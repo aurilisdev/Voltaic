@@ -1,5 +1,6 @@
 package voltaic.datagen;
 
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
@@ -19,11 +20,12 @@ import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
-import net.neoforged.neoforge.data.event.GatherDataEvent;
+import net.minecraftforge.common.data.DatapackBuiltinEntriesProvider;
+import net.minecraftforge.common.data.ExistingFileHelper;
+import net.minecraftforge.common.data.ForgeAdvancementProvider;
+import net.minecraftforge.data.event.GatherDataEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 
 @EventBusSubscriber(modid = Voltaic.ID, bus = EventBusSubscriber.Bus.MOD)
 public class DataGenerators {
@@ -50,8 +52,8 @@ public class DataGenerators {
 
             generator.addProvider(true, datapacks);
             VoltaicTagsProvider.addTagProviders(generator, output, datapacks.getRegistryProvider(), helper);
-            generator.addProvider(true, new VoltaicRecipeProvider(output, lookupProvider));
-            generator.addProvider(true, new VoltaicAdvancementProvider(output, datapacks.getRegistryProvider()));
+            generator.addProvider(true, new VoltaicRecipeProvider(output));
+            generator.addProvider(true, new ForgeAdvancementProvider(output, event.getLookupProvider(), helper, List.of(new VoltaicAdvancementProvider())));
         }
         if (event.includeClient()) {
             generator.addProvider(true, new VoltaicBlockStateProvider(output, helper));

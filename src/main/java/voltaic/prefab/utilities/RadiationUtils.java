@@ -1,8 +1,8 @@
 package voltaic.prefab.utilities;
 
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.capability.templates.FluidTank;
 import voltaic.api.gas.GasStack;
 import voltaic.api.gas.GasTank;
 import voltaic.api.radiation.RadiationSystem;

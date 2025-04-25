@@ -3,6 +3,7 @@ package voltaic.api.gas;
 import javax.annotation.Nullable;
 
 import voltaic.registers.VoltaicGases;
+import voltaic.registers.VoltaicRegistries;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
@@ -54,11 +55,11 @@ public class Gas {
 	}
 
 	public Holder<Gas> getBuiltInRegistry() {
-		return VoltaicGases.GAS_REGISTRY.wrapAsHolder(this);
+		return VoltaicRegistries.gasRegistry().getHolder(this).get();
 	}
 
 	public boolean isEmpty() {
-		return this == VoltaicGases.EMPTY.value();
+		return this == VoltaicGases.EMPTY.get();
 	}
 
 	public int getCondensationTemp() {

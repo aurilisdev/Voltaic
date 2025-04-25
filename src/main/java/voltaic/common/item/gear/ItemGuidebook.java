@@ -6,7 +6,6 @@ import voltaic.common.inventory.container.ContainerGuidebook;
 import voltaic.common.item.ItemVoltaic;
 import voltaic.prefab.utilities.VoltaicTextUtils;
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.Holder;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
@@ -18,18 +17,19 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.registries.RegistryObject;
 
 public class ItemGuidebook extends ItemVoltaic {
 
 	private static final String LINK = "https://wiki.aurilis.dev";
 	private static final Component CONTAINER_TITLE = Component.translatable("container.guidebook");
 
-	public ItemGuidebook(Properties properties, Holder<CreativeModeTab> creativeTab) {
+	public ItemGuidebook(Properties properties, RegistryObject<CreativeModeTab> creativeTab) {
 		super(properties, creativeTab);
 	}
 
 	@Override
-	public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltips, TooltipFlag flag) {
+	public void appendHoverText(ItemStack stack, Level context, List<Component> tooltips, TooltipFlag flag) {
 		tooltips.add(VoltaicTextUtils.tooltip("info.guidebookuse").withStyle(ChatFormatting.LIGHT_PURPLE));
 		tooltips.add(VoltaicTextUtils.tooltip("guidebookname").withStyle(ChatFormatting.LIGHT_PURPLE));
 		super.appendHoverText(stack, context, tooltips, flag);

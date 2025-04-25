@@ -27,7 +27,7 @@ import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.registration.IExtraIngredientRegistration;
 import mezz.jei.api.registration.IModIngredientRegistration;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.registries.DeferredHolder;
+import net.minecraftforge.registries.RegistryObject;
 
 @JeiPlugin
 public class VoltaicJEIPlugin implements IModPlugin {
@@ -44,7 +44,7 @@ public class VoltaicJEIPlugin implements IModPlugin {
 
     @Override
     public void registerIngredients(IModIngredientRegistration registration) {
-        registration.register(VoltaicJeiTypes.GAS_STACK, new ArrayList<>(), new IngredientHelperGasStack(), IngredientRendererGasStack.LIST_RENDERER, GasStack.CODEC);
+        registration.register(VoltaicJeiTypes.GAS_STACK, new ArrayList<>(), new IngredientHelperGasStack(), IngredientRendererGasStack.LIST_RENDERER);
     }
 
     @Override
@@ -61,8 +61,8 @@ public class VoltaicJEIPlugin implements IModPlugin {
     public void registerExtraIngredients(IExtraIngredientRegistration registration) {
 
         List<GasStack> gases = new ArrayList<>();
-        for(DeferredHolder<Gas, ? extends Gas> gas : VoltaicGases.GASES.getEntries()) {
-            if(gas.get() == VoltaicGases.EMPTY.value()) {
+        for(RegistryObject<? extends Gas> gas : VoltaicGases.GASES.getEntries()) {
+            if(gas.get() == VoltaicGases.EMPTY.get()) {
                 continue;
             }
 

@@ -7,10 +7,9 @@ import org.jetbrains.annotations.NotNull;
 import voltaic.prefab.properties.variant.SingleProperty;
 import voltaic.prefab.properties.types.PropertyTypes;
 import voltaic.prefab.tile.GenericTile;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.capability.templates.FluidTank;
 
 /**
  * Modification of the FluidTank class incorporating the property system. The protected constructor should remain protected
@@ -51,22 +50,22 @@ public class PropertyFluidTank extends FluidTank {
 
 	@Override
 	public String toString() {
-		return "Fluid: " + getFluid().getFluidType().getDescriptionId() + "\nAmount: " + getFluidAmount() + "\nCapacity: " + getCapacity();
+		return "Fluid: " + getFluid().getFluid().getFluidType().getDescriptionId() + "\nAmount: " + getFluidAmount() + "\nCapacity: " + getCapacity();
 	}
 
 	@Override
-	public CompoundTag writeToNBT(HolderLookup.Provider lookupProvider, CompoundTag nbt) {
+	public CompoundTag writeToNBT(CompoundTag nbt) {
 		CompoundTag tag = new CompoundTag();
-		tag.put("fluid", getFluid().save(lookupProvider));
+		getFluid().writeToNBT(tag);
 		tag.putInt("capacity", getCapacity());
 		nbt.put(fluidStackProperty.getName() + "tank", tag);
 		return nbt;
 	}
 
 	@Override
-	public FluidTank readFromNBT(HolderLookup.Provider lookupProvider, CompoundTag nbt) {
+	public FluidTank readFromNBT(CompoundTag nbt) {
 		CompoundTag tag = nbt.getCompound(fluidStackProperty.getName() + "name");
-		setFluid(FluidStack.parseOptional(lookupProvider, tag.getCompound("fluid")));
+		setFluid(FluidStack.loadFluidStackFromNBT(tag));
 		setCapacity(tag.getInt("capacity"));
 		return this;
 	}
@@ -103,7 +102,7 @@ public class PropertyFluidTank extends FluidTank {
 			if (getFluid().isEmpty()) {
 				return Math.min(getCapacity(), resource.getAmount());
 			}
-			if (!FluidStack.isSameFluidSameComponents(getFluid(), resource)) {
+			if (!getFluid().isFluidEqual(resource)) {
 				return 0;
 			}
 			return Math.min(getCapacity() - getFluidAmount(), resource.getAmount());
@@ -113,7 +112,7 @@ public class PropertyFluidTank extends FluidTank {
 			onContentsChanged();
 			return getFluidAmount();
 		}
-		if (!FluidStack.isSameFluidSameComponents(getFluid(), resource)) {
+		if (!getFluid().isFluidEqual(resource)) {
 			return 0;
 		}
 		int filled = getCapacity() - getFluidAmount();
@@ -134,7 +133,7 @@ public class PropertyFluidTank extends FluidTank {
 	@NotNull
 	@Override
 	public FluidStack drain(FluidStack resource, FluidAction action) {
-		if (resource.isEmpty() || !FluidStack.isSameFluidSameComponents(getFluid(), resource)) {
+		if (resource.isEmpty() || !resource.isFluidEqual(getFluid())) {
 			return FluidStack.EMPTY;
 		}
 		return drain(resource.getAmount(), action);

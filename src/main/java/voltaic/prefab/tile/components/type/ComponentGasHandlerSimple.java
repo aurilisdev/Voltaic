@@ -18,10 +18,12 @@ import voltaic.prefab.tile.components.CapabilityInputType;
 import voltaic.prefab.tile.components.IComponentType;
 import voltaic.prefab.tile.components.utils.IComponentGasHandler;
 import voltaic.prefab.utilities.BlockEntityUtils;
-import voltaic.registers.VoltaicGases;
+import voltaic.registers.VoltaicRegistries;
 import net.minecraft.core.Direction;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.LazyOptional;
 
 /**
  * Extension of the PropertyGasTank making it usable as a ComponentGasHandler
@@ -140,16 +142,16 @@ public class ComponentGasHandlerSimple extends PropertyGasTank implements ICompo
             defineOptionals(newState.getValue(VoltaicBlockStates.FACING));
         }
     }
-
+    
     @Override
-    public @org.jetbrains.annotations.Nullable IGasHandler getCapability(@org.jetbrains.annotations.Nullable Direction direction, CapabilityInputType mode) {
-        if (!isSided) {
-            return this;
+    public <T> LazyOptional<T> getCapability(Capability<T> capability, Direction side, CapabilityInputType inputType) {
+    	if (!isSided) {
+            return LazyOptional.of(() -> this).cast();
         }
-        if (direction == null) {
-            return null;
+        if (side == null) {
+            return LazyOptional.empty();
         }
-        return sidedOptionals[direction.ordinal()];
+        return LazyOptional.of(() -> sidedOptionals[side.ordinal()]).cast();
     }
 
     @Override
@@ -161,7 +163,7 @@ public class ComponentGasHandlerSimple extends PropertyGasTank implements ICompo
 
     private void defineOptionals(Direction facing) {
 
-        holder.getLevel().invalidateCapabilities(holder.getBlockPos());
+        holder.invalidateCaps();
 
         sidedOptionals = new IGasHandler[6];
 
@@ -203,9 +205,9 @@ public class ComponentGasHandlerSimple extends PropertyGasTank implements ICompo
         }
         if (validGasTags != null) {
             for (TagKey<Gas> tag : validGasTags) {
-                VoltaicGases.GAS_REGISTRY.getTag(tag).get().stream().forEach(holder -> {
-                    validatorGases.add(holder.value());
-                });
+            	for (Gas gas : VoltaicRegistries.gasRegistry().tags().getTag(tag).stream().toList()) {
+					validatorGases.add(gas);
+				}
             }
         }
         if (!validatorGases.isEmpty()) {

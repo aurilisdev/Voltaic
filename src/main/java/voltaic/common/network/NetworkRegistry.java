@@ -5,14 +5,15 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.UUID;
 
+import net.minecraftforge.event.TickEvent.Phase;
+import net.minecraftforge.event.TickEvent.ServerTickEvent;
+import net.minecraftforge.event.server.ServerStoppedEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import voltaic.Voltaic;
 import voltaic.api.network.ITickableNetwork;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.server.ServerStoppedEvent;
-import net.neoforged.neoforge.event.tick.ServerTickEvent;
 
-@EventBusSubscriber(modid = Voltaic.ID, bus = EventBusSubscriber.Bus.GAME)
+@EventBusSubscriber(modid = Voltaic.ID, bus = EventBusSubscriber.Bus.FORGE)
 public class NetworkRegistry {
 	private static final HashMap<UUID, ITickableNetwork> NETWORKS = new HashMap<>();
 	private static final HashSet<UUID> TO_REMOVE = new HashSet<>();
@@ -28,8 +29,10 @@ public class NetworkRegistry {
 	}
 
 	@SubscribeEvent
-	public static void update(ServerTickEvent.Post event) {
-
+	public static void update(ServerTickEvent event) {
+		if(event.phase == Phase.START) {
+			return;
+		}
 		try {
 			for(UUID id : TO_REMOVE) {
 				NETWORKS.remove(id);

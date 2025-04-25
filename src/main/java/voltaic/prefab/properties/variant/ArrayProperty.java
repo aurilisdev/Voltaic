@@ -1,9 +1,7 @@
 package voltaic.prefab.properties.variant;
 
-import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.Block;
-import org.apache.commons.lang3.function.TriConsumer;
 import voltaic.Voltaic;
 import voltaic.prefab.properties.PropertyManager;
 import voltaic.prefab.properties.types.ArrayPropertyType;
@@ -11,6 +9,8 @@ import voltaic.prefab.properties.types.IPropertyType;
 
 import java.util.Arrays;
 import java.util.function.Consumer;
+
+import org.apache.logging.log4j.util.TriConsumer;
 
 public class ArrayProperty<T> extends AbstractProperty<T[], ArrayPropertyType<T, ?>> {
 
@@ -39,7 +39,7 @@ public class ArrayProperty<T> extends AbstractProperty<T[], ArrayPropertyType<T,
     }
 
     public ArrayProperty<T> onChange(TriConsumer<ArrayProperty<T>, T[], Integer> event) {
-        onChange = onChange.andThen(event);
+        onChange = event;
         return this;
     }
 
@@ -100,9 +100,9 @@ public class ArrayProperty<T> extends AbstractProperty<T[], ArrayPropertyType<T,
         return shouldUpdate;
     }
 
-    public void loadFromTag(CompoundTag tag, HolderLookup.Provider registries) {
+    public void loadFromTag(CompoundTag tag) {
         try {
-            T[] data = (T[]) getType().readFromTag(new IPropertyType.TagReader(this, tag, registries));
+            T[] data = (T[]) getType().readFromTag(new IPropertyType.TagReader(this, tag));
             if (data != null) {
                 value = data;
                 onLoadedFromTag(this, value);

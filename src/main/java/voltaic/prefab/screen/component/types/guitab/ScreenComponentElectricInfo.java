@@ -20,8 +20,8 @@ import voltaic.prefab.utilities.VoltaicTextUtils;
 import voltaic.prefab.utilities.object.TransferPack;
 import net.minecraft.ChatFormatting;
 import net.minecraft.util.FormattedCharSequence;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public class ScreenComponentElectricInfo extends ScreenComponentGuiTab {

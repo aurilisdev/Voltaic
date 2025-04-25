@@ -2,7 +2,10 @@ package voltaic.api.gas;
 
 import java.util.function.Predicate;
 
-import voltaic.registers.VoltaicDataComponentTypes;
+import com.mojang.datafixers.util.Pair;
+
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.world.item.ItemStack;
 
 /**
@@ -39,14 +42,14 @@ public class GasHandlerItemStack implements IGasHandlerItem {
     }
 
     public void setGas(GasStack gas) {
-
-        container.set(VoltaicDataComponentTypes.GAS_STACK, gas);
+    	
+    	GasStack.CODEC.encode(gas, NbtOps.INSTANCE, NbtOps.INSTANCE.empty()).result().ifPresent(tag -> container.getOrCreateTag().put(GAS_NBT_KEY, tag));
     }
 
     @Override
     public GasStack getGasInTank(int tank) {
 
-        return container.getOrDefault(VoltaicDataComponentTypes.GAS_STACK, GasStack.EMPTY);
+        return GasStack.CODEC.decode(NbtOps.INSTANCE, container.getOrCreateTag().get(GAS_NBT_KEY)).result().orElseGet(() -> Pair.of(GasStack.EMPTY, new CompoundTag())).getFirst();
     }
 
     @Override
@@ -271,7 +274,7 @@ public class GasHandlerItemStack implements IGasHandlerItem {
     }
 
     public void setContainerToEmpty() {
-        container.remove(VoltaicDataComponentTypes.GAS_STACK);
+        container.getOrCreateTag().remove(GAS_NBT_KEY);
     }
 
     /**

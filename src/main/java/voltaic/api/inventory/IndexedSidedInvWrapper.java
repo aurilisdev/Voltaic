@@ -8,7 +8,7 @@ import voltaic.prefab.tile.components.type.ComponentInventory;
 import net.minecraft.core.Direction;
 import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.items.IItemHandlerModifiable;
+import net.minecraftforge.items.IItemHandlerModifiable;
 
 public class IndexedSidedInvWrapper implements IItemHandlerModifiable {
 
@@ -99,7 +99,7 @@ public class IndexedSidedInvWrapper implements IItemHandlerModifiable {
             if (stackInSlot.getCount() >= Math.min(stackInSlot.getMaxStackSize(), getSlotLimit(slot)))
                 return stack;
 
-            if (!ItemStack.isSameItemSameComponents(stack, stackInSlot))
+            if (!ItemStack.isSameItemSameTags(stack, stackInSlot))
                 return stack;
 
             if (!inv.canPlaceItemThroughFace(slot1, stack, side) || !inv.canPlaceItem(slot1, stack))

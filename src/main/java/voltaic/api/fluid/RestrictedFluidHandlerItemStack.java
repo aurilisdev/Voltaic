@@ -4,10 +4,15 @@ import java.util.function.Predicate;
 
 import org.jetbrains.annotations.NotNull;
 
-import voltaic.registers.VoltaicDataComponentTypes;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 
 /**
  * Almost carbon copy of Forge's FluidHandlerItemStack capability, except the way you validate fluids actually makes
@@ -15,11 +20,13 @@ import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
  * 
  * @author skip999
  */
-public class RestrictedFluidHandlerItemStack implements IFluidHandlerItem {
+public class RestrictedFluidHandlerItemStack implements IFluidHandlerItem, ICapabilityProvider {
 
     public static final String FLUID_NBT_KEY = "Fluid";
 
     private Predicate<FluidStack> isFluidValid = stack -> true;
+    
+    private final LazyOptional<IFluidHandlerItem> holder = LazyOptional.of(() -> this);
 
     @NotNull
     protected ItemStack container;
@@ -73,7 +80,7 @@ public class RestrictedFluidHandlerItemStack implements IFluidHandlerItem {
 
             return fillAmount;
         }
-        if (FluidStack.isSameFluidSameComponents(resource, contained)) {
+        if (resource.isFluidEqual(contained)) {
             int fillAmount = Math.min(capacity - contained.getAmount(), resource.getAmount());
 
             if (action.execute() && fillAmount > 0) {
@@ -89,7 +96,7 @@ public class RestrictedFluidHandlerItemStack implements IFluidHandlerItem {
 
     @Override
     public @NotNull FluidStack drain(FluidStack resource, FluidAction action) {
-        if (container.getCount() != 1 || resource.isEmpty() || !FluidStack.isSameFluidSameComponents(getFluid(), resource)) {
+        if (container.getCount() != 1 || resource.isEmpty() || !getFluid().isFluidEqual(resource)) {
             return FluidStack.EMPTY;
         }
         return drain(resource.getAmount(), action);
@@ -108,7 +115,8 @@ public class RestrictedFluidHandlerItemStack implements IFluidHandlerItem {
 
         final int drainAmount = Math.min(contained.getAmount(), maxDrain);
 
-        FluidStack drained = contained.copyWithAmount(drainAmount);
+        FluidStack drained = contained.copy();
+		drained.setAmount(drainAmount);
 
         if (action.execute()) {
             contained.shrink(drainAmount);
@@ -126,19 +134,34 @@ public class RestrictedFluidHandlerItemStack implements IFluidHandlerItem {
     public @NotNull ItemStack getContainer() {
         return container;
     }
+    
+    @Override
+	public <T> @NotNull LazyOptional<T> getCapability(@NotNull Capability<T> cap, @org.jetbrains.annotations.Nullable Direction side) {
+		return ForgeCapabilities.FLUID_HANDLER_ITEM.orEmpty(cap, holder);
+	}
 
     @NotNull
-    public FluidStack getFluid() {
-        return container.getOrDefault(VoltaicDataComponentTypes.FLUID_STACK, FluidStackComponent.EMPTY).fluid;
-    }
+	public FluidStack getFluid() {
+		CompoundTag tagCompound = container.getTag();
+		if (tagCompound == null || !tagCompound.contains(FLUID_NBT_KEY)) {
+			return FluidStack.EMPTY;
+		}
+		return FluidStack.loadFluidStackFromNBT(tagCompound.getCompound(FLUID_NBT_KEY));
+	}
 
-    public void setFluid(FluidStack fluid) {
-        container.set(VoltaicDataComponentTypes.FLUID_STACK, new FluidStackComponent(fluid));
-    }
+	public void setFluid(FluidStack fluid) {
+		if (!container.hasTag()) {
+			container.setTag(new CompoundTag());
+		}
 
-    public void setContainerToEmpty() {
-        container.remove(VoltaicDataComponentTypes.FLUID_STACK);
-    }
+		CompoundTag fluidTag = new CompoundTag();
+		fluid.writeToNBT(fluidTag);
+		container.getTag().put(FLUID_NBT_KEY, fluidTag);
+	}
+
+	public void setContainerToEmpty() {
+		container.removeTagKey(FLUID_NBT_KEY);
+	}
 
     public static class Consumable extends RestrictedFluidHandlerItemStack {
 

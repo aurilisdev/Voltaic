@@ -1,7 +1,7 @@
 package voltaic.client.event;
 
 import net.minecraft.client.Minecraft;
-import net.neoforged.neoforge.client.event.InputEvent.Key;
+import net.minecraftforge.client.event.InputEvent.Key;
 
 public abstract class AbstractKeyPressHandler {
 

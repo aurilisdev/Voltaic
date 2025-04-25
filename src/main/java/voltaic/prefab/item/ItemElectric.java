@@ -9,7 +9,6 @@ import voltaic.api.item.IItemElectric;
 import voltaic.common.item.ItemVoltaic;
 import voltaic.prefab.utilities.VoltaicTextUtils;
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.SlotAccess;
 import net.minecraft.world.entity.player.Player;
@@ -20,13 +19,15 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
+import net.minecraftforge.registries.RegistryObject;
 
 public class ItemElectric extends ItemVoltaic implements IItemElectric {
 
 	private final ElectricItemProperties properties;
 	private final Function<Item, Item> getBatteryItem;
 
-	public ItemElectric(ElectricItemProperties properties, Holder<CreativeModeTab> creativeTab, Function<Item, Item> getBatteryItem) {
+	public ItemElectric(ElectricItemProperties properties, RegistryObject<CreativeModeTab> creativeTab, Function<Item, Item> getBatteryItem) {
 		super(properties, creativeTab);
 		this.properties = properties;
 		this.getBatteryItem = getBatteryItem;
@@ -55,7 +56,7 @@ public class ItemElectric extends ItemVoltaic implements IItemElectric {
 	}
 
 	@Override
-	public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flagIn) {
+	public void appendHoverText(ItemStack stack, Level context, List<Component> tooltip, TooltipFlag flagIn) {
 		super.appendHoverText(stack, context, tooltip, flagIn);
 		tooltip.add(VoltaicTextUtils.tooltip("item.electric.info", VoltaicTextUtils.ratio(ChatFormatter.getChatDisplayShort(getJoulesStored(stack), DisplayUnits.JOULES), ChatFormatter.getChatDisplayShort(getMaximumCapacity(stack), DisplayUnits.JOULES)).withStyle(ChatFormatting.GRAY)).withStyle(ChatFormatting.DARK_GRAY));
 		tooltip.add(VoltaicTextUtils.tooltip("item.electric.voltage", ChatFormatter.getChatDisplayShort(properties.receive.getVoltage(), DisplayUnits.VOLTAGE).withStyle(ChatFormatting.GRAY)).withStyle(ChatFormatting.DARK_GRAY));

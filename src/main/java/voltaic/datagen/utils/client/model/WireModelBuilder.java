@@ -2,12 +2,14 @@ package voltaic.datagen.utils.client.model;
 
 import com.google.gson.JsonObject;
 
+import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.client.model.generators.CustomLoaderBuilder;
+import net.minecraftforge.client.model.generators.ModelBuilder;
+import net.minecraftforge.client.model.generators.ModelFile;
+import net.minecraftforge.common.data.ExistingFileHelper;
+import voltaic.Voltaic;
 import voltaic.client.model.block.bakerytypes.CableModelLoader;
 import voltaic.common.block.connect.EnumConnectType;
-import net.neoforged.neoforge.client.model.generators.CustomLoaderBuilder;
-import net.neoforged.neoforge.client.model.generators.ModelBuilder;
-import net.neoforged.neoforge.client.model.generators.ModelFile;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 public class WireModelBuilder<T extends ModelBuilder<T>> extends CustomLoaderBuilder<T> {
 
@@ -20,7 +22,7 @@ public class WireModelBuilder<T extends ModelBuilder<T>> extends CustomLoaderBui
 	private ModelFile inventory;
 
 	protected WireModelBuilder(T parent, ExistingFileHelper existingFileHelper) {
-		super(CableModelLoader.ID, parent, existingFileHelper, false);
+		super(new ResourceLocation(Voltaic.ID, CableModelLoader.ID), parent, existingFileHelper);
 
 	}
 

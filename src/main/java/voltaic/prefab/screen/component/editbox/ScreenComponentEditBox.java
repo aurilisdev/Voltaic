@@ -11,6 +11,7 @@ import voltaic.Voltaic;
 import voltaic.api.screen.ITexture;
 import voltaic.prefab.screen.component.ScreenComponentGeneric;
 import voltaic.prefab.utilities.math.Color;
+import net.minecraft.SharedConstants;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -21,9 +22,8 @@ import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
-import net.minecraft.util.StringUtil;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 /**
@@ -137,7 +137,7 @@ public class ScreenComponentEditBox extends ScreenComponentGeneric {
 		int min = Math.min(this.cursorPos, this.highlightPos);
 		int max = Math.max(this.cursorPos, this.highlightPos);
 		int length = this.maxLength - this.value.length() - (min - max);
-		String filtered = StringUtil.filterText(textToWrite);
+		String filtered = SharedConstants.filterText(textToWrite);
 		int filteredLength = filtered.length();
 		if (length < filteredLength) {
 			filtered = filtered.substring(0, length);
@@ -380,7 +380,7 @@ public class ScreenComponentEditBox extends ScreenComponentGeneric {
 		if (!this.canConsumeInput()) {
 			return false;
 		}
-		if (!StringUtil.isAllowedChatCharacter(codePoint)) {
+		if (!SharedConstants.isAllowedChatCharacter(codePoint)) {
 			return false;
 		}
 		if (this.isEditable) {

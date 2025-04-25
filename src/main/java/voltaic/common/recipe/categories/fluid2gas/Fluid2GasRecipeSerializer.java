@@ -1,9 +1,11 @@
 package voltaic.common.recipe.categories.fluid2gas;
 
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.MapCodec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.List;
 
+import com.google.gson.JsonObject;
+
+import net.minecraft.resources.ResourceLocation;
+import voltaic.api.codec.StreamCodec;
 import voltaic.api.gas.GasStack;
 import voltaic.common.recipe.VoltaicRecipeSerializer;
 import voltaic.common.recipe.recipeutils.FluidIngredient;
@@ -11,70 +13,41 @@ import voltaic.common.recipe.recipeutils.ProbableFluid;
 import voltaic.common.recipe.recipeutils.ProbableGas;
 import voltaic.common.recipe.recipeutils.ProbableItem;
 import voltaic.prefab.utilities.CodecUtils;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
 
 public class Fluid2GasRecipeSerializer<T extends Fluid2GasRecipe> extends VoltaicRecipeSerializer<T> {
-
-    private final Fluid2GasRecipe.Factory<T> factory;
-    private final MapCodec<T> codec;
-
-    private final StreamCodec<RegistryFriendlyByteBuf, T> streamCodec;
+	
+	private final Fluid2GasRecipe.Factory<T> factory;
 
     public Fluid2GasRecipeSerializer(Fluid2GasRecipe.Factory<T> factory) {
-        this.factory = factory;
-        codec = RecordCodecBuilder.mapCodec(instance -> instance.group(
-                                //
-                                Codec.STRING.fieldOf(GROUP).forGetter(T::getGroup),
-                                //
-                                FluidIngredient.LIST_CODEC.fieldOf(FLUID_INPUTS).forGetter(T::getFluidIngredients),
-                                //
-                                GasStack.CODEC.fieldOf(OUTPUT).forGetter(T::getGasRecipeOutput),
-                                //
-                                Codec.DOUBLE.optionalFieldOf(EXPERIENCE, 0.0).forGetter(T::getXp),
-                                //
-                                Codec.INT.fieldOf(TICKS).forGetter(T::getTicks),
-                                //
-                                Codec.DOUBLE.fieldOf(USAGE_PER_TICK).forGetter(T::getUsagePerTick),
-                                //
-                                ProbableItem.LIST_CODEC.optionalFieldOf(ITEM_BIPRODUCTS, ProbableItem.NONE).forGetter(T::getItemBiproducts),
-                                //
-                                ProbableFluid.LIST_CODEC.optionalFieldOf(FLUID_BIPRODUCTS, ProbableFluid.NONE).forGetter(T::getFluidBiproducts),
-                                //
-                                ProbableGas.LIST_CODEC.optionalFieldOf(GAS_BIPRODUCTS, ProbableGas.NONE).forGetter(T::getGasBiproducts)
-                                //
-
-                        )
-                        //
-                        .apply(instance, factory::create)
-
-        );
-
-        streamCodec = CodecUtils.composite(
-                ByteBufCodecs.STRING_UTF8, T::getGroup,
+        super(CodecUtils.composite(
+                StreamCodec.RESOURCE_LOCATION, T::getId,
                 FluidIngredient.LIST_STREAM_CODEC, T::getFluidIngredients,
                 GasStack.STREAM_CODEC, T::getGasRecipeOutput,
-                ByteBufCodecs.DOUBLE, T::getXp,
-                ByteBufCodecs.INT, T::getTicks,
-                ByteBufCodecs.DOUBLE, T::getUsagePerTick,
+                StreamCodec.DOUBLE, T::getXp,
+                StreamCodec.INT, T::getTicks,
+                StreamCodec.DOUBLE, T::getUsagePerTick,
                 ProbableItem.LIST_STREAM_CODEC, T::getItemBiproducts,
                 ProbableFluid.LIST_STREAM_CODEC, T::getFluidBiproducts,
                 ProbableGas.LIST_STREAM_CODEC, T::getGasBiproducts,
                 factory::create
 
-        );
+        ));
+        this.factory = factory;
+    }
+    
+    @Override
+    public T fromJson(ResourceLocation recipeId, JsonObject recipeJson) {
+    	List<FluidIngredient> inputs = getFluidIngredients(recipeId, recipeJson);
+		GasStack output = getGasOutput(recipeId, recipeJson);
+		double experience = getExperience(recipeJson);
+		int ticks = getTicks(recipeId, recipeJson);
+		double usagePerTick = getUsagePerTick(recipeId, recipeJson);
+		List<ProbableItem> itemBi = getItemBiproducts(recipeId, recipeJson);
+		List<ProbableFluid> fluidBi = getFluidBiproducts(recipeId, recipeJson);
+		List<ProbableGas> gasBi = getGasBiproducts(recipeId, recipeJson);
+    	return factory.create(recipeId, inputs, output, experience, ticks, usagePerTick, itemBi, fluidBi, gasBi);
     }
 
-    @Override
-    public MapCodec<T> codec() {
-        return codec;
-    }
-
-    @Override
-    public StreamCodec<RegistryFriendlyByteBuf, T> streamCodec() {
-        return streamCodec;
-    }
 
     /*
     @Override

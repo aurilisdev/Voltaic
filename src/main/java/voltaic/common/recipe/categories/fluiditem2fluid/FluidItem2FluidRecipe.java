@@ -4,6 +4,8 @@ import java.util.List;
 
 import com.mojang.datafixers.util.Pair;
 
+import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.fluids.FluidStack;
 import voltaic.common.recipe.recipeutils.AbstractMaterialRecipe;
 import voltaic.common.recipe.recipeutils.CountableIngredient;
 import voltaic.common.recipe.recipeutils.FluidIngredient;
@@ -14,7 +16,6 @@ import voltaic.prefab.tile.components.IComponentType;
 import voltaic.prefab.tile.components.type.ComponentFluidHandlerMulti;
 import voltaic.prefab.tile.components.type.ComponentInventory;
 import voltaic.prefab.tile.components.type.ComponentProcessor;
-import net.neoforged.neoforge.fluids.FluidStack;
 
 public abstract class FluidItem2FluidRecipe extends AbstractMaterialRecipe {
 
@@ -22,7 +23,7 @@ public abstract class FluidItem2FluidRecipe extends AbstractMaterialRecipe {
     private List<CountableIngredient> ingredients;
     private FluidStack outputStack;
 
-    public FluidItem2FluidRecipe(String group, List<CountableIngredient> inputItems, List<FluidIngredient> inputFluids, FluidStack outputFluid, double experience, int ticks, double usagePerTick, List<ProbableItem> itemBiproducts, List<ProbableFluid> fluidBiproducts, List<ProbableGas> gasBiproducts) {
+    public FluidItem2FluidRecipe(ResourceLocation group, List<CountableIngredient> inputItems, List<FluidIngredient> inputFluids, FluidStack outputFluid, double experience, int ticks, double usagePerTick, List<ProbableItem> itemBiproducts, List<ProbableFluid> fluidBiproducts, List<ProbableGas> gasBiproducts) {
         super(group, experience, ticks, usagePerTick, itemBiproducts, fluidBiproducts, gasBiproducts);
         ingredients = inputItems;
         fluidIngredients = inputFluids;
@@ -60,7 +61,7 @@ public abstract class FluidItem2FluidRecipe extends AbstractMaterialRecipe {
 
     public interface Factory<T extends FluidItem2FluidRecipe> {
 
-        T create(String group, List<CountableIngredient> inputItems, List<FluidIngredient> inputFluids, FluidStack outputFluid, double experience, int ticks, double usagePerTick, List<ProbableItem> itemBiproducts, List<ProbableFluid> fluidBiproducts, List<ProbableGas> gasBiproducts);
+        T create(ResourceLocation group, List<CountableIngredient> inputItems, List<FluidIngredient> inputFluids, FluidStack outputFluid, double experience, int ticks, double usagePerTick, List<ProbableItem> itemBiproducts, List<ProbableFluid> fluidBiproducts, List<ProbableGas> gasBiproducts);
 
     }
 

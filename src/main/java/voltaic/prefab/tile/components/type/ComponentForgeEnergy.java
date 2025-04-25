@@ -1,7 +1,10 @@
 package voltaic.prefab.tile.components.type;
 
 import net.minecraft.core.Direction;
-import net.neoforged.neoforge.energy.IEnergyStorage;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.energy.IEnergyStorage;
+
 import org.jetbrains.annotations.Nullable;
 import voltaic.Voltaic;
 import voltaic.api.electricity.ICapabilityElectrodynamic;
@@ -10,6 +13,7 @@ import voltaic.prefab.tile.components.CapabilityInputType;
 import voltaic.prefab.tile.components.IComponent;
 import voltaic.prefab.tile.components.IComponentType;
 import voltaic.prefab.utilities.object.TransferPack;
+import voltaic.registers.VoltaicCapabilities;
 
 public class ComponentForgeEnergy implements IComponent {
 
@@ -46,18 +50,16 @@ public class ComponentForgeEnergy implements IComponent {
     public GenericTile getHolder() {
         return holder;
     }
-
-    public IEnergyStorage getCap(Direction side, CapabilityInputType type) {
-
-        if(electroLoaded || side == null) {
-            return null;
+    
+    @Override
+    public <T> LazyOptional<T> getCapability(Capability<T> capability, Direction side, CapabilityInputType inputType) {
+    	if(electroLoaded || side == null) {
+            return LazyOptional.empty();
         }
 
-        ICapabilityElectrodynamic electrodynamic = electro.getCapability(side, type);
+        ICapabilityElectrodynamic electrodynamic = electro.getCapability(VoltaicCapabilities.CAPABILITY_ELECTRODYNAMIC_BLOCK, side, inputType).resolve().get();
 
-        return electrodynamic == null ? null : new ElectrodynamicWrapper(electrodynamic);
-
-
+        return electrodynamic == null ? LazyOptional.empty() : LazyOptional.of(() -> new ElectrodynamicWrapper(electrodynamic)).cast();
     }
 
     private static final class ElectrodynamicWrapper implements IEnergyStorage {

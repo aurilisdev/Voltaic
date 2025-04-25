@@ -10,7 +10,6 @@ import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
 import java.nio.file.Path;
 import java.util.concurrent.CompletableFuture;
 
@@ -40,7 +39,7 @@ public abstract class BaseRadiationShieldingProvider implements DataProvider {
 
     public static void addBlock(Block block, double radiationAmount, double radiationLevel, JsonObject json) {
         JsonObject data = new JsonObject();
-        json.add(BuiltInRegistries.BLOCK.getKey(block).toString(), RadiationShielding.CODEC.encode(new RadiationShielding(radiationAmount, radiationLevel), JsonOps.INSTANCE, data).getOrThrow());
+        json.add(BuiltInRegistries.BLOCK.getKey(block).toString(), RadiationShielding.CODEC.encode(new RadiationShielding(radiationAmount, radiationLevel), JsonOps.INSTANCE, data).result().get());
     }
 
 //    private void addTag(TagKey<Block> tag, double radiationAmount, double radiationLevel, JsonObject json) {

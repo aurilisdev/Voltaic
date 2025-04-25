@@ -10,13 +10,13 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
-import net.neoforged.neoforge.client.model.generators.ItemModelBuilder;
-import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
-import net.neoforged.neoforge.client.model.generators.ModelFile;
-import net.neoforged.neoforge.client.model.generators.ModelFile.ExistingModelFile;
-import net.neoforged.neoforge.client.model.generators.loaders.DynamicFluidContainerModelBuilder;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
-import net.neoforged.neoforge.registries.DeferredHolder;
+import net.minecraftforge.client.model.generators.ItemModelBuilder;
+import net.minecraftforge.client.model.generators.ItemModelProvider;
+import net.minecraftforge.client.model.generators.ModelFile;
+import net.minecraftforge.client.model.generators.ModelFile.ExistingModelFile;
+import net.minecraftforge.client.model.generators.loaders.DynamicFluidContainerModelBuilder;
+import net.minecraftforge.common.data.ExistingFileHelper;
+import net.minecraftforge.registries.RegistryObject;
 
 public abstract class BaseItemModelsProvider extends ItemModelProvider {
 
@@ -27,7 +27,7 @@ public abstract class BaseItemModelsProvider extends ItemModelProvider {
 		this.modID = modID;
 	}
 
-	public void layeredItem(DeferredHolder<Item, ? extends Item> item, Parent parent, ResourceLocation... textures) {
+	public void layeredItem(RegistryObject<? extends Item> item, Parent parent, ResourceLocation... textures) {
 		layeredItem(name(item), parent, textures);
 	}
 
@@ -39,7 +39,7 @@ public abstract class BaseItemModelsProvider extends ItemModelProvider {
 		layeredBuilder(name, parent, textures);
 	}
 
-	public void toggleableItem(DeferredHolder<Item, ? extends Item> item, String toggle, Parent parentOff, Parent parentOn, ResourceLocation[] offText, ResourceLocation[] onText) {
+	public void toggleableItem(RegistryObject<? extends Item> item, String toggle, Parent parentOff, Parent parentOn, ResourceLocation[] offText, ResourceLocation[] onText) {
 		toggleableItem(name(item), toggle, parentOff, parentOn, offText, onText);
 	}
 
@@ -62,7 +62,7 @@ public abstract class BaseItemModelsProvider extends ItemModelProvider {
 		return builder;
 	}
 
-	public DynamicFluidContainerModelBuilder<ItemModelBuilder> getBucketModel(DeferredHolder<Item, ? extends Item> item, Parent parent) {
+	public DynamicFluidContainerModelBuilder<ItemModelBuilder> getBucketModel(RegistryObject<? extends Item> item, Parent parent) {
 		return getBucketModel(name(item), parent);
 	}
 
@@ -86,7 +86,7 @@ public abstract class BaseItemModelsProvider extends ItemModelProvider {
 		return modLoc("block/" + texture);
 	}
 
-	public String name(DeferredHolder<Item, ? extends Item> item) {
+	public String name(RegistryObject<? extends Item> item) {
 		return name(item.get());
 	}
 
@@ -94,7 +94,7 @@ public abstract class BaseItemModelsProvider extends ItemModelProvider {
 		return BuiltInRegistries.ITEM.getKey(item).getPath();
 	}
 
-	public ExistingModelFile existingBlock(DeferredHolder<Block, ? extends Block> block) {
+	public ExistingModelFile existingBlock(RegistryObject<? extends Block> block) {
 		return existingBlock(block.getId());
 	}
 
@@ -120,11 +120,11 @@ public abstract class BaseItemModelsProvider extends ItemModelProvider {
 		}
 
 		Parent(String id, String loc) {
-			this.loc = ResourceLocation.fromNamespaceAndPath(id, loc);
+			this.loc = new ResourceLocation(id, loc);
 		}
 
 		public ResourceLocation loc() {
-			return loc == null ? ResourceLocation.parse(toString().toLowerCase(Locale.ROOT)) : loc;
+			return loc == null ? new ResourceLocation(toString().toLowerCase(Locale.ROOT)) : loc;
 		}
 	}
 

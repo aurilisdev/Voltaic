@@ -9,10 +9,9 @@ import javax.annotation.Nonnull;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.codec.StreamCodec;
+import voltaic.api.codec.StreamCodec;
 
 public class SinglePropertyType<TYPE, BUFFERTYPE> implements IPropertyType<TYPE, BUFFERTYPE> {
 
@@ -32,12 +31,12 @@ public class SinglePropertyType<TYPE, BUFFERTYPE> implements IPropertyType<TYPE,
                 //
                 packetCodec,
                 //
-                writer -> nbtCodec.encode(writer.prop().getValue(), NbtOps.INSTANCE, NbtOps.INSTANCE.empty()).ifSuccess(tag -> writer.tag().put(writer.prop().getName(), tag)),
+                writer -> nbtCodec.encode(writer.prop().getValue(), NbtOps.INSTANCE, NbtOps.INSTANCE.empty()).result().ifPresent(tag -> writer.tag().put(writer.prop().getName(), tag)),
                 //
                 reader -> {
                     DataResult<Pair<TYPE, Tag>> result = nbtCodec.decode(NbtOps.INSTANCE, reader.tag().get(reader.prop().getName()));
 
-                    return result.isSuccess() ? result.getOrThrow().getFirst() : reader.prop().getValue();
+                    return result.result().isPresent() ? result.result().get().getFirst() : reader.prop().getValue();
                 }
         );
 

@@ -10,13 +10,13 @@ import voltaic.prefab.inventory.container.slot.item.SlotGeneric;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.capabilities.ItemCapability;
+import net.minecraftforge.common.capabilities.Capability;
 
 public class SlotRestricted extends SlotGeneric {
 
     private List<Item> whitelist;
     private List<Class<?>> classes;
-    private List<ItemCapability<?, Void>> validCapabilities;
+    private List<Capability<?>> validCapabilities;
 
     private Predicate<ItemStack> mayPlace = stack -> false;
 
@@ -54,11 +54,11 @@ public class SlotRestricted extends SlotGeneric {
         return this;
     }
 
-    public SlotRestricted setRestriction(ItemCapability<?, Void>... capabilities) {
+    public SlotRestricted setRestriction(Capability<?>... capabilities) {
         validCapabilities = Arrays.asList(capabilities);
         mayPlace = stack -> {
             if (validCapabilities != null) {
-                for (ItemCapability<?, Void> cap : validCapabilities) {
+                for (Capability<?> cap : validCapabilities) {
                     if (stack.getCapability(cap) != null) {
                         return true;
                     }

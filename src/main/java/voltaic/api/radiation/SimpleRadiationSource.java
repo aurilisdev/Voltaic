@@ -3,11 +3,10 @@ package voltaic.api.radiation;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.netty.buffer.ByteBuf;
+import voltaic.api.codec.StreamCodec;
 import voltaic.api.radiation.util.IRadiationSource;
 import voltaic.prefab.utilities.BlockEntityUtils;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
 
 public record SimpleRadiationSource(double amount, double strength, int distance, boolean isTemporary, int ticks, BlockPos location, boolean shouldLinger) implements IRadiationSource {
 
@@ -26,7 +25,24 @@ public record SimpleRadiationSource(double amount, double strength, int distance
 
     ).apply(instance, SimpleRadiationSource::new));
 
-    public static final StreamCodec<ByteBuf, SimpleRadiationSource> STREAM_CODEC = ByteBufCodecs.fromCodec(CODEC);
+    public static final StreamCodec<ByteBuf, SimpleRadiationSource> STREAM_CODEC = new StreamCodec<ByteBuf, SimpleRadiationSource>() {
+		
+		@Override
+		public void encode(ByteBuf buffer, SimpleRadiationSource value) {
+			StreamCodec.DOUBLE.encode(buffer, value.amount);
+			StreamCodec.DOUBLE.encode(buffer, value.strength);
+			StreamCodec.INT.encode(buffer, value.distance);
+			StreamCodec.BOOL.encode(buffer, value.isTemporary);
+			StreamCodec.INT.encode(buffer, value.ticks);
+			StreamCodec.BLOCK_POS.encode(buffer, value.location);
+			StreamCodec.BOOL.encode(buffer, value.shouldLinger);
+		}
+		
+		@Override
+		public SimpleRadiationSource decode(ByteBuf buffer) {
+			return new SimpleRadiationSource(StreamCodec.DOUBLE.decode(buffer), StreamCodec.DOUBLE.decode(buffer), StreamCodec.INT.decode(buffer), StreamCodec.BOOL.decode(buffer), StreamCodec.INT.decode(buffer), StreamCodec.BLOCK_POS.decode(buffer), StreamCodec.BOOL.decode(buffer));
+		}
+	};
 
 
     @Override

@@ -2,7 +2,7 @@ package voltaic.common.tags;
 
 import voltaic.Voltaic;
 import voltaic.api.gas.Gas;
-import voltaic.registers.VoltaicGases;
+import voltaic.registers.VoltaicRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
@@ -218,12 +218,14 @@ public class VoltaicTags {
 		public static final TagKey<Item> LOGISTICAL_SILVER_WIRES = forgeTag("wires/logistical_silver");
 		public static final TagKey<Item> LOGISTICAL_SUPERCONDUCTIVE_WIRES = forgeTag("wires/logistical_superconductive");
 		public static final TagKey<Item> LOGISTICAL_TIN_WIRES = forgeTag("wires/logistical_tin");
+		
+		public static final TagKey<Item> CURES_RADIATION = forgeTag("cures_radiation");
 
 		private static void init() {
 		}
 
 		private static TagKey<Item> forgeTag(String name) {
-			return ItemTags.create(Voltaic.commonrl(name));
+			return ItemTags.create(Voltaic.forgerl(name));
 		}
 	}
 
@@ -280,7 +282,7 @@ public class VoltaicTags {
 		}
 
 		private static TagKey<Block> forgeTag(String name) {
-			return BlockTags.create(Voltaic.commonrl(name));
+			return BlockTags.create(Voltaic.forgerl(name));
 		}
 
 	}
@@ -329,7 +331,7 @@ public class VoltaicTags {
 		}
 
 		private static TagKey<Fluid> forgeTag(String name) {
-			return FluidTags.create(Voltaic.commonrl(name));
+			return FluidTags.create(Voltaic.forgerl(name));
 		}
 
 	}
@@ -353,11 +355,11 @@ public class VoltaicTags {
 		}
 
 		private static TagKey<Gas> forgeTag(String name) {
-			return create(Voltaic.commonrl(name));
+			return create(Voltaic.forgerl(name));
 		}
 
 		public static TagKey<Gas> create(ResourceLocation loc) {
-			return TagKey.create(VoltaicGases.GAS_REGISTRY_KEY, loc);
+			return TagKey.create(VoltaicRegistries.GAS_REGISTRY_KEY, loc);
 		}
 	}
 
@@ -371,7 +373,7 @@ public class VoltaicTags {
 		private static void init()  { }
 
 		private static TagKey<Enchantment> forgeTag(String name) {
-			return TagKey.create(Registries.ENCHANTMENT, Voltaic.commonrl(name));
+			return TagKey.create(Registries.ENCHANTMENT, Voltaic.forgerl(name));
 		}
 	}
 

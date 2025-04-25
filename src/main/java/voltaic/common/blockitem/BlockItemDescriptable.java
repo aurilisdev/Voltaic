@@ -8,12 +8,12 @@ import voltaic.api.electricity.formatting.ChatFormatter;
 import voltaic.api.electricity.formatting.DisplayUnits;
 import voltaic.prefab.utilities.VoltaicTextUtils;
 import net.minecraft.core.Holder;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 
 public class BlockItemDescriptable extends BlockItemVoltaic {
@@ -28,7 +28,7 @@ public class BlockItemDescriptable extends BlockItemVoltaic {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, Level context, List<Component> tooltip, TooltipFlag flagIn) {
         super.appendHoverText(stack, context, tooltip, flagIn);
         if (!initialized) {
             BlockItemDescriptable.initialized = true;
@@ -45,8 +45,8 @@ public class BlockItemDescriptable extends BlockItemVoltaic {
             tooltip.addAll(gotten);
         }
 
-        if (stack.has(DataComponents.BLOCK_ENTITY_DATA)) {
-            double joules = stack.get(DataComponents.BLOCK_ENTITY_DATA).copyTag().getDouble("joules");
+        if (stack.hasTag() && stack.getTag().contains("joules")) {
+            double joules = stack.getTag().getDouble("joules");
             if (joules > 0) {
                 tooltip.add(VoltaicTextUtils.gui("machine.stored", ChatFormatter.getChatDisplayShort(joules, DisplayUnits.JOULES)));
             }
@@ -55,10 +55,7 @@ public class BlockItemDescriptable extends BlockItemVoltaic {
 
     @Override
     public int getMaxStackSize(ItemStack stack) {
-        if (stack.has(DataComponents.BLOCK_ENTITY_DATA) && stack.get(DataComponents.BLOCK_ENTITY_DATA).copyTag().getDouble("joules") > 0) {
-            return 1;
-        }
-        return super.getMaxStackSize(stack);
+    	return stack.hasTag() && stack.getTag().getDouble("joules") > 0 ? 1 : super.getMaxStackSize(stack);
     }
 
     public static void addDescription(Holder<Block> block, MutableComponent description) {

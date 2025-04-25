@@ -9,6 +9,7 @@ import voltaic.prefab.tile.GenericTile;
 import voltaic.prefab.tile.components.IComponentType;
 import voltaic.prefab.tile.components.type.ComponentInventory;
 import voltaic.prefab.utilities.BlockEntityUtils;
+import voltaic.prefab.utilities.CapabilityUtils;
 import voltaic.registers.VoltaicCapabilities;
 import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundEvents;
@@ -19,7 +20,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 public class GasUtilities {
 
     public static boolean isGasReciever(BlockEntity acceptor, Direction dir) {
-        return acceptor != null && acceptor.getLevel().getCapability(VoltaicCapabilities.CAPABILITY_GASHANDLER_BLOCK, acceptor.getBlockPos(), acceptor.getBlockState(), acceptor, dir) != null;
+        return acceptor != null && acceptor.getCapability(VoltaicCapabilities.CAPABILITY_GASHANDLER_BLOCK, dir).isPresent();
     }
 
     public static int recieveGas(BlockEntity reciever, Direction dir, GasStack gas, GasAction action) {
@@ -28,9 +29,9 @@ public class GasUtilities {
         }
         GasStack copy = gas.copy();
 
-        IGasHandler handler = reciever.getLevel().getCapability(VoltaicCapabilities.CAPABILITY_GASHANDLER_BLOCK, reciever.getBlockPos(), reciever.getBlockState(), reciever, dir);
+        IGasHandler handler = reciever.getCapability(VoltaicCapabilities.CAPABILITY_GASHANDLER_BLOCK, dir).orElse(CapabilityUtils.EMPTY_GAS);
 
-        if (handler == null) {
+        if (handler == CapabilityUtils.EMPTY_GAS) {
             return 0;
         }
 
@@ -61,9 +62,9 @@ public class GasUtilities {
                 continue;
             }
 
-            IGasHandler handler = faceTile.getLevel().getCapability(VoltaicCapabilities.CAPABILITY_GASHANDLER_BLOCK, faceTile.getBlockPos(), faceTile.getBlockState(), faceTile, direction.getOpposite());
+            IGasHandler handler = faceTile.getCapability(VoltaicCapabilities.CAPABILITY_GASHANDLER_BLOCK, direction.getOpposite()).orElse(CapabilityUtils.EMPTY_GAS);
 
-            if (handler == null) {
+            if (handler == CapabilityUtils.EMPTY_GAS) {
                 continue;
             }
 
@@ -118,9 +119,9 @@ public class GasUtilities {
                 continue;
             }
 
-            IGasHandlerItem handler = stack.getCapability(VoltaicCapabilities.CAPABILITY_GASHANDLER_ITEM);
+            IGasHandlerItem handler = stack.getCapability(VoltaicCapabilities.CAPABILITY_GASHANDLER_ITEM).orElse(CapabilityUtils.EMPTY_GAS_ITEM);
 
-            if (handler == null) {
+            if (handler == CapabilityUtils.EMPTY_GAS_ITEM) {
                 continue;
             }
 
@@ -178,7 +179,7 @@ public class GasUtilities {
                 continue;
             }
 
-            IGasHandlerItem handler = stack.getCapability(VoltaicCapabilities.CAPABILITY_GASHANDLER_ITEM);
+            IGasHandlerItem handler = stack.getCapability(VoltaicCapabilities.CAPABILITY_GASHANDLER_ITEM).orElse(CapabilityUtils.EMPTY_GAS_ITEM);
 
             if (handler == null) {
                 continue;
@@ -194,7 +195,7 @@ public class GasUtilities {
 
                 if (gas.getTemperature() > handler.getTankMaxTemperature(0) || gas.getPressure() > handler.getTankMaxPressure(0)) {
 
-                    tile.getLevel().playSound(null, tile.getBlockPos(), SoundEvents.GENERIC_EXPLODE.value(), SoundSource.BLOCKS, 1.0F, 1.0F);
+                    tile.getLevel().playSound(null, tile.getBlockPos(), SoundEvents.GENERIC_EXPLODE, SoundSource.BLOCKS, 1.0F, 1.0F);
 
                 }
 

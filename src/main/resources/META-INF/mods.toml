@@ -1,0 +1,26 @@
+modLoader="javafml" #mandatory
+
+loaderVersion="[47,)" #mandatory This is typically bumped every Minecraft version by Forge. See our download page for lists of versions.
+
+license="All rights reserved"
+
+issueTrackerURL="https://github.com/aurilisdev/Electrodynamics" #optional
+
+[[mods]] #mandatory
+
+modId="voltaic" #mandatory
+
+version="${file.jarVersion}" #mandatory
+
+displayName="Voltaic" #mandatory
+
+displayURL="https://github.com/aurilisdev/Voltaic" #optional
+
+logoFile="electrodynamics.png" #optional
+
+credits="Thanks to all contributors. Roi Pasteque, FITFC, Quarkrus, JSBurger, 9thCore." #optional
+
+authors="aurilisdev, skip999" #optional
+
+description='''
+'''

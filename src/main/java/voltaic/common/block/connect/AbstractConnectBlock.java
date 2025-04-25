@@ -9,7 +9,7 @@ import voltaic.prefab.tile.types.GenericConnectTile;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
@@ -163,64 +163,65 @@ public abstract class AbstractConnectBlock extends GenericEntityBlockWaterloggab
 	}
 
 	 */
-
+	
 	@Override
-	protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+	public InteractionResult use(BlockState state, Level worldIn, BlockPos pos, Player player, InteractionHand handIn, BlockHitResult hit) {
+		ItemStack stack = player.getItemInHand(handIn);
 		if (stack.isEmpty()) {
-			return ItemInteractionResult.FAIL;
+			return super.use(state, worldIn, pos, player, handIn, hit);
 		}
 
-		if (stack.getItem() instanceof BlockItem blockitem && level.getBlockEntity(pos) instanceof GenericConnectTile connect) {
+		if (stack.getItem() instanceof BlockItem blockitem && worldIn.getBlockEntity(pos) instanceof GenericConnectTile connect) {
 
-			BlockPlaceContext newCtx = new BlockPlaceContext(player, hand, stack, hitResult);
+			BlockPlaceContext newCtx = new BlockPlaceContext(player, handIn, stack, hit);
 
 			if (blockitem.getBlock() instanceof BlockScaffold scaffold) {
 				if (!state.getValue(VoltaicBlockStates.HAS_SCAFFOLDING)) {
-					if (!level.isClientSide) {
+					if (!worldIn.isClientSide) {
 						if (!player.isCreative()) {
 							stack.shrink(1);
-							player.setItemInHand(hand, stack);
+							player.setItemInHand(handIn, stack);
 						}
 						state = state.setValue(VoltaicBlockStates.HAS_SCAFFOLDING, true);
-						level.setBlockAndUpdate(pos, state);
+						worldIn.setBlockAndUpdate(pos, state);
 						connect.setScaffoldBlock(scaffold.getStateForPlacement(newCtx));
-						level.playSound(null, pos, blockitem.getBlock().defaultBlockState().getSoundType().getPlaceSound(), SoundSource.BLOCKS, 1.0F, 1.0F);
+						worldIn.playSound(null, pos, blockitem.getBlock().defaultBlockState().getSoundType().getPlaceSound(), SoundSource.BLOCKS, 1.0F, 1.0F);
 					}
-					return ItemInteractionResult.CONSUME;
+					return InteractionResult.CONSUME;
 				}
 
 			} else if (!(blockitem.getBlock() instanceof AbstractConnectBlock) && state.getValue(VoltaicBlockStates.HAS_SCAFFOLDING)) {
 				if (connect.isCamoAir()) {
-					if (!level.isClientSide) {
+					if (!worldIn.isClientSide) {
 						connect.setCamoBlock(blockitem.getBlock().getStateForPlacement(newCtx));
 						if (!player.isCreative()) {
 							stack.shrink(1);
-							player.setItemInHand(hand, stack);
+							player.setItemInHand(handIn, stack);
 						}
-						level.playSound(null, pos, blockitem.getBlock().defaultBlockState().getSoundType().getPlaceSound(), SoundSource.BLOCKS, 1.0F, 1.0F);
-						level.getChunkSource().getLightEngine().checkBlock(pos);
+						worldIn.playSound(null, pos, blockitem.getBlock().defaultBlockState().getSoundType().getPlaceSound(), SoundSource.BLOCKS, 1.0F, 1.0F);
+						worldIn.getChunkSource().getLightEngine().checkBlock(pos);
 					}
-					return ItemInteractionResult.CONSUME;
+					return InteractionResult.CONSUME;
 				}
 				if (!connect.getCamoBlock().is(blockitem.getBlock())) {
-					if (!level.isClientSide) {
+					if (!worldIn.isClientSide) {
 						if (!player.isCreative()) {
 							if (!player.addItem(new ItemStack(connect.getCamoBlock().getBlock()))) {
-								level.addFreshEntity(new ItemEntity(player.level(), (int) player.getX(), (int) player.getY(), (int) player.getZ(), new ItemStack(connect.getCamoBlock().getBlock())));
+								worldIn.addFreshEntity(new ItemEntity(player.level(), (int) player.getX(), (int) player.getY(), (int) player.getZ(), new ItemStack(connect.getCamoBlock().getBlock())));
 							}
 							stack.shrink(1);
-							player.setItemInHand(hand, stack);
+							player.setItemInHand(handIn, stack);
 						}
 						connect.setCamoBlock(blockitem.getBlock().getStateForPlacement(newCtx));
-						level.playSound(null, pos, blockitem.getBlock().defaultBlockState().getSoundType().getPlaceSound(), SoundSource.BLOCKS, 1.0F, 1.0F);
+						worldIn.playSound(null, pos, blockitem.getBlock().defaultBlockState().getSoundType().getPlaceSound(), SoundSource.BLOCKS, 1.0F, 1.0F);
 					}
-					return ItemInteractionResult.CONSUME;
+					return InteractionResult.CONSUME;
 
 				}
 			}
 
 		}
-		return super.useItemOn(stack, state, level, pos, player, hand, hitResult);
+		return super.use(state, worldIn, pos, player, handIn, hit);
 	}
 
 	@Override

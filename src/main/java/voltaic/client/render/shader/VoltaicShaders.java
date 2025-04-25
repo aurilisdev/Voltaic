@@ -15,7 +15,7 @@ import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.client.event.RegisterShadersEvent;
+import net.minecraftforge.client.event.RegisterShadersEvent;
 
 //@EventBusSubscriber(modid = References.ID, bus = Bus.MOD, value = Dist.CLIENT)
 public class VoltaicShaders extends RenderType {

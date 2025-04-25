@@ -6,11 +6,13 @@ import java.util.List;
 import voltaic.api.electricity.formatting.ChatFormatter;
 import voltaic.api.fluid.PropertyFluidTank;
 import voltaic.api.screen.component.FluidTankSupplier;
+import voltaic.common.packet.NetworkHandler;
 import voltaic.common.packet.types.server.PacketUpdateCarriedItemServer;
 import voltaic.prefab.inventory.container.types.GenericContainerBlockEntity;
 import voltaic.prefab.screen.GenericScreen;
 import voltaic.prefab.tile.GenericTile;
 import voltaic.prefab.utilities.VoltaicTextUtils;
+import voltaic.prefab.utilities.CapabilityUtils;
 import voltaic.prefab.utilities.RenderingUtils;
 import voltaic.prefab.utilities.math.Color;
 import net.minecraft.ChatFormatting;
@@ -21,15 +23,14 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
-import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.IFluidTank;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
-import net.neoforged.neoforge.network.PacketDistributor;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.IFluidTank;
+import net.minecraftforge.fluids.capability.IFluidHandlerItem;
+import net.minecraftforge.fluids.capability.IFluidHandler;
 
 @OnlyIn(Dist.CLIENT)
 public class ScreenComponentFluidGauge extends AbstractScreenComponentGauge {
@@ -131,9 +132,9 @@ public class ScreenComponentFluidGauge extends AbstractScreenComponentGauge {
 
 		ItemStack stack = screen.getMenu().getCarried();
 
-		IFluidHandlerItem handler = stack.getCapability(Capabilities.FluidHandler.ITEM);
+		IFluidHandlerItem handler = stack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).resolve().orElse(CapabilityUtils.EMPTY_FLUID_ITEM);
 
-		if(handler == null) {
+		if(handler == CapabilityUtils.EMPTY_FLUID_ITEM) {
 			return;
 		}
 
@@ -149,8 +150,8 @@ public class ScreenComponentFluidGauge extends AbstractScreenComponentGauge {
 			Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.BUCKET_FILL, 1.0F));
 
 			stack = handler.getContainer();
-
-			PacketDistributor.sendToServer(new PacketUpdateCarriedItemServer(stack.copy(), ((GenericContainerBlockEntity<?>) screen.getMenu()).getSafeHost().getBlockPos(), Minecraft.getInstance().player.getUUID()));
+			
+			NetworkHandler.CHANNEL.sendToServer(new PacketUpdateCarriedItemServer(stack.copy(), ((GenericContainerBlockEntity<?>) screen.getMenu()).getSafeHost().getBlockPos(), Minecraft.getInstance().player.getUUID()));
 
 			return;
 
@@ -168,8 +169,8 @@ public class ScreenComponentFluidGauge extends AbstractScreenComponentGauge {
 			Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.BUCKET_EMPTY, 1.0F));
 
 			stack = handler.getContainer();
-
-			PacketDistributor.sendToServer(new PacketUpdateCarriedItemServer(stack.copy(), ((GenericContainerBlockEntity<?>) screen.getMenu()).getSafeHost().getBlockPos(), Minecraft.getInstance().player.getUUID()));
+			
+			NetworkHandler.CHANNEL.sendToServer(new PacketUpdateCarriedItemServer(stack.copy(), ((GenericContainerBlockEntity<?>) screen.getMenu()).getSafeHost().getBlockPos(), Minecraft.getInstance().player.getUUID()));
 
 			return;
 		}

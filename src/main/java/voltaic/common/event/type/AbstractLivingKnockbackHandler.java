@@ -1,6 +1,6 @@
 package voltaic.common.event.type;
 
-import net.neoforged.neoforge.event.entity.living.LivingKnockBackEvent;
+import net.minecraftforge.event.entity.living.LivingKnockBackEvent;
 
 public abstract class AbstractLivingKnockbackHandler {
 

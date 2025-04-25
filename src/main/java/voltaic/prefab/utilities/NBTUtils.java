@@ -1,9 +1,8 @@
 package voltaic.prefab.utilities;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
-import voltaic.registers.VoltaicDataComponentTypes;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
@@ -34,15 +33,31 @@ public class NBTUtils {
 	public static final String SPEED_ENCHANT = "speedenchant";
 
 	public static List<Direction> readDirectionList(ItemStack item) {
-		return item.getOrDefault(VoltaicDataComponentTypes.DIRECTIONS, Collections.emptyList());
+		List<Direction> dirs = new ArrayList<>();
+		CompoundTag tag = item.getTag();
+		int size = tag.getInt(SIZE + DIRECTION);
+		for (int i = 0; i < size; i++) {
+			dirs.add(Direction.valueOf(tag.getString(DIRECTION + i).toUpperCase()));
+		}
+		return dirs;
 	}
 
 	public static void writeDirectionList(List<Direction> dirs, ItemStack item) {
-		item.set(VoltaicDataComponentTypes.DIRECTIONS, dirs);
+		int size = dirs.size();
+		CompoundTag tag = item.getTag();
+		tag.putInt(SIZE + DIRECTION, size);
+		for (int i = 0; i < size; i++) {
+			tag.putString(DIRECTION + i, dirs.get(i).getName());
+		}
 	}
 
 	public static void clearDirectionList(ItemStack item) {
-		item.remove(VoltaicDataComponentTypes.DIRECTIONS);
+		CompoundTag tag = item.getTag();
+		int size = tag.getInt(SIZE + DIRECTION);
+		for (int i = 0; i < size; i++) {
+			tag.remove(DIRECTION + i);
+		}
+		tag.remove(SIZE + DIRECTION);
 	}
 
 	public static CompoundTag writeDimensionToTag(ResourceKey<Level> level) {
@@ -52,7 +67,7 @@ public class NBTUtils {
 	}
 
 	public static ResourceKey<Level> readDimensionFromTag(CompoundTag tag) {
-		return ResourceKey.create(Registries.DIMENSION, ResourceLocation.parse(tag.getString(DIMENSION)));
+		return ResourceKey.create(Registries.DIMENSION, new ResourceLocation(tag.getString(DIMENSION)));
 	}
 
 }

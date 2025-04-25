@@ -10,6 +10,11 @@ import java.lang.reflect.Modifier;
 import java.util.HashSet;
 import java.util.Locale;
 
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.loading.FMLConfig;
+import net.minecraftforge.fml.loading.FMLPaths;
 import voltaic.Voltaic;
 import voltaic.api.configuration.BooleanValue;
 import voltaic.api.configuration.ByteValue;
@@ -19,11 +24,6 @@ import voltaic.api.configuration.FloatValue;
 import voltaic.api.configuration.IntValue;
 import voltaic.api.configuration.LongValue;
 import voltaic.api.configuration.StringValue;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.neoforged.fml.loading.FMLConfig;
-import net.neoforged.fml.loading.FMLPaths;
 
 @EventBusSubscriber(modid = Voltaic.ID, bus = EventBusSubscriber.Bus.MOD)
 public class ConfigurationHandler {

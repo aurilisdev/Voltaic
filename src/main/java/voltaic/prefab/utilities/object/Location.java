@@ -5,11 +5,10 @@ import org.joml.Vector3f;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
+import io.netty.buffer.ByteBuf;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -18,6 +17,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
+import voltaic.api.codec.StreamCodec;
 
 public final class Location {
 
@@ -35,13 +35,22 @@ public final class Location {
 //
     );
 
-    public static final StreamCodec<FriendlyByteBuf, Location> STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.DOUBLE, Location::x,
-            ByteBufCodecs.DOUBLE, Location::y,
-            ByteBufCodecs.DOUBLE, Location::z,
-            Location::new
+    public static final StreamCodec<ByteBuf, Location> STREAM_CODEC = new StreamCodec<>() {
 
-    );
+		@Override
+		public void encode(ByteBuf buffer, Location value) {
+			buffer.writeDouble(value.x);
+			buffer.writeDouble(value.y);
+			buffer.writeDouble(value.z);
+		}
+
+		@Override
+		public Location decode(ByteBuf buffer) {
+			return new Location(buffer.readDouble(), buffer.readDouble(), buffer.readDouble());
+		}
+    	
+    };
+            
 
     protected double x;
     protected double y;

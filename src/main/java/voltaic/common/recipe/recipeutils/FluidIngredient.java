@@ -2,7 +2,6 @@ package voltaic.common.recipe.recipeutils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import javax.annotation.Nonnull;
@@ -10,21 +9,17 @@ import javax.annotation.Nullable;
 
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import voltaic.registers.VoltaicIngredients;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.material.Fluid;
-import net.neoforged.neoforge.common.crafting.ICustomIngredient;
-import net.neoforged.neoforge.common.crafting.IngredientType;
-import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
-import net.neoforged.neoforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidStack;
+import voltaic.api.codec.StreamCodec;
 
 /**
  * Extension of Ingredient that adds Fluid compatibility
@@ -32,11 +27,11 @@ import net.neoforged.neoforge.fluids.FluidStack;
  * @author skip999
  *
  */
-public class FluidIngredient implements Predicate<FluidStack>, ICustomIngredient {
+public class FluidIngredient extends Ingredient {
 
     // Mojank...
 
-    public static final MapCodec<FluidIngredient> CODEC_DIRECT_FLUID = RecordCodecBuilder.mapCodec(instance ->
+    public static final Codec<FluidIngredient> CODEC_DIRECT_FLUID = RecordCodecBuilder.create(instance ->
     //
     instance.group(
             //
@@ -50,7 +45,7 @@ public class FluidIngredient implements Predicate<FluidStack>, ICustomIngredient
 
     );
 
-    public static final MapCodec<FluidIngredient> CODEC_TAGGED_FLUID = RecordCodecBuilder.mapCodec(instance ->
+    public static final Codec<FluidIngredient> CODEC_TAGGED_FLUID = RecordCodecBuilder.create(instance ->
     //
     instance.group(
             //
@@ -65,7 +60,7 @@ public class FluidIngredient implements Predicate<FluidStack>, ICustomIngredient
 
     );
 
-    public static final MapCodec<FluidIngredient> CODEC = NeoForgeExtraCodecs.xor(CODEC_TAGGED_FLUID, CODEC_DIRECT_FLUID).xmap(either -> either.map(tag -> tag, fluid -> fluid), value -> {
+    public static final Codec<FluidIngredient> CODEC = Codec.either(CODEC_TAGGED_FLUID, CODEC_DIRECT_FLUID).xmap(either -> either.map(tag -> tag, fluid -> fluid), value -> {
         //
 
         if (value.tag != null) {
@@ -78,34 +73,34 @@ public class FluidIngredient implements Predicate<FluidStack>, ICustomIngredient
 
     });
 
-    public static final Codec<List<FluidIngredient>> LIST_CODEC = CODEC.codec().listOf();
+    public static final Codec<List<FluidIngredient>> LIST_CODEC = CODEC.listOf();
 
-    public static final StreamCodec<RegistryFriendlyByteBuf, FluidIngredient> STREAM_CODEC = new StreamCodec<>() {
+    public static final StreamCodec<FriendlyByteBuf, FluidIngredient> STREAM_CODEC = new StreamCodec<>() {
 
         @Override
-        public void encode(RegistryFriendlyByteBuf buf, FluidIngredient ing) {
+        public void encode(FriendlyByteBuf buf, FluidIngredient ing) {
             List<FluidStack> fluidStacks = ing.getMatchingFluids();
             buf.writeInt(fluidStacks.size());
             for (FluidStack stack : fluidStacks) {
-                FluidStack.STREAM_CODEC.encode(buf, stack);
+                StreamCodec.FLUID_STACK.encode(buf, stack);
             }
         }
 
         @Override
-        public FluidIngredient decode(RegistryFriendlyByteBuf buf) {
+        public FluidIngredient decode(FriendlyByteBuf buf) {
             List<FluidStack> stacks = new ArrayList<>();
             int count = buf.readInt();
             for (int i = 0; i < count; i++) {
-                stacks.add(FluidStack.STREAM_CODEC.decode(buf));
+                stacks.add(StreamCodec.FLUID_STACK.decode(buf));
             }
             return new FluidIngredient(stacks);
         }
     };
 
-    public static final StreamCodec<RegistryFriendlyByteBuf, List<FluidIngredient>> LIST_STREAM_CODEC = new StreamCodec<>() {
+    public static final StreamCodec<FriendlyByteBuf, List<FluidIngredient>> LIST_STREAM_CODEC = new StreamCodec<>() {
 
         @Override
-        public void encode(RegistryFriendlyByteBuf buf, List<FluidIngredient> ings) {
+        public void encode(FriendlyByteBuf buf, List<FluidIngredient> ings) {
             buf.writeInt(ings.size());
             for (FluidIngredient ing : ings) {
                 STREAM_CODEC.encode(buf, ing);
@@ -113,7 +108,7 @@ public class FluidIngredient implements Predicate<FluidStack>, ICustomIngredient
         }
 
         @Override
-        public List<FluidIngredient> decode(RegistryFriendlyByteBuf buf) {
+        public List<FluidIngredient> decode(FriendlyByteBuf buf) {
             int length = buf.readInt();
             List<FluidIngredient> ings = new ArrayList<>();
             for (int i = 0; i < length; i++) {
@@ -134,6 +129,7 @@ public class FluidIngredient implements Predicate<FluidStack>, ICustomIngredient
     private int amount;
 
     public FluidIngredient(FluidStack fluidStack) {
+    	super(Stream.empty());
         this.fluid = fluidStack.getFluid();
         this.amount = fluidStack.getAmount();
     }
@@ -143,6 +139,7 @@ public class FluidIngredient implements Predicate<FluidStack>, ICustomIngredient
     }
 
     public FluidIngredient(List<FluidStack> fluidStack) {
+    	super(Stream.empty());
         fluidStacks = fluidStack;
         FluidStack fluid = getFluidStack();
         this.fluid = fluid.getFluid();
@@ -150,6 +147,7 @@ public class FluidIngredient implements Predicate<FluidStack>, ICustomIngredient
     }
 
     public FluidIngredient(TagKey<Fluid> tag, int amount) {
+    	super(Stream.empty());
         this.tag = tag;
         this.amount = amount;
 
@@ -161,22 +159,16 @@ public class FluidIngredient implements Predicate<FluidStack>, ICustomIngredient
     }
 
     @Override
-    public Stream<ItemStack> getItems() {
-        return Stream.empty();
+    public ItemStack[] getItems() {
+        return new ItemStack[] {};
     }
 
     @Override
     public boolean isSimple() {
         return false;
     }
-
-    @Override
-    public IngredientType<?> getType() {
-        return VoltaicIngredients.FLUID_INGREDIENT_TYPE.get();
-    }
-
-    @Override
-    public boolean test(@Nullable FluidStack t) {
+    
+    public boolean testFluid(@Nullable FluidStack t) {
         if(t == null || t.isEmpty()){
             return false;
         }
@@ -200,7 +192,7 @@ public class FluidIngredient implements Predicate<FluidStack>, ICustomIngredient
             if (tag != null) {
 
                 BuiltInRegistries.FLUID.getTag(tag).get().forEach(h -> {
-                    fluidStacks.add(new FluidStack(h, amount));
+                    fluidStacks.add(new FluidStack(h.get(), amount));
                 });
 
             } else if (fluid != null) {

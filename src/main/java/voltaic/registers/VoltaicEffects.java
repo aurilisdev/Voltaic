@@ -1,18 +1,18 @@
 package voltaic.registers;
 
+import net.minecraft.world.effect.MobEffect;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegistryObject;
 import voltaic.Voltaic;
 import voltaic.api.radiation.EffectRadiation;
 import voltaic.api.radiation.EffectRadiationResistance;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.world.effect.MobEffect;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredRegister;
 
 public class VoltaicEffects {
 
-	public static final DeferredRegister<MobEffect> EFFECTS = DeferredRegister.create(Registries.MOB_EFFECT, Voltaic.ID);
+	public static final DeferredRegister<MobEffect> EFFECTS = DeferredRegister.create(ForgeRegistries.MOB_EFFECTS, Voltaic.ID);
 
-	public static final DeferredHolder<MobEffect, EffectRadiation> RADIATION = EFFECTS.register("radiation", EffectRadiation::new);
-	public static final DeferredHolder<MobEffect, EffectRadiationResistance> RADIATION_RESISTANCE = EFFECTS.register("radiationresistance", EffectRadiationResistance::new);
+	public static final RegistryObject<EffectRadiation> RADIATION = EFFECTS.register("radiation", EffectRadiation::new);
+	public static final RegistryObject<EffectRadiationResistance> RADIATION_RESISTANCE = EFFECTS.register("radiationresistance", EffectRadiationResistance::new);
 
 }

@@ -1,34 +1,32 @@
 package voltaic.common.packet.types.client;
 
-import voltaic.common.packet.NetworkHandler;
-import io.netty.buffer.ByteBuf;
+import java.util.function.Supplier;
+
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.network.NetworkEvent.Context;
 
-public class PacketSpawnSmokeParticle implements CustomPacketPayload {
+public class PacketSpawnSmokeParticle {
 
-    public static final ResourceLocation PACKET_SPAWNSMOKEPARTICLE_PACKETID = NetworkHandler.id("packetspawnsmokeparticle");
-    public static final Type<PacketSpawnSmokeParticle> TYPE = new Type<>(PACKET_SPAWNSMOKEPARTICLE_PACKETID);
-    public static final StreamCodec<ByteBuf, PacketSpawnSmokeParticle> CODEC = StreamCodec.composite(
-            BlockPos.STREAM_CODEC, instance0 -> instance0.pos,
-            PacketSpawnSmokeParticle::new
-    );
+	private final BlockPos pos;
 
-    private final BlockPos pos;
+	public PacketSpawnSmokeParticle(BlockPos pos) {
+		this.pos = pos;
+	}
 
-    public PacketSpawnSmokeParticle(BlockPos pos) {
-        this.pos = pos;
-    }
+	public static void handle(PacketSpawnSmokeParticle message, Supplier<Context> context) {
+		Context ctx = context.get();
+		ctx.enqueueWork(() -> {
+			ClientBarrierMethods.handlerSpawnSmokeParicle(message.pos);
+		});
+		ctx.setPacketHandled(true);
+	}
 
-    public static void handle(PacketSpawnSmokeParticle message, IPayloadContext context) {
-        ClientBarrierMethods.handlerSpawnSmokeParicle(message.pos);
-    }
+	public static void encode(PacketSpawnSmokeParticle pkt, FriendlyByteBuf buf) {
+		buf.writeBlockPos(pkt.pos);
+	}
 
-    @Override
-    public Type<? extends CustomPacketPayload> type() {
-        return TYPE;
-    }
+	public static PacketSpawnSmokeParticle decode(FriendlyByteBuf buf) {
+		return new PacketSpawnSmokeParticle(buf.readBlockPos());
+	}
 }

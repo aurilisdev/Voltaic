@@ -1,8 +1,7 @@
 package voltaic.common.item;
 
-import voltaic.api.radiation.EffectRadiation;
+import voltaic.registers.VoltaicEffects;
 import net.minecraft.advancements.CriteriaTriggers;
-import net.minecraft.core.Holder;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
@@ -14,17 +13,18 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemUtils;
 import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.registries.RegistryObject;
 
 public class ItemAntidote extends ItemVoltaic {
 
-    public ItemAntidote(Properties properties, Holder<CreativeModeTab> creativeTab) {
+    public ItemAntidote(Properties properties, RegistryObject<CreativeModeTab> creativeTab) {
         super(properties, creativeTab);
     }
 
     @Override
     public ItemStack finishUsingItem(ItemStack stack, Level worldIn, LivingEntity entityLiving) {
         if (!worldIn.isClientSide) {
-            entityLiving.removeEffectsCuredBy(EffectRadiation.CURE);
+        	entityLiving.removeEffect(VoltaicEffects.RADIATION.get());
         }
         if (entityLiving instanceof ServerPlayer serverplayerentity) {
             CriteriaTriggers.CONSUME_ITEM.trigger(serverplayerentity, stack);
@@ -35,10 +35,10 @@ public class ItemAntidote extends ItemVoltaic {
         }
         return stack;
     }
-
+    
     @Override
-    public int getUseDuration(ItemStack stack, LivingEntity entity) {
-        return 32;
+    public int getUseDuration(ItemStack pStack) {
+    	return 32;
     }
 
     @Override

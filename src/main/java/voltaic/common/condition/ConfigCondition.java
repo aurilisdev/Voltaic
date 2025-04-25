@@ -1,18 +1,24 @@
 package voltaic.common.condition;
 
-import com.mojang.serialization.MapCodec;
+import com.google.gson.JsonObject;
 
+import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.common.crafting.conditions.ICondition;
+import net.minecraftforge.common.crafting.conditions.IConditionSerializer;
+import voltaic.Voltaic;
 import voltaic.common.settings.VoltaicConstants;
-import net.neoforged.neoforge.common.conditions.ICondition;
 
 public class ConfigCondition implements ICondition {
 
-    public static final ConfigCondition INSTANCE = new ConfigCondition();
-	
-	public static final MapCodec<ConfigCondition> CODEC = MapCodec.unit(INSTANCE).stable();
+	// make this work for multiple config values
+	private static final ResourceLocation NAME = new ResourceLocation(Voltaic.ID, "config");
 
 	public ConfigCondition() {
-	    
+	}
+
+	@Override
+	public ResourceLocation getID() {
+		return NAME;
 	}
 
 	@Override
@@ -20,13 +26,24 @@ public class ConfigCondition implements ICondition {
 		return VoltaicConstants.DISPENSE_GUIDEBOOK;
 	}
 
-    @Override
-    public MapCodec<? extends ICondition> codec() {
-        return CODEC;
-    }
-    
-    @Override
-    public String toString() {
-        return "Guidebook toggle config";
-    }
+	public static class Serializer implements IConditionSerializer<ConfigCondition> {
+
+		public static final Serializer INSTANCE = new Serializer();
+
+		@Override
+		public void write(JsonObject json, ConfigCondition value) {
+			// for data gen
+		}
+
+		@Override
+		public ConfigCondition read(JsonObject json) {
+			// specify config fields
+			return new ConfigCondition();
+		}
+
+		@Override
+		public ResourceLocation getID() {
+			return ConfigCondition.NAME;
+		}
+	}
 }

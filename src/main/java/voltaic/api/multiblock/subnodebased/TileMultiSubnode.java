@@ -1,9 +1,8 @@
 package voltaic.api.multiblock.subnodebased;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import voltaic.api.electricity.ICapabilityElectrodynamic;
-import voltaic.api.gas.IGasHandler;
 import voltaic.api.multiblock.subnodebased.parent.IMultiblockParentTile;
 import voltaic.prefab.properties.variant.SingleProperty;
 import voltaic.prefab.properties.types.PropertyTypes;
@@ -15,15 +14,13 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.neoforged.neoforge.items.IItemHandler;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.LazyOptional;
 
 public class TileMultiSubnode extends GenericTile {
 
@@ -38,39 +35,11 @@ public class TileMultiSubnode extends GenericTile {
 	}
 
 	@Override
-	@Nullable
-	public ICapabilityElectrodynamic getElectrodynamicCapability(@Nullable Direction side) {
+	public <T> @NotNull LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
 		if (level.getBlockEntity(parentPos.getValue()) instanceof IMultiblockParentTile node) {
-			return node.getSubnodeElectrodynamicCapability(this, side);
+			return node.getSubnodeCapability(cap, side);
 		}
-		return null;
-	}
-
-	@Override
-	@Nullable
-	public IFluidHandler getFluidHandlerCapability(@Nullable Direction side) {
-		if (level.getBlockEntity(parentPos.getValue()) instanceof IMultiblockParentTile node) {
-			return node.getSubnodeFluidHandlerCapability(this, side);
-		}
-		return null;
-	}
-
-	@Override
-	@Nullable
-	public IGasHandler getGasHandlerCapability(@Nullable Direction side) {
-		if (level.getBlockEntity(parentPos.getValue()) instanceof IMultiblockParentTile node) {
-			return node.getSubnodeGasHandlerCapability(this, side);
-		}
-		return null;
-	}
-
-	@Override
-	@Nullable
-	public IItemHandler getItemHandlerCapability(@Nullable Direction side) {
-		if (level.getBlockEntity(parentPos.getValue()) instanceof IMultiblockParentTile node) {
-			return node.getSubnodeItemHandlerCapability(this, side);
-		}
-		return null;
+		return LazyOptional.empty();
 	}
 
 	public void setData(BlockPos parentPos, int subnodeIndex) {
@@ -105,19 +74,11 @@ public class TileMultiSubnode extends GenericTile {
 	}
 
 	@Override
-	public InteractionResult useWithoutItem(Player player, BlockHitResult hit) {
+	public InteractionResult use(Player player, InteractionHand handIn, BlockHitResult hit) {
 		if (level.getBlockEntity(parentPos.getValue()) instanceof IMultiblockParentTile node) {
-			return node.onSubnodeUseWithoutItem(player, hit, this);
+			return node.onSubnodeUse(player, handIn, hit, this);
 		}
-		return super.useWithoutItem(player, hit);
-	}
-
-	@Override
-	public ItemInteractionResult useWithItem(ItemStack used, Player player, InteractionHand hand, BlockHitResult hit) {
-		if (level.getBlockEntity(parentPos.getValue()) instanceof IMultiblockParentTile node) {
-			return node.onSubnodeUseWithItem(used, player, hand, hit, this);
-		}
-		return super.useWithItem(used, player, hand, hit);
+		return super.use(player, handIn, hit);
 	}
 
 	@Override

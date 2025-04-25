@@ -11,8 +11,8 @@ import voltaic.prefab.screen.component.types.gauges.ScreenComponentGasGauge;
 import voltaic.prefab.screen.types.GenericMaterialScreen;
 import mezz.jei.api.gui.handlers.IGuiContainerHandler;
 import mezz.jei.api.runtime.IClickableIngredient;
-import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.IFluidTank;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.IFluidTank;
 
 public class ScreenHandlerMaterialScreen implements IGuiContainerHandler<GenericMaterialScreen<?>> {
 

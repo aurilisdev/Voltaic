@@ -4,7 +4,7 @@ import com.mojang.serialization.Codec;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.network.codec.StreamCodec;
+import voltaic.api.codec.StreamCodec;
 
 import javax.annotation.Nonnull;
 import java.util.Arrays;
@@ -92,7 +92,7 @@ public class ArrayPropertyType<TYPE, BUFFERTYPE extends ByteBuf> implements IPro
 
                 final int index = i;
 
-                singleNbtCodec.encode(arr[i], NbtOps.INSTANCE, NbtOps.INSTANCE.empty()).ifSuccess(nbt -> tag.put("" + index, nbt));
+                singleNbtCodec.encode(arr[i], NbtOps.INSTANCE, NbtOps.INSTANCE.empty()).result().ifPresent(nbt -> tag.put("" + index, nbt));
 
             }
 
@@ -122,7 +122,7 @@ public class ArrayPropertyType<TYPE, BUFFERTYPE extends ByteBuf> implements IPro
 
                 final int index = i;
 
-                singleNbtCodec.decode(NbtOps.INSTANCE, data.get("" + i)).ifSuccess(pair -> newArr[index] = pair.getFirst());
+                singleNbtCodec.decode(NbtOps.INSTANCE, data.get("" + i)).result().ifPresent(pair -> newArr[index] = pair.getFirst());
 
             }
 

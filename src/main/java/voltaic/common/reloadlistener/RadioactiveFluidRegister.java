@@ -18,9 +18,12 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.level.material.Fluid;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.OnDatapackSyncEvent;
-import net.neoforged.neoforge.network.PacketDistributor;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.OnDatapackSyncEvent;
+import net.minecraftforge.network.PacketDistributor;
+import net.minecraftforge.network.PacketDistributor.PacketTarget;
+import net.minecraftforge.network.simple.SimpleChannel;
+
 import org.apache.logging.log4j.Logger;
 
 import java.io.*;
@@ -59,7 +62,7 @@ public class RadioactiveFluidRegister extends SimplePreparableReloadListener<Jso
             final String filePath = loc.getPath();
             final String dataPath = filePath.substring(FOLDER.length() + 1, filePath.length() - JSON_EXTENSION_LENGTH);
 
-            final ResourceLocation jsonFile = ResourceLocation.fromNamespaceAndPath(namespace, dataPath);
+            final ResourceLocation jsonFile = new ResourceLocation(namespace, dataPath);
 
             Resource resource = entry.getValue();
             try (final InputStream inputStream = resource.open(); final Reader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));) {
@@ -89,17 +92,17 @@ public class RadioactiveFluidRegister extends SimplePreparableReloadListener<Jso
         json.entrySet().forEach(set -> {
 
             String key = set.getKey();
-            RadioactiveObject value = RadioactiveObject.CODEC.decode(JsonOps.INSTANCE, set.getValue()).getOrThrow().getFirst();
+            RadioactiveObject value = RadioactiveObject.CODEC.decode(JsonOps.INSTANCE, set.getValue()).result().get().getFirst();
 
             if (key.contains("#")) {
 
                 key = key.substring(1);
 
-                tags.put(FluidTags.create(ResourceLocation.parse(key)), value);
+                tags.put(FluidTags.create(new ResourceLocation(key)), value);
 
             } else {
 
-                radioactiveFluidMap.put(BuiltInRegistries.FLUID.get(ResourceLocation.parse(key)), value);
+                radioactiveFluidMap.put(BuiltInRegistries.FLUID.get(new ResourceLocation(key)), value);
 
 
             }
@@ -121,21 +124,18 @@ public class RadioactiveFluidRegister extends SimplePreparableReloadListener<Jso
         tags.clear();
     }
 
-    public RadioactiveFluidRegister subscribeAsSyncable() {
-        NeoForge.EVENT_BUS.addListener(getDatapackSyncListener());
+    public RadioactiveFluidRegister subscribeAsSyncable(final SimpleChannel channel) {
+    	MinecraftForge.EVENT_BUS.addListener(getDatapackSyncListener(channel));
         return this;
     }
 
-    private Consumer<OnDatapackSyncEvent> getDatapackSyncListener() {
+    private Consumer<OnDatapackSyncEvent> getDatapackSyncListener(final SimpleChannel channel) {
         return event -> {
             generateTagValues();
             ServerPlayer player = event.getPlayer();
             PacketSetClientRadioactiveFluids packet = new PacketSetClientRadioactiveFluids(radioactiveFluidMap);
-            if(player == null) {
-                PacketDistributor.sendToAllPlayers(packet);
-            } else {
-                PacketDistributor.sendToPlayer(player, packet);
-            }
+            PacketTarget target = player == null ? PacketDistributor.ALL.noArg() : PacketDistributor.PLAYER.with(() -> player);
+			channel.send(target, packet);
         };
     }
 

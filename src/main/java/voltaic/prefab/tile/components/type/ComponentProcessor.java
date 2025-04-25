@@ -8,6 +8,7 @@ import java.util.function.BiPredicate;
 import javax.annotation.Nullable;
 
 import org.apache.logging.log4j.util.TriConsumer;
+
 import voltaic.api.gas.GasAction;
 import voltaic.api.gas.GasStack;
 import voltaic.api.gas.GasTank;
@@ -35,14 +36,14 @@ import voltaic.prefab.tile.GenericTile;
 import voltaic.prefab.tile.components.IComponent;
 import voltaic.prefab.tile.components.IComponentType;
 import voltaic.prefab.utilities.ItemUtils;
+import voltaic.prefab.utilities.NBTUtils;
 import voltaic.prefab.utilities.math.MathUtils;
-import voltaic.registers.VoltaicDataComponentTypes;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeType;
-import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
-import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
+import net.minecraftforge.fluids.capability.templates.FluidTank;
 
 public class ComponentProcessor implements IComponent {
 
@@ -57,7 +58,7 @@ public class ComponentProcessor implements IComponent {
     private TriConsumer<ComponentProcessor, List<Integer>, Boolean> failed = (component, failedProcessors, anySuceeded) -> {};
     private final int numProcessors;
 
-    private List<RecipeHolder<VoltaicRecipe>> cachedRecipes = new ArrayList<>();
+    private List<VoltaicRecipe> cachedRecipes = new ArrayList<>();
     private final VoltaicRecipe[] activeRecipies;
     private double storedXp = 0.0;
 
@@ -1182,8 +1183,9 @@ public class ComponentProcessor implements IComponent {
             if (!stack.isEmpty()) {
                 ItemUpgrade upgrade = (ItemUpgrade) stack.getItem();
                 if (upgrade.subtype == SubtypeItemUpgrade.experience) {
-                    stack.set(VoltaicDataComponentTypes.XP, stack.getOrDefault(VoltaicDataComponentTypes.XP, 0.0) + getStoredXp());
-                    setStoredXp(0);
+                	CompoundTag tag = stack.getOrCreateTag();
+					tag.putDouble(NBTUtils.XP, tag.getDouble(NBTUtils.XP) + getStoredXp());
+					setStoredXp(0);
                     break;
                 }
             }

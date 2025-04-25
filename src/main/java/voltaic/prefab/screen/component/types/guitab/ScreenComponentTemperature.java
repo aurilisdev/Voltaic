@@ -1,9 +1,9 @@
 package voltaic.prefab.screen.component.types.guitab;
 
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import voltaic.api.screen.component.TextPropertySupplier;
 import voltaic.prefab.screen.component.types.ScreenComponentSlot.IconType;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public class ScreenComponentTemperature extends ScreenComponentGuiTab {

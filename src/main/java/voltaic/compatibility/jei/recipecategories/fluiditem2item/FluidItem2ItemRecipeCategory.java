@@ -11,15 +11,16 @@ import voltaic.common.recipe.recipeutils.FluidIngredient;
 import voltaic.common.recipe.recipeutils.ProbableFluid;
 import voltaic.compatibility.jei.recipecategories.AbstractRecipeCategory;
 import voltaic.compatibility.jei.utils.gui.types.BackgroundObject;
+import voltaic.prefab.utilities.CapabilityUtils;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.RecipeType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
-import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
+import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 
 public abstract class FluidItem2ItemRecipeCategory<T extends FluidItem2ItemRecipe> extends AbstractRecipeCategory<T> {
 
@@ -62,9 +63,9 @@ public abstract class FluidItem2ItemRecipeCategory<T extends FluidItem2ItemRecip
             List<ItemStack> buckets = new ArrayList<>();
             for (FluidStack stack : ing.getMatchingFluids()) {
                 ItemStack bucket = new ItemStack(stack.getFluid().getBucket(), 1);
-                IFluidHandlerItem handler = bucket.getCapability(Capabilities.FluidHandler.ITEM);
+                IFluidHandlerItem handler = bucket.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).orElse(CapabilityUtils.EMPTY_FLUID_ITEM);
 
-                if (handler != null) {
+                if (handler != CapabilityUtils.EMPTY_FLUID_ITEM) {
                     handler.fill(stack, FluidAction.EXECUTE);
 
                     bucket = handler.getContainer();
@@ -91,9 +92,9 @@ public abstract class FluidItem2ItemRecipeCategory<T extends FluidItem2ItemRecip
         if (recipe.hasFluidBiproducts()) {
             for (ProbableFluid stack : recipe.getFluidBiproducts()) {
                 ItemStack temp = new ItemStack(stack.getFullStack().getFluid().getBucket(), 1);
-                IFluidHandlerItem handler = temp.getCapability(Capabilities.FluidHandler.ITEM);
+                IFluidHandlerItem handler = temp.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).orElse(CapabilityUtils.EMPTY_FLUID_ITEM);
 
-                if (handler != null) {
+                if (handler != CapabilityUtils.EMPTY_FLUID_ITEM) {
 
                     handler.fill(stack.getFullStack(), FluidAction.EXECUTE);
 
