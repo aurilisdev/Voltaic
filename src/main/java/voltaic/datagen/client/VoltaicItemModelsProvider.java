@@ -5,7 +5,7 @@ import voltaic.common.item.subtype.SubtypeItemUpgrade;
 import voltaic.datagen.utils.client.BaseItemModelsProvider;
 import voltaic.registers.VoltaicItems;
 import net.minecraft.data.PackOutput;
-import net.minecraftforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 public class VoltaicItemModelsProvider extends BaseItemModelsProvider {
 

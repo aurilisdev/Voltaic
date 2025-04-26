@@ -18,12 +18,9 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.level.block.Block;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.OnDatapackSyncEvent;
-import net.minecraftforge.network.PacketDistributor;
-import net.minecraftforge.network.PacketDistributor.PacketTarget;
-import net.minecraftforge.network.simple.SimpleChannel;
-
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.OnDatapackSyncEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.apache.logging.log4j.Logger;
 
 import java.io.*;
@@ -62,7 +59,7 @@ public class RadiationShieldingRegister extends SimplePreparableReloadListener<J
             final String filePath = loc.getPath();
             final String dataPath = filePath.substring(FOLDER.length() + 1, filePath.length() - JSON_EXTENSION_LENGTH);
 
-            final ResourceLocation jsonFile = new ResourceLocation(namespace, dataPath);
+            final ResourceLocation jsonFile = ResourceLocation.fromNamespaceAndPath(namespace, dataPath);
 
             Resource resource = entry.getValue();
             try (final InputStream inputStream = resource.open(); final Reader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));) {
@@ -92,17 +89,17 @@ public class RadiationShieldingRegister extends SimplePreparableReloadListener<J
         json.entrySet().forEach(set -> {
 
             String key = set.getKey();
-            RadiationShielding value = RadiationShielding.CODEC.decode(JsonOps.INSTANCE, set.getValue()).result().get().getFirst();
+            RadiationShielding value = RadiationShielding.CODEC.decode(JsonOps.INSTANCE, set.getValue()).getOrThrow().getFirst();
 
             if (key.contains("#")) {
 
                 key = key.substring(1);
 
-                tags.put(BlockTags.create(new ResourceLocation(key)), value);
+                tags.put(BlockTags.create(ResourceLocation.parse(key)), value);
 
             } else {
 
-                radiationShieldingMap.put(BuiltInRegistries.BLOCK.get(new ResourceLocation(key)), value);
+                radiationShieldingMap.put(BuiltInRegistries.BLOCK.get(ResourceLocation.parse(key)), value);
 
 
             }
@@ -124,18 +121,21 @@ public class RadiationShieldingRegister extends SimplePreparableReloadListener<J
         tags.clear();
     }
 
-    public RadiationShieldingRegister subscribeAsSyncable(final SimpleChannel channel) {
-    	MinecraftForge.EVENT_BUS.addListener(getDatapackSyncListener(channel));
+    public RadiationShieldingRegister subscribeAsSyncable() {
+        NeoForge.EVENT_BUS.addListener(getDatapackSyncListener());
         return this;
     }
 
-    private Consumer<OnDatapackSyncEvent> getDatapackSyncListener(final SimpleChannel channel) {
+    private Consumer<OnDatapackSyncEvent> getDatapackSyncListener() {
         return event -> {
             generateTagValues();
             ServerPlayer player = event.getPlayer();
             PacketSetClientRadiationShielding packet = new PacketSetClientRadiationShielding(radiationShieldingMap);
-            PacketTarget target = player == null ? PacketDistributor.ALL.noArg() : PacketDistributor.PLAYER.with(() -> player);
-			channel.send(target, packet);
+            if (player == null) {
+                PacketDistributor.sendToAllPlayers(packet);
+            } else {
+                PacketDistributor.sendToPlayer(player, packet);
+            }
         };
     }
 

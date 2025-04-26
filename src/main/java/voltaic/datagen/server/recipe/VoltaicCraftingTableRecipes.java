@@ -2,24 +2,21 @@ package voltaic.datagen.server.recipe;
 
 import voltaic.Voltaic;
 import voltaic.datagen.utils.server.recipe.AbstractRecipeGenerator;
-import voltaic.datagen.utils.server.recipe.CustomShapedCraftingRecipe;
-import voltaic.datagen.utils.server.recipe.CustomShapelessCraftingRecipe;
+import voltaic.datagen.utils.server.recipe.ShapedCraftingRecipeBuilder;
+import voltaic.datagen.utils.server.recipe.ShapelessCraftingRecipeBuilder;
 import voltaic.registers.VoltaicItems;
-
-import java.util.function.Consumer;
-
-import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.world.item.Items;
-import net.minecraftforge.common.Tags;
-import net.minecraftforge.common.crafting.conditions.ModLoadedCondition;
-import net.minecraftforge.common.crafting.conditions.NotCondition;
+import net.neoforged.neoforge.common.Tags;
+import net.neoforged.neoforge.common.conditions.ModLoadedCondition;
+import net.neoforged.neoforge.common.conditions.NotCondition;
 
 public class VoltaicCraftingTableRecipes extends AbstractRecipeGenerator {
 
     public static final String ELECTRODYNAMICS_ID = "electrodynamics";
 
     @Override
-    public void addRecipes(Consumer<FinishedRecipe> output) {
+    public void addRecipes(RecipeOutput output) {
 
         addGear(output);
 
@@ -337,9 +334,9 @@ public class VoltaicCraftingTableRecipes extends AbstractRecipeGenerator {
 
     }
 
-    private void addGear(Consumer<FinishedRecipe> output) {
+    private void addGear(RecipeOutput output) {
 
-        CustomShapelessCraftingRecipe.start(VoltaicItems.GUIDEBOOK.get(), 1)
+        ShapelessCraftingRecipeBuilder.start(VoltaicItems.GUIDEBOOK.get(), 1)
                 //
                 .addIngredient(Items.BOOK)
                 //
@@ -348,7 +345,7 @@ public class VoltaicCraftingTableRecipes extends AbstractRecipeGenerator {
                 .complete(Voltaic.ID, "guidebook", output);
 
 
-        CustomShapedCraftingRecipe.start(VoltaicItems.ITEM_WRENCH.get(), 1)
+        ShapedCraftingRecipeBuilder.start(VoltaicItems.ITEM_WRENCH.get(), 1)
                 //
                 .addPattern(" S ")
                 //

@@ -1,21 +1,25 @@
 package voltaic.common.packet.types.client;
 
-import voltaic.api.codec.StreamCodec;
 import voltaic.api.gas.Gas;
 import voltaic.api.gas.GasStack;
 import voltaic.api.radiation.util.RadioactiveObject;
+import voltaic.common.packet.NetworkHandler;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import java.util.HashMap;
-import java.util.function.Supplier;
 
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent.Context;
+public class PacketSetClientRadioactiveGases implements CustomPacketPayload {
 
-public class PacketSetClientRadioactiveGases {
+    public static final ResourceLocation PACKET_SETCLIENTRADIOACTIVEGASES_PACKETID = NetworkHandler.id("packetsetclientradioactivegases");
+    public static final Type<PacketSetClientRadioactiveGases> TYPE = new Type<>(PACKET_SETCLIENTRADIOACTIVEGASES_PACKETID);
 
-    public static final StreamCodec<FriendlyByteBuf, PacketSetClientRadioactiveGases> CODEC = new StreamCodec<FriendlyByteBuf, PacketSetClientRadioactiveGases>() {
+    public static final StreamCodec<RegistryFriendlyByteBuf, PacketSetClientRadioactiveGases> CODEC = new StreamCodec<RegistryFriendlyByteBuf, PacketSetClientRadioactiveGases>() {
         @Override
-        public PacketSetClientRadioactiveGases decode(FriendlyByteBuf buf) {
+        public PacketSetClientRadioactiveGases decode(RegistryFriendlyByteBuf buf) {
             int count = buf.readInt();
             HashMap<Gas, RadioactiveObject> values = new HashMap<>();
             for (int i = 0; i < count; i++) {
@@ -25,7 +29,7 @@ public class PacketSetClientRadioactiveGases {
         }
 
         @Override
-        public void encode(FriendlyByteBuf buf, PacketSetClientRadioactiveGases packet) {
+        public void encode(RegistryFriendlyByteBuf buf, PacketSetClientRadioactiveGases packet) {
             buf.writeInt(packet.gases.size());
             packet.gases.forEach((gas, value) -> {
                 GasStack.STREAM_CODEC.encode(buf, new GasStack(gas, 1, Gas.ROOM_TEMPERATURE, Gas.PRESSURE_AT_SEA_LEVEL));
@@ -42,19 +46,12 @@ public class PacketSetClientRadioactiveGases {
         this.gases = items;
     }
 
-    public static void handle(PacketSetClientRadioactiveGases message, Supplier<Context> context) {
-		Context ctx = context.get();
-		ctx.enqueueWork(() -> {
-			ClientBarrierMethods.handleSetClientRadioactiveGases(message.gases);
-		});
-		ctx.setPacketHandled(true);
-	}
+    public static void handle(PacketSetClientRadioactiveGases message, IPayloadContext context) {
+        ClientBarrierMethods.handleSetClientRadioactiveGases(message.gases);
+    }
 
-	public static void encode(PacketSetClientRadioactiveGases message, FriendlyByteBuf buf) {
-		CODEC.encode(buf, message);
-	}
-
-	public static PacketSetClientRadioactiveGases decode(FriendlyByteBuf buf) {
-		return CODEC.decode(buf);
-	}
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
+    }
 }

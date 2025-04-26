@@ -1,29 +1,23 @@
 package voltaic.common.packet.types.server;
 
 import java.util.UUID;
-import java.util.function.Supplier;
 
-import voltaic.api.codec.StreamCodec;
+import voltaic.common.packet.NetworkHandler;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraftforge.network.NetworkEvent.Context;
+import net.minecraft.core.UUIDUtil;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-public class PacketSwapBattery {
+public class PacketSwapBattery implements CustomPacketPayload {
 
-    public static final StreamCodec<ByteBuf, PacketSwapBattery> CODEC = new StreamCodec<>() {
-
-		@Override
-		public void encode(ByteBuf buffer, PacketSwapBattery value) {
-			StreamCodec.UUID.encode(buffer, value.playerId);
-		}
-
-		@Override
-		public PacketSwapBattery decode(ByteBuf buffer) {
-			return new PacketSwapBattery(StreamCodec.UUID.decode(buffer));
-		}
-    	
-    };
+    public static final ResourceLocation PACKET_SWAPBATTER_PACKETID = NetworkHandler.id("packetswapbattery");
+    public static final Type<PacketSwapBattery> TYPE = new Type<>(PACKET_SWAPBATTER_PACKETID);
+    public static final StreamCodec<ByteBuf, PacketSwapBattery> CODEC = StreamCodec.composite(
+            UUIDUtil.STREAM_CODEC, instance -> instance.playerId,
+            PacketSwapBattery::new
+    );
 
     private final UUID playerId;
 
@@ -31,22 +25,12 @@ public class PacketSwapBattery {
         playerId = uuid;
     }
 
-    public static void handle(PacketSwapBattery message, Supplier<Context> context) {
-		Context ctx = context.get();
-		ctx.enqueueWork(() -> {
-			ServerLevel world = context.get().getSender().serverLevel();
-			if (world != null) {
-				ServerBarrierMethods.handleSwapBattery(world, message.playerId);
-			}
-		});
-		ctx.setPacketHandled(true);
-	}
+    public static void handle(PacketSwapBattery message, IPayloadContext context) {
+        ServerBarrierMethods.handleSwapBattery(context.player().level(), message.playerId);
+    }
 
-	public static void encode(PacketSwapBattery message, FriendlyByteBuf buf) {
-		CODEC.encode(buf, message);
-	}
-
-	public static PacketSwapBattery decode(FriendlyByteBuf buf) {
-		return CODEC.decode(buf);
-	}
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
+    }
 }

@@ -1,7 +1,8 @@
 package voltaic.prefab.properties.types;
 
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import voltaic.api.codec.StreamCodec;
+import net.minecraft.network.codec.StreamCodec;
 import voltaic.prefab.properties.variant.AbstractProperty;
 
 /**
@@ -22,11 +23,11 @@ public interface IPropertyType<TYPE, BUFFERTYPE> {
 
     public TYPE readFromTag(TagReader<TYPE> reader);
 
-    public static final record TagWriter<TYPE>(AbstractProperty<TYPE, ? extends IPropertyType> prop, CompoundTag tag) {
+    public static final record TagWriter<TYPE>(AbstractProperty<TYPE, ? extends IPropertyType> prop, CompoundTag tag, HolderLookup.Provider registries) {
 
 
     }
-    public static final record TagReader<TYPE>(AbstractProperty<TYPE, ? extends IPropertyType> prop, CompoundTag tag) {
+    public static final record TagReader<TYPE>(AbstractProperty<TYPE, ? extends IPropertyType> prop, CompoundTag tag, HolderLookup.Provider registries) {
 
     }
 

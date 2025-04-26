@@ -4,24 +4,26 @@ import java.util.Objects;
 import java.util.UUID;
 
 import com.mojang.serialization.Codec;
-
-import voltaic.api.codec.StreamCodec;
 import voltaic.api.gas.GasStack;
 import voltaic.prefab.utilities.BlockEntityUtils;
+import voltaic.prefab.utilities.CodecUtils;
 import voltaic.prefab.utilities.object.Location;
 import voltaic.prefab.utilities.object.TransferPack;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 public class PropertyTypes {
 
@@ -29,7 +31,7 @@ public class PropertyTypes {
             //
             Objects::equals,
             //
-            StreamCodec.BYTE,
+            ByteBufCodecs.BYTE,
             //
             Codec.BYTE
             //
@@ -39,7 +41,7 @@ public class PropertyTypes {
             //
             Objects::equals,
             //
-            StreamCodec.BOOL,
+            ByteBufCodecs.BOOL,
             //
             Codec.BOOL
             //
@@ -49,7 +51,7 @@ public class PropertyTypes {
             //
             Objects::equals,
             //
-            StreamCodec.BOOL,
+            ByteBufCodecs.BOOL,
             //
             Codec.BOOL,
             //
@@ -63,7 +65,7 @@ public class PropertyTypes {
             //
             Objects::equals,
             //
-            StreamCodec.INT,
+            ByteBufCodecs.INT,
             //
             Codec.INT
             //
@@ -73,7 +75,7 @@ public class PropertyTypes {
             //
             Objects::equals,
             //
-            StreamCodec.INT,
+            ByteBufCodecs.INT,
             //
             Codec.INT,
             //
@@ -85,7 +87,7 @@ public class PropertyTypes {
             //
             Objects::equals,
             //
-            StreamCodec.INT,
+            ByteBufCodecs.INT,
             //
             Codec.INT
             //
@@ -95,7 +97,7 @@ public class PropertyTypes {
             //
             Objects::equals,
             //
-            StreamCodec.LONG,
+            ByteBufCodecs.VAR_LONG,
             //
             Codec.LONG
             //
@@ -105,7 +107,7 @@ public class PropertyTypes {
             //
             Objects::equals,
             //
-            StreamCodec.FLOAT,
+            ByteBufCodecs.FLOAT,
             //
             Codec.FLOAT
             //
@@ -115,7 +117,7 @@ public class PropertyTypes {
             //
             Objects::equals,
             //
-            StreamCodec.DOUBLE,
+            ByteBufCodecs.DOUBLE,
             //
             Codec.DOUBLE
             //
@@ -125,7 +127,7 @@ public class PropertyTypes {
             //
             Objects::equals,
             //
-            StreamCodec.DOUBLE,
+            ByteBufCodecs.DOUBLE,
             //
             Codec.DOUBLE,
             //
@@ -139,7 +141,7 @@ public class PropertyTypes {
             //
             Objects::equals,
             //
-            StreamCodec.STRING,
+            ByteBufCodecs.STRING_UTF8,
             //
             Codec.STRING,
             //
@@ -151,7 +153,7 @@ public class PropertyTypes {
             //
             Objects::equals,
             //
-            StreamCodec.UUID,
+            UUIDUtil.STREAM_CODEC,
             //
             UUIDUtil.CODEC
             //
@@ -161,7 +163,7 @@ public class PropertyTypes {
             //
             Objects::equals,
             //
-            StreamCodec.COMPOUND_TAG,
+            ByteBufCodecs.COMPOUND_TAG,
             //
             CompoundTag.CODEC
             //
@@ -171,7 +173,7 @@ public class PropertyTypes {
             //
             Objects::equals,
             //
-            StreamCodec.BLOCK_POS,
+            BlockPos.STREAM_CODEC,
             //
             BlockPos.CODEC
             //
@@ -181,7 +183,7 @@ public class PropertyTypes {
             //
             Objects::equals,
             //
-            StreamCodec.BLOCK_POS,
+            BlockPos.STREAM_CODEC,
             //
             BlockPos.CODEC,
             //
@@ -189,7 +191,7 @@ public class PropertyTypes {
             //
     );
 
-    public static final SinglePropertyType<FluidStack, FriendlyByteBuf> FLUID_STACK = new SinglePropertyType<>(
+    public static final SinglePropertyType<FluidStack, RegistryFriendlyByteBuf> FLUID_STACK = new SinglePropertyType<>(
             //
             (thisStack, otherStack) -> {
                 if (thisStack.getAmount() != otherStack.getAmount()) {
@@ -198,13 +200,13 @@ public class PropertyTypes {
                 return thisStack.getFluid().isSame(otherStack.getFluid());
             },
             //
-            StreamCodec.FLUID_STACK,
+            FluidStack.OPTIONAL_STREAM_CODEC,
             //
-            FluidStack.CODEC
+            FluidStack.OPTIONAL_CODEC
             //
     );
 
-    public static final SinglePropertyType<Location, ByteBuf> LOCATION = new SinglePropertyType<>(
+    public static final SinglePropertyType<Location, FriendlyByteBuf> LOCATION = new SinglePropertyType<>(
             //
             Objects::equals,
             //
@@ -214,7 +216,7 @@ public class PropertyTypes {
             //
     );
 
-    public static final SinglePropertyType<GasStack, FriendlyByteBuf> GAS_STACK = new SinglePropertyType<>(
+    public static final SinglePropertyType<GasStack, RegistryFriendlyByteBuf> GAS_STACK = new SinglePropertyType<>(
             //
             Objects::equals,
             //
@@ -224,49 +226,49 @@ public class PropertyTypes {
             //
     );
 
-    public static final SinglePropertyType<ItemStack, FriendlyByteBuf> ITEM_STACK = new SinglePropertyType<>(
+    public static final SinglePropertyType<ItemStack, RegistryFriendlyByteBuf> ITEM_STACK = new SinglePropertyType<>(
             //
             ItemStack::matches,
             //
-            StreamCodec.ITEM_STACK,
+            ItemStack.OPTIONAL_STREAM_CODEC,
             //
-            ItemStack.CODEC
+            ItemStack.OPTIONAL_CODEC
             //
     );
 
-    public static final ListPropertyType<ItemStack, FriendlyByteBuf> ITEM_STACK_LIST = new ListPropertyType<>(
+    public static final ListPropertyType<ItemStack, RegistryFriendlyByteBuf> ITEM_STACK_LIST = new ListPropertyType<>(
             //
-            ItemStack::isSameItemSameTags,
+            ItemStack::isSameItemSameComponents,
             //
-            StreamCodec.ITEM_STACK,
+            ItemStack.OPTIONAL_STREAM_CODEC,
             //
-            ItemStack.CODEC,
+            ItemStack.OPTIONAL_CODEC,
             //
             ItemStack.EMPTY
             //
     );
 
-    public static final SinglePropertyType<Block, FriendlyByteBuf> BLOCK = new SinglePropertyType<>(
+    public static final SinglePropertyType<Block, RegistryFriendlyByteBuf> BLOCK = new SinglePropertyType<>(
             //
             Objects::equals,
             //
-            StreamCodec.BLOCK,
+            ByteBufCodecs.registry(Registries.BLOCK),
             //
             BuiltInRegistries.BLOCK.byNameCodec()
             //
     );
 
-    public static final SinglePropertyType<BlockState, FriendlyByteBuf> BLOCK_STATE = new SinglePropertyType<>(
+    public static final SinglePropertyType<BlockState, ByteBuf> BLOCK_STATE = new SinglePropertyType<>(
             //
             Objects::equals,
             //
-            StreamCodec.BLOCK_STATE,
+            ByteBufCodecs.fromCodec(BlockState.CODEC),
             //
             BlockState.CODEC
             //
     );
 
-    public static final SinglePropertyType<TransferPack, ByteBuf> TRANSFER_PACK = new SinglePropertyType<>(
+    public static final SinglePropertyType<TransferPack, FriendlyByteBuf> TRANSFER_PACK = new SinglePropertyType<>(
             //
             Objects::equals,
             //
@@ -280,7 +282,7 @@ public class PropertyTypes {
             //
             Objects::equals,
             //
-            StreamCodec.RESOURCE_LOCATION,
+            ResourceLocation.STREAM_CODEC,
             //
             ResourceLocation.CODEC
             //
@@ -290,7 +292,7 @@ public class PropertyTypes {
             //
             Objects::equals,
             //
-            StreamCodec.VEC3,
+            CodecUtils.VEC3_STREAM_CODEC,
             //
             Vec3.CODEC
             //

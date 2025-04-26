@@ -3,6 +3,7 @@ package voltaic;
 import java.util.Random;
 import java.util.function.Consumer;
 
+import net.neoforged.fml.ModList;
 import voltaic.api.electricity.formatting.MeasurementUnits;
 import voltaic.common.reloadlistener.RadiationShieldingRegister;
 import voltaic.common.reloadlistener.RadioactiveFluidRegister;
@@ -13,7 +14,6 @@ import org.apache.logging.log4j.Logger;
 
 import voltaic.client.VoltaicClientRegister;
 import voltaic.common.block.states.VoltaicBlockStates;
-import voltaic.common.packet.NetworkHandler;
 import voltaic.common.packet.types.client.PacketResetGuidebookPages;
 import voltaic.common.settings.VoltaicConstants;
 import voltaic.common.tags.VoltaicTags;
@@ -21,20 +21,17 @@ import voltaic.prefab.configuration.ConfigurationHandler;
 import voltaic.registers.UnifiedVoltaicRegister;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.OnDatapackSyncEvent;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.ModList;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.network.PacketDistributor;
-import net.minecraftforge.network.PacketDistributor.PacketTarget;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.OnDatapackSyncEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import javax.annotation.Nullable;
 
@@ -56,8 +53,7 @@ public class Voltaic {
     @Nullable
     private static Boolean ELECTRODYNAMICS_LOADED = null;
 
-    public Voltaic() {
-    	IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
+    public Voltaic(IEventBus bus) {
         ELECTRODYNAMICS_LOADED = ModList.get().isLoaded(ELECTRODYNAMICS_MOD_ID);
         MeasurementUnits.init();
         ConfigurationHandler.registerConfig(VoltaicConstants.class);
@@ -69,13 +65,13 @@ public class Voltaic {
 
     @SubscribeEvent
     public static void onCommonSetup(FMLCommonSetupEvent event) {
-        MinecraftForge.EVENT_BUS.addListener(getGuidebookListener());
-        NetworkHandler.init();
+
+        NeoForge.EVENT_BUS.addListener(getGuidebookListener());
         VoltaicTags.init();
-        RadioactiveItemRegister.INSTANCE = new RadioactiveItemRegister().subscribeAsSyncable(NetworkHandler.CHANNEL);
-        RadioactiveFluidRegister.INSTANCE = new RadioactiveFluidRegister().subscribeAsSyncable(NetworkHandler.CHANNEL);
-        RadioactiveGasRegister.INSTANCE = new RadioactiveGasRegister().subscribeAsSyncable(NetworkHandler.CHANNEL);
-        RadiationShieldingRegister.INSTANCE = new RadiationShieldingRegister().subscribeAsSyncable(NetworkHandler.CHANNEL);
+        RadioactiveItemRegister.INSTANCE = new RadioactiveItemRegister().subscribeAsSyncable();
+        RadioactiveFluidRegister.INSTANCE = new RadioactiveFluidRegister().subscribeAsSyncable();
+        RadioactiveGasRegister.INSTANCE = new RadioactiveGasRegister().subscribeAsSyncable();
+        RadiationShieldingRegister.INSTANCE = new RadiationShieldingRegister().subscribeAsSyncable();
         // CraftingHelper.register(ConfigCondition.Serializer.INSTANCE); // Probably wrong location after update from 1.18.2 to
         // 1.19.2
 
@@ -97,24 +93,31 @@ public class Voltaic {
     // Don't really have a better place to put this for now
     private static Consumer<OnDatapackSyncEvent> getGuidebookListener() {
 
-    	return event -> {
-			ServerPlayer player = event.getPlayer();
-			PacketTarget target = player == null ? PacketDistributor.ALL.noArg() : PacketDistributor.PLAYER.with(() -> player);
-			NetworkHandler.CHANNEL.send(target, new PacketResetGuidebookPages());
-		};
+        return event -> {
+            ServerPlayer player = event.getPlayer();
+            if (player == null) {
+                PacketDistributor.sendToAllPlayers(PacketResetGuidebookPages.PACKET);
+            } else {
+                PacketDistributor.sendToPlayer(player, PacketResetGuidebookPages.PACKET);
+            }
+        };
 
     }
 
     public static final ResourceLocation rl(String path) {
-        return new ResourceLocation(ID, path);
+        return ResourceLocation.fromNamespaceAndPath(ID, path);
     }
 
     public static final ResourceLocation vanillarl(String path) {
-        return new ResourceLocation(path);
+        return ResourceLocation.withDefaultNamespace(path);
     }
 
     public static final ResourceLocation forgerl(String path) {
-        return new ResourceLocation("neoforge", path);
+        return ResourceLocation.fromNamespaceAndPath("neoforge", path);
+    }
+
+    public static final ResourceLocation commonrl(String path) {
+        return ResourceLocation.fromNamespaceAndPath("c", path);
     }
 
     // This returns null to help us catch inappropriate references of this parameter

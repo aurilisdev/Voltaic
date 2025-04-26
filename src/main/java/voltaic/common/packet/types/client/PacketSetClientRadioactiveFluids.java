@@ -1,33 +1,38 @@
 package voltaic.common.packet.types.client;
 
-import voltaic.api.codec.StreamCodec;
 import voltaic.api.radiation.util.RadioactiveObject;
-import net.minecraft.network.FriendlyByteBuf;
+import voltaic.common.packet.NetworkHandler;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.network.NetworkEvent.Context;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import java.util.HashMap;
-import java.util.function.Supplier;
 
-public class PacketSetClientRadioactiveFluids {
+public class PacketSetClientRadioactiveFluids implements CustomPacketPayload {
 
-    public static final StreamCodec<FriendlyByteBuf, PacketSetClientRadioactiveFluids> CODEC = new StreamCodec<FriendlyByteBuf, PacketSetClientRadioactiveFluids>() {
+    public static final ResourceLocation PACKET_SETCLIENTRADIOACTIVEFLUIDS_PACKETID = NetworkHandler.id("packetsetclientradioactivefluids");
+    public static final Type<PacketSetClientRadioactiveFluids> TYPE = new Type<>(PACKET_SETCLIENTRADIOACTIVEFLUIDS_PACKETID);
+
+    public static final StreamCodec<RegistryFriendlyByteBuf, PacketSetClientRadioactiveFluids> CODEC = new StreamCodec<RegistryFriendlyByteBuf, PacketSetClientRadioactiveFluids>() {
         @Override
-        public PacketSetClientRadioactiveFluids decode(FriendlyByteBuf buf) {
+        public PacketSetClientRadioactiveFluids decode(RegistryFriendlyByteBuf buf) {
             int count = buf.readInt();
             HashMap<Fluid, RadioactiveObject> values = new HashMap<>();
             for (int i = 0; i < count; i++) {
-                values.put(StreamCodec.FLUID_STACK.decode(buf).getFluid(), RadioactiveObject.STREAM_CODEC.decode(buf));
+                values.put(FluidStack.STREAM_CODEC.decode(buf).getFluid(), RadioactiveObject.STREAM_CODEC.decode(buf));
             }
             return new PacketSetClientRadioactiveFluids(values);
         }
 
         @Override
-        public void encode(FriendlyByteBuf buf, PacketSetClientRadioactiveFluids packet) {
+        public void encode(RegistryFriendlyByteBuf buf, PacketSetClientRadioactiveFluids packet) {
             buf.writeInt(packet.fluids.size());
             packet.fluids.forEach((fluid, value) -> {
-                StreamCodec.FLUID_STACK.encode(buf, new FluidStack(fluid, 1));
+                FluidStack.STREAM_CODEC.encode(buf, new FluidStack(fluid, 1));
                 RadioactiveObject.STREAM_CODEC.encode(buf, value);
             });
 
@@ -41,19 +46,12 @@ public class PacketSetClientRadioactiveFluids {
         this.fluids = items;
     }
 
-    public static void handle(PacketSetClientRadioactiveFluids message, Supplier<Context> context) {
-		Context ctx = context.get();
-		ctx.enqueueWork(() -> {
-			ClientBarrierMethods.handleSetClientRadioactiveFluids(message.fluids);
-		});
-		ctx.setPacketHandled(true);
-	}
+    public static void handle(PacketSetClientRadioactiveFluids message, IPayloadContext context) {
+        ClientBarrierMethods.handleSetClientRadioactiveFluids(message.fluids);
+    }
 
-	public static void encode(PacketSetClientRadioactiveFluids message, FriendlyByteBuf buf) {
-		CODEC.encode(buf, message);
-	}
-
-	public static PacketSetClientRadioactiveFluids decode(FriendlyByteBuf buf) {
-		return CODEC.decode(buf);
-	}
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
+    }
 }

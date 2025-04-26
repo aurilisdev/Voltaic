@@ -8,14 +8,13 @@ import voltaic.common.recipe.categories.item2item.Item2ItemRecipe;
 import voltaic.common.recipe.recipeutils.ProbableFluid;
 import voltaic.compatibility.jei.recipecategories.AbstractRecipeCategory;
 import voltaic.compatibility.jei.utils.gui.types.BackgroundObject;
-import voltaic.prefab.utilities.CapabilityUtils;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.RecipeType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
-import net.minecraftforge.fluids.capability.IFluidHandlerItem;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
+import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
 
 public abstract class Item2ItemRecipeCategory<T extends Item2ItemRecipe> extends AbstractRecipeCategory<T> {
 
@@ -49,9 +48,9 @@ public abstract class Item2ItemRecipeCategory<T extends Item2ItemRecipe> extends
         if (recipe.hasFluidBiproducts()) {
             for (ProbableFluid fluid : recipe.getFluidBiproducts()) {
                 ItemStack canister = new ItemStack(fluid.getFullStack().getFluid().getBucket(), 1);
-                IFluidHandlerItem handler = canister.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).orElse(CapabilityUtils.EMPTY_FLUID_ITEM);
+                IFluidHandlerItem handler = canister.getCapability(Capabilities.FluidHandler.ITEM);
 
-                if (handler != CapabilityUtils.EMPTY_FLUID_ITEM) {
+                if (handler != null) {
 
                     handler.fill(fluid.getFullStack(), FluidAction.EXECUTE);
 

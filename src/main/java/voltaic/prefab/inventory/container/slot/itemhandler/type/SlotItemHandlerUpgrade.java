@@ -10,7 +10,7 @@ import voltaic.prefab.inventory.container.slot.utils.IUpgradeSlot;
 import voltaic.prefab.screen.component.types.ScreenComponentSlot.IconType;
 import voltaic.prefab.screen.component.types.ScreenComponentSlot.SlotType;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandler;
 
 public class SlotItemHandlerUpgrade extends SlotItemHandlerGeneric implements IUpgradeSlot {
 

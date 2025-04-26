@@ -1,5 +1,6 @@
 package voltaic.prefab.properties.variant;
 
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.Block;
 import voltaic.Voltaic;
@@ -168,9 +169,9 @@ public class SetProperty<T> extends AbstractProperty<HashSet<T>, SetPropertyType
         overwriteValue(otherVal);
     }
 
-    public void loadFromTag(CompoundTag tag) {
+    public void loadFromTag(CompoundTag tag, HolderLookup.Provider registries) {
         try {
-            HashSet<T> data = (HashSet<T>) getType().readFromTag(new IPropertyType.TagReader(this, tag));
+            HashSet<T> data = (HashSet<T>) getType().readFromTag(new IPropertyType.TagReader(this, tag, registries));
             if (data != null) {
                 value = data;
                 onLoadedFromTag(this, value);

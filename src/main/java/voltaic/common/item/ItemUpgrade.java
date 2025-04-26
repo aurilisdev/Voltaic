@@ -3,13 +3,15 @@ package voltaic.common.item;
 import java.text.DecimalFormat;
 import java.util.List;
 
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.Holder;
 import net.minecraft.world.item.CreativeModeTab;
 import org.apache.commons.lang3.StringUtils;
 
 import voltaic.common.item.subtype.SubtypeItemUpgrade;
 import voltaic.prefab.utilities.VoltaicTextUtils;
 import voltaic.prefab.utilities.NBTUtils;
+import voltaic.registers.VoltaicCreativeTabs;
+import voltaic.registers.VoltaicDataComponentTypes;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -23,20 +25,19 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.registries.RegistryObject;
 
 public class ItemUpgrade extends ItemVoltaic {
 	public final SubtypeItemUpgrade subtype;
 
 	private static final DecimalFormat FORMATTER = new DecimalFormat("0.00");
 
-	public ItemUpgrade(Properties properties, SubtypeItemUpgrade subtype, RegistryObject<CreativeModeTab> creativeTab) {
+	public ItemUpgrade(Properties properties, SubtypeItemUpgrade subtype, Holder<CreativeModeTab> creativeTab) {
 		super(properties.stacksTo(subtype.maxSize), creativeTab);
 		this.subtype = subtype;
 	}
 
 	@Override
-	public void appendHoverText(ItemStack stack, Level context, List<Component> tooltip, TooltipFlag flagIn) {
+	public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flagIn) {
 		super.appendHoverText(stack, context, tooltip, flagIn);
 		if (subtype == SubtypeItemUpgrade.advancedcapacity || subtype == SubtypeItemUpgrade.basiccapacity) {
 			double capacityMultiplier = subtype == SubtypeItemUpgrade.advancedcapacity ? 2.25 : 1.5;
@@ -56,7 +57,7 @@ public class ItemUpgrade extends ItemVoltaic {
 			} else {
 				tooltip.add(VoltaicTextUtils.tooltip("info.iteminputupgrade").withStyle(ChatFormatting.GRAY));
 			}
-			if (stack.getOrCreateTag().getBoolean(NBTUtils.SMART)) {
+			if (stack.getOrDefault(VoltaicDataComponentTypes.SMART, false)) {
 				tooltip.add(VoltaicTextUtils.tooltip("info.insmartmode").withStyle(ChatFormatting.LIGHT_PURPLE));
 			}
 			List<Direction> dirs = NBTUtils.readDirectionList(stack);
@@ -73,7 +74,7 @@ public class ItemUpgrade extends ItemVoltaic {
 			tooltip.add(VoltaicTextUtils.tooltip("info.togglesmart").withStyle(ChatFormatting.GRAY));
 		}
 		if (subtype == SubtypeItemUpgrade.experience) {
-			double storedXp = stack.getOrCreateTag().getDouble(NBTUtils.XP);
+			double storedXp = stack.getOrDefault(VoltaicDataComponentTypes.XP, 0.0);
 			tooltip.add(VoltaicTextUtils.tooltip("info.xpstored", Component.literal(FORMATTER.format(storedXp)).withStyle(ChatFormatting.LIGHT_PURPLE)).withStyle(ChatFormatting.GRAY));
 			tooltip.add(VoltaicTextUtils.tooltip("info.xpusage").withStyle(ChatFormatting.GRAY));
 
@@ -97,19 +98,17 @@ public class ItemUpgrade extends ItemVoltaic {
 					NBTUtils.clearDirectionList(handStack);
 					NBTUtils.writeDirectionList(dirs, handStack);
 				} else {
-					CompoundTag tag = handStack.getOrCreateTag();
-					tag.putBoolean(NBTUtils.SMART, !tag.getBoolean(NBTUtils.SMART));
+					handStack.set(VoltaicDataComponentTypes.SMART, !handStack.getOrDefault(VoltaicDataComponentTypes.SMART, false));
 				}
 				return InteractionResultHolder.pass(player.getItemInHand(hand));
 			}
 			if (localSubtype == SubtypeItemUpgrade.experience) {
-				CompoundTag tag = handStack.getOrCreateTag();
-				double storedXp = tag.getDouble(NBTUtils.XP);
+				double storedXp = handStack.getOrDefault(VoltaicDataComponentTypes.XP, 0.0);
 				int takenXp = (int) storedXp;
 				// it uses a Vec3 for some reason don't ask me why
 				Vec3 playerPos = new Vec3(player.blockPosition().getX(), player.blockPosition().getY(), player.blockPosition().getZ());
 				ExperienceOrb.award((ServerLevel) world, playerPos, takenXp);
-				tag.putDouble(NBTUtils.XP, storedXp - takenXp);
+				handStack.set(VoltaicDataComponentTypes.XP, storedXp - takenXp);
 				return InteractionResultHolder.pass(player.getItemInHand(hand));
 			}
 		}
@@ -132,10 +131,7 @@ public class ItemUpgrade extends ItemVoltaic {
 	@Override
 	public boolean isFoil(ItemStack stack) {
 		SubtypeItemUpgrade subtype = ((ItemUpgrade) stack.getItem()).subtype;
-		if (stack.hasTag()) {
-			return stack.getTag().getBoolean(NBTUtils.SMART);
-		}
-		return subtype == SubtypeItemUpgrade.fortune || subtype == SubtypeItemUpgrade.unbreaking || subtype == SubtypeItemUpgrade.silktouch;
+		return stack.getOrDefault(VoltaicDataComponentTypes.SMART, false) || subtype == SubtypeItemUpgrade.fortune || subtype == SubtypeItemUpgrade.unbreaking || subtype == SubtypeItemUpgrade.silktouch;
 	}
 
 }

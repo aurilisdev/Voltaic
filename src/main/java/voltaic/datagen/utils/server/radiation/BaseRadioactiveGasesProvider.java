@@ -6,7 +6,7 @@ import voltaic.Voltaic;
 import voltaic.api.gas.Gas;
 import voltaic.api.radiation.util.RadioactiveObject;
 import voltaic.common.reloadlistener.RadioactiveGasRegister;
-import voltaic.registers.VoltaicRegistries;
+import voltaic.registers.VoltaicGases;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
@@ -42,12 +42,12 @@ public abstract class BaseRadioactiveGasesProvider implements DataProvider {
     @SuppressWarnings("unused")
     public void addItem(Gas gas, double radiationAmount, double radiationStrength, JsonObject json) {
         JsonObject data = new JsonObject();
-        json.add(VoltaicRegistries.gasRegistry().getKey(gas).toString(), RadioactiveObject.CODEC.encode(new RadioactiveObject(radiationStrength, radiationAmount), JsonOps.INSTANCE, data).result().get());
+        json.add(VoltaicGases.GAS_REGISTRY.getKey(gas).toString(), RadioactiveObject.CODEC.encode(new RadioactiveObject(radiationStrength, radiationAmount), JsonOps.INSTANCE, data).getOrThrow());
     }
 
     public void addTag(TagKey<Gas> tag, double radiationAmount, double radiationStrength, JsonObject json) {
         JsonObject data = new JsonObject();
-        json.add("#" + tag.location().toString(), RadioactiveObject.CODEC.encode(new RadioactiveObject(radiationStrength, radiationAmount), JsonOps.INSTANCE, data).result().get());
+        json.add("#" + tag.location().toString(), RadioactiveObject.CODEC.encode(new RadioactiveObject(radiationStrength, radiationAmount), JsonOps.INSTANCE, data).getOrThrow());
     }
 
     @Override

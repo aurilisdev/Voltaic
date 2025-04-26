@@ -5,25 +5,23 @@ import java.util.List;
 
 import voltaic.api.gas.GasStack;
 import voltaic.common.recipe.VoltaicRecipe;
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.items.wrapper.RecipeWrapper;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 public abstract class AbstractMaterialRecipe extends VoltaicRecipe {
 
-	public AbstractMaterialRecipe(ResourceLocation recipeGroup, double experience, int ticks, double usagePerTick, List<ProbableItem> itemBiproducts, List<ProbableFluid> fluidBiproducts, List<ProbableGas> gasBiproducts) {
+	public AbstractMaterialRecipe(String recipeGroup, double experience, int ticks, double usagePerTick, List<ProbableItem> itemBiproducts, List<ProbableFluid> fluidBiproducts, List<ProbableGas> gasBiproducts) {
 		super(recipeGroup, experience, ticks, usagePerTick, itemBiproducts, fluidBiproducts, gasBiproducts);
 	}
-	
+
 	@Override
-	public ItemStack assemble(RecipeWrapper pContainer, RegistryAccess pRegistryAccess) {
+	public ItemStack assemble(VoltaicRecipe p_345149_, HolderLookup.Provider p_346030_) {
 		return getItemRecipeOutput();
 	}
-	
+
 	@Override
-	public ItemStack getResultItem(RegistryAccess pRegistryAccess) {
+	public ItemStack getResultItem(HolderLookup.Provider pRegistries) {
 		return getItemRecipeOutput();
 	}
 

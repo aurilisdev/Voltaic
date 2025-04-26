@@ -1,14 +1,21 @@
 package voltaic.api.item;
 
 import java.util.List;
+import java.util.Objects;
+
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import voltaic.prefab.item.ElectricItemProperties;
 import voltaic.prefab.utilities.VoltaicTextUtils;
 import voltaic.prefab.utilities.object.TransferPack;
+import voltaic.registers.VoltaicDataComponentTypes;
 import voltaic.registers.VoltaicSounds;
 import net.minecraft.ChatFormatting;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.SlotAccess;
 import net.minecraft.world.entity.player.Inventory;
@@ -18,7 +25,6 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.level.Level;
 
 public interface IItemElectric {
 
@@ -29,48 +35,49 @@ public interface IItemElectric {
     public static final String EXTRACT_LIMIT = "extractlimit";
     public static final String CURRENT_BATTERY = "currentbattery";
 
+    static ElectricItemData defaultData(IItemElectric item) {
+        return new ElectricItemData(0, item.getElectricProperties().capacity, item.getElectricProperties().extract.getVoltage(), item.getElectricProperties().receive.getJoules(), item.getElectricProperties().extract.getJoules(), new ItemStack(item.getDefaultStorageBattery()));
+    }
+
     default double getJoulesStored(ItemStack stack) {
-    	return stack.getOrCreateTag().getDouble(JOULES_STORED);
+        return stack.getOrDefault(VoltaicDataComponentTypes.ELECTRIC_ITEM_DATA, defaultData(this)).joulesStored;
     }
 
     public static void setEnergyStored(ItemStack stack, double amount) {
-    	stack.getOrCreateTag().putDouble(JOULES_STORED, amount);
+        ElectricItemData data = stack.getOrDefault(VoltaicDataComponentTypes.ELECTRIC_ITEM_DATA, defaultData((IItemElectric) stack.getItem()));
+        data.joulesStored = amount;
+        stack.set(VoltaicDataComponentTypes.ELECTRIC_ITEM_DATA, data);
     }
 
     default double getMaximumCapacity(ItemStack item) {
-    	CompoundTag tag = item.getOrCreateTag();
-		if (!tag.contains(JOULES_CAPACITY)) {
-			setMaximumCapacity(item, getElectricProperties().capacity);
-		}
-		return tag.getDouble(JOULES_CAPACITY);
+        return item.getOrDefault(VoltaicDataComponentTypes.ELECTRIC_ITEM_DATA, defaultData((IItemElectric) item.getItem())).maxJoules;
     }
 
     static void setMaximumCapacity(ItemStack item, double amt) {
-    	item.getOrCreateTag().putDouble(JOULES_CAPACITY, amt);
+        ElectricItemData data = item.getOrDefault(VoltaicDataComponentTypes.ELECTRIC_ITEM_DATA, defaultData((IItemElectric) item.getItem()));
+        data.maxJoules = amt;
+        item.set(VoltaicDataComponentTypes.ELECTRIC_ITEM_DATA, data);
     }
 
     default double getReceiveLimit(ItemStack item) {
-    	CompoundTag tag = item.getOrCreateTag();
-		if (!tag.contains(RECEIVE_LIMIT)) {
-			setReceiveLimit(item, getElectricProperties().receive.getJoules());
-		}
-		return tag.getDouble(RECEIVE_LIMIT);
+        return item.getOrDefault(VoltaicDataComponentTypes.ELECTRIC_ITEM_DATA, defaultData((IItemElectric) item.getItem())).receiveCap;
     }
 
     static void setReceiveLimit(ItemStack stack, double amount) {
-    	stack.getOrCreateTag().putDouble(RECEIVE_LIMIT, amount);
+
+        ElectricItemData data = stack.getOrDefault(VoltaicDataComponentTypes.ELECTRIC_ITEM_DATA, defaultData((IItemElectric) stack.getItem()));
+        data.receiveCap = amount;
+        stack.set(VoltaicDataComponentTypes.ELECTRIC_ITEM_DATA, data);
     }
 
     default double getExtractLimit(ItemStack item) {
-    	CompoundTag tag = item.getOrCreateTag();
-		if (!tag.contains(EXTRACT_LIMIT)) {
-			setExtractLimit(item, getElectricProperties().extract.getJoules());
-		}
-		return tag.getDouble(EXTRACT_LIMIT);
+        return item.getOrDefault(VoltaicDataComponentTypes.ELECTRIC_ITEM_DATA, defaultData((IItemElectric) item.getItem())).extractCap;
     }
 
     static void setExtractLimit(ItemStack stack, double amount) {
-    	stack.getOrCreateTag().putDouble(EXTRACT_LIMIT, amount);
+        ElectricItemData data = stack.getOrDefault(VoltaicDataComponentTypes.ELECTRIC_ITEM_DATA, defaultData((IItemElectric) stack.getItem()));
+        data.extractCap = amount;
+        stack.set(VoltaicDataComponentTypes.ELECTRIC_ITEM_DATA, data);
     }
 
     default boolean isEnergyStorageOnly() {
@@ -197,38 +204,101 @@ public interface IItemElectric {
 
     default ItemStack getCurrentBattery(ItemStack tool) {
 
-    	if (((IItemElectric) tool.getItem()).getDefaultStorageBattery() == Items.AIR) {
-			return ItemStack.EMPTY;
-		}
-		CompoundTag tag = tool.getOrCreateTag();
-		if (!tag.contains(CURRENT_BATTERY)) {
-			setCurrentBattery(tool, new ItemStack(getDefaultStorageBattery()));
-		}
-		return ItemStack.of(tag.getCompound(CURRENT_BATTERY));
+        ElectricItemData data = tool.getOrDefault(VoltaicDataComponentTypes.ELECTRIC_ITEM_DATA, defaultData((IItemElectric) tool.getItem()));
+
+        if (data.battery.getItem() == Items.AIR) {
+            return ItemStack.EMPTY;
+        }
+
+        return data.battery;
     }
 
     // It is assumed you are setting a battery with this method
     default void setCurrentBattery(ItemStack tool, ItemStack battery) {
 
-    	CompoundTag tag = tool.getOrCreateTag();
-		tag.remove(CURRENT_BATTERY);
-		if (battery.getItem() instanceof IItemElectric electric) {
-			// If the battery is an electric item, use its capacity
-			IItemElectric.setMaximumCapacity(tool, electric.getMaximumCapacity(battery));
-		} else {
-			// Failsafe, use the capacity of the current item instead (previous behaviour)
-			IItemElectric.setMaximumCapacity(tool, getMaximumCapacity(tool));
-		}
-		tag.put(CURRENT_BATTERY, battery.save(new CompoundTag()));
+        IItemElectric.setMaximumCapacity(tool, getMaximumCapacity(tool));
+
+        ElectricItemData data = tool.getOrDefault(VoltaicDataComponentTypes.ELECTRIC_ITEM_DATA, defaultData((IItemElectric) tool.getItem()));
+
+        data.battery = battery;
+
+        tool.set(VoltaicDataComponentTypes.ELECTRIC_ITEM_DATA, data);
     }
 
     ElectricItemProperties getElectricProperties();
 
     Item getDefaultStorageBattery();
 
-    static void addBatteryTooltip(ItemStack stack, Level context, List<Component> tooltip) {
+    static void addBatteryTooltip(ItemStack stack, Item.TooltipContext context, List<Component> tooltip) {
         tooltip.add(VoltaicTextUtils.tooltip("currbattery", ((IItemElectric) stack.getItem()).getCurrentBattery(stack).getDisplayName().copy().withStyle(ChatFormatting.GRAY)).withStyle(ChatFormatting.DARK_GRAY));
     }
 
+    public static class ElectricItemData {
+
+        public double joulesStored;
+
+        public double maxJoules;
+
+        public double voltage;
+        public double receiveCap;
+
+        public double extractCap;
+
+        public ItemStack battery;
+
+        public ElectricItemData(double joulesStored, double maxJoules, double voltage, double receiveCap, double extractCap, ItemStack battery) {
+            this.joulesStored = joulesStored;
+            this.maxJoules = maxJoules;
+            this.voltage = voltage;
+            this.receiveCap = receiveCap;
+            this.extractCap = extractCap;
+            this.battery = battery;
+        }
+
+        public static final Codec<ElectricItemData> CODEC = RecordCodecBuilder.create(instance ->
+                        //
+                        instance.group(
+                                //
+                                Codec.DOUBLE.fieldOf(JOULES_STORED).forGetter(instance0 -> instance0.joulesStored),
+                                //
+                                Codec.DOUBLE.fieldOf(JOULES_CAPACITY).forGetter(instance0 -> instance0.maxJoules),
+                                //
+                                Codec.DOUBLE.fieldOf(VOLTAGE).forGetter(instance0 -> instance0.voltage),
+                                //
+                                Codec.DOUBLE.fieldOf(RECEIVE_LIMIT).forGetter(instance0 -> instance0.receiveCap),
+                                //
+                                Codec.DOUBLE.fieldOf(EXTRACT_LIMIT).forGetter(instance0 -> instance0.extractCap),
+                                //
+                                ItemStack.OPTIONAL_CODEC.fieldOf(CURRENT_BATTERY).forGetter(instance0 -> instance0.battery)
+//
+
+                        ).apply(instance, ElectricItemData::new)
+
+
+        );
+
+        public static final StreamCodec<RegistryFriendlyByteBuf, ElectricItemData> STREAM_CODEC = StreamCodec.composite(
+                ByteBufCodecs.DOUBLE, instance0 -> instance0.joulesStored,
+                ByteBufCodecs.DOUBLE, instance0 -> instance0.maxJoules,
+                ByteBufCodecs.DOUBLE, instance0 -> instance0.voltage,
+                ByteBufCodecs.DOUBLE, instance0 -> instance0.receiveCap,
+                ByteBufCodecs.DOUBLE, instance0 -> instance0.extractCap,
+                ItemStack.OPTIONAL_STREAM_CODEC, instance0 -> instance0.battery,
+                ElectricItemData::new
+        );
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj instanceof ElectricItemData data) {
+                return joulesStored == data.joulesStored && maxJoules == data.maxJoules && voltage == data.voltage && receiveCap == data.receiveCap && extractCap == data.extractCap && battery == data.battery;
+            }
+            return false;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(joulesStored, maxJoules, voltage, receiveCap, extractCap, battery);
+        }
+    }
 
 }

@@ -6,7 +6,7 @@ import javax.annotation.Nonnull;
 
 import voltaic.api.gas.utils.IGasTank;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 
 public class GasTank implements IGasTank, IGasHandler {
 
@@ -330,7 +330,7 @@ public class GasTank implements IGasTank, IGasHandler {
 
 	}
 
-	public void writeToBuffer(FriendlyByteBuf buffer) {
+	public void writeToBuffer(RegistryFriendlyByteBuf buffer) {
 
 		GasStack.STREAM_CODEC.encode(buffer, getGas());
 
@@ -342,7 +342,7 @@ public class GasTank implements IGasTank, IGasHandler {
 
 	}
 
-	public static GasTank readFromBuffer(FriendlyByteBuf buffer) {
+	public static GasTank readFromBuffer(RegistryFriendlyByteBuf buffer) {
 
 		GasStack stack = GasStack.STREAM_CODEC.decode(buffer);
 

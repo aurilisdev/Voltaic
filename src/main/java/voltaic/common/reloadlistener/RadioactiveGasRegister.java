@@ -9,7 +9,7 @@ import voltaic.api.gas.Gas;
 import voltaic.api.radiation.util.RadioactiveObject;
 import voltaic.common.packet.types.client.PacketSetClientRadioactiveGases;
 import voltaic.common.tags.VoltaicTags;
-import voltaic.registers.VoltaicRegistries;
+import voltaic.registers.VoltaicGases;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.packs.resources.Resource;
@@ -18,12 +18,9 @@ import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.util.profiling.ProfilerFiller;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.OnDatapackSyncEvent;
-import net.minecraftforge.network.PacketDistributor;
-import net.minecraftforge.network.PacketDistributor.PacketTarget;
-import net.minecraftforge.network.simple.SimpleChannel;
-
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.OnDatapackSyncEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.apache.logging.log4j.Logger;
 
 import java.io.*;
@@ -62,7 +59,7 @@ public class RadioactiveGasRegister extends SimplePreparableReloadListener<JsonO
             final String filePath = loc.getPath();
             final String dataPath = filePath.substring(FOLDER.length() + 1, filePath.length() - JSON_EXTENSION_LENGTH);
 
-            final ResourceLocation jsonFile = new ResourceLocation(namespace, dataPath);
+            final ResourceLocation jsonFile = ResourceLocation.fromNamespaceAndPath(namespace, dataPath);
 
             Resource resource = entry.getValue();
             try (final InputStream inputStream = resource.open(); final Reader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));) {
@@ -92,17 +89,17 @@ public class RadioactiveGasRegister extends SimplePreparableReloadListener<JsonO
         json.entrySet().forEach(set -> {
 
             String key = set.getKey();
-            RadioactiveObject value = RadioactiveObject.CODEC.decode(JsonOps.INSTANCE, set.getValue()).result().get().getFirst();
+            RadioactiveObject value = RadioactiveObject.CODEC.decode(JsonOps.INSTANCE, set.getValue()).getOrThrow().getFirst();
 
             if (key.contains("#")) {
 
                 key = key.substring(1);
 
-                tags.put(VoltaicTags.Gases.create(new ResourceLocation(key)), value);
+                tags.put(VoltaicTags.Gases.create(ResourceLocation.parse(key)), value);
 
             } else {
 
-                radioactiveGasMap.put(VoltaicRegistries.gasRegistry().getValue(new ResourceLocation(key)), value);
+                radioactiveGasMap.put(VoltaicGases.GAS_REGISTRY.get(ResourceLocation.parse(key)), value);
 
 
             }
@@ -114,9 +111,9 @@ public class RadioactiveGasRegister extends SimplePreparableReloadListener<JsonO
     public void generateTagValues() {
 
         tags.forEach((tag, value) -> {
-            VoltaicRegistries.gasRegistry().tags().getTag(tag).forEach(fluid -> {
+            VoltaicGases.GAS_REGISTRY.getTag(tag).get().forEach(fluid -> {
 
-                radioactiveGasMap.put(fluid, value);
+                radioactiveGasMap.put(fluid.value(), value);
 
             });
         });
@@ -124,18 +121,21 @@ public class RadioactiveGasRegister extends SimplePreparableReloadListener<JsonO
         tags.clear();
     }
 
-    public RadioactiveGasRegister subscribeAsSyncable(final SimpleChannel channel) {
-    	MinecraftForge.EVENT_BUS.addListener(getDatapackSyncListener(channel));
+    public RadioactiveGasRegister subscribeAsSyncable() {
+        NeoForge.EVENT_BUS.addListener(getDatapackSyncListener());
         return this;
     }
 
-    private Consumer<OnDatapackSyncEvent> getDatapackSyncListener(final SimpleChannel channel) {
+    private Consumer<OnDatapackSyncEvent> getDatapackSyncListener() {
         return event -> {
             generateTagValues();
             ServerPlayer player = event.getPlayer();
             PacketSetClientRadioactiveGases packet = new PacketSetClientRadioactiveGases(radioactiveGasMap);
-            PacketTarget target = player == null ? PacketDistributor.ALL.noArg() : PacketDistributor.PLAYER.with(() -> player);
-			channel.send(target, packet);
+            if (player == null) {
+                PacketDistributor.sendToAllPlayers(packet);
+            } else {
+                PacketDistributor.sendToPlayer(player, packet);
+            }
         };
     }
 

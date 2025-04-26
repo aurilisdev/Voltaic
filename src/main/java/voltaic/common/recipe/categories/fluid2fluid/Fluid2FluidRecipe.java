@@ -4,8 +4,6 @@ import java.util.List;
 
 import com.mojang.datafixers.util.Pair;
 
-import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.fluids.FluidStack;
 import voltaic.common.recipe.recipeutils.AbstractMaterialRecipe;
 import voltaic.common.recipe.recipeutils.FluidIngredient;
 import voltaic.common.recipe.recipeutils.ProbableFluid;
@@ -14,13 +12,14 @@ import voltaic.common.recipe.recipeutils.ProbableItem;
 import voltaic.prefab.tile.components.IComponentType;
 import voltaic.prefab.tile.components.type.ComponentFluidHandlerMulti;
 import voltaic.prefab.tile.components.type.ComponentProcessor;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 public abstract class Fluid2FluidRecipe extends AbstractMaterialRecipe {
 
     private List<FluidIngredient> inputFluidIngredients;
     private FluidStack outputFluidStack;
 
-    public Fluid2FluidRecipe(ResourceLocation recipeGroup, List<FluidIngredient> inputFluids, FluidStack outputFluid, double experience, int ticks, double usagePerTick, List<ProbableItem> itemBiproducts, List<ProbableFluid> fluidBiproducts, List<ProbableGas> gasBiproducts) {
+    public Fluid2FluidRecipe(String recipeGroup, List<FluidIngredient> inputFluids, FluidStack outputFluid, double experience, int ticks, double usagePerTick, List<ProbableItem> itemBiproducts, List<ProbableFluid> fluidBiproducts, List<ProbableGas> gasBiproducts) {
         super(recipeGroup, experience, ticks, usagePerTick, itemBiproducts, fluidBiproducts, gasBiproducts);
         inputFluidIngredients = inputFluids;
         outputFluidStack = outputFluid;
@@ -48,7 +47,7 @@ public abstract class Fluid2FluidRecipe extends AbstractMaterialRecipe {
 
     public interface Factory<T extends Fluid2FluidRecipe> {
 
-        T create(ResourceLocation recipeGroup, List<FluidIngredient> inputFluids, FluidStack outputFluid, double experience, int ticks, double usagePerTick, List<ProbableItem> itemBiproducts, List<ProbableFluid> fluidBiproducts, List<ProbableGas> gasBiproducts);
+        T create(String recipeGroup, List<FluidIngredient> inputFluids, FluidStack outputFluid, double experience, int ticks, double usagePerTick, List<ProbableItem> itemBiproducts, List<ProbableFluid> fluidBiproducts, List<ProbableGas> gasBiproducts);
 
     }
 

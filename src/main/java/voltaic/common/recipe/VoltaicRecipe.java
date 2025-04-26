@@ -19,19 +19,19 @@ import voltaic.common.recipe.recipeutils.ProbableGas;
 import voltaic.common.recipe.recipeutils.ProbableItem;
 import voltaic.prefab.tile.components.type.ComponentProcessor;
 import net.minecraft.core.NonNullList;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.RecipeInput;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.templates.FluidTank;
-import net.minecraftforge.items.wrapper.RecipeWrapper;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
 
-public abstract class VoltaicRecipe implements Recipe<RecipeWrapper> {
+public abstract class VoltaicRecipe implements Recipe<VoltaicRecipe>, RecipeInput {
 
-    private final ResourceLocation group;
+    private final String group;
 
     private final double xp;
     private final int ticks;
@@ -48,7 +48,7 @@ public abstract class VoltaicRecipe implements Recipe<RecipeWrapper> {
     @Nullable
     private List<Integer> gasArrangement;
 
-    public VoltaicRecipe(ResourceLocation recipeGroup, double experience, int ticks, double usagePerTick, List<ProbableItem> itemBiproducts, List<ProbableFluid> fluidBiproducts, List<ProbableGas> gasBiproducts) {
+    public VoltaicRecipe(String recipeGroup, double experience, int ticks, double usagePerTick, List<ProbableItem> itemBiproducts, List<ProbableFluid> fluidBiproducts, List<ProbableGas> gasBiproducts) {
         group = recipeGroup;
         xp = experience;
         this.ticks = ticks;
@@ -62,9 +62,8 @@ public abstract class VoltaicRecipe implements Recipe<RecipeWrapper> {
      * NEVER USE THIS METHOD!
      */
     @Override
-    public boolean matches(RecipeWrapper pContainer, Level pLevel) {
-    	// TODO Auto-generated method stub
-    	return false;
+    public boolean matches(VoltaicRecipe recipe, Level world) {
+        return false;
     }
 
     @Override
@@ -78,8 +77,8 @@ public abstract class VoltaicRecipe implements Recipe<RecipeWrapper> {
     }
 
     @Override
-    public ResourceLocation getId() {
-    	return group;
+    public String getGroup() {
+        return group;
     }
 
     public boolean hasItemBiproducts() {
@@ -181,15 +180,15 @@ public abstract class VoltaicRecipe implements Recipe<RecipeWrapper> {
         return gasArrangement;
     }
 
-    public static List<VoltaicRecipe> findRecipesbyType(RecipeType<? extends VoltaicRecipe> typeIn, Level world) {
+    public static List<RecipeHolder<VoltaicRecipe>> findRecipesbyType(RecipeType<? extends VoltaicRecipe> typeIn, Level world) {
         return world != null ? world.getRecipeManager().getAllRecipesFor((RecipeType<VoltaicRecipe>) typeIn) : Collections.emptyList();
     }
 
     @Nullable
-    public static VoltaicRecipe getRecipe(ComponentProcessor pr, List<VoltaicRecipe> cachedRecipes, int index) {
-        for (VoltaicRecipe recipe : cachedRecipes) {
-            if (recipe.matchesRecipe(pr, index)) {
-                return recipe;
+    public static VoltaicRecipe getRecipe(ComponentProcessor pr, List<RecipeHolder<VoltaicRecipe>> cachedRecipes, int index) {
+        for (RecipeHolder<VoltaicRecipe> recipe : cachedRecipes) {
+            if (recipe.value().matchesRecipe(pr, index)) {
+                return recipe.value();
             }
         }
         return null;
@@ -224,7 +223,7 @@ public abstract class VoltaicRecipe implements Recipe<RecipeWrapper> {
             FluidIngredient ing = ingredients.get(i);
             int tankNum = -1;
             for (int j = 0; j < fluidTanks.length; j++) {
-                if (ing.testFluid(fluidTanks[j].getFluid())) {
+                if (ing.test(fluidTanks[j].getFluid())) {
                     tankNum = j;
                     break;
                 }
@@ -262,6 +261,21 @@ public abstract class VoltaicRecipe implements Recipe<RecipeWrapper> {
     }
 
     public abstract boolean matchesRecipe(ComponentProcessor pr, int index);
+
+    @Override
+    public boolean isEmpty() {
+        return false;
+    }
+
+    @Override
+    public ItemStack getItem(int p_346128_) {
+        return ItemStack.EMPTY;
+    }
+
+    @Override
+    public int size() {
+        return 0;
+    }
 
     @Override
     public NonNullList<Ingredient> getIngredients() {

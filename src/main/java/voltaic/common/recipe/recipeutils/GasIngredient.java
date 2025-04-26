@@ -2,6 +2,7 @@ package voltaic.common.recipe.recipeutils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import javax.annotation.Nonnull;
@@ -9,16 +10,20 @@ import javax.annotation.Nullable;
 
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import voltaic.api.codec.StreamCodec;
 import voltaic.api.gas.Gas;
 import voltaic.api.gas.GasStack;
-import voltaic.registers.VoltaicRegistries;
-import net.minecraft.network.FriendlyByteBuf;
+import voltaic.registers.VoltaicIngredients;
+import voltaic.registers.VoltaicGases;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
+import net.neoforged.neoforge.common.crafting.ICustomIngredient;
+import net.neoforged.neoforge.common.crafting.IngredientType;
+import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
 
 /**
  * An extension of the Ingredient class for Gases
@@ -26,14 +31,14 @@ import net.minecraft.world.item.crafting.Ingredient;
  * @author skip999
  *
  */
-public class GasIngredient extends Ingredient {
+public class GasIngredient implements Predicate<GasStack>, ICustomIngredient {
 
-    public static final Codec<GasIngredient> CODEC_DIRECT_GAS = RecordCodecBuilder.create(instance ->
+    public static final MapCodec<GasIngredient> CODEC_DIRECT_GAS = RecordCodecBuilder.mapCodec(instance ->
     //
     instance.group(
 
             //
-            VoltaicRegistries.gasRegistry().getCodec().fieldOf("gas").forGetter(instance0 -> instance0.gas),
+            VoltaicGases.GAS_REGISTRY.byNameCodec().fieldOf("gas").forGetter(instance0 -> instance0.gas),
             //
             Codec.INT.fieldOf("amount").forGetter(instance0 -> instance0.amount),
             //
@@ -47,12 +52,12 @@ public class GasIngredient extends Ingredient {
 
     );
 
-    public static final Codec<GasIngredient> CODEC_TAGGED_GAS = RecordCodecBuilder.create(instance ->
+    public static final MapCodec<GasIngredient> CODEC_TAGGED_GAS = RecordCodecBuilder.mapCodec(instance ->
     //
     instance.group(
 
             //
-            TagKey.codec(VoltaicRegistries.GAS_REGISTRY_KEY).fieldOf("tag").forGetter(instance0 -> instance0.tag),
+            TagKey.codec(VoltaicGases.GAS_REGISTRY_KEY).fieldOf("tag").forGetter(instance0 -> instance0.tag),
             //
             Codec.INT.fieldOf("amount").forGetter(instance0 -> instance0.amount),
             //
@@ -66,7 +71,7 @@ public class GasIngredient extends Ingredient {
 
     );
 
-    public static final Codec<GasIngredient> CODEC = Codec.either(CODEC_TAGGED_GAS, CODEC_DIRECT_GAS).xmap(either -> either.map(tag -> tag, gas -> gas), value -> {
+    public static final MapCodec<GasIngredient> CODEC = NeoForgeExtraCodecs.xor(CODEC_TAGGED_GAS, CODEC_DIRECT_GAS).xmap(either -> either.map(tag -> tag, gas -> gas), value -> {
         //
 
         if (value.tag != null) {
@@ -79,12 +84,12 @@ public class GasIngredient extends Ingredient {
 
     });
 
-    public static final Codec<List<GasIngredient>> LIST_CODEC = CODEC.listOf();
+    public static final Codec<List<GasIngredient>> LIST_CODEC = CODEC.codec().listOf();
 
-    public static final StreamCodec<FriendlyByteBuf, GasIngredient> STREAM_CODEC = new StreamCodec<>() {
+    public static final StreamCodec<RegistryFriendlyByteBuf, GasIngredient> STREAM_CODEC = new StreamCodec<>() {
 
         @Override
-        public void encode(FriendlyByteBuf buf, GasIngredient ing) {
+        public void encode(RegistryFriendlyByteBuf buf, GasIngredient ing) {
             List<GasStack> gasStacks = ing.getMatchingGases();
             buf.writeInt(gasStacks.size());
             for (GasStack stack : gasStacks) {
@@ -93,7 +98,7 @@ public class GasIngredient extends Ingredient {
         }
 
         @Override
-        public GasIngredient decode(FriendlyByteBuf buf) {
+        public GasIngredient decode(RegistryFriendlyByteBuf buf) {
             List<GasStack> stacks = new ArrayList<>();
             int count = buf.readInt();
             for (int i = 0; i < count; i++) {
@@ -103,10 +108,10 @@ public class GasIngredient extends Ingredient {
         }
     };
 
-    public static final StreamCodec<FriendlyByteBuf, List<GasIngredient>> LIST_STREAM_CODEC = new StreamCodec<>() {
+    public static final StreamCodec<RegistryFriendlyByteBuf, List<GasIngredient>> LIST_STREAM_CODEC = new StreamCodec<>() {
 
         @Override
-        public void encode(FriendlyByteBuf buf, List<GasIngredient> ings) {
+        public void encode(RegistryFriendlyByteBuf buf, List<GasIngredient> ings) {
             buf.writeInt(ings.size());
             for (GasIngredient ing : ings) {
                 STREAM_CODEC.encode(buf, ing);
@@ -114,7 +119,7 @@ public class GasIngredient extends Ingredient {
         }
 
         @Override
-        public List<GasIngredient> decode(FriendlyByteBuf buf) {
+        public List<GasIngredient> decode(RegistryFriendlyByteBuf buf) {
             int length = buf.readInt();
             List<GasIngredient> ings = new ArrayList<>();
             for (int i = 0; i < length; i++) {
@@ -140,7 +145,6 @@ public class GasIngredient extends Ingredient {
     }
 
     public GasIngredient(GasStack gasStack) {
-    	super(Stream.empty());
         this.gas = gasStack.getGas();
         this.amount = gasStack.getAmount();
         this.temperature = gasStack.getTemperature();
@@ -148,7 +152,6 @@ public class GasIngredient extends Ingredient {
     }
 
     public GasIngredient(List<GasStack> stacks) {
-    	super(Stream.empty());
         gasStacks = stacks;
         GasStack gas = getGasStack();
         this.gas = gas.getGas();
@@ -158,7 +161,6 @@ public class GasIngredient extends Ingredient {
     }
 
     public GasIngredient(TagKey<Gas> tag, int amount, int temperature, int pressure) {
-    	super(Stream.empty());
         this.tag = tag;
         this.amount = amount;
         this.temperature = temperature;
@@ -171,13 +173,18 @@ public class GasIngredient extends Ingredient {
     }
 
     @Override
-    public ItemStack[] getItems() {
-        return new ItemStack[] {};
+    public Stream<ItemStack> getItems() {
+        return null;
     }
 
     @Override
     public boolean isSimple() {
         return false;
+    }
+
+    @Override
+    public IngredientType<?> getType() {
+        return VoltaicIngredients.GAS_INGREDIENT_TYPE.get();
     }
 
     public boolean testGas(@Nullable GasStack gas, boolean checkTemperature, boolean checkPressure) {
@@ -215,8 +222,8 @@ public class GasIngredient extends Ingredient {
         if (gasStacks == null) {
             gasStacks = new ArrayList<>();
             if (tag != null) {
-                VoltaicRegistries.gasRegistry().tags().getTag(tag).forEach(h -> {
-                    gasStacks.add(new GasStack(h, amount, temperature, pressure));
+                VoltaicGases.GAS_REGISTRY.getTag(tag).get().forEach(h -> {
+                    gasStacks.add(new GasStack(h.value(), amount, temperature, pressure));
                 });
             } else if (gas != null) {
                 gasStacks.add(new GasStack(gas, amount, temperature, pressure));
@@ -242,7 +249,8 @@ public class GasIngredient extends Ingredient {
         return false;
     }
 
-    public boolean testGas(GasStack gasStack) {
+    @Override
+    public boolean test(GasStack gasStack) {
         return testGas(gasStack, true, true);
     }
 }

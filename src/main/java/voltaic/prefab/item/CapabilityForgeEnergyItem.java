@@ -1,7 +1,7 @@
 package voltaic.prefab.item;
 
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.energy.IEnergyStorage;
 import voltaic.api.item.IItemElectric;
 import voltaic.prefab.utilities.object.TransferPack;
 
@@ -47,6 +47,6 @@ public class CapabilityForgeEnergyItem implements IEnergyStorage {
 
     @Override
     public boolean canReceive() {
-        return canExtract;
+        return canRecieve;
     }
 }

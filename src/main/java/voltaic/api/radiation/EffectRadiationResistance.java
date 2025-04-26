@@ -15,10 +15,10 @@ public class EffectRadiationResistance extends MobEffect {
     public EffectRadiationResistance() {
         this(MobEffectCategory.HARMFUL, COLOR.color());
     }
-    
+
     @Override
-    public boolean isDurationEffectTick(int pDuration, int pAmplifier) {
-    	return true;
+    public boolean shouldApplyEffectTickThisTick(int duration, int amplifier) {
+        return true;
     }
 
 }

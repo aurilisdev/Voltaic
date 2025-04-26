@@ -1,12 +1,15 @@
 package voltaic.datagen.server.recipe;
 
-import net.minecraft.data.PackOutput;
 import voltaic.datagen.utils.server.recipe.BaseRecipeProvider;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.data.PackOutput;
+
+import java.util.concurrent.CompletableFuture;
 
 public class VoltaicRecipeProvider extends BaseRecipeProvider {
 
-    public VoltaicRecipeProvider(PackOutput output) {
-        super(output);
+    public VoltaicRecipeProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider) {
+        super(output, lookupProvider);
     }
 
     @Override

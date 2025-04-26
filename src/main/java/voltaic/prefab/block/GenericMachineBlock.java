@@ -4,6 +4,8 @@ import java.util.HashMap;
 
 import javax.annotation.Nullable;
 
+import com.mojang.serialization.MapCodec;
+
 import voltaic.common.block.states.VoltaicBlockStates;
 import voltaic.common.block.voxelshapes.VoxelShapeProvider;
 import net.minecraft.core.BlockPos;
@@ -13,6 +15,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
@@ -31,7 +34,7 @@ public class GenericMachineBlock extends GenericEntityBlockWaterloggable {
     public static HashMap<BlockPos, LivingEntity> IPLAYERSTORABLE_MAP = new HashMap<>();
 
     public GenericMachineBlock(BlockEntitySupplier<BlockEntity> blockEntitySupplier, VoxelShapeProvider provider) {
-        super(Properties.copy(Blocks.IRON_BLOCK).strength(3.5F).sound(SoundType.METAL).noOcclusion().requiresCorrectToolForDrops());
+        super(Blocks.IRON_BLOCK.properties().strength(3.5F).sound(SoundType.METAL).noOcclusion().requiresCorrectToolForDrops());
         registerDefaultState(stateDefinition.any().setValue(VoltaicBlockStates.FACING, Direction.NORTH));
         this.blockEntitySupplier = blockEntitySupplier;
         this.shapeProvider = provider;
@@ -85,4 +88,8 @@ public class GenericMachineBlock extends GenericEntityBlockWaterloggable {
         return false;
     }
 
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        throw new UnsupportedOperationException("Need to implement CODEC");
+    }
 }

@@ -5,67 +5,17 @@ import voltaic.api.radiation.util.IHazmatSuit;
 import voltaic.api.radiation.util.IRadiationRecipient;
 import voltaic.api.radiation.util.RadioactiveObject;
 import voltaic.common.settings.VoltaicConstants;
-import voltaic.registers.VoltaicCapabilities;
+import voltaic.registers.VoltaicAttachmentTypes;
 import voltaic.registers.VoltaicEffects;
-
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ICapabilitySerializable;
-import net.minecraftforge.common.util.LazyOptional;
 
-public class CapabilityRadiationRecipient implements IRadiationRecipient, ICapabilitySerializable<CompoundTag> {
+public class CapabilityRadiationRecipient implements IRadiationRecipient {
 
     private static final EquipmentSlot[] ARMOR_SLOTS = {EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET};
-    
-    private final LazyOptional<IRadiationRecipient> lazyOptional = LazyOptional.of(() -> this);
-    
-    private double recieved = 0;
-    private double recievedStrength = 0;
-    
-    private double prevRecieved = 0;
-    private double prevRecievedStrength = 0;
-    
-    public CapabilityRadiationRecipient() {
-    	
-    }
-    
-    @Override
-	public <T> @NotNull LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-		if(cap == null || cap != VoltaicCapabilities.CAPABILITY_RADIATIONRECIPIENT) {
-			return LazyOptional.empty();
-		}
-		return lazyOptional.cast();
-	}
-
-	@Override
-	public CompoundTag serializeNBT() {
-		CompoundTag tag = new CompoundTag();
-		tag.putDouble("recieved", recieved);
-		tag.putDouble("recievedstrength", recievedStrength);
-		tag.putDouble("prevrecieved", prevRecieved);
-		tag.putDouble("prevrecievedstrength", prevRecievedStrength);
-		return tag;
-	}
-
-	@Override
-	public void deserializeNBT(CompoundTag nbt) {
-		if(VoltaicCapabilities.CAPABILITY_RADIATIONRECIPIENT == null) {
-			return;
-		}
-		recieved = nbt.getDouble("recieved");
-		recievedStrength = nbt.getDouble("recievedstrength");
-		prevRecieved = nbt.getDouble("prevrecieved");
-		prevRecievedStrength = nbt.getDouble("prevrecievedstrength");
-	}
 
     @Override
     public void recieveRadiation(LivingEntity entity, double rads, double strength) {
@@ -75,15 +25,15 @@ public class CapabilityRadiationRecipient implements IRadiationRecipient, ICapab
         }
 
         if (entity instanceof Player player && (player.isCreative() || player.isSpectator())) {
-            recieved += rads;
-            recievedStrength += strength;
+            player.setData(VoltaicAttachmentTypes.RECIEVED_RADIATIONAMOUNT, player.getData(VoltaicAttachmentTypes.RECIEVED_RADIATIONAMOUNT) + rads);
+            player.setData(VoltaicAttachmentTypes.RECIEVED_RADIATIONSTRENGTH, player.getData(VoltaicAttachmentTypes.RECIEVED_RADIATIONSTRENGTH) + strength);
             return;
         }
 
-        if(entity.hasEffect(VoltaicEffects.RADIATION_RESISTANCE.get())) {
+        if(entity.hasEffect(VoltaicEffects.RADIATION_RESISTANCE)) {
             if(rads <= VoltaicConstants.IODINE_RESISTANCE_THRESHHOLD) {
-            	recieved += rads;
-                recievedStrength += strength;
+                entity.setData(VoltaicAttachmentTypes.RECIEVED_RADIATIONAMOUNT, entity.getData(VoltaicAttachmentTypes.RECIEVED_RADIATIONAMOUNT) + rads);
+                entity.setData(VoltaicAttachmentTypes.RECIEVED_RADIATIONSTRENGTH, entity.getData(VoltaicAttachmentTypes.RECIEVED_RADIATIONSTRENGTH) + strength);
                 return;
             } else {
                 rads = rads * VoltaicConstants.IODINE_RAD_REDUCTION;
@@ -108,7 +58,7 @@ public class CapabilityRadiationRecipient implements IRadiationRecipient, ICapab
                     continue;
                 }
 
-                stack.hurtAndBreak((int) Math.ceil(damage), entity, item -> {});
+                stack.hurtAndBreak((int) Math.ceil(damage), entity, slot);
 
             }
 
@@ -120,39 +70,39 @@ public class CapabilityRadiationRecipient implements IRadiationRecipient, ICapab
             int amplitude = getAmplitudeFromRadiation(rads, strength);
             int time = getDurationFromRadiation(rads);
 
-            if (entity.hasEffect(VoltaicEffects.RADIATION.get())) {
+            if (entity.hasEffect(VoltaicEffects.RADIATION)) {
 
-                MobEffectInstance instance = entity.getEffect(VoltaicEffects.RADIATION.get());
+                MobEffectInstance instance = entity.getEffect(VoltaicEffects.RADIATION);
 
                 if (instance.getAmplifier() > amplitude) {
-                    entity.addEffect(new MobEffectInstance(VoltaicEffects.RADIATION.get(), time + instance.getDuration(), instance.getAmplifier(), false, true));
+                    entity.addEffect(new MobEffectInstance(VoltaicEffects.RADIATION, time + instance.getDuration(), instance.getAmplifier(), false, true));
                 } else {
-                    entity.addEffect(new MobEffectInstance(VoltaicEffects.RADIATION.get(), time + instance.getDuration(), amplitude, false, true));
+                    entity.addEffect(new MobEffectInstance(VoltaicEffects.RADIATION, time + instance.getDuration(), amplitude, false, true));
                 }
 
             } else {
-                entity.addEffect(new MobEffectInstance(VoltaicEffects.RADIATION.get(), time, amplitude, false, true));
+                entity.addEffect(new MobEffectInstance(VoltaicEffects.RADIATION, time, amplitude, false, true));
             }
         }
 
-        recieved += rads;
-        recievedStrength += strength;
+        entity.setData(VoltaicAttachmentTypes.RECIEVED_RADIATIONAMOUNT, entity.getData(VoltaicAttachmentTypes.RECIEVED_RADIATIONAMOUNT) + rads);
+        entity.setData(VoltaicAttachmentTypes.RECIEVED_RADIATIONSTRENGTH, entity.getData(VoltaicAttachmentTypes.RECIEVED_RADIATIONSTRENGTH) + strength);
 
     }
 
     @Override
     public RadioactiveObject getRecievedRadiation(LivingEntity entity) {
-        return new RadioactiveObject(recieved, recievedStrength);
+        return new RadioactiveObject(entity.getData(VoltaicAttachmentTypes.OLD_RECIEVED_RADIATIONSTRENGTH), entity.getData(VoltaicAttachmentTypes.OLD_RECIEVED_RADIATIONAMOUNT));
     }
 
     @Override
     public void tick(LivingEntity entity) {
 
-        prevRecieved = recieved;
-        prevRecievedStrength = recievedStrength;
+        entity.setData(VoltaicAttachmentTypes.OLD_RECIEVED_RADIATIONAMOUNT, entity.getData(VoltaicAttachmentTypes.RECIEVED_RADIATIONAMOUNT));
+        entity.setData(VoltaicAttachmentTypes.OLD_RECIEVED_RADIATIONSTRENGTH, entity.getData(VoltaicAttachmentTypes.RECIEVED_RADIATIONSTRENGTH));
 
-        recieved = 0;
-        recievedStrength = 0;
+        entity.setData(VoltaicAttachmentTypes.RECIEVED_RADIATIONAMOUNT, 0.0);
+        entity.setData(VoltaicAttachmentTypes.RECIEVED_RADIATIONSTRENGTH, 0.0);
 
     }
 

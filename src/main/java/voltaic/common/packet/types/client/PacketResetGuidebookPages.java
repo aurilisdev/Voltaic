@@ -1,30 +1,25 @@
 package voltaic.common.packet.types.client;
 
-import java.util.function.Supplier;
-
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientLevel;
+import voltaic.common.packet.NetworkHandler;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent.Context;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-public class PacketResetGuidebookPages {
+public class PacketResetGuidebookPages implements CustomPacketPayload {
 
-	public static void handle(PacketResetGuidebookPages message, Supplier<Context> context) {
-		Context ctx = context.get();
-		ctx.enqueueWork(() -> {
-			Minecraft minecraft = Minecraft.getInstance();
-			ClientLevel world = minecraft.level;
-			if (world != null && minecraft.player != null) {
-				ClientBarrierMethods.handlerSetGuidebookInitFlag();
-			}
-		});
-		ctx.setPacketHandled(true);
-	}
+    public static final PacketResetGuidebookPages PACKET = new PacketResetGuidebookPages();
+    public static final ResourceLocation PACKET_RESETGUIDEBOOKPAGES_PACKETID = NetworkHandler.id("packetresetguidebookpages");
+    public static final Type<PacketResetGuidebookPages> TYPE = new Type<>(PACKET_RESETGUIDEBOOKPAGES_PACKETID);
+    public static final StreamCodec<FriendlyByteBuf, PacketResetGuidebookPages> CODEC = StreamCodec.unit(PACKET);
 
-	public static void encode(PacketResetGuidebookPages message, FriendlyByteBuf buf) {
-	}
+    public static void handle(PacketResetGuidebookPages message, IPayloadContext context) {
+        ClientBarrierMethods.handlerSetGuidebookInitFlag();
+    }
 
-	public static PacketResetGuidebookPages decode(FriendlyByteBuf buf) {
-		return new PacketResetGuidebookPages();
-	}
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
+    }
 }

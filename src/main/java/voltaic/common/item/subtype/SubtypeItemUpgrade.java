@@ -11,18 +11,17 @@ import voltaic.api.ISubtype;
 import voltaic.prefab.tile.GenericTile;
 import voltaic.prefab.tile.components.IComponentType;
 import voltaic.prefab.tile.components.type.ComponentInventory;
-import voltaic.prefab.utilities.CapabilityUtils;
 import voltaic.prefab.utilities.ItemUtils;
 import voltaic.prefab.utilities.NBTUtils;
 import voltaic.prefab.utilities.VoltaicTextUtils;
+import voltaic.registers.VoltaicDataComponentTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.items.IItemHandler;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.items.IItemHandler;
 
 public enum SubtypeItemUpgrade implements ISubtype {
 
@@ -55,22 +54,21 @@ public enum SubtypeItemUpgrade implements ISubtype {
             return;
         }
 
-        CompoundTag tag = upgrade.getOrCreateTag();
-		int tickNumber = tag.getInt(NBTUtils.TIMER);
+        int tickNumber = upgrade.getOrDefault(VoltaicDataComponentTypes.TIMER, 0);
 
-		if (tickNumber < 4) {
-			tag.putInt(NBTUtils.TIMER, tag.getInt(NBTUtils.TIMER) + 1);
-			return;
-		}
+        if (tickNumber < 4) {
+            upgrade.set(VoltaicDataComponentTypes.TIMER, tickNumber + 1);
+            return;
+        }
 
-		tag.putInt(NBTUtils.TIMER, 0);
+        upgrade.set(VoltaicDataComponentTypes.TIMER, 0);
         List<Direction> dirs = NBTUtils.readDirectionList(upgrade);
 
         if (dirs.size() == 0) {
             return;
         }
 
-        if (tag.getBoolean(NBTUtils.SMART)) {
+        if (upgrade.getOrDefault(VoltaicDataComponentTypes.SMART, false)) {
 
             int index = 0;
             Direction dir = Direction.DOWN;
@@ -95,14 +93,14 @@ public enum SubtypeItemUpgrade implements ISubtype {
             return;
         }
 
-        CompoundTag tag = upgrade.getOrCreateTag();
-		int tickNumber = tag.getInt(NBTUtils.TIMER);
-		if (tickNumber < 4) {
-			tag.putInt(NBTUtils.TIMER, tag.getInt(NBTUtils.TIMER) + 1);
-			return;
-		}
+        int tickNumber = upgrade.getOrDefault(VoltaicDataComponentTypes.TIMER, 0);
 
-		tag.putInt(NBTUtils.TIMER, 0);
+        if (tickNumber < 4) {
+            upgrade.set(VoltaicDataComponentTypes.TIMER, tickNumber + 1);
+            return;
+        }
+
+        upgrade.set(VoltaicDataComponentTypes.TIMER, 0);
 
         List<Direction> dirs = NBTUtils.readDirectionList(upgrade);
 
@@ -110,7 +108,7 @@ public enum SubtypeItemUpgrade implements ISubtype {
             return;
         }
 
-        if (tag.getBoolean(NBTUtils.SMART)) {
+        if (upgrade.getOrDefault(VoltaicDataComponentTypes.SMART, false)) {
 
             int size = 0;
             Direction dir = Direction.DOWN;
@@ -198,9 +196,9 @@ public enum SubtypeItemUpgrade implements ISubtype {
             return;
         }
 
-        IItemHandler item = entity.getCapability(ForgeCapabilities.ITEM_HANDLER, dir.getOpposite()).orElse(CapabilityUtils.EMPTY_ITEM_HANDLER);
+        IItemHandler item = entity.getLevel().getCapability(Capabilities.ItemHandler.BLOCK, entity.getBlockPos(), entity.getBlockState(), entity, dir.getOpposite());
 
-        if (item == CapabilityUtils.EMPTY_ITEM_HANDLER) {
+        if (item == null) {
             return;
         }
 
@@ -214,9 +212,9 @@ public enum SubtypeItemUpgrade implements ISubtype {
             return;
         }
 
-        IItemHandler item = entity.getCapability(ForgeCapabilities.ITEM_HANDLER, dir.getOpposite()).orElse(CapabilityUtils.EMPTY_ITEM_HANDLER);
+        IItemHandler item = entity.getLevel().getCapability(Capabilities.ItemHandler.BLOCK, entity.getBlockPos(), entity.getBlockState(), entity, dir.getOpposite());
 
-        if (item == CapabilityUtils.EMPTY_ITEM_HANDLER) {
+        if (item == null) {
             return;
         }
 
@@ -253,9 +251,9 @@ public enum SubtypeItemUpgrade implements ISubtype {
         if (entity == null) {
             return;
         }
-        IItemHandler item = entity.getCapability(ForgeCapabilities.ITEM_HANDLER, dir.getOpposite()).orElse(CapabilityUtils.EMPTY_ITEM_HANDLER);
+        IItemHandler item = entity.getLevel().getCapability(Capabilities.ItemHandler.BLOCK, entity.getBlockPos(), entity.getBlockState(), entity, dir.getOpposite());
 
-        if (item == CapabilityUtils.EMPTY_ITEM_HANDLER) {
+        if (item == null) {
             return;
         }
         addItemToHandler(item, inv, index);
@@ -265,9 +263,9 @@ public enum SubtypeItemUpgrade implements ISubtype {
         if (entity == null) {
             return;
         }
-        IItemHandler item = entity.getCapability(ForgeCapabilities.ITEM_HANDLER, dir.getOpposite()).orElse(CapabilityUtils.EMPTY_ITEM_HANDLER);
+        IItemHandler item = entity.getLevel().getCapability(Capabilities.ItemHandler.BLOCK, entity.getBlockPos(), entity.getBlockState(), entity, dir.getOpposite());
 
-        if (item == CapabilityUtils.EMPTY_ITEM_HANDLER) {
+        if (item == null) {
             return;
         }
         for (int i = 0; i < inv.outputs(); i++) {

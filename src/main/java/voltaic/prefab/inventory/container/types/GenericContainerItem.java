@@ -20,6 +20,7 @@ public abstract class GenericContainerItem extends GenericContainerSlotData<Capa
      */
     public GenericContainerItem(MenuType<?> type, int id, Inventory playerinv, CapabilityItemStackHandler handler, ContainerData data) {
         super(type, id, playerinv, handler, data);
+        getContainer().setLevelAccess(playerinv.player.level(), playerinv.player.getOnPos());
     }
 
     @Override

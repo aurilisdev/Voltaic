@@ -1,6 +1,7 @@
 package voltaic.api.gas;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Predicate;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -9,15 +10,16 @@ import org.jetbrains.annotations.Nullable;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import voltaic.api.codec.StreamCodec;
 import voltaic.registers.VoltaicGases;
-import voltaic.registers.VoltaicRegistries;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
+import net.minecraft.util.ExtraCodecs;
 
 /**
  * An implementation of a FluidStack-like object for gases
@@ -26,14 +28,15 @@ import net.minecraft.tags.TagKey;
  */
 public class GasStack {
 
-    public static final Codec<GasStack> CODEC = RecordCodecBuilder.create(instance ->
+    private static final Codec<GasStack> INTERNAL_CODEC = RecordCodecBuilder.create(instance ->
                     //
                     instance.group(
                             //
-                            VoltaicRegistries.gasRegistry().getCodec().fieldOf("gas").forGetter(GasStack::getGas),
+                            VoltaicGases.GAS_REGISTRY.holderByNameCodec().fieldOf("gas").forGetter(GasStack::getGasHolder),
                             //
                             Codec.INT.fieldOf("amount").forGetter(instance0 -> instance0.amount),
                             //
+
                             Codec.INT.fieldOf("temp").forGetter(instance0 -> instance0.temperature),
                             //
                             Codec.INT.fieldOf("pressure").forGetter(instance0 -> instance0.pressure)
@@ -42,32 +45,33 @@ public class GasStack {
 //        
     );
 
-    public static final StreamCodec<FriendlyByteBuf, GasStack> STREAM_CODEC = new StreamCodec<>() {
+    public static final Codec<GasStack> CODEC = ExtraCodecs.optionalEmptyMap(INTERNAL_CODEC)
+            .xmap(optional -> optional.orElse(GasStack.EMPTY), stack -> stack.isEmpty() ? Optional.empty() : Optional.of(stack));
+
+    public static final StreamCodec<RegistryFriendlyByteBuf, GasStack> STREAM_CODEC = new StreamCodec<>() {
+
+        private static final StreamCodec<RegistryFriendlyByteBuf, Holder<Gas>> GAS_STREAM_CODEC = ByteBufCodecs.holderRegistry(VoltaicGases.GAS_REGISTRY_KEY);
 
         @Override
-        public GasStack decode(FriendlyByteBuf buffer) {
+        public GasStack decode(RegistryFriendlyByteBuf buffer) {
             int amt = buffer.readInt();
 
             if (amt <= 0) {
                 return GasStack.EMPTY;
             }
 
-            Gas gas = buffer.readRegistryId();
-    		int amount = buffer.readInt();
-    		int temperature = buffer.readInt();
-    		int pressure = buffer.readInt();
-    		return new GasStack(gas, amount, temperature, pressure);
+            return new GasStack(GAS_STREAM_CODEC.decode(buffer), amt, buffer.readInt(), buffer.readInt());
         }
 
         @Override
-        public void encode(FriendlyByteBuf buffer, GasStack value) {
+        public void encode(RegistryFriendlyByteBuf buffer, GasStack value) {
             if (value.isEmpty()) {
                 buffer.writeInt(0);
             } else {
-            	buffer.writeRegistryId(VoltaicRegistries.gasRegistry(), value.gas);
-        		buffer.writeInt(value.amount);
-        		buffer.writeInt(value.temperature);
-        		buffer.writeInt(value.pressure);
+                buffer.writeInt(value.getAmount());
+                GAS_STREAM_CODEC.encode(buffer, value.getGasHolder());
+                buffer.writeInt(value.getTemperature());
+                buffer.writeInt(value.getPressure());
             }
         }
     };
@@ -180,7 +184,7 @@ public class GasStack {
     }
 
     public boolean isEmpty() {
-        return this == EMPTY || this.gas == VoltaicGases.EMPTY.get() || this.amount <= 0;
+        return this == EMPTY || this.gas == VoltaicGases.EMPTY.value() || this.amount <= 0;
     }
 
     public boolean is(TagKey<Gas> tag) {
@@ -261,7 +265,7 @@ public class GasStack {
         if (isEmpty()) {
             tag.putInt("amount", 0);
         } else {
-            tag.putString("name", VoltaicRegistries.gasRegistry().getKey(getGas()).toString());
+            tag.putString("name", VoltaicGases.GAS_REGISTRY.getKey(getGas()).toString());
             tag.putInt("amount", amount);
             tag.putInt("temperature", temperature);
             tag.putInt("pressure", pressure);
@@ -275,7 +279,7 @@ public class GasStack {
         if (amount <= 0) {
             return GasStack.EMPTY;
         } else {
-            Gas gas = VoltaicRegistries.gasRegistry().getValue(new ResourceLocation(tag.getString("name")));
+            Gas gas = VoltaicGases.GAS_REGISTRY.get(ResourceLocation.parse(tag.getString("name")));
             int temperature = tag.getInt("temperature");
             int pressure = tag.getInt("pressure");
             return new GasStack(gas, amount, temperature, pressure);

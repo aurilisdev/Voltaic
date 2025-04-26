@@ -19,10 +19,8 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 
 /**
  * Extension of PropertyFluidTank implementing directional I/O and the Component system
@@ -130,17 +128,17 @@ public class ComponentFluidHandlerSimple extends PropertyFluidTank implements IC
             defineOptionals(newState.getValue(VoltaicBlockStates.FACING));
         }
     }
-    
+
     @Override
-    public <T> LazyOptional<T> getCapability(Capability<T> capability, Direction side, CapabilityInputType inputType) {
-    	if (!isSided) {
-            return LazyOptional.of(() -> this).cast();
+    public @org.jetbrains.annotations.Nullable IFluidHandler getCapability(@org.jetbrains.annotations.Nullable Direction side, CapabilityInputType type) {
+        if (!isSided) {
+            return this;
         }
         if (side == null) {
-            return LazyOptional.empty();
+            return null;
         }
 
-        return LazyOptional.of(() -> sidedOptionals[side.ordinal()]).cast();
+        return sidedOptionals[side.ordinal()];
     }
 
     @Override
@@ -152,7 +150,7 @@ public class ComponentFluidHandlerSimple extends PropertyFluidTank implements IC
 
     private void defineOptionals(Direction facing) {
 
-        holder.invalidateCaps();
+        holder.getLevel().invalidateCapabilities(holder.getBlockPos());
 
         sidedOptionals = new IFluidHandler[6];
 

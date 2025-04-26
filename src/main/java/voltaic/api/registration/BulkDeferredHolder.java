@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.function.Function;
 
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredHolder;
 
 /**
  * A wrapper class intended to house much of the functionality of the Subtype HashMaps
@@ -15,13 +15,13 @@ import net.minecraftforge.registries.RegistryObject;
  *
  * @Author skip999
  */
-public class BulkRegistryObject<A, SUBTYPE> {
+public class BulkDeferredHolder<T, A extends T, SUBTYPE> {
 
-    private final HashMap<SUBTYPE, RegistryObject<A>> subtypeMap = new HashMap<>();
+    private final HashMap<SUBTYPE, DeferredHolder<T, A>> subtypeMap = new HashMap<>();
     private final List<A> extractedValues = new ArrayList<>();
     private A[] extractedValuesArray;
 
-    public BulkRegistryObject(SUBTYPE[] values, Function<SUBTYPE, RegistryObject<A>> factory) {
+    public BulkDeferredHolder(SUBTYPE[] values, Function<SUBTYPE, DeferredHolder<T, A>> factory) {
         subtypeMap.clear();
         extractedValues.clear();
         for(SUBTYPE subtype : values){
@@ -33,7 +33,7 @@ public class BulkRegistryObject<A, SUBTYPE> {
         return subtypeMap.get(key).get();
     }
 
-    public RegistryObject<A> getHolder(SUBTYPE key){
+    public DeferredHolder<T, A> getHolder(SUBTYPE key){
         return subtypeMap.get(key);
     }
 
@@ -67,7 +67,7 @@ public class BulkRegistryObject<A, SUBTYPE> {
         return values;
     }
 
-    public List<RegistryObject<A>> getAllHolders() {
+    public List<DeferredHolder<T, A>> getAllHolders() {
         return subtypeMap.values().stream().toList();
     }
 

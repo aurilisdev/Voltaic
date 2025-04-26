@@ -21,14 +21,13 @@ import voltaic.prefab.utilities.BlockEntityUtils;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
 
 /**
  * This class is separate from ComponentFluidHandlerSimple as it has segregated input and output tanks. These tanks are
@@ -230,13 +229,13 @@ public class ComponentFluidHandlerMulti implements IComponentFluidHandler {
     public IComponentType getType() {
         return IComponentType.FluidHandler;
     }
-    
+
     @Override
-    public <T> LazyOptional<T> getCapability(Capability<T> capability, Direction side, CapabilityInputType inputType) {
-    	if (side == null || !isSided) {
-            return LazyOptional.empty();
+    public IFluidHandler getCapability(@Nullable Direction side, CapabilityInputType inputType) {
+        if (side == null || !isSided) {
+            return null;
         }
-        return LazyOptional.of(() -> sidedOptionals[side.ordinal()]).cast();
+        return sidedOptionals[side.ordinal()];
     }
 
     @Override
@@ -255,7 +254,7 @@ public class ComponentFluidHandlerMulti implements IComponentFluidHandler {
 
     private void defineOptionals(Direction facing) {
 
-        holder.invalidateCaps();
+        holder.getLevel().invalidateCapabilities(holder.getBlockPos());
 
         sidedOptionals = new IFluidHandler[6];
         
@@ -298,7 +297,7 @@ public class ComponentFluidHandlerMulti implements IComponentFluidHandler {
         IComponentFluidHandler.super.onLoad();
 
         if (recipeType != null) {
-            List<VoltaicRecipe> recipes = VoltaicRecipe.findRecipesbyType(recipeType, holder.getLevel());
+            List<RecipeHolder<VoltaicRecipe>> recipes = VoltaicRecipe.findRecipesbyType(recipeType, holder.getLevel());
 
             List<Fluid> inputFluidHolder = new ArrayList<>();
             List<Fluid> outputFluidHohlder = new ArrayList<>();
@@ -306,8 +305,8 @@ public class ComponentFluidHandlerMulti implements IComponentFluidHandler {
             int maxFluidOutput = 0;
             int maxFluidBiproduct = 0;
 
-            for (VoltaicRecipe iRecipe : recipes) {
-                AbstractMaterialRecipe recipe = (AbstractMaterialRecipe) iRecipe;
+            for (RecipeHolder<VoltaicRecipe> iRecipe : recipes) {
+                AbstractMaterialRecipe recipe = (AbstractMaterialRecipe) iRecipe.value();
                 if (inputTanks != null) {
                     for (FluidIngredient ing : recipe.getFluidIngredients()) {
                         ing.getMatchingFluids().forEach(h -> inputFluidHolder.add(h.getFluid()));
@@ -457,7 +456,7 @@ public class ComponentFluidHandlerMulti implements IComponentFluidHandler {
         @Override
         public int fill(FluidStack resource, FluidAction action) {
             for (PropertyFluidTank tank : tanks) {
-                if (tank.getFluid().isFluidEqual(resource)) {
+                if (tank.getFluid().is(resource.getFluid())) {
                     return tank.fill(resource, action);
                 }
             }
@@ -523,7 +522,7 @@ public class ComponentFluidHandlerMulti implements IComponentFluidHandler {
         @Override
         public @NotNull FluidStack drain(FluidStack resource, FluidAction action) {
             for (PropertyFluidTank tank : tanks) {
-                if (tank.getFluid().isFluidEqual(resource)) {
+                if (tank.getFluid().is(resource.getFluid())) {
                     return tank.drain(resource, action);
                 }
             }
@@ -553,24 +552,26 @@ public class ComponentFluidHandlerMulti implements IComponentFluidHandler {
         public ComponentFluidHandlerMultiBiDirec(GenericTile holder) {
             super(holder);
         }
-        
+
         @Override
-        public <T> LazyOptional<T> getCapability(Capability<T> capability, Direction side, CapabilityInputType inputType) {
-        	if (side == null || (inputDirections == null && outputDirections == null)) {
-                return LazyOptional.empty();
+        @Nullable
+        public IFluidHandler getCapability(Direction side, CapabilityInputType inputType) {
+            if (side == null || (inputDirections == null && outputDirections == null)) {
+                return null;
             }
 
             if (inputType == CapabilityInputType.INPUT) {
-                return LazyOptional.of(() -> inputSidedOptionals[side.ordinal()]).cast();
+                return inputSidedOptionals[side.ordinal()];
             } else {
-                return LazyOptional.of(() -> outputSidedOptionals[side.ordinal()]).cast();
+                return outputSidedOptionals[side.ordinal()];
             }
+
         }
 
         @Override
         public void refresh() {
 
-            super.holder.invalidateCaps();
+            super.holder.getLevel().invalidateCapabilities(super.holder.getBlockPos());
 
             inputSidedOptionals = new IFluidHandler[6];
             outputSidedOptionals = new IFluidHandler[6];

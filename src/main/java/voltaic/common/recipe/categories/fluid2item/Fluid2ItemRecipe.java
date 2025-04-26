@@ -13,7 +13,6 @@ import voltaic.common.recipe.recipeutils.ProbableItem;
 import voltaic.prefab.tile.components.IComponentType;
 import voltaic.prefab.tile.components.type.ComponentFluidHandlerMulti;
 import voltaic.prefab.tile.components.type.ComponentProcessor;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 
 public abstract class Fluid2ItemRecipe extends AbstractMaterialRecipe {
@@ -21,7 +20,7 @@ public abstract class Fluid2ItemRecipe extends AbstractMaterialRecipe {
     private List<FluidIngredient> inputFluids;
     private ItemStack outputItem;
 
-    public Fluid2ItemRecipe(ResourceLocation group, List<FluidIngredient> fluidInputs, ItemStack itemOutput, double experience, int ticks, double usagePerTick, List<ProbableItem> itemBiproducts, List<ProbableFluid> fluidBiproducts, List<ProbableGas> gasBiproducts) {
+    public Fluid2ItemRecipe(String group, List<FluidIngredient> fluidInputs, ItemStack itemOutput, double experience, int ticks, double usagePerTick, List<ProbableItem> itemBiproducts, List<ProbableFluid> fluidBiproducts, List<ProbableGas> gasBiproducts) {
         super(group, experience, ticks, usagePerTick, itemBiproducts, fluidBiproducts, gasBiproducts);
         inputFluids = fluidInputs;
         outputItem = itemOutput;
@@ -53,7 +52,7 @@ public abstract class Fluid2ItemRecipe extends AbstractMaterialRecipe {
 
     public interface Factory<T extends Fluid2ItemRecipe> {
 
-        T create(ResourceLocation group, List<FluidIngredient> fluidInputs, ItemStack itemOutput, double experience, int ticks, double usagePerTick, List<ProbableItem> itemBiproducts, List<ProbableFluid> fluidBiproducts, List<ProbableGas> gasBiproducts);
+        T create(String group, List<FluidIngredient> fluidInputs, ItemStack itemOutput, double experience, int ticks, double usagePerTick, List<ProbableItem> itemBiproducts, List<ProbableFluid> fluidBiproducts, List<ProbableGas> gasBiproducts);
 
     }
 

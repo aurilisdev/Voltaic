@@ -24,14 +24,12 @@ import voltaic.api.gas.PropertyGasTank;
 import voltaic.api.gas.utils.IGasTank;
 import voltaic.api.screen.ITexture;
 import voltaic.client.VoltaicClientRegister;
-import voltaic.common.packet.NetworkHandler;
 import voltaic.common.packet.types.server.PacketUpdateCarriedItemServer;
 import voltaic.prefab.inventory.container.types.GenericContainerBlockEntity;
 import voltaic.prefab.screen.GenericScreen;
 import voltaic.prefab.screen.component.ScreenComponentGeneric;
 import voltaic.prefab.tile.GenericTile;
 import voltaic.prefab.utilities.VoltaicTextUtils;
-import voltaic.prefab.utilities.CapabilityUtils;
 import voltaic.prefab.utilities.RenderingUtils;
 import voltaic.registers.VoltaicCapabilities;
 import net.minecraft.ChatFormatting;
@@ -44,6 +42,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 public class ScreenComponentGasGauge extends ScreenComponentGeneric {
 
@@ -133,13 +132,9 @@ public class ScreenComponentGasGauge extends ScreenComponentGeneric {
 		minV = maxV - deltaV * progress;
 
 		RenderSystem.setShader(GameRenderer::getPositionTexShader);
-		BufferBuilder bufferbuilder = Tesselator.getInstance().getBuilder();
-		bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
-		bufferbuilder.vertex(matrix, x1, y2, 0).uv(minU, maxV).endVertex();
-		bufferbuilder.vertex(matrix, x2, y2, 0).uv(maxU, maxV).endVertex();
-		bufferbuilder.vertex(matrix, x2, y1, 0).uv(maxU, minV).endVertex();
-		bufferbuilder.vertex(matrix, x1, y1, 0).uv(minU, minV).endVertex();
-		BufferUploader.drawWithShader(bufferbuilder.end());
+		BufferBuilder bufferbuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+		bufferbuilder.addVertex(matrix, x1, y2, 0).setUv(minU, maxV).addVertex(matrix, x2, y2, 0).setUv(maxU, maxV).addVertex(matrix, x2, y1, 0).setUv(maxU, minV).addVertex(matrix, x1, y1, 0).setUv(minU, minV);
+		BufferUploader.drawWithShader(bufferbuilder.buildOrThrow());
 
 	}
 
@@ -184,9 +179,9 @@ public class ScreenComponentGasGauge extends ScreenComponentGeneric {
 
 		GasStack drainedGasSource = tank.getGas().copy();
 
-		IGasHandlerItem handler = stack.getCapability(VoltaicCapabilities.CAPABILITY_GASHANDLER_ITEM).resolve().orElse(CapabilityUtils.EMPTY_GAS_ITEM);
+		IGasHandlerItem handler = stack.getCapability(VoltaicCapabilities.CAPABILITY_GASHANDLER_ITEM);
 
-		if (handler == CapabilityUtils.EMPTY_GAS_ITEM) {
+		if (handler == null) {
 			return;
 		}
 
@@ -200,8 +195,8 @@ public class ScreenComponentGasGauge extends ScreenComponentGeneric {
 			Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(VoltaicSounds.SOUND_PRESSURERELEASE.get(), 1.0F));
 
 			stack = handler.getContainer();
-			
-			NetworkHandler.CHANNEL.sendToServer(new PacketUpdateCarriedItemServer(stack.copy(), ((GenericContainerBlockEntity<?>) screen.getMenu()).getSafeHost().getBlockPos(), Minecraft.getInstance().player.getUUID()));
+
+			PacketDistributor.sendToServer(new PacketUpdateCarriedItemServer(stack.copy(), ((GenericContainerBlockEntity<?>) screen.getMenu()).getSafeHost().getBlockPos(), Minecraft.getInstance().player.getUUID()));
 
 			return;
 		}
@@ -217,8 +212,8 @@ public class ScreenComponentGasGauge extends ScreenComponentGeneric {
 			Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(VoltaicSounds.SOUND_PRESSURERELEASE.get(), 1.0F));
 
 			stack = handler.getContainer();
-			
-			NetworkHandler.CHANNEL.sendToServer(new PacketUpdateCarriedItemServer(stack.copy(), ((GenericContainerBlockEntity<?>) screen.getMenu()).getSafeHost().getBlockPos(), Minecraft.getInstance().player.getUUID()));
+
+			PacketDistributor.sendToServer(new PacketUpdateCarriedItemServer(stack.copy(), ((GenericContainerBlockEntity<?>) screen.getMenu()).getSafeHost().getBlockPos(), Minecraft.getInstance().player.getUUID()));
 
 			return;
 		}
