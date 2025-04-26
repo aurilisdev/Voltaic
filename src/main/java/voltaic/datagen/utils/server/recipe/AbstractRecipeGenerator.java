@@ -1,11 +1,11 @@
 package voltaic.datagen.utils.server.recipe;
 
-import net.minecraft.data.recipes.RecipeOutput;
+import java.util.function.Consumer;
+
+import net.minecraft.data.recipes.FinishedRecipe;
 
 public abstract class AbstractRecipeGenerator {
 
-	public AbstractRecipeGenerator() {}
-
-	public abstract void addRecipes(RecipeOutput output);
+	public abstract void addRecipes(Consumer<FinishedRecipe> consumer);
 
 }

@@ -6,7 +6,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "voltaicapi:guidebook"
+          "name": "voltaic:guidebook"
         }
       ]
     }

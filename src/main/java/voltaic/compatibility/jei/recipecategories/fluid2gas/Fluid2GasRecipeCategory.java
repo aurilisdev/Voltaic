@@ -5,10 +5,10 @@ import mezz.jei.api.recipe.RecipeType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
-import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
+import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 import voltaic.api.gas.GasAction;
 import voltaic.api.gas.GasStack;
 import voltaic.api.gas.IGasHandlerItem;
@@ -17,6 +17,7 @@ import voltaic.common.recipe.recipeutils.FluidIngredient;
 import voltaic.common.recipe.recipeutils.ProbableGas;
 import voltaic.compatibility.jei.recipecategories.AbstractRecipeCategory;
 import voltaic.compatibility.jei.utils.gui.types.BackgroundObject;
+import voltaic.prefab.utilities.CapabilityUtils;
 import voltaic.registers.VoltaicCapabilities;
 
 import java.util.ArrayList;
@@ -54,9 +55,9 @@ public abstract class Fluid2GasRecipeCategory<T extends Fluid2GasRecipe> extends
             for (FluidStack stack : ing.getMatchingFluids()) {
                 ItemStack bucket = new ItemStack(stack.getFluid().getBucket(), 1);
 
-                IFluidHandlerItem handler = bucket.getCapability(Capabilities.FluidHandler.ITEM);
+                IFluidHandlerItem handler = bucket.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).orElse(CapabilityUtils.EMPTY_FLUID_ITEM);
 
-                if (handler != null) {
+                if (handler != CapabilityUtils.EMPTY_FLUID_ITEM) {
 
                     handler.fill(stack, FluidAction.EXECUTE);
 
@@ -77,11 +78,11 @@ public abstract class Fluid2GasRecipeCategory<T extends Fluid2GasRecipe> extends
 
         ItemStack bucket = new ItemStack(recipe.getGasRecipeOutput().getGas().getContainer(), 1);
 
-        IGasHandlerItem outputHandler = bucket.getCapability(VoltaicCapabilities.CAPABILITY_GASHANDLER_ITEM);
+        IGasHandlerItem outputHandler = bucket.getCapability(VoltaicCapabilities.CAPABILITY_GASHANDLER_ITEM).orElse(CapabilityUtils.EMPTY_GAS_ITEM);
 
         outputHandler.fill(recipe.getGasRecipeOutput(), GasAction.EXECUTE);
 
-        if (outputHandler != null) {
+        if (outputHandler != CapabilityUtils.EMPTY_GAS_ITEM) {
 
             outputHandler.fill(recipe.getGasRecipeOutput(), GasAction.EXECUTE);
 
@@ -96,9 +97,9 @@ public abstract class Fluid2GasRecipeCategory<T extends Fluid2GasRecipe> extends
             for (ProbableGas gas : recipe.getGasBiproducts()) {
                 ItemStack temp = new ItemStack(gas.getFullStack().getGas().getContainer());
 
-                IGasHandlerItem handler = temp.getCapability(VoltaicCapabilities.CAPABILITY_GASHANDLER_ITEM);
+                IGasHandlerItem handler = temp.getCapability(VoltaicCapabilities.CAPABILITY_GASHANDLER_ITEM).orElse(CapabilityUtils.EMPTY_GAS_ITEM);
 
-                if (handler != null) {
+                if (handler != CapabilityUtils.EMPTY_GAS_ITEM) {
 
                     handler.fill(gas.getFullStack(), GasAction.EXECUTE);
 

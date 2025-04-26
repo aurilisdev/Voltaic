@@ -3,13 +3,19 @@ package voltaic.api.misc;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jetbrains.annotations.NotNull;
+
 import voltaic.prefab.utilities.object.Location;
 import voltaic.registers.VoltaicCapabilities;
-import net.minecraft.core.HolderLookup;
+import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.neoforged.neoforge.common.util.INBTSerializable;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ICapabilitySerializable;
+import net.minecraftforge.common.util.LazyOptional;
 
-public class CapabilityLocationStorage implements ILocationStorage, INBTSerializable<CompoundTag> {
+public class CapabilityLocationStorage implements ILocationStorage, ICapabilitySerializable<CompoundTag> {
+	
+	public final LazyOptional<ILocationStorage> holder = LazyOptional.of(() -> this);
 
 	public CapabilityLocationStorage(int size) {
 		// avoids null errors
@@ -17,9 +23,17 @@ public class CapabilityLocationStorage implements ILocationStorage, INBTSerializ
 			locations.add(new Location(0, 0, 0));
 		}
 	}
+	
+	@Override
+	public <T> @NotNull LazyOptional<T> getCapability(@NotNull Capability<T> cap, Direction side) {
+		if (cap == VoltaicCapabilities.CAPABILITY_LOCATIONSTORAGE_ITEM) {
+			return holder.cast();
+		}
+		return LazyOptional.empty();
+	}
 
 	@Override
-	public CompoundTag serializeNBT(HolderLookup.Provider provider) {
+	public CompoundTag serializeNBT() {
 		if (VoltaicCapabilities.CAPABILITY_LOCATIONSTORAGE_ITEM != null) {
 			CompoundTag nbt = new CompoundTag();
 			nbt.putInt("size", locations.size());
@@ -32,7 +46,7 @@ public class CapabilityLocationStorage implements ILocationStorage, INBTSerializ
 	}
 
 	@Override
-	public void deserializeNBT(HolderLookup.Provider provider, CompoundTag nbt) {
+	public void deserializeNBT(CompoundTag nbt) {
 		if (VoltaicCapabilities.CAPABILITY_LOCATIONSTORAGE_ITEM != null) {
 			locations.clear();
 			for (int i = 0; i < nbt.getInt("size"); i++) {

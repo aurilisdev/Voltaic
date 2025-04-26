@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.mojang.datafixers.util.Pair;
 
+import net.minecraft.resources.ResourceLocation;
 import voltaic.api.gas.GasStack;
 import voltaic.common.recipe.recipeutils.AbstractMaterialRecipe;
 import voltaic.common.recipe.recipeutils.FluidIngredient;
@@ -19,7 +20,7 @@ public abstract class Fluid2GasRecipe extends AbstractMaterialRecipe {
     private List<FluidIngredient> inputFluidIngredients;
     private GasStack outputGasStack;
 
-    public Fluid2GasRecipe(String recipeGroup, List<FluidIngredient> inputFluidIngredients, GasStack outputGasStack, double experience, int ticks, double usagePerTick, List<ProbableItem> itemBiproducts, List<ProbableFluid> fluidBiproducts, List<ProbableGas> gasBiproducts) {
+    public Fluid2GasRecipe(ResourceLocation recipeGroup, List<FluidIngredient> inputFluidIngredients, GasStack outputGasStack, double experience, int ticks, double usagePerTick, List<ProbableItem> itemBiproducts, List<ProbableFluid> fluidBiproducts, List<ProbableGas> gasBiproducts) {
         super(recipeGroup, experience, ticks, usagePerTick, itemBiproducts, fluidBiproducts, gasBiproducts);
         this.inputFluidIngredients = inputFluidIngredients;
         this.outputGasStack = outputGasStack;
@@ -47,7 +48,7 @@ public abstract class Fluid2GasRecipe extends AbstractMaterialRecipe {
 
     public interface Factory<T extends Fluid2GasRecipe> {
 
-        T create(String recipeGroup, List<FluidIngredient> inputFluidIngredients, GasStack outputGasStack, double experience, int ticks, double usagePerTick, List<ProbableItem> itemBiproducts, List<ProbableFluid> fluidBiproducts, List<ProbableGas> gasBiproducts);
+        T create(ResourceLocation recipeGroup, List<FluidIngredient> inputFluidIngredients, GasStack outputGasStack, double experience, int ticks, double usagePerTick, List<ProbableItem> itemBiproducts, List<ProbableFluid> fluidBiproducts, List<ProbableGas> gasBiproducts);
 
     }
 

@@ -2,6 +2,7 @@ package voltaic.prefab.screen.component.types;
 
 import java.util.function.Supplier;
 
+import voltaic.common.packet.NetworkHandler;
 import voltaic.common.packet.types.server.PacketUpdateCarriedItemServer;
 import voltaic.prefab.inventory.container.types.GenericContainerBlockEntity;
 import voltaic.prefab.properties.variant.SingleProperty;
@@ -14,11 +15,10 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
-import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
-import net.neoforged.neoforge.network.PacketDistributor;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
+import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 
 public class ScreenComponentCondensedFluid extends ScreenComponentGeneric {
 
@@ -86,7 +86,7 @@ public class ScreenComponentCondensedFluid extends ScreenComponentGeneric {
 
         ItemStack stack = screen.getMenu().getCarried();
 
-        IFluidHandlerItem handler = stack.getCapability(Capabilities.FluidHandler.ITEM);
+        IFluidHandlerItem handler = stack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).orElse(null);
 
         if (handler == null) {
             return;
@@ -103,8 +103,8 @@ public class ScreenComponentCondensedFluid extends ScreenComponentGeneric {
         Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.BUCKET_FILL, 1.0F));
 
         stack = handler.getContainer();
-
-        PacketDistributor.sendToServer(new PacketUpdateCarriedItemServer(stack.copy(), owner.getBlockPos(), Minecraft.getInstance().player.getUUID()));
+        
+        NetworkHandler.CHANNEL.sendToServer(new PacketUpdateCarriedItemServer(stack.copy(), owner.getBlockPos(), Minecraft.getInstance().player.getUUID()));
 
     }
 

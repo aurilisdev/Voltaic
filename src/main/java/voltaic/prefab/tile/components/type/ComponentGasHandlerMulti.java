@@ -8,7 +8,6 @@ import java.util.function.BiConsumer;
 import javax.annotation.Nullable;
 
 import org.jetbrains.annotations.NotNull;
-
 import voltaic.api.gas.IGasHandler;
 import voltaic.api.gas.Gas;
 import voltaic.api.gas.GasAction;
@@ -26,11 +25,13 @@ import voltaic.prefab.tile.components.utils.IComponentGasHandler;
 import voltaic.prefab.utilities.BlockEntityUtils;
 import voltaic.prefab.utilities.math.MathUtils;
 import voltaic.registers.VoltaicGases;
+import voltaic.registers.VoltaicRegistries;
 import net.minecraft.core.Direction;
 import net.minecraft.tags.TagKey;
-import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.LazyOptional;
 
 public class ComponentGasHandlerMulti implements IComponentGasHandler {
 
@@ -238,13 +239,13 @@ public class ComponentGasHandlerMulti implements IComponentGasHandler {
         }
         return outputTanks[tank].drain(maxDrain, action);
     }
-
+    
     @Override
-    public @org.jetbrains.annotations.Nullable IGasHandler getCapability(@org.jetbrains.annotations.Nullable Direction direction, CapabilityInputType mode) {
-        if (direction == null || !isSided) {
-            return null;
+    public <T> LazyOptional<T> getCapability(Capability<T> capability, Direction side, CapabilityInputType inputType) {
+    	if (side == null || !isSided) {
+            return LazyOptional.empty();
         }
-        return sidedOptionals[direction.ordinal()];
+        return LazyOptional.of(() -> sidedOptionals[side.ordinal()]).cast();
     }
 
     @Override
@@ -263,7 +264,7 @@ public class ComponentGasHandlerMulti implements IComponentGasHandler {
 
     private void defineOptionals(Direction facing) {
 
-        holder.getLevel().invalidateCapabilities(holder.getBlockPos());
+        holder.invalidateCaps();
 
         sidedOptionals = new IGasHandler[6];
 
@@ -305,7 +306,7 @@ public class ComponentGasHandlerMulti implements IComponentGasHandler {
     public void onLoad() {
         IComponentGasHandler.super.onLoad();
         if (recipeType != null) {
-            List<RecipeHolder<VoltaicRecipe>> recipes = VoltaicRecipe.findRecipesbyType(recipeType, holder.getLevel());
+            List<VoltaicRecipe> recipes = VoltaicRecipe.findRecipesbyType(recipeType, holder.getLevel());
 
             List<Gas> inputGasHolder = new ArrayList<>();
             List<Gas> outputGasHolder = new ArrayList<>();
@@ -322,8 +323,8 @@ public class ComponentGasHandlerMulti implements IComponentGasHandler {
             double maxGasBiproductTemperature = 0;
             int maxGasBiproudctPressure = 0;
 
-            for (RecipeHolder<VoltaicRecipe> iRecipe : recipes) {
-                AbstractMaterialRecipe recipe = (AbstractMaterialRecipe) iRecipe.value();
+            for (VoltaicRecipe iRecipe : recipes) {
+                AbstractMaterialRecipe recipe = (AbstractMaterialRecipe) iRecipe;
                 if (inputTanks != null) {
                     for (GasIngredient ing : recipe.getGasIngredients()) {
                         ing.getMatchingGases().forEach(h -> inputGasHolder.add(h.getGas()));
@@ -476,9 +477,9 @@ public class ComponentGasHandlerMulti implements IComponentGasHandler {
             }
             if (validInputGasTags != null) {
                 for (TagKey<Gas> tag : validInputGasTags) {
-                    VoltaicGases.GAS_REGISTRY.getTag(tag).get().stream().forEach(holder -> {
-                        inputValidatorGases.add(holder.value());
-                    });
+                	for (Gas fluid : VoltaicRegistries.gasRegistry().tags().getTag(tag).stream().toList()) {
+						inputValidatorGases.add(fluid);
+					}
                 }
             }
             if (validOutputGases != null) {
@@ -488,9 +489,9 @@ public class ComponentGasHandlerMulti implements IComponentGasHandler {
             }
             if (validOutputGasTags != null) {
                 for (TagKey<Gas> tag : validOutputGasTags) {
-                    VoltaicGases.GAS_REGISTRY.getTag(tag).get().stream().forEach(holder -> {
-                        outputValidatorGases.add(holder.value());
-                    });
+                	for (Gas fluid : VoltaicRegistries.gasRegistry().tags().getTag(tag).stream().toList()) {
+						outputValidatorGases.add(fluid);
+					}
                 }
             }
         }

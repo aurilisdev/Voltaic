@@ -12,15 +12,17 @@ import voltaic.common.recipe.recipeutils.ProbableItem;
 import voltaic.prefab.tile.components.IComponentType;
 import voltaic.prefab.tile.components.type.ComponentInventory;
 import voltaic.prefab.tile.components.type.ComponentProcessor;
-import net.minecraft.core.HolderLookup;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.items.wrapper.RecipeWrapper;
 
 public abstract class Item2ItemRecipe extends VoltaicRecipe {
 
     private List<CountableIngredient> inputItems;
     private ItemStack outputItem;
 
-    public Item2ItemRecipe(String group, List<CountableIngredient> inputs, ItemStack output, double experience, int ticks, double usagePerTick, List<ProbableItem> itemBiproducts, List<ProbableFluid> fluidBiproducts, List<ProbableGas> gasBiproducts) {
+    public Item2ItemRecipe(ResourceLocation group, List<CountableIngredient> inputs, ItemStack output, double experience, int ticks, double usagePerTick, List<ProbableItem> itemBiproducts, List<ProbableFluid> fluidBiproducts, List<ProbableGas> gasBiproducts) {
         super(group, experience, ticks, usagePerTick, itemBiproducts, fluidBiproducts, gasBiproducts);
         inputItems = inputs;
         outputItem = output;
@@ -35,15 +37,15 @@ public abstract class Item2ItemRecipe extends VoltaicRecipe {
         }
         return false;
     }
-
+    
     @Override
-    public ItemStack assemble(VoltaicRecipe p_345149_, HolderLookup.Provider p_346030_) {
-        return getItemRecipeOutput();
+    public ItemStack assemble(RecipeWrapper pContainer, RegistryAccess pRegistryAccess) {
+    	return getItemRecipeOutput();
     }
-
+    
     @Override
-    public ItemStack getResultItem(HolderLookup.Provider pRegistries) {
-        return getItemRecipeOutput();
+    public ItemStack getResultItem(RegistryAccess pRegistryAccess) {
+    	return getItemRecipeOutput();
     }
 
     public ItemStack getItemRecipeOutput() {
@@ -56,7 +58,7 @@ public abstract class Item2ItemRecipe extends VoltaicRecipe {
 
     public interface Factory<T extends Item2ItemRecipe> {
 
-        T create(String group, List<CountableIngredient> inputs, ItemStack output, double experience, int ticks, double usagePerTick, List<ProbableItem> itemBiproducts, List<ProbableFluid> fluidBiproducts, List<ProbableGas> gasBiproducts);
+        T create(ResourceLocation group, List<CountableIngredient> inputs, ItemStack output, double experience, int ticks, double usagePerTick, List<ProbableItem> itemBiproducts, List<ProbableFluid> fluidBiproducts, List<ProbableGas> gasBiproducts);
 
     }
 

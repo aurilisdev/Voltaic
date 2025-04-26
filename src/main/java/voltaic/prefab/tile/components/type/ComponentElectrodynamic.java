@@ -28,6 +28,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.Level.ExplosionInteraction;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.LazyOptional;
 
 public class ComponentElectrodynamic implements IComponent, ICapabilityElectrodynamic {
 
@@ -114,16 +116,17 @@ public class ComponentElectrodynamic implements IComponent, ICapabilityElectrody
     public void setJoulesStored(double joules) {
         joules(joules);
     }
-
-    public ICapabilityElectrodynamic getCapability(Direction side, CapabilityInputType type) {
-        if (!isSided) {
-            return this;
+    
+    @Override
+    public <T> LazyOptional<T> getCapability(Capability<T> capability, Direction side, CapabilityInputType inputType) {
+    	if (!isSided) {
+            return LazyOptional.of(() -> this).cast();
         }
         if (side == null) {
-            return null;
+            return LazyOptional.empty();
         }
 
-        return sidedOptionals[side.ordinal()];
+        return LazyOptional.of(() -> sidedOptionals[side.ordinal()]).cast();
     }
 
     @Override
@@ -142,7 +145,7 @@ public class ComponentElectrodynamic implements IComponent, ICapabilityElectrody
 
     private void defineOptionals(Direction facing) {
 
-        holder.getLevel().invalidateCapabilities(holder.getBlockPos());
+    	holder.invalidateCaps();
 
         sidedOptionals = new ICapabilityElectrodynamic[6];
         

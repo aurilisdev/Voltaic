@@ -6,7 +6,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.neoforged.neoforge.registries.DeferredHolder;
+import net.minecraftforge.registries.RegistryObject;
 
 public abstract class BaseLootTablesProvider extends AbstractLootTableProvider {
 
@@ -14,7 +14,7 @@ public abstract class BaseLootTablesProvider extends AbstractLootTableProvider {
         super(provider, modID);
     }
 
-    public <T extends GenericTile> void addMachineTable(Block block, DeferredHolder<BlockEntityType<?>, BlockEntityType<T>> tilereg, boolean items, boolean fluids, boolean gases, boolean energy, boolean additional) {
+    public <T extends GenericTile> void addMachineTable(Block block, RegistryObject<BlockEntityType<T>> tilereg, boolean items, boolean fluids, boolean gases, boolean energy, boolean additional) {
         add(block, machineTable(name(block), block, tilereg.get(), items, fluids, gases, energy, additional));
     }
 
@@ -24,12 +24,12 @@ public abstract class BaseLootTablesProvider extends AbstractLootTableProvider {
      * @param reg The block that will be added
      * @author SeaRobber69
      */
-    public void addSilkTouchOnlyTable(DeferredHolder<Block, ? extends Block> reg) {
+    public void addSilkTouchOnlyTable(RegistryObject<? extends Block> reg) {
         Block block = reg.get();
         add(block, createSilkTouchOnlyTable(name(block), block));
     }
 
-    public void addFortuneAndSilkTouchTable(DeferredHolder<Block, ? extends Block> reg, Item nonSilk, int minDrop, int maxDrop) {
+    public void addFortuneAndSilkTouchTable(RegistryObject<? extends Block> reg, Item nonSilk, int minDrop, int maxDrop) {
         addFortuneAndSilkTouchTable(reg.get(), nonSilk, minDrop, maxDrop);
     }
 
@@ -37,7 +37,7 @@ public abstract class BaseLootTablesProvider extends AbstractLootTableProvider {
         add(block, createSilkTouchAndFortuneTable(name(block), block, nonSilk, minDrop, maxDrop));
     }
 
-    public void addSimpleBlock(DeferredHolder<Block, ? extends Block> reg) {
+    public void addSimpleBlock(RegistryObject<? extends Block> reg) {
         addSimpleBlock(reg.get());
     }
 

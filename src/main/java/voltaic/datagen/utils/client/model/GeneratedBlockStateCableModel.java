@@ -2,11 +2,11 @@ package voltaic.datagen.utils.client.model;
 
 import com.google.gson.JsonObject;
 
+import net.minecraftforge.client.model.generators.IGeneratedBlockState;
+import net.minecraftforge.client.model.generators.ModelFile;
 import voltaic.Voltaic;
 import voltaic.client.model.block.bakerytypes.CableModelLoader;
 import voltaic.common.block.connect.EnumConnectType;
-import net.neoforged.neoforge.client.model.generators.IGeneratedBlockState;
-import net.neoforged.neoforge.client.model.generators.ModelFile;
 
 public class GeneratedBlockStateCableModel implements IGeneratedBlockState {
 

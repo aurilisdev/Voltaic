@@ -1,9 +1,8 @@
 package voltaic.prefab.properties.variant;
 
-import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.neoforged.neoforge.network.PacketDistributor;
 import voltaic.Voltaic;
+import voltaic.common.packet.NetworkHandler;
 import voltaic.common.packet.types.server.PacketSendUpdatePropertiesServer;
 import voltaic.prefab.properties.types.IPropertyType;
 import voltaic.prefab.properties.PropertyManager;
@@ -95,17 +94,17 @@ public abstract class AbstractProperty<T, PROPERTYTYPE extends IPropertyType> {
         this.manager = manager;
     }
 
-    public void saveToTag(CompoundTag tag, HolderLookup.Provider registries) {
+    public void saveToTag(CompoundTag tag) {
         try {
-            getType().writeToTag(new IPropertyType.TagWriter<>(this, tag, registries));
+            getType().writeToTag(new IPropertyType.TagWriter<>(this, tag));
         } catch (Exception e) {
             Voltaic.LOGGER.info("Catching error while saving property " + getName() + " from NBT. Error: " + e.getMessage());
         }
     }
 
-    public void loadFromTag(CompoundTag tag, HolderLookup.Provider registries) {
+    public void loadFromTag(CompoundTag tag) {
         try {
-            T data = (T) getType().readFromTag(new IPropertyType.TagReader(this, tag, registries));
+            T data = (T) getType().readFromTag(new IPropertyType.TagReader(this, tag));
             if (data != null) {
                 value = data;
                 onLoadedFromTag(this, value);
@@ -151,8 +150,8 @@ public abstract class AbstractProperty<T, PROPERTYTYPE extends IPropertyType> {
             manager.setDirty(this);
         } else {
             CompoundTag data = new CompoundTag();
-            saveToTag(data, manager.getOwner().getLevel().registryAccess());
-            PacketDistributor.sendToServer(new PacketSendUpdatePropertiesServer(data, index(), manager.getOwner().getBlockPos()));
+            saveToTag(data);
+            NetworkHandler.CHANNEL.sendToServer(new PacketSendUpdatePropertiesServer(data, index(), manager.getOwner().getBlockPos()));
         }
     }
 
@@ -162,8 +161,8 @@ public abstract class AbstractProperty<T, PROPERTYTYPE extends IPropertyType> {
 
     public void updateServer() {
         CompoundTag data = new CompoundTag();
-        saveToTag(data, manager.getOwner().getLevel().registryAccess());
-        PacketDistributor.sendToServer(new PacketSendUpdatePropertiesServer(data, index(), manager.getOwner().getBlockPos()));
+        saveToTag(data);
+        NetworkHandler.CHANNEL.sendToServer(new PacketSendUpdatePropertiesServer(data, index(), manager.getOwner().getBlockPos()));
     }
 
 }

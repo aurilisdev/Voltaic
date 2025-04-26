@@ -10,7 +10,7 @@ import voltaic.prefab.inventory.container.slot.utils.IUpgradeSlot;
 import voltaic.prefab.screen.component.types.ScreenComponentSlot.IconType;
 import voltaic.prefab.screen.component.types.ScreenComponentSlot.SlotType;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.items.IItemHandler;
+import net.minecraftforge.items.IItemHandler;
 
 public class SlotItemHandlerUpgrade extends SlotItemHandlerGeneric implements IUpgradeSlot {
 
@@ -25,7 +25,7 @@ public class SlotItemHandlerUpgrade extends SlotItemHandlerGeneric implements IU
 
 	@Override
 	public boolean mayPlace(ItemStack stack) {
-		return stack.getItem() instanceof ItemUpgrade upgrade && upgrades.contains(upgrade);
+		return stack.getItem() instanceof ItemUpgrade upgrade && upgrades.contains(upgrade.subtype);
 	}
 
 	@Override

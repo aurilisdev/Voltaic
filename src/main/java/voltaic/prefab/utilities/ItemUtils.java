@@ -30,7 +30,7 @@ public class ItemUtils {
 	 */
 	@Nullable
 	public static Ingredient getIngredientFromTag(String location, String tag) {
-		return Ingredient.of(ItemTags.create(ResourceLocation.fromNamespaceAndPath(location, tag)));
+		return Ingredient.of(ItemTags.create(new ResourceLocation(location, tag)));
 	}
 
 	public static Item fromBlock(Block block) {

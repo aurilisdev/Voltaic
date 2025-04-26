@@ -14,7 +14,6 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
-import voltaic.Voltaic;
 import voltaic.client.model.block.ModelStateRotation;
 import voltaic.client.model.block.modelproperties.ModelPropertyConnections;
 import voltaic.common.block.connect.EnumConnectType;
@@ -36,16 +35,16 @@ import net.minecraft.util.GsonHelper;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.client.ChunkRenderTypeSet;
-import net.neoforged.neoforge.client.model.IDynamicBakedModel;
-import net.neoforged.neoforge.client.model.data.ModelData;
-import net.neoforged.neoforge.client.model.geometry.IGeometryBakingContext;
-import net.neoforged.neoforge.client.model.geometry.IGeometryLoader;
-import net.neoforged.neoforge.client.model.geometry.IUnbakedGeometry;
+import net.minecraftforge.client.ChunkRenderTypeSet;
+import net.minecraftforge.client.model.IDynamicBakedModel;
+import net.minecraftforge.client.model.data.ModelData;
+import net.minecraftforge.client.model.geometry.IGeometryBakingContext;
+import net.minecraftforge.client.model.geometry.IGeometryLoader;
+import net.minecraftforge.client.model.geometry.IUnbakedGeometry;
 
 public class CableModelLoader implements IGeometryLoader<CableModelLoader.WirePartGeometry> {
 
-    public static final ResourceLocation ID = Voltaic.rl("voltaiccableloader");
+    public static final String ID = "voltaiccableloader";
 
     public static final CableModelLoader INSTANCE = new CableModelLoader();
 
@@ -72,10 +71,10 @@ public class CableModelLoader implements IGeometryLoader<CableModelLoader.WirePa
         }
 
         @Override
-        public BakedModel bake(IGeometryBakingContext context, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, ItemOverrides overrides) {
+        public BakedModel bake(IGeometryBakingContext context, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, ItemOverrides overrides, ResourceLocation modelLocation) {
             boolean useBlockLight = context.useBlockLight();
 
-            BakedModel none = this.none.bake(baker, this.none, spriteGetter, modelState, useBlockLight);
+            BakedModel none = this.none.bake(baker, this.none, spriteGetter, modelState, modelLocation, useBlockLight);
 
             BakedModel[] wires = new BakedModel[6];
             BakedModel[] inventories = new BakedModel[6];
@@ -84,8 +83,8 @@ public class CableModelLoader implements IGeometryLoader<CableModelLoader.WirePa
 
                 ModelState transform = ModelStateRotation.ROTATIONS.get(dir);
 
-                wires[dir.ordinal()] = this.wire.bake(baker, this.wire, spriteGetter, transform, useBlockLight);
-                inventories[dir.ordinal()] = this.inventory.bake(baker, this.inventory, spriteGetter, transform, useBlockLight);
+                wires[dir.ordinal()] = this.wire.bake(baker, this.wire, spriteGetter, transform, modelLocation, useBlockLight);
+                inventories[dir.ordinal()] = this.inventory.bake(baker, this.inventory, spriteGetter, transform, modelLocation, useBlockLight);
 
             }
 

@@ -1,6 +1,7 @@
 package voltaic.common.item;
 
-import net.minecraft.core.Holder;
+import java.util.function.Supplier;
+
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -13,11 +14,12 @@ import voltaic.api.radiation.SimpleRadiationSource;
 import voltaic.api.radiation.util.IRadiationRecipient;
 import voltaic.api.radiation.util.RadioactiveObject;
 import voltaic.common.reloadlistener.RadioactiveItemRegister;
+import voltaic.prefab.utilities.CapabilityUtils;
 import voltaic.registers.VoltaicCapabilities;
 
 public class ItemRadioactive extends ItemVoltaic {
 
-    public ItemRadioactive(Item.Properties properties, Holder<CreativeModeTab> creativeTab) {
+    public ItemRadioactive(Item.Properties properties, Supplier<CreativeModeTab> creativeTab) {
         super(properties, creativeTab);
     }
 
@@ -37,8 +39,8 @@ public class ItemRadioactive extends ItemVoltaic {
         RadioactiveObject rad = RadioactiveItemRegister.getValue(stack.getItem());
 
         if (entity instanceof LivingEntity living) {
-            IRadiationRecipient cap = living.getCapability(VoltaicCapabilities.CAPABILITY_RADIATIONRECIPIENT);
-            if (cap == null) {
+            IRadiationRecipient cap = living.getCapability(VoltaicCapabilities.CAPABILITY_RADIATIONRECIPIENT).orElse(CapabilityUtils.EMPTY_RADIATION_REPIPIENT);
+            if (cap == CapabilityUtils.EMPTY_RADIATION_REPIPIENT) {
                 return;
             }
             cap.recieveRadiation(living, stack.getCount() * rad.amount(), rad.strength());

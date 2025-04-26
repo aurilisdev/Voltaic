@@ -7,7 +7,6 @@ import voltaic.Voltaic;
 import voltaic.prefab.properties.types.IPropertyType;
 import voltaic.prefab.properties.variant.AbstractProperty;
 import voltaic.prefab.tile.GenericTile;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 
 /**
@@ -45,16 +44,16 @@ public class PropertyManager {
 		return properties;
 	}
 
-	public void saveDirtyPropsToTag(CompoundTag tag, HolderLookup.Provider registries) {
+	public void saveDirtyPropsToTag(CompoundTag tag) {
 		for(AbstractProperty prop : dirtyPropertiesDirect){
-			prop.saveToTag(tag, owner.getLevel().registryAccess());
+			prop.saveToTag(tag);
 		}
 	}
 
-	public void saveAllPropsForClientSync(CompoundTag tag, HolderLookup.Provider registries) {
+	public void saveAllPropsForClientSync(CompoundTag tag) {
 		for(AbstractProperty prop : properties){
 			if(prop.shouldUpdateClient()) {
-				prop.saveToTag(tag, registries);
+				prop.saveToTag(tag);
 			}
 		}
 	}
@@ -97,18 +96,18 @@ public class PropertyManager {
 		return owner;
 	}
 
-	public void saveToTag(CompoundTag tag, HolderLookup.Provider registries) {
+	public void saveToTag(CompoundTag tag) {
 		for (AbstractProperty prop : getProperties()) {
 			if (prop.shouldSave()) {
-				prop.saveToTag(tag, registries);
+				prop.saveToTag(tag);
 			}
 		}
 	}
 
-	public void loadFromTag(CompoundTag tag, HolderLookup.Provider registries) {
+	public void loadFromTag(CompoundTag tag) {
 		for (AbstractProperty prop : getProperties()) {
 			if (prop.shouldSave() && tag.contains(prop.getName())) {
-				prop.loadFromTag(tag, registries);
+				prop.loadFromTag(tag);
 
 				tag.remove(prop.getName());
 			}
@@ -129,7 +128,7 @@ public class PropertyManager {
 			Voltaic.LOGGER.info("The property " + prop.getName() + " that sent data to the tile at " + owner.getBlockPos() + " encountered a null level. The data was not loaded");
 			return;
 		}
-		prop.overwriteValue(prop.getType().readFromTag(new IPropertyType.TagReader(prop, data, owner.getLevel().registryAccess())));
+		prop.overwriteValue(prop.getType().readFromTag(new IPropertyType.TagReader(prop, data)));
 		owner.setChanged();
 	}
 

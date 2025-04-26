@@ -3,7 +3,7 @@ package voltaic.compatibility.jei.utils.ingredients;
 import org.jetbrains.annotations.Nullable;
 
 import voltaic.api.gas.GasStack;
-import voltaic.registers.VoltaicGases;
+import voltaic.registers.VoltaicRegistries;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.subtypes.UidContext;
@@ -28,7 +28,7 @@ public class IngredientHelperGasStack implements IIngredientHelper<GasStack> {
 
 	@Override
 	public ResourceLocation getResourceLocation(GasStack ingredient) {
-		return VoltaicGases.GAS_REGISTRY.getKey(ingredient.getGas());
+		return VoltaicRegistries.gasRegistry().getKey(ingredient.getGas());
 	}
 
 	@Override

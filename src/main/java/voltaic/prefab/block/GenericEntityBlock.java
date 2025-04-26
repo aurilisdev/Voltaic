@@ -12,13 +12,11 @@ import voltaic.prefab.tile.components.IComponentType;
 import voltaic.prefab.tile.components.type.ComponentElectrodynamic;
 import voltaic.prefab.tile.components.type.ComponentInventory;
 import voltaic.prefab.tile.components.type.ComponentTickable;
-import voltaic.registers.VoltaicDataComponentTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -108,7 +106,7 @@ public abstract class GenericEntityBlock extends BaseEntityBlock implements IWre
 				    
 				    double joules = electro.getJoulesStored();
                     if (joules > 0) {
-						stack.set(VoltaicDataComponentTypes.JOULES, joules);
+                    	stack.getOrCreateTag().putDouble("joules", joules);
                     }
 				    
 				}
@@ -177,21 +175,14 @@ public abstract class GenericEntityBlock extends BaseEntityBlock implements IWre
 		}
 		return super.getAnalogOutputSignal(state, level, pos);
 	}
-
+	
 	@Override
-	protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
-		if (level.getBlockEntity(pos) instanceof GenericTile generic) {
-			return generic.useWithoutItem(player, hitResult);
+	public InteractionResult use(BlockState state, Level worldIn, BlockPos pos, Player player, InteractionHand handIn, BlockHitResult hit) {
+		if (worldIn.getBlockEntity(pos) instanceof GenericTile generic) {
+			return generic.use(player, handIn, hit);
 		}
-		return super.useWithoutItem(state, level, pos, player, hitResult);
-	}
 
-	@Override
-	protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
-		if (level.getBlockEntity(pos) instanceof GenericTile generic) {
-			return generic.useWithItem(stack, player, hand, hitResult);
-		}
-		return super.useItemOn(stack, state, level, pos, player, hand, hitResult);
+		return super.use(state, worldIn, pos, player, handIn, hit);
 	}
 
 	@Override

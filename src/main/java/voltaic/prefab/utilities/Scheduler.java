@@ -4,17 +4,21 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
+import net.minecraftforge.event.TickEvent.Phase;
+import net.minecraftforge.event.TickEvent.ServerTickEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import voltaic.Voltaic;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.tick.ServerTickEvent;
 
-@EventBusSubscriber(modid = Voltaic.ID, bus = EventBusSubscriber.Bus.GAME)
+@EventBusSubscriber(modid = Voltaic.ID, bus = EventBusSubscriber.Bus.FORGE)
 public class Scheduler {
 	private static ConcurrentHashMap<Runnable, Integer> scheduled = new ConcurrentHashMap<>();
 
 	@SubscribeEvent
-	public static void onTick(ServerTickEvent.Post event) {
+	public static void onTick(ServerTickEvent event) {
+		if(event.phase == Phase.START) {
+			return;
+		}
 		if (!scheduled.isEmpty()) {
 			Iterator<Entry<Runnable, Integer>> it = scheduled.entrySet().iterator();
 			while (it.hasNext()) {

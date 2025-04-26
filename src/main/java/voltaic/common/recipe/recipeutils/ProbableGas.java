@@ -6,17 +6,17 @@ import java.util.List;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
+import net.minecraft.network.FriendlyByteBuf;
 import voltaic.Voltaic;
+import voltaic.api.codec.StreamCodec;
 import voltaic.api.gas.GasStack;
-import voltaic.registers.VoltaicGases;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.StreamCodec;
+import voltaic.registers.VoltaicRegistries;
 
 public class ProbableGas {
 
     public static final Codec<ProbableGas> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             //
-            VoltaicGases.GAS_REGISTRY.byNameCodec().fieldOf("gas").forGetter(instance0 -> instance0.gas.getGas()),
+            VoltaicRegistries.gasRegistry().getCodec().fieldOf("gas").forGetter(instance0 -> instance0.gas.getGas()),
             //
             Codec.INT.fieldOf("amount").forGetter(instance0 -> instance0.gas.getAmount()),
             //
@@ -33,23 +33,23 @@ public class ProbableGas {
 
     public static final Codec<List<ProbableGas>> LIST_CODEC = CODEC.listOf();
 
-    public static final StreamCodec<RegistryFriendlyByteBuf, ProbableGas> STREAM_CODEC = new StreamCodec<>() {
+    public static final StreamCodec<FriendlyByteBuf, ProbableGas> STREAM_CODEC = new StreamCodec<>() {
 
         @Override
-        public void encode(RegistryFriendlyByteBuf buf, ProbableGas gas) {
+        public void encode(FriendlyByteBuf buf, ProbableGas gas) {
             GasStack.STREAM_CODEC.encode(buf, gas.gas);
             buf.writeDouble(gas.chance);
         }
 
         @Override
-        public ProbableGas decode(RegistryFriendlyByteBuf buf) {
+        public ProbableGas decode(FriendlyByteBuf buf) {
             return new ProbableGas(GasStack.STREAM_CODEC.decode(buf), buf.readDouble());
         }
     };
 
-    public static final StreamCodec<RegistryFriendlyByteBuf, List<ProbableGas>> LIST_STREAM_CODEC = new StreamCodec<>() {
+    public static final StreamCodec<FriendlyByteBuf, List<ProbableGas>> LIST_STREAM_CODEC = new StreamCodec<>() {
         @Override
-        public List<ProbableGas> decode(RegistryFriendlyByteBuf buf) {
+        public List<ProbableGas> decode(FriendlyByteBuf buf) {
             int count = buf.readInt();
             List<ProbableGas> fluids = new ArrayList<>();
             for (int i = 0; i < count; i++) {
@@ -59,7 +59,7 @@ public class ProbableGas {
         }
 
         @Override
-        public void encode(RegistryFriendlyByteBuf buf, List<ProbableGas> probable) {
+        public void encode(FriendlyByteBuf buf, List<ProbableGas> probable) {
             buf.writeInt(probable.size());
             for (ProbableGas gas : probable) {
                 STREAM_CODEC.encode(buf, gas);

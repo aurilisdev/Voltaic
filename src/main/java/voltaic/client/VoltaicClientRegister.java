@@ -6,8 +6,6 @@ import java.util.List;
 import voltaic.Voltaic;
 import voltaic.client.guidebook.ScreenGuidebook;
 import voltaic.client.model.block.bakerytypes.CableModelLoader;
-import voltaic.client.model.block.bakerytypes.MultiblockModelLoader;
-import voltaic.client.model.block.bakerytypes.SlaveNodeModelLoader;
 import voltaic.client.particle.fluiddrop.ParticleFluidDrop;
 import voltaic.client.particle.lavawithphysics.ParticleLavaWithPhysics;
 import voltaic.client.particle.plasmaball.ParticlePlasmaBall;
@@ -21,22 +19,21 @@ import voltaic.client.texture.atlas.AtlasHolderVoltaicCustom;
 import voltaic.registers.VoltaicMenuTypes;
 import voltaic.registers.VoltaicParticles;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.resources.FileToIdConverter;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.ModelEvent;
-import net.neoforged.neoforge.client.event.ModelEvent.RegisterAdditional;
-import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
-import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
-import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
-import net.neoforged.neoforge.client.event.TextureAtlasStitchedEvent;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.client.event.TextureStitchEvent;
+import net.minecraftforge.client.event.ModelEvent;
+import net.minecraftforge.client.event.ModelEvent.RegisterAdditional;
+import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
+import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 
 @OnlyIn(Dist.CLIENT)
 @EventBusSubscriber(modid = Voltaic.ID, bus = EventBusSubscriber.Bus.MOD, value = {Dist.CLIENT})
@@ -58,7 +55,11 @@ public class VoltaicClientRegister {
     private static final List<ResourceLocation> CUSTOM_TEXTURES = List.of(VoltaicClientRegister.TEXTURE_WHITE, VoltaicClientRegister.TEXTURE_MERCURY, VoltaicClientRegister.TEXTURE_GAS, VoltaicClientRegister.TEXTURE_MULTISUBNODE);
 
     public static void setup() {
-
+    	MenuScreens.register(VoltaicMenuTypes.CONTAINER_GUIDEBOOK.get(), ScreenGuidebook::new);
+        MenuScreens.register(VoltaicMenuTypes.CONTAINER_O2OPROCESSOR.get(), ScreenO2OProcessor::new);
+        MenuScreens.register(VoltaicMenuTypes.CONTAINER_O2OPROCESSORDOUBLE.get(), ScreenO2OProcessorDouble::new);
+        MenuScreens.register(VoltaicMenuTypes.CONTAINER_O2OPROCESSORTRIPLE.get(), ScreenO2OProcessorTriple::new);
+        MenuScreens.register(VoltaicMenuTypes.CONTAINER_DO2OPROCESSOR.get(), ScreenDO2OProcessor::new);
     }
 
     @SubscribeEvent
@@ -66,20 +67,11 @@ public class VoltaicClientRegister {
 
         ResourceManager manager = Minecraft.getInstance().getResourceManager();
         FileToIdConverter converter = FileToIdConverter.json("models/" + MULTIBLOCK_API_MODEL_FOLDER);
-        converter.listMatchingResources(manager).forEach((location, resource) -> event.register(ModelResourceLocation.standalone(converter.fileToId(location).withPrefix(MULTIBLOCK_API_MODEL_FOLDER + "/"))));
+        converter.listMatchingResources(manager).forEach((location, resource) -> event.register(converter.fileToId(location).withPrefix(MULTIBLOCK_API_MODEL_FOLDER + "/")));
     }
 
     @SubscribeEvent
-    public static void registerMenus(RegisterMenuScreensEvent event) {
-        event.register(VoltaicMenuTypes.CONTAINER_GUIDEBOOK.get(), ScreenGuidebook::new);
-        event.register(VoltaicMenuTypes.CONTAINER_O2OPROCESSOR.get(), ScreenO2OProcessor::new);
-        event.register(VoltaicMenuTypes.CONTAINER_O2OPROCESSORDOUBLE.get(), ScreenO2OProcessorDouble::new);
-        event.register(VoltaicMenuTypes.CONTAINER_O2OPROCESSORTRIPLE.get(), ScreenO2OProcessorTriple::new);
-        event.register(VoltaicMenuTypes.CONTAINER_DO2OPROCESSOR.get(), ScreenDO2OProcessor::new);
-    }
-
-    @SubscribeEvent
-    public static void cacheCustomTextureAtlases(TextureAtlasStitchedEvent event) {
+    public static void cacheCustomTextureAtlases(TextureStitchEvent.Post event) {
         if (event.getAtlas().location().equals(TextureAtlas.LOCATION_BLOCKS)) {
             CACHED_TEXTUREATLASSPRITES.clear();
             for (ResourceLocation loc : CUSTOM_TEXTURES) {
@@ -104,8 +96,6 @@ public class VoltaicClientRegister {
     @SubscribeEvent
     public static void registerGeometryLoaders(final ModelEvent.RegisterGeometryLoaders event) {
         event.register(CableModelLoader.ID, CableModelLoader.INSTANCE);
-        event.register(SlaveNodeModelLoader.ID, SlaveNodeModelLoader.INSTANCE);
-        event.register(MultiblockModelLoader.ID, MultiblockModelLoader.INSTANCE);
     }
 
     public static TextureAtlasSprite getSprite(ResourceLocation sprite) {

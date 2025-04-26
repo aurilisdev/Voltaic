@@ -1,6 +1,7 @@
 {
   "criteria": {
     "SpawnIn": {
+      "conditions": {},
       "trigger": "minecraft:tick"
     }
   },
@@ -13,5 +14,6 @@
     "loot": [
       "minecraft:advancement_reward/electroguidebook"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

@@ -1,7 +1,5 @@
 package voltaic.common.block;
 
-import com.mojang.serialization.MapCodec;
-
 import voltaic.api.multiblock.subnodebased.parent.IMultiblockParentBlock;
 import voltaic.api.multiblock.subnodebased.parent.IMultiblockParentTile;
 import voltaic.api.tile.IMachine;
@@ -16,7 +14,6 @@ import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
-import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -107,13 +104,13 @@ public class BlockMachine extends GenericMachineBlock implements IMultiblockPare
     public boolean isIPlayerStorable() {
         return machine.isPlayerStorable();
     }
-
+    
     @Override
-    public ItemStack getCloneItemStack(BlockState state, HitResult target, LevelReader level, BlockPos pos, Player player) {
-        ItemStack stack = super.getCloneItemStack(state, target, level, pos, player);
+    public ItemStack getCloneItemStack(BlockState state, HitResult target, BlockGetter level, BlockPos pos, Player player) {
+    	ItemStack stack = super.getCloneItemStack(state, target, level, pos, player);
         BlockEntity tile = level.getBlockEntity(pos);
         if (tile != null) {
-            tile.saveToItem(stack, level.registryAccess());
+            tile.saveToItem(stack);
         }
         return stack;
     }
@@ -129,8 +126,4 @@ public class BlockMachine extends GenericMachineBlock implements IMultiblockPare
         builder.add(VoltaicBlockStates.LIT);
     }
 
-    @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() {
-        throw new UnsupportedOperationException("Need to implement CODEC");
-    }
 }

@@ -3,8 +3,10 @@ package voltaic.common.item.gear;
 import voltaic.api.IWrenchItem;
 import voltaic.common.item.ItemVoltaic;
 import voltaic.prefab.tile.IWrenchable;
+
+import java.util.function.Supplier;
+
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Holder;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
@@ -18,7 +20,7 @@ import net.minecraft.world.level.block.state.BlockState;
 
 public class ItemWrench extends ItemVoltaic implements IWrenchItem {
 
-	public ItemWrench(Properties properties, Holder<CreativeModeTab> creativeTab) {
+	public ItemWrench(Properties properties, Supplier<CreativeModeTab> creativeTab) {
 		super(properties, creativeTab);
 	}
 

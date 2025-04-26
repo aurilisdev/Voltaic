@@ -1,8 +1,7 @@
 package voltaic.datagen.utils.client;
 
 import voltaic.api.gas.Gas;
-import voltaic.registers.VoltaicGases;
-import net.minecraft.core.Holder;
+import voltaic.registers.VoltaicRegistries;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceKey;
@@ -11,8 +10,8 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.Fluid;
-import net.neoforged.neoforge.common.data.LanguageProvider;
-import net.neoforged.neoforge.registries.DeferredHolder;
+import net.minecraftforge.common.data.LanguageProvider;
+import net.minecraftforge.registries.RegistryObject;
 
 public abstract class BaseLangKeyProvider extends LanguageProvider {
 
@@ -25,7 +24,7 @@ public abstract class BaseLangKeyProvider extends LanguageProvider {
 		this.modID = modID;
 	}
 
-	public void addItem(DeferredHolder<Item, ? extends Item> item, String translation) {
+	public void addItem(RegistryObject<? extends Item> item, String translation) {
 		add(item.get(), translation);
 	}
 
@@ -33,7 +32,7 @@ public abstract class BaseLangKeyProvider extends LanguageProvider {
 		add(item, translation);
 	}
 
-	public void addBlock(DeferredHolder<Block, ? extends Block> block, String translation) {
+	public void addBlock(RegistryObject<? extends Block> block, String translation) {
 		add(block.get(), translation);
 	}
 
@@ -45,19 +44,19 @@ public abstract class BaseLangKeyProvider extends LanguageProvider {
 		add("tooltip." + modID + "." + key, translation);
 	}
 
-	public void addFluid(DeferredHolder<Fluid, ? extends Fluid> fluid, String translation){
+	public void addFluid(RegistryObject<? extends Fluid> fluid, String translation){
 		addFluid(fluid.get(), translation);
 	}
 	public void addFluid(Fluid fluid, String translation) {
 		add("fluid." + modID + "." + BuiltInRegistries.FLUID.getKey(fluid).getPath(), translation);
 	}
 
-	public void addGas(Holder<Gas> gas, String translation) {
-		addGas(gas.value(), translation);
+	public void addGas(RegistryObject<Gas> gas, String translation) {
+		addGas(gas.get(), translation);
 	}
 
 	public void addGas(Gas gas, String translation) {
-		add("gas." + modID + "." + VoltaicGases.GAS_REGISTRY.getKey(gas).getPath(), translation);
+		add("gas." + modID + "." + VoltaicRegistries.gasRegistry().getKey(gas).getPath(), translation);
 	}
 
 	public void addContainer(String key, String translation) {
@@ -72,7 +71,7 @@ public abstract class BaseLangKeyProvider extends LanguageProvider {
 		add("subtitles." + modID + "." + key, translation);
 	}
 
-	public void addSubtitle(DeferredHolder<SoundEvent, SoundEvent> sound, String translation) {
+	public void addSubtitle(RegistryObject<SoundEvent> sound, String translation) {
 		addSubtitle(sound.getId().getPath(), translation);
 	}
 
@@ -80,7 +79,6 @@ public abstract class BaseLangKeyProvider extends LanguageProvider {
 		add("gui." + modID + "." + key, translation);
 	}
 
-	@Override
 	public void addDimension(ResourceKey<Level> dim, String translation) {
 		addDimension(dim.location().getPath(), translation);
 	}

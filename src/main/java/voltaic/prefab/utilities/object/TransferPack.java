@@ -3,10 +3,10 @@ package voltaic.prefab.utilities.object;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
+import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
+import voltaic.api.codec.StreamCodec;
 
 public class TransferPack {
 
@@ -17,11 +17,20 @@ public class TransferPack {
             ).apply(instance, (joules, voltage) -> TransferPack.joulesVoltage(joules, voltage))
     );
 
-    public static final StreamCodec<FriendlyByteBuf, TransferPack> STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.DOUBLE, TransferPack::getJoules,
-            ByteBufCodecs.DOUBLE, TransferPack::getVoltage,
-            TransferPack::new
-    );
+    public static final StreamCodec<ByteBuf, TransferPack> STREAM_CODEC = new StreamCodec<>() {
+
+		@Override
+		public void encode(ByteBuf buffer, TransferPack value) {
+			buffer.writeDouble(value.joules);
+			buffer.writeDouble(value.voltage);
+		}
+
+		@Override
+		public TransferPack decode(ByteBuf buffer) {
+			return new TransferPack(buffer.readDouble(), buffer.readDouble());
+		}
+    	
+    };
 
     public static final TransferPack EMPTY = new TransferPack(0, 0);
     private double joules;

@@ -1,7 +1,5 @@
 package voltaic.prefab.utilities;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Function;
 
 import com.mojang.datafixers.util.Function10;
@@ -12,13 +10,7 @@ import com.mojang.datafixers.util.Function7;
 import com.mojang.datafixers.util.Function8;
 import com.mojang.datafixers.util.Function9;
 
-import io.netty.buffer.ByteBuf;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.NonNullList;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.phys.Vec3;
+import voltaic.api.codec.StreamCodec;
 
 /**
  * Utility class for Codecs
@@ -26,70 +18,6 @@ import net.minecraft.world.phys.Vec3;
  * @author skip999
  */
 public class CodecUtils {
-
-    public static final StreamCodec<ByteBuf, Vec3> VEC3_STREAM_CODEC = new StreamCodec<>() {
-        @Override
-        public Vec3 decode(ByteBuf buffer) {
-            return new Vec3(buffer.readDouble(), buffer.readDouble(), buffer.readDouble());
-        }
-
-        @Override
-        public void encode(ByteBuf buffer, Vec3 value) {
-            buffer.writeDouble(value.x);
-            buffer.writeDouble(value.y);
-            buffer.writeDouble(value.z);
-        }
-    };
-
-    public static final StreamCodec<RegistryFriendlyByteBuf, NonNullList<ItemStack>> INVENTORYITEMS_STREAM_CODEC = new StreamCodec<>() {
-        @Override
-        public NonNullList<ItemStack> decode(RegistryFriendlyByteBuf buffer) {
-            int size = buffer.readInt();
-            NonNullList<ItemStack> items = NonNullList.create();
-
-            for(int i = 0; i < size; i++) {
-                items.add(ItemStack.OPTIONAL_STREAM_CODEC.decode(buffer));
-            }
-
-            return items;
-        }
-
-        @Override
-        public void encode(RegistryFriendlyByteBuf buffer, NonNullList<ItemStack> value) {
-
-            buffer.writeInt(value.size());
-
-            for(ItemStack stack : value) {
-                ItemStack.OPTIONAL_STREAM_CODEC.encode(buffer, stack);
-            }
-
-        }
-    };
-
-    public static final StreamCodec<ByteBuf, List<BlockPos>> BLOCKPOS_LIST_STREAMCODEC = new StreamCodec<>() {
-        @Override
-        public List<BlockPos> decode(ByteBuf buffer) {
-            int size = buffer.readInt();
-            List<BlockPos> poses = new ArrayList<>();
-
-
-            for(int i = 0; i < size; i++) {
-                poses.add(BlockPos.STREAM_CODEC.decode(buffer));
-            }
-
-            return poses;
-        }
-
-        @Override
-        public void encode(ByteBuf buffer, List<BlockPos> value) {
-            buffer.writeInt(value.size());
-
-            for(BlockPos pos : value) {
-                BlockPos.STREAM_CODEC.encode(buffer, pos);
-            }
-
-        }
-    };
 
     public static <B, C, T1, T2, T3, T4, T5, T6, T7> StreamCodec<B, C> composite(
             final StreamCodec<? super B, T1> pCodec1,

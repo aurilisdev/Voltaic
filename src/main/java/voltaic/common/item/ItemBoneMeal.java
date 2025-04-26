@@ -1,18 +1,18 @@
 package voltaic.common.item;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 import voltaic.api.creativetab.CreativeTabSupplier;
-import net.minecraft.core.Holder;
 import net.minecraft.world.item.BoneMealItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 
 public class ItemBoneMeal extends BoneMealItem implements CreativeTabSupplier {
 
-	private final Holder<CreativeModeTab> creativeTab;
+	private final Supplier<CreativeModeTab> creativeTab;
 
-	public ItemBoneMeal(Properties properties, Holder<CreativeModeTab> creativeTab) {
+	public ItemBoneMeal(Properties properties, Supplier<CreativeModeTab> creativeTab) {
 		super(properties);
 		this.creativeTab = creativeTab;
 	}
@@ -25,7 +25,7 @@ public class ItemBoneMeal extends BoneMealItem implements CreativeTabSupplier {
 
 	@Override
 	public boolean isAllowedInCreativeTab(CreativeModeTab tab) {
-		return creativeTab.value() == tab;
+		return creativeTab.get() == tab;
 	}
 
 	@Override

@@ -2,8 +2,19 @@ package voltaic.api.gas;
 
 import java.util.function.Predicate;
 
-import voltaic.registers.VoltaicDataComponentTypes;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import com.mojang.datafixers.util.Pair;
+
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.minecraftforge.common.util.LazyOptional;
+import voltaic.registers.VoltaicCapabilities;
 
 /**
  * Default implementation of IGasHandlerItem to be bound to an item's capability
@@ -11,9 +22,11 @@ import net.minecraft.world.item.ItemStack;
  * @author skip999
  *
  */
-public class GasHandlerItemStack implements IGasHandlerItem {
+public class GasHandlerItemStack implements IGasHandlerItem, ICapabilityProvider {
 
     public static final String GAS_NBT_KEY = "Gas";
+    
+    private final LazyOptional<IGasHandlerItem> lazyOptional = LazyOptional.of(() -> this);
 
     private Predicate<GasStack> isGasValid = gas -> true;
     protected ItemStack container;
@@ -32,6 +45,14 @@ public class GasHandlerItemStack implements IGasHandlerItem {
         isGasValid = predicate;
         return this;
     }
+    
+    @Override
+	public <T> @NotNull LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
+		if(cap == VoltaicCapabilities.CAPABILITY_GASHANDLER_ITEM) {
+			return lazyOptional.cast();
+		}
+		return LazyOptional.empty();
+	}
 
     @Override
     public int getTanks() {
@@ -39,14 +60,14 @@ public class GasHandlerItemStack implements IGasHandlerItem {
     }
 
     public void setGas(GasStack gas) {
-
-        container.set(VoltaicDataComponentTypes.GAS_STACK, gas);
+    	
+    	GasStack.CODEC.encode(gas, NbtOps.INSTANCE, NbtOps.INSTANCE.empty()).result().ifPresent(tag -> container.getOrCreateTag().put(GAS_NBT_KEY, tag));
     }
 
     @Override
     public GasStack getGasInTank(int tank) {
 
-        return container.getOrDefault(VoltaicDataComponentTypes.GAS_STACK, GasStack.EMPTY);
+        return GasStack.CODEC.decode(NbtOps.INSTANCE, container.getOrCreateTag().get(GAS_NBT_KEY)).result().orElseGet(() -> Pair.of(GasStack.EMPTY, new CompoundTag())).getFirst();
     }
 
     @Override
@@ -271,7 +292,7 @@ public class GasHandlerItemStack implements IGasHandlerItem {
     }
 
     public void setContainerToEmpty() {
-        container.remove(VoltaicDataComponentTypes.GAS_STACK);
+        container.getOrCreateTag().remove(GAS_NBT_KEY);
     }
 
     /**

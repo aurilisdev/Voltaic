@@ -5,7 +5,7 @@ import voltaic.prefab.screen.component.types.ScreenComponentSlot.IconType;
 import voltaic.prefab.screen.component.types.ScreenComponentSlot.SlotType;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.capabilities.Capabilities;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 
 public class SlotFluid extends SlotGeneric {
 
@@ -15,7 +15,7 @@ public class SlotFluid extends SlotGeneric {
 
     @Override
     public boolean mayPlace(ItemStack stack) {
-        if (super.mayPlace(stack) && stack.getCapability(Capabilities.FluidHandler.ITEM) != null) {
+        if (super.mayPlace(stack) && stack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM) != null) {
             return true;
         }
         return false;

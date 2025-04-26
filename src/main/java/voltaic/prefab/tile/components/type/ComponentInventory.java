@@ -4,8 +4,6 @@ import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
-import org.jetbrains.annotations.Nullable;
-
 import voltaic.api.inventory.IndexedSidedInvWrapper;
 import voltaic.common.block.states.VoltaicBlockStates;
 import voltaic.common.item.subtype.SubtypeItemUpgrade;
@@ -24,9 +22,10 @@ import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.common.util.TriPredicate;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.IItemHandlerModifiable;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.common.util.TriPredicate;
+import net.minecraftforge.items.IItemHandlerModifiable;
 
 public class ComponentInventory implements IComponent, WorldlyContainer {
 
@@ -210,13 +209,13 @@ public class ComponentInventory implements IComponent, WorldlyContainer {
     public void stopOpen(Player player) {
         viewing.remove(player);
     }
-
-    @Nullable
-    public IItemHandler getCapability(@Nullable Direction side, CapabilityInputType type) {
-        if (side == null) {
-            return null;
+    
+    @Override
+    public <T> LazyOptional<T> getCapability(Capability<T> capability, Direction side, CapabilityInputType inputType) {
+    	if (side == null) {
+            return LazyOptional.empty();
         }
-        return sidedOptionals[side.ordinal()];
+        return LazyOptional.of(() -> sidedOptionals[side.ordinal()]).cast();
     }
 
     @Override
@@ -235,7 +234,7 @@ public class ComponentInventory implements IComponent, WorldlyContainer {
 
     private void defineOptionals(Direction facing) {
 
-        holder.getLevel().invalidateCapabilities(holder.getBlockPos());
+        holder.invalidateCaps();
 
         slotsForFace = new int[6][];
 
@@ -376,7 +375,9 @@ public class ComponentInventory implements IComponent, WorldlyContainer {
     }
 
     public NonNullList<ItemStack> getItems() {
-        return NonNullList.copyOf(items.getValue());
+    	NonNullList<ItemStack> its = NonNullList.create();
+    	its.addAll(items.getValue());
+        return its;
     }
 
     public HashSet<Player> getViewing() {

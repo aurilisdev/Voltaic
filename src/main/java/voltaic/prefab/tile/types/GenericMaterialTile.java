@@ -8,24 +8,25 @@ import voltaic.prefab.tile.GenericTile;
 import voltaic.prefab.tile.components.IComponentType;
 import voltaic.prefab.tile.components.utils.IComponentFluidHandler;
 import voltaic.prefab.tile.components.utils.IComponentGasHandler;
+import voltaic.prefab.utilities.CapabilityUtils;
 import voltaic.registers.VoltaicCapabilities;
 import voltaic.registers.VoltaicSounds;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
-import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
-import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
-import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
+import net.minecraftforge.fluids.capability.IFluidHandlerItem;
+import net.minecraftforge.fluids.capability.templates.FluidTank;
 
 //You come up with a better name :D
 public class GenericMaterialTile extends GenericTile {
@@ -33,15 +34,21 @@ public class GenericMaterialTile extends GenericTile {
     public GenericMaterialTile(BlockEntityType<?> tileEntityTypeIn, BlockPos worldPos, BlockState blockState) {
         super(tileEntityTypeIn, worldPos, blockState);
     }
-
+    
     @Override
-    public ItemInteractionResult useWithItem(ItemStack used, Player player, InteractionHand hand, BlockHitResult hit) {
+    public InteractionResult use(Player player, InteractionHand handIn, BlockHitResult hit) {
+    	
+    	ItemStack used = player.getItemInHand(handIn);
+    	
+    	if(used.isEmpty()) {
+    		return super.use(player, handIn, hit);
+    	}
+    	
+    	Level world = getLevel();
 
-        Level world = getLevel();
+        IFluidHandlerItem handlerFluidItem = used.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).resolve().orElse(CapabilityUtils.EMPTY_FLUID_ITEM);
 
-        IFluidHandlerItem handlerFluidItem = used.getCapability(Capabilities.FluidHandler.ITEM);
-
-        if (handlerFluidItem != null && hasComponent(IComponentType.FluidHandler)) {
+        if (handlerFluidItem != CapabilityUtils.EMPTY_FLUID_ITEM && hasComponent(IComponentType.FluidHandler)) {
 
             IComponentFluidHandler fluidHandler = getComponent(IComponentType.FluidHandler);
 
@@ -68,11 +75,11 @@ public class GenericMaterialTile extends GenericTile {
 
                     world.playSound(null, player.blockPosition(), SoundEvents.BUCKET_EMPTY, SoundSource.PLAYERS, 1, 1);
 
-                    player.setItemInHand(hand, handlerFluidItem.getContainer());
+                    player.setItemInHand(handIn, handlerFluidItem.getContainer());
 
                 }
 
-                return ItemInteractionResult.CONSUME;
+                return InteractionResult.CONSUME;
 
             }
             // now try to fill it
@@ -92,18 +99,18 @@ public class GenericMaterialTile extends GenericTile {
 
                     world.playSound(null, player.blockPosition(), SoundEvents.BUCKET_FILL, SoundSource.PLAYERS, 1, 1);
 
-                    player.setItemInHand(hand, handlerFluidItem.getContainer());
+                    player.setItemInHand(handIn, handlerFluidItem.getContainer());
 
                 }
 
-                return ItemInteractionResult.CONSUME;
+                return InteractionResult.CONSUME;
 
             }
         }
 
-        IGasHandlerItem handlerGasItem = used.getCapability(VoltaicCapabilities.CAPABILITY_GASHANDLER_ITEM);
+        IGasHandlerItem handlerGasItem = used.getCapability(VoltaicCapabilities.CAPABILITY_GASHANDLER_ITEM).orElse(CapabilityUtils.EMPTY_GAS_ITEM);
 
-        if (handlerGasItem != null && hasComponent(IComponentType.GasHandler)) {
+        if (handlerGasItem != CapabilityUtils.EMPTY_GAS_ITEM && hasComponent(IComponentType.GasHandler)) {
 
             IComponentGasHandler gasHandler = getComponent(IComponentType.GasHandler);
 
@@ -130,11 +137,11 @@ public class GenericMaterialTile extends GenericTile {
 
                     world.playSound(null, player.blockPosition(), VoltaicSounds.SOUND_PRESSURERELEASE.get(), SoundSource.PLAYERS, 1, 1);
 
-                    player.setItemInHand(hand, handlerGasItem.getContainer());
+                    player.setItemInHand(handIn, handlerGasItem.getContainer());
 
                 }
 
-                return ItemInteractionResult.CONSUME;
+                return InteractionResult.CONSUME;
 
             }
             // now try to fill it
@@ -154,15 +161,15 @@ public class GenericMaterialTile extends GenericTile {
 
                     world.playSound(null, player.blockPosition(), VoltaicSounds.SOUND_PRESSURERELEASE.get(), SoundSource.PLAYERS, 1, 1);
 
-                    player.setItemInHand(hand, handlerGasItem.getContainer());
+                    player.setItemInHand(handIn, handlerGasItem.getContainer());
 
                 }
 
-                return ItemInteractionResult.CONSUME;
+                return InteractionResult.CONSUME;
 
             }
         }
-        return super.useWithItem(used, player, hand, hit);
+        return super.use(player, handIn, hit);
     }
 
 }

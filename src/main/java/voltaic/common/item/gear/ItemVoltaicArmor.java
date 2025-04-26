@@ -1,9 +1,9 @@
 package voltaic.common.item.gear;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 import voltaic.api.creativetab.CreativeTabSupplier;
-import net.minecraft.core.Holder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ArmorItem;
@@ -14,9 +14,9 @@ import net.minecraft.world.level.Level;
 
 public class ItemVoltaicArmor extends ArmorItem implements CreativeTabSupplier {
 
-	private final Holder<CreativeModeTab> creativeTab;
+	private final Supplier<CreativeModeTab> creativeTab;
 
-	public ItemVoltaicArmor(Holder<ArmorMaterial> material, Type type, Properties properties, Holder<CreativeModeTab> creativeTab) {
+	public ItemVoltaicArmor(ArmorMaterial material, Type type, Properties properties, Supplier<CreativeModeTab> creativeTab) {
 		super(material, type, properties);
 		this.creativeTab = creativeTab;
 	}
@@ -41,7 +41,7 @@ public class ItemVoltaicArmor extends ArmorItem implements CreativeTabSupplier {
 
 	@Override
 	public boolean isAllowedInCreativeTab(CreativeModeTab tab) {
-		return creativeTab.value() == tab;
+		return creativeTab.get() == tab;
 	}
 
 	@Override

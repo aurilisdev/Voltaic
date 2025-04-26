@@ -1,9 +1,9 @@
 package voltaic.common.blockitem;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 import voltaic.api.creativetab.CreativeTabSupplier;
-import net.minecraft.core.Holder;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
@@ -11,9 +11,9 @@ import net.minecraft.world.level.block.Block;
 
 public class BlockItemVoltaic extends BlockItem implements CreativeTabSupplier {
 
-	private final Holder<CreativeModeTab> creativeTab;
+	private final Supplier<CreativeModeTab> creativeTab;
 
-	public BlockItemVoltaic(Block block, Properties properties, Holder<CreativeModeTab> creativeTab) {
+	public BlockItemVoltaic(Block block, Properties properties, Supplier<CreativeModeTab> creativeTab) {
 		super(block, properties);
 		this.creativeTab = creativeTab;
 	}
@@ -25,7 +25,7 @@ public class BlockItemVoltaic extends BlockItem implements CreativeTabSupplier {
 
 	@Override
 	public boolean isAllowedInCreativeTab(CreativeModeTab tab) {
-		return creativeTab.value() == tab;
+		return creativeTab.get() == tab;
 	}
 
 	@Override

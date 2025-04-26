@@ -1,6 +1,6 @@
 package voltaic.compatibility.jei;
 
-import net.neoforged.fml.ModList;
+import net.minecraftforge.fml.ModList;
 
 public class JeiBuffer {
 

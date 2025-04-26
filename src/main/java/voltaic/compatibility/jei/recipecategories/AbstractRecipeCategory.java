@@ -16,13 +16,13 @@ import voltaic.compatibility.jei.utils.ingredients.IngredientRendererGasStack;
 import voltaic.compatibility.jei.utils.label.AbstractLabelWrapper;
 import voltaic.prefab.utilities.math.MathUtils;
 import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.forge.ForgeTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
-import mezz.jei.api.neoforge.NeoForgeTypes;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
@@ -32,7 +32,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidStack;
 
 public abstract class AbstractRecipeCategory<T> implements IRecipeCategory<T> {
 
@@ -75,6 +75,11 @@ public abstract class AbstractRecipeCategory<T> implements IRecipeCategory<T> {
     public RecipeType<T> getRecipeType() {
         return recipeType;
     }
+    
+    @Override
+    public IDrawable getBackground() {
+    	return background;
+    }
 
     @Override
     public Component getTitle() {
@@ -107,7 +112,7 @@ public abstract class AbstractRecipeCategory<T> implements IRecipeCategory<T> {
     }
 
     public void drawnBackground(T recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics graphics) {
-        background.draw(graphics);
+        //background.draw(graphics);
     }
 
     @Override
@@ -269,7 +274,7 @@ public abstract class AbstractRecipeCategory<T> implements IRecipeCategory<T> {
 
             int height = (int) Math.ceil((float) amt / (float) maxGaugeCap * wrapper.getFluidTextHeight());
 
-            builder.addSlot(role, wrapper.getFluidXPos(), wrapper.getFluidYPos() - height).setFluidRenderer(stack.getAmount(), false, wrapper.getFluidTextWidth(), height).addIngredients(NeoForgeTypes.FLUID_STACK, inputs.get(i));
+            builder.addSlot(role, wrapper.getFluidXPos(), wrapper.getFluidYPos() - height).setFluidRenderer(stack.getAmount(), false, wrapper.getFluidTextWidth(), height).addIngredients(ForgeTypes.FLUID_STACK, inputs.get(i));
         }
     }
 
@@ -296,7 +301,7 @@ public abstract class AbstractRecipeCategory<T> implements IRecipeCategory<T> {
             //int gaugeCap = (int) Math.pow(10, MathUtils.nearestPowerOf10(amt, true));
 
             int height = (int) Math.ceil((float) amt / (float) maxGaugeCap * wrapper.getFluidTextHeight());
-            builder.addSlot(role, wrapper.getFluidXPos(), wrapper.getFluidYPos() - height).setFluidRenderer(stack.getAmount(), false, wrapper.getFluidTextWidth(), height).addIngredient(NeoForgeTypes.FLUID_STACK, stack);
+            builder.addSlot(role, wrapper.getFluidXPos(), wrapper.getFluidYPos() - height).setFluidRenderer(stack.getAmount(), false, wrapper.getFluidTextWidth(), height).addIngredient(ForgeTypes.FLUID_STACK, stack);
         }
     }
 

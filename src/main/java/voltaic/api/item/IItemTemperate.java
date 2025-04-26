@@ -1,18 +1,17 @@
 package voltaic.api.item;
 
 import voltaic.prefab.item.TemperateItemProperties;
-import voltaic.registers.VoltaicDataComponentTypes;
+import voltaic.prefab.utilities.NBTUtils;
 import net.minecraft.world.item.ItemStack;
 
 public interface IItemTemperate {
 
 	public static void setTemperature(ItemStack stack, double amount) {
-		stack.set(VoltaicDataComponentTypes.HEAT_STORED, amount);
+		stack.getOrCreateTag().putDouble(NBTUtils.TEMPERATURE, amount);
 	}
 
 	public static double getTemperature(ItemStack stack) {
-
-		return stack.getOrDefault(VoltaicDataComponentTypes.HEAT_STORED, 0.0);
+		return stack.getOrCreateTag().getDouble(NBTUtils.TEMPERATURE);
 	}
 
 	/**
@@ -25,7 +24,7 @@ public interface IItemTemperate {
 	 * @return The actual amount the item was cooled
 	 */
 	default double loseHeat(ItemStack stack, double amount, double minTemp, boolean debug) {
-		if (getTemperature(stack) < 0) {
+		if (!stack.hasTag() || amount < 0) {
 			return 0;
 		}
 

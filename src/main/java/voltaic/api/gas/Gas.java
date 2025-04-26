@@ -1,8 +1,11 @@
 package voltaic.api.gas;
 
+import java.util.function.Supplier;
+
 import javax.annotation.Nullable;
 
 import voltaic.registers.VoltaicGases;
+import voltaic.registers.VoltaicRegistries;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
@@ -24,20 +27,20 @@ public class Gas {
 	public static final int MINIMUM_HEAT_BURN_TEMP = 327;
 	public static final int MINIMUM_FREEZE_TEMP = 260;
 
-	private final Holder<Item> container;
+	private final Supplier<Item> container;
 	private final Component description;
 	private final int condensationTemp; // Degrees Kelvin; set to 0 if this gas does not condense
 	@Nullable
-	private final Holder<Fluid> condensedFluid; // set to empty if gas does not condense
+	private final Fluid condensedFluid; // set to empty if gas does not condense
 
-	public Gas(Holder<Item> container, Component description) {
+	public Gas(Supplier<Item> container, Component description) {
 		this.container = container;
 		this.description = description;
 		this.condensationTemp = 0;
-		this.condensedFluid = new Holder.Direct<>(Fluids.EMPTY);
+		this.condensedFluid = Fluids.EMPTY;
 	}
 
-	public Gas(Holder<Item> container, Component description, int condensationTemp, Holder<Fluid> condensedFluid) {
+	public Gas(Supplier<Item> container, Component description, int condensationTemp, Fluid condensedFluid) {
 		this.container = container;
 		this.description = description;
 		this.condensationTemp = condensationTemp;
@@ -50,15 +53,15 @@ public class Gas {
 	}
 
 	public Item getContainer() {
-		return container.value();
+		return container.get();
 	}
 
 	public Holder<Gas> getBuiltInRegistry() {
-		return VoltaicGases.GAS_REGISTRY.wrapAsHolder(this);
+		return VoltaicRegistries.gasRegistry().getHolder(this).get();
 	}
 
 	public boolean isEmpty() {
-		return this == VoltaicGases.EMPTY.value();
+		return this == VoltaicGases.EMPTY.get();
 	}
 
 	public int getCondensationTemp() {
@@ -66,11 +69,11 @@ public class Gas {
 	}
 
 	public boolean noCondensedFluid() {
-		return condensedFluid == null || condensedFluid.value() == Fluids.EMPTY;
+		return condensedFluid == null || condensedFluid == Fluids.EMPTY;
 	}
 
 	public Fluid getCondensedFluid() {
-		return condensedFluid.value();
+		return condensedFluid;
 	}
 
 	@Override

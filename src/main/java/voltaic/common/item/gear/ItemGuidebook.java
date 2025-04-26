@@ -1,12 +1,12 @@
 package voltaic.common.item.gear;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 import voltaic.common.inventory.container.ContainerGuidebook;
 import voltaic.common.item.ItemVoltaic;
 import voltaic.prefab.utilities.VoltaicTextUtils;
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.Holder;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
@@ -24,12 +24,12 @@ public class ItemGuidebook extends ItemVoltaic {
 	private static final String LINK = "https://wiki.aurilis.dev";
 	private static final Component CONTAINER_TITLE = Component.translatable("container.guidebook");
 
-	public ItemGuidebook(Properties properties, Holder<CreativeModeTab> creativeTab) {
+	public ItemGuidebook(Properties properties, Supplier<CreativeModeTab> creativeTab) {
 		super(properties, creativeTab);
 	}
 
 	@Override
-	public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltips, TooltipFlag flag) {
+	public void appendHoverText(ItemStack stack, Level context, List<Component> tooltips, TooltipFlag flag) {
 		tooltips.add(VoltaicTextUtils.tooltip("info.guidebookuse").withStyle(ChatFormatting.LIGHT_PURPLE));
 		tooltips.add(VoltaicTextUtils.tooltip("guidebookname").withStyle(ChatFormatting.LIGHT_PURPLE));
 		super.appendHoverText(stack, context, tooltips, flag);

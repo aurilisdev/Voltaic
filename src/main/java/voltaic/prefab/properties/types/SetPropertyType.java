@@ -4,7 +4,7 @@ import com.mojang.serialization.Codec;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.network.codec.StreamCodec;
+import voltaic.api.codec.StreamCodec;
 
 import javax.annotation.Nonnull;
 import java.util.HashSet;
@@ -82,7 +82,7 @@ public class SetPropertyType<TYPE, BUFFERTYPE extends ByteBuf> implements IPrope
 
                 final int indx = index;
 
-                singleNbtCodec.encode(val, NbtOps.INSTANCE, NbtOps.INSTANCE.empty()).ifSuccess(nbt -> tag.put("" + indx, nbt));
+                singleNbtCodec.encode(val, NbtOps.INSTANCE, NbtOps.INSTANCE.empty()).result().ifPresent(nbt -> tag.put("" + indx, nbt));
 
                 index++;
 
@@ -110,7 +110,7 @@ public class SetPropertyType<TYPE, BUFFERTYPE extends ByteBuf> implements IPrope
 
             for (int i = 0; i < size; i++) {
 
-                singleNbtCodec.decode(NbtOps.INSTANCE, data.get("" + i)).ifSuccess(pair -> set.add(pair.getFirst()));
+                singleNbtCodec.decode(NbtOps.INSTANCE, data.get("" + i)).result().ifPresent(pair -> set.add(pair.getFirst()));
 
             }
 

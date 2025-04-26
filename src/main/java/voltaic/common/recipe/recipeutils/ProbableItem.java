@@ -7,8 +7,8 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import voltaic.Voltaic;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.StreamCodec;
+import voltaic.api.codec.StreamCodec;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
 
 public class ProbableItem {
@@ -29,22 +29,22 @@ public class ProbableItem {
 
     public static final Codec<List<ProbableItem>> LIST_CODEC = CODEC.listOf();
 
-    public static final StreamCodec<RegistryFriendlyByteBuf, ProbableItem> STREAM_CODEC = new StreamCodec<>() {
+    public static final StreamCodec<FriendlyByteBuf, ProbableItem> STREAM_CODEC = new StreamCodec<>() {
         @Override
-        public ProbableItem decode(RegistryFriendlyByteBuf buf) {
-            return new ProbableItem(ItemStack.STREAM_CODEC.decode(buf), buf.readDouble());
+        public ProbableItem decode(FriendlyByteBuf buf) {
+            return new ProbableItem(StreamCodec.ITEM_STACK.decode(buf), buf.readDouble());
         }
 
         @Override
-        public void encode(RegistryFriendlyByteBuf buf, ProbableItem item) {
-            ItemStack.STREAM_CODEC.encode(buf, item.item);
+        public void encode(FriendlyByteBuf buf, ProbableItem item) {
+            StreamCodec.ITEM_STACK.encode(buf, item.item);
             buf.writeDouble(item.chance);
         }
     };
 
-    public static final StreamCodec<RegistryFriendlyByteBuf, List<ProbableItem>> LIST_STREAM_CODEC = new StreamCodec<>() {
+    public static final StreamCodec<FriendlyByteBuf, List<ProbableItem>> LIST_STREAM_CODEC = new StreamCodec<>() {
         @Override
-        public List<ProbableItem> decode(RegistryFriendlyByteBuf buf) {
+        public List<ProbableItem> decode(FriendlyByteBuf buf) {
             int count = buf.readInt();
             List<ProbableItem> items = new ArrayList<>();
             for (int i = 0; i < count; i++) {
@@ -54,7 +54,7 @@ public class ProbableItem {
         }
 
         @Override
-        public void encode(RegistryFriendlyByteBuf buf, List<ProbableItem> probable) {
+        public void encode(FriendlyByteBuf buf, List<ProbableItem> probable) {
             buf.writeInt(probable.size());
             for (ProbableItem item : probable) {
                 STREAM_CODEC.encode(buf, item);

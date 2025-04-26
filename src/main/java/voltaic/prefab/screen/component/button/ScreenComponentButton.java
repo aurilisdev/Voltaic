@@ -6,14 +6,13 @@ import javax.annotation.Nullable;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 
-import voltaic.Voltaic;
 import voltaic.api.screen.ITexture;
 import voltaic.prefab.screen.component.ScreenComponentGeneric;
 import voltaic.prefab.utilities.RenderingUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.WidgetSprites;
+import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.Component;
@@ -29,8 +28,6 @@ import net.minecraft.sounds.SoundEvents;
  * @param <T>
  */
 public class ScreenComponentButton<T extends ScreenComponentButton<?>> extends ScreenComponentGeneric {
-
-    public static final WidgetSprites VANILLA_BUTTON_SPRITES = new WidgetSprites(Voltaic.vanillarl("widget/button"), Voltaic.vanillarl("widget/button_disabled"), Voltaic.vanillarl("widget/button_highlighted"));
 
     public boolean isPressed = false;
 
@@ -85,9 +82,11 @@ public class ScreenComponentButton<T extends ScreenComponentButton<?>> extends S
         if (isVanillaRender && isVisible()) {
             Minecraft minecraft = Minecraft.getInstance();
             RenderingUtils.setShaderColor(color);
+            int i = this.getVanillaYImage(isHovered());
             RenderSystem.enableBlend();
             RenderSystem.enableDepthTest();
-            graphics.blitSprite(VANILLA_BUTTON_SPRITES.get(isActive(), this.isHovered() || isPressed), this.xLocation + guiWidth, this.yLocation + guiHeight, this.width, this.height);
+            graphics.blit(AbstractWidget.WIDGETS_LOCATION, this.xLocation + guiWidth, this.yLocation + guiHeight, 0, 46 + i * 20, this.width / 2, this.height, 256, 256);
+			graphics.blit(AbstractWidget.WIDGETS_LOCATION, this.xLocation + guiWidth + this.width / 2, this.yLocation + guiHeight, 200 - this.width / 2, 46 + i * 20, this.width / 2, this.height, 256, 256);
             if(icon != null) {
                 int xOffset = (width - icon.imageWidth()) / 2;
                 int yOffset = (height - icon.imageHeight()) / 2;

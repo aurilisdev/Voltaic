@@ -1,19 +1,17 @@
 package voltaic.common.packet.types.server;
 
-import voltaic.common.packet.NetworkHandler;
-//import electrodynamics.prefab.properties.PropertyManager.PropertyWrapper;
+import voltaic.api.codec.StreamCodec;
+
+import java.util.function.Supplier;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraftforge.network.NetworkEvent.Context;
 
-public class PacketSendUpdatePropertiesServer implements CustomPacketPayload {
-
-    public static final ResourceLocation PACKET_SENDUPDATEPROPERTIESSERVER_PACKETID = NetworkHandler.id("packetsendupdatepropertiesserver");
-    public static final Type<PacketSendUpdatePropertiesServer> TYPE = new Type<>(PACKET_SENDUPDATEPROPERTIESSERVER_PACKETID);
+public class PacketSendUpdatePropertiesServer {
+	
     public static final StreamCodec<FriendlyByteBuf, PacketSendUpdatePropertiesServer> CODEC = new StreamCodec<>() {
 
         @Override
@@ -60,12 +58,22 @@ public class PacketSendUpdatePropertiesServer implements CustomPacketPayload {
 
      */
 
-    public static void handle(PacketSendUpdatePropertiesServer message, IPayloadContext context) {
-        ServerBarrierMethods.handleSendUpdatePropertiesServer(context.player().level(), message.tilePos, message.data, message.index);
-    }
+    public static void handle(PacketSendUpdatePropertiesServer message, Supplier<Context> context) {
+		Context ctx = context.get();
+		ctx.enqueueWork(() -> {
+			ServerLevel world = context.get().getSender().serverLevel();
+			if (world != null) {
+				ServerBarrierMethods.handleSendUpdatePropertiesServer(world, message.tilePos, message.data, message.index);
+			}
+		});
+		ctx.setPacketHandled(true);
+	}
 
-    @Override
-    public Type<? extends CustomPacketPayload> type() {
-        return TYPE;
-    }
+	public static void encode(PacketSendUpdatePropertiesServer message, FriendlyByteBuf buf) {
+		CODEC.encode(buf, message);
+	}
+
+	public static PacketSendUpdatePropertiesServer decode(FriendlyByteBuf buf) {
+		return CODEC.decode(buf);
+	}
 }

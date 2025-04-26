@@ -1,167 +1,165 @@
 plugins {
-    id 'java-library'
-    id 'idea'
-    id 'maven-publish'
-    id 'net.neoforged.gradle.userdev' version '7.0.165'
+	id 'eclipse'
+	id 'maven-publish'
+	id 'net.minecraftforge.gradle' version '[6.0,6.2)'
+	id 'org.parchmentmc.librarian.forgegradle' version "${parchent_librarian_version}.+"
+    id 'com.matthewprenger.cursegradle' version "${cursegradle_version}"
 }
-
-tasks.named('wrapper', Wrapper).configure {
-    // Define wrapper values here so as to not have to always do so when updating gradlew.properties.
-    // Switching this to Wrapper.DistributionType.ALL will download the full gradle sources that comes with
-    // documentation attached on cursor hover of gradle classes and methods. However, this comes with increased
-    // file size for Gradle. If you do switch this to ALL, run the Gradle wrapper task twice afterwards.
-    // (Verify by checking gradle/wrapper/gradle-wrapper.properties to see if distributionUrl now points to `-all`)
-    distributionType = Wrapper.DistributionType.BIN
-}
-
-group = mod_group_id
-version = "${minecraft_version}-" + mod_version
 
 libsDirName = "../output"
 distsDirName = "../output"
 
-repositories {
-    mavenLocal()
-}
+group = voltaic_group
+version = "${minecraft_version}-" + voltaic_version
 
 base {
-    archivesName = mod_id
+
+	archivesName = voltaic_name
+
 }
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+
+
 
 println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
+minecraft {
+    mappings channel: 'parchment', version: "${parchment_version}-${minecraft_version}"
+    accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
+    runs {
+        client {
+            workingDirectory project.file('run')
 
+            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
 
+            property 'forge.logging.console.level', 'debug'
 
-minecraft.accessTransformers.file rootProject.file('src/main/resources/META-INF/accesstransformer.cfg')
+            mods {
+                voltaic {
+                    source sourceSets.main
+                }
+            }
+        }
 
-runs {
+        server {
+            workingDirectory project.file('run')
 
-    configureEach {
+            // Recommended logging data for a userdev environment
+            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
 
-        systemProperty 'forge.logging.markers', 'REGISTRIES'
+            // Recommended logging level for the console
+            property 'forge.logging.console.level', 'debug'
+            
+            mods {
+                voltaic {
+                    source sourceSets.main
+                }
+            }
+        }
 
-        systemProperty 'forge.logging.console.level', 'debug'
+        data {
+            workingDirectory project.file('run')
 
-        modSource project.sourceSets.main
-    }
+            // Recommended logging data for a userdev environment
+            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
 
-    client {
+            // Recommended logging level for the console
+            property 'forge.logging.console.level', 'debug'
 
-        systemProperty 'forge.enabledGameTestNamespaces', project.mod_id
+            args '--mod', 'voltaic', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
 
-    }
-
-    server {
-
-        systemProperty 'forge.enabledGameTestNamespaces', project.mod_id
-        programArgument '--nogui'
-
-    }
-
-    gameTestServer {
-
-        systemProperty 'forge.enabledGameTestNamespaces', project.mod_id
-
-    }
-
-    data {
-
-        programArguments.addAll '--mod', project.mod_id, '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
-
+            mods {
+                voltaic {
+                    source sourceSets.main
+                }
+            }
+        }
     }
 }
 
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
-configurations {
-    runtimeClasspath.extendsFrom localRuntime
+dependencies {
+	minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+    compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}-common-api:${jei_version}")
+    compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}-forge-api:${jei_version}")
+    runtimeOnly fg.deobf("mezz.jei:jei-${minecraft_version}-forge:${jei_version}")
 }
 
-dependencies {
-    implementation "net.neoforged:neoforge:${neo_version}"
-    compileOnly "mezz.jei:jei-${minecraft_version}-common-api:${jei_version}"
-    compileOnly "mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}"
-    localRuntime "mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}"
-   
+repositories {
+	mavenCentral()
+	maven {
+	    // location of the maven that hosts JEI files since January 2023
+	    name = "Jared's maven"
+	    url = "https://maven.blamejared.com/"
+	}
+	maven {
+   		// location of a maven mirror for JEI files, as a fallback
+    	name = "ModMaven"
+    	url = "https://modmaven.dev"
+  	}
+    maven {
+        url = "https://api.modrinth.com/maven"
+    }
+
+}
+
+tasks.named('jar', Jar).configure {
+	
+	manifest {
+        attributes([
+            "Specification-Title": "voltaic",
+            "Specification-Vendor": "aurilisdev",
+            "Specification-Version": "1", // We are version 1 of ourselves
+            "Implementation-Title": project.name,
+            "Implementation-Version": project.jar.archiveVersion,
+            "Implementation-Vendor" :"aurilisdev",
+            "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+        ])
+    }
+
+	finalizedBy 'reobfJar'
+
 }
 
 tasks.register('sourcesJar', Jar).configure {
-    dependsOn classes
-    from sourceSets.main.allSource
-    archiveClassifier = 'sources'
+	dependsOn classes
+	from sourceSets.main.allSource
+	archiveClassifier = 'sources'
 }
 
 tasks.register('deobfJar', Jar).configure {
-    from sourceSets.main.output
-    archiveClassifier = 'deobf'
+	from sourceSets.main.output
+	archiveClassifier = 'deobf'
 }
 
 tasks.named('publish').configure {
-    dependsOn 'reobfJar'
+	dependsOn 'reobfJar'
 }
 
-
-tasks.withType(ProcessResources).configureEach {
-    var replaceProperties = [
-            minecraft_version      : minecraft_version,
-            minecraft_version_range: minecraft_version_range,
-            neo_version            : neo_version,
-            neo_version_range      : neo_version_range,
-            loader_version_range   : loader_version_range,
-            mod_id                 : mod_id,
-            mod_name               : mod_name,
-            mod_license            : mod_license,
-            mod_version            : mod_version,
-            mod_authors            : mod_authors,
-            mod_description        : mod_description
-    ]
-    inputs.properties replaceProperties
-
-    filesMatching(['META-INF/neoforge.mods.toml']) {
-        expand replaceProperties
-    }
+/*
+task sourcesJar(type: Jar, dependsOn: classes) {
+	from sourceSets.main.allSource
+	classifier = 'sources'
 }
-
+task deobfJar(type: Jar) {
+	from sourceSets.main.output
+	classifier = 'deobf'
+}
+*/
 artifacts {
-    archives sourcesJar
-    archives deobfJar
+	archives sourcesJar
+	archives deobfJar
 }
-
 publishing {
     publications {
-        register('mavenJava', MavenPublication) {
-            from components.java
+        mavenJava(MavenPublication) {
+            artifact jar
         }
     }
     repositories {
         maven {
-            url "file://${project.projectDir}/repo"
+            url "file:///${project.projectDir}/mcmodsrepo"
         }
-    }
-}
-
-tasks.withType(JavaCompile).configureEach {
-    options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
-}
-
-idea {
-    module {
-        downloadSources = true
-        downloadJavadoc = true
-    }
-}
-
-repositories {
-    maven {
-        // location of the maven that hosts JEI files since January 2023
-        name = "Jared's maven"
-        url = "https://maven.blamejared.com/"
-    }
-    maven {
-        // location of a maven mirror for JEI files, as a fallback
-        name = "ModMaven"
-        url = "https://modmaven.dev"
     }
 }
