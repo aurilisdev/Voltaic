@@ -6,6 +6,7 @@ import java.util.List;
 import org.jetbrains.annotations.NotNull;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -21,6 +22,8 @@ import voltaic.api.radiation.util.BlockPosVolume;
 import voltaic.api.radiation.util.IRadiationManager;
 import voltaic.api.radiation.util.IRadiationRecipient;
 import voltaic.api.radiation.util.RadioactiveObject;
+import voltaic.prefab.utilities.object.TransferPack;
+import voltaic.api.electricity.ICapabilityElectrodynamic;
 import voltaic.api.gas.GasAction;
 import voltaic.api.gas.GasStack;
 
@@ -466,6 +469,45 @@ public class CapabilityUtils {
 		@Override
 		public void tick(Level world) {
 
+		}
+		
+	};
+	
+	public static final ICapabilityElectrodynamic EMPTY_ELECTRO = new ICapabilityElectrodynamic() {
+
+		@Override
+		public double getJoulesStored() {
+			return 0;
+		}
+
+		@Override
+		public double getMaxJoulesStored() {
+			return 0;
+		}
+
+		@Override
+		public void setJoulesStored(double joules) {
+			
+		}
+
+		@Override
+		public boolean isEnergyReceiver() {
+			return false;
+		}
+
+		@Override
+		public boolean isEnergyProducer() {
+			return false;
+		}
+
+		@Override
+		public void onChange() {
+			
+		}
+
+		@Override
+		public TransferPack getConnectedLoad(LoadProfile loadProfile, Direction dir) {
+			return TransferPack.EMPTY;
 		}
 		
 	};

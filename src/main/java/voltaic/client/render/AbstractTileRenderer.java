@@ -15,7 +15,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.client.resources.model.ModelResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -50,7 +50,7 @@ public abstract class AbstractTileRenderer<T extends GenericTile> implements Blo
 		return minecraft().level;
 	}
 
-	public BakedModel getModel(ModelResourceLocation model) {
+	public BakedModel getModel(ResourceLocation model) {
 		return Minecraft.getInstance().getModelManager().getModel(model);
 	}
 

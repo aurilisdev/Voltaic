@@ -5,7 +5,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import voltaic.prefab.tile.components.type.ComponentInventory;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.loot.packs.VanillaBlockLoot;
 import net.minecraft.resources.ResourceLocation;
@@ -32,7 +31,7 @@ public abstract class AbstractLootTableProvider extends VanillaBlockLoot {
 
 	private final String modID;
 
-	public AbstractLootTableProvider(HolderLookup.Provider provider, String modID) {
+	public AbstractLootTableProvider(String modID) {
 		this.modID = modID;
 	}
 
