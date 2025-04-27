@@ -151,7 +151,10 @@ public class ComponentGasHandlerSimple extends PropertyGasTank implements ICompo
         if (side == null) {
             return LazyOptional.empty();
         }
-        return LazyOptional.of(() -> sidedOptionals[side.ordinal()]).cast();
+        
+        IGasHandler cap = sidedOptionals[side.ordinal()];
+        
+        return cap == null ? LazyOptional.empty() : LazyOptional.of(() -> cap).cast();
     }
 
     @Override

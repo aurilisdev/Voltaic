@@ -11,7 +11,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
@@ -24,17 +23,15 @@ public class SimpleWaterBasedFluidType extends FluidType {
 
     public final ResourceLocation texture;
     public final Color color;
-    private final Fluid fluid;
 
-    public SimpleWaterBasedFluidType(Fluid fluid, String modId, String id, String texture, Color color) {
+    public SimpleWaterBasedFluidType(String modId, String id, String texture, Color color) {
         super(FluidType.Properties.create().descriptionId("fluid." + modId + "." + id).fallDistanceModifier(0F).canExtinguish(true).canConvertToSource(true).supportsBoating(true).sound(SoundActions.BUCKET_FILL, SoundEvents.BUCKET_FILL).sound(SoundActions.BUCKET_EMPTY, SoundEvents.BUCKET_EMPTY).sound(SoundActions.FLUID_VAPORIZE, SoundEvents.FIRE_EXTINGUISH).canHydrate(true));
         this.texture = new ResourceLocation(modId, "block/fluid/" + texture);
         this.color = color;
-        this.fluid = fluid;
     }
 
-    public SimpleWaterBasedFluidType(Fluid fluid, String modId, String fluidName, String texture) {
-        this(fluid, modId, fluidName, texture, DEFAULT_COLOR_TINT);
+    public SimpleWaterBasedFluidType(String modId, String fluidName, String texture) {
+        this(modId, fluidName, texture, DEFAULT_COLOR_TINT);
     }
 
     @Override
@@ -42,9 +39,10 @@ public class SimpleWaterBasedFluidType extends FluidType {
         return canFluidLog ? super.getBlockPathType(state, level, pos, mob, true) : null;
     }
     
+    
     @Override
     public void initializeClient(Consumer<IClientFluidTypeExtensions> consumer) {
-    	consumer.accept(new SWBFClientExtensions((SimpleWaterBasedFluidType) fluid.getFluidType()));
+    	consumer.accept(new SWBFClientExtensions(this));
     }
 
 }

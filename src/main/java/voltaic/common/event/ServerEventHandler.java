@@ -17,6 +17,7 @@ import voltaic.common.reloadlistener.RadiationShieldingRegister;
 import voltaic.common.reloadlistener.RadioactiveFluidRegister;
 import voltaic.common.reloadlistener.RadioactiveGasRegister;
 import voltaic.common.reloadlistener.RadioactiveItemRegister;
+import voltaic.prefab.utilities.CapabilityUtils;
 import voltaic.registers.VoltaicCapabilities;
 
 @EventBusSubscriber(modid = Voltaic.ID, bus = EventBusSubscriber.Bus.FORGE)
@@ -46,7 +47,7 @@ public class ServerEventHandler {
 	@SubscribeEvent
 	public static void registerEntityCaps(AttachCapabilitiesEvent<Entity> event) {
 		Entity entity = event.getObject();
-		if(entity instanceof LivingEntity living && !entity.getCapability(VoltaicCapabilities.CAPABILITY_RADIATIONRECIPIENT).isPresent()) {
+		if(entity instanceof LivingEntity living && entity.getCapability(VoltaicCapabilities.CAPABILITY_RADIATIONRECIPIENT).orElse(CapabilityUtils.EMPTY_RADIATION_REPIPIENT) == CapabilityUtils.EMPTY_RADIATION_REPIPIENT) {
 			event.addCapability(Voltaic.rl("radiationrecipient"), new CapabilityRadiationRecipient());
 		}
 	}
@@ -54,7 +55,7 @@ public class ServerEventHandler {
 	@SubscribeEvent
 	public static void registerLevelCaps(AttachCapabilitiesEvent<Level> event) {
 		Level world = event.getObject();
-		if(world != null && !world.getCapability(VoltaicCapabilities.CAPABILITY_RADIATIONMANAGER).isPresent()) {
+		if(world != null && world.getCapability(VoltaicCapabilities.CAPABILITY_RADIATIONMANAGER).orElse(CapabilityUtils.EMPTY_MANAGER) == CapabilityUtils.EMPTY_MANAGER) {
 			event.addCapability(Voltaic.rl("radiationmanager"), new RadiationManager());
 		}
 	}

@@ -236,7 +236,10 @@ public class ComponentFluidHandlerMulti implements IComponentFluidHandler {
     	if (side == null || !isSided) {
             return LazyOptional.empty();
         }
-        return LazyOptional.of(() -> sidedOptionals[side.ordinal()]).cast();
+    	
+    	IFluidHandler cap = sidedOptionals[side.ordinal()];
+        
+        return cap == null ? LazyOptional.empty() : LazyOptional.of(() -> cap).cast();
     }
 
     @Override

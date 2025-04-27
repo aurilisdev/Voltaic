@@ -8,6 +8,7 @@ import voltaic.prefab.utilities.WorldUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -68,6 +69,29 @@ public abstract class AbstractRefreshingConnectBlock<CONDUCTOR extends GenericCo
         }
 
     }
+    
+    @Override
+	public BlockState updateShape(BlockState stateIn, Direction facing, BlockState facingState, LevelAccessor world, BlockPos currentPos, BlockPos facingPos) {
+    	
+    	if (world.isClientSide()) {
+            return super.updateShape(stateIn, facing, facingState, world, currentPos, facingPos);
+        }
+        BlockEntity tile = world.getBlockEntity(currentPos);
+        CONDUCTOR conductor = getCableIfValid(tile);
+        if (conductor == null || conductor.isRemoved()) {
+            return super.updateShape(stateIn, facing, facingState, world, currentPos, facingPos);
+        }
+
+        EnumConnectType currConnection = conductor.readConnections()[facing.ordinal()];
+
+        EnumConnectType connection = getConnection(world.getBlockState(facingPos), world.getBlockEntity(facingPos), conductor, facing);
+
+        if (currConnection != connection && conductor.writeConnection(facing, connection)) {
+            conductor.updateNetwork(facing);
+        }
+    	
+		return super.updateShape(stateIn, facing, facingState, world, currentPos, facingPos);
+	}
 
     public abstract EnumConnectType getConnection(BlockState otherState, BlockEntity otherTile, CONDUCTOR thisConductor, Direction dir);
 

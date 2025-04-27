@@ -31,21 +31,20 @@ public class Gas {
 	private final Component description;
 	private final int condensationTemp; // Degrees Kelvin; set to 0 if this gas does not condense
 	@Nullable
-	private final Fluid condensedFluid; // set to empty if gas does not condense
+	private final Supplier<Fluid> condensedFluid; // set to empty if gas does not condense
 
 	public Gas(Supplier<Item> container, Component description) {
 		this.container = container;
 		this.description = description;
 		this.condensationTemp = 0;
-		this.condensedFluid = Fluids.EMPTY;
+		this.condensedFluid = () -> Fluids.EMPTY;
 	}
 
-	public Gas(Supplier<Item> container, Component description, int condensationTemp, Fluid condensedFluid) {
+	public Gas(Supplier<Item> container, Component description, int condensationTemp, Supplier<Fluid> condensedFluid) {
 		this.container = container;
 		this.description = description;
 		this.condensationTemp = condensationTemp;
 		this.condensedFluid = condensedFluid;
-		VoltaicGases.MAPPED_GASSES.put(condensedFluid, this);
 	}
 
 	public Component getDescription() {
@@ -73,7 +72,7 @@ public class Gas {
 	}
 
 	public Fluid getCondensedFluid() {
-		return condensedFluid;
+		return condensedFluid.get();
 	}
 
 	@Override

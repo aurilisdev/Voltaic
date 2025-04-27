@@ -1,7 +1,6 @@
 package voltaic.datagen.utils.server.loottable;
 
 import voltaic.prefab.tile.GenericTile;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
@@ -10,8 +9,8 @@ import net.minecraftforge.registries.RegistryObject;
 
 public abstract class BaseLootTablesProvider extends AbstractLootTableProvider {
 
-    public BaseLootTablesProvider(String modID, HolderLookup.Provider provider) {
-        super(provider, modID);
+    public BaseLootTablesProvider(String modID) {
+        super(modID);
     }
 
     public <T extends GenericTile> void addMachineTable(Block block, RegistryObject<BlockEntityType<T>> tilereg, boolean items, boolean fluids, boolean gases, boolean energy, boolean additional) {

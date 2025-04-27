@@ -20,6 +20,8 @@ import voltaic.common.settings.VoltaicConstants;
 import voltaic.common.tags.VoltaicTags;
 import voltaic.prefab.configuration.ConfigurationHandler;
 import voltaic.registers.UnifiedVoltaicRegister;
+import voltaic.registers.VoltaicGases;
+import voltaic.registers.VoltaicRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.api.distmarker.Dist;
@@ -80,6 +82,9 @@ public class Voltaic {
         RadioactiveFluidRegister.INSTANCE = new RadioactiveFluidRegister().subscribeAsSyncable(NetworkHandler.CHANNEL);
         RadioactiveGasRegister.INSTANCE = new RadioactiveGasRegister().subscribeAsSyncable(NetworkHandler.CHANNEL);
         RadiationShieldingRegister.INSTANCE = new RadiationShieldingRegister().subscribeAsSyncable(NetworkHandler.CHANNEL);
+        event.enqueueWork(() -> {
+        	VoltaicRegistries.gasRegistry().forEach(gas -> VoltaicGases.MAPPED_GASSES.put(gas.getCondensedFluid(), gas));
+        });
         // CraftingHelper.register(ConfigCondition.Serializer.INSTANCE); // Probably wrong location after update from 1.18.2 to
         // 1.19.2
 
@@ -125,7 +130,7 @@ public class Voltaic {
     }
 
     public static final ResourceLocation forgerl(String path) {
-        return new ResourceLocation("neoforge", path);
+        return new ResourceLocation("forge", path);
     }
 
     // This returns null to help us catch inappropriate references of this parameter

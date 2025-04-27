@@ -125,8 +125,10 @@ public class ComponentElectrodynamic implements IComponent, ICapabilityElectrody
         if (side == null) {
             return LazyOptional.empty();
         }
-
-        return LazyOptional.of(() -> sidedOptionals[side.ordinal()]).cast();
+        
+        ICapabilityElectrodynamic cap = sidedOptionals[side.ordinal()];
+        
+        return cap == null ? LazyOptional.empty() : LazyOptional.of(() -> cap).cast();
     }
 
     @Override

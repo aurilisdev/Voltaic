@@ -12,6 +12,7 @@ import voltaic.prefab.tile.GenericTile;
 import voltaic.prefab.tile.components.CapabilityInputType;
 import voltaic.prefab.tile.components.IComponent;
 import voltaic.prefab.tile.components.IComponentType;
+import voltaic.prefab.utilities.CapabilityUtils;
 import voltaic.prefab.utilities.object.TransferPack;
 import voltaic.registers.VoltaicCapabilities;
 
@@ -57,9 +58,9 @@ public class ComponentForgeEnergy implements IComponent {
             return LazyOptional.empty();
         }
 
-        ICapabilityElectrodynamic electrodynamic = electro.getCapability(VoltaicCapabilities.CAPABILITY_ELECTRODYNAMIC_BLOCK, side, inputType).resolve().get();
+        ICapabilityElectrodynamic electrodynamic = electro.getCapability(VoltaicCapabilities.CAPABILITY_ELECTRODYNAMIC_BLOCK, side, inputType).orElse(CapabilityUtils.EMPTY_ELECTRO);
 
-        return electrodynamic == null ? LazyOptional.empty() : LazyOptional.of(() -> new ElectrodynamicWrapper(electrodynamic)).cast();
+        return electrodynamic == CapabilityUtils.EMPTY_ELECTRO ? LazyOptional.empty() : LazyOptional.of(() -> new ElectrodynamicWrapper(electrodynamic)).cast();
     }
 
     private static final class ElectrodynamicWrapper implements IEnergyStorage {

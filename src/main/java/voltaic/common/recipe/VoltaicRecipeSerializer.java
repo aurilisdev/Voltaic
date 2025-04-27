@@ -1,6 +1,7 @@
 package voltaic.common.recipe;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.jetbrains.annotations.Nullable;
@@ -117,7 +118,7 @@ public abstract class VoltaicRecipeSerializer<T extends VoltaicRecipe> implement
 	@Nullable
 	public static List<ProbableItem> getItemBiproducts(ResourceLocation recipeId, JsonObject json) {
 		if (!json.has(ITEM_BIPRODUCTS)) {
-			return null;
+			return Collections.emptyList();
 		}
 		JsonObject itemBiproducts = GsonHelper.getAsJsonObject(json, ITEM_BIPRODUCTS);
 
@@ -138,7 +139,7 @@ public abstract class VoltaicRecipeSerializer<T extends VoltaicRecipe> implement
 	@Nullable
 	public static List<ProbableFluid> getFluidBiproducts(ResourceLocation recipeId, JsonObject json) {
 		if (!json.has(FLUID_BIPRODUCTS)) {
-			return null;
+			return Collections.emptyList();
 		}
 		JsonObject fluidBiproducts = GsonHelper.getAsJsonObject(json, FLUID_BIPRODUCTS);
 		if (!fluidBiproducts.has(COUNT)) {
@@ -157,7 +158,7 @@ public abstract class VoltaicRecipeSerializer<T extends VoltaicRecipe> implement
 
 	public static List<ProbableGas> getGasBiproducts(ResourceLocation recipeId, JsonObject json) {
 		if (!json.has(GAS_BIPRODUCTS)) {
-			return null;
+			return Collections.emptyList();
 		}
 		JsonObject gasBiproducts = GsonHelper.getAsJsonObject(json, GAS_BIPRODUCTS);
 		if (!gasBiproducts.has(COUNT)) {
