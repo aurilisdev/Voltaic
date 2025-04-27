@@ -13,6 +13,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -31,7 +32,7 @@ public class CountableIngredient extends Ingredient {
 
 	)
 			//
-			.apply(instance, (item, amount) -> new CountableIngredient(item, amount))
+			.apply(instance, (item, amount) -> new CountableIngredient(new ItemStack(item, amount)))
 
 	);
 
@@ -55,7 +56,7 @@ public class CountableIngredient extends Ingredient {
 
 		if (value.tag != null) {
 			return Either.left(value);
-		} else if (value.item != null) {
+		} else if (value.ingredient != null) {
 			return Either.right(value);
 		} else {
 			throw new UnsupportedOperationException("The Countable Ingredient neither has a tag nor a direct item value defined!");
@@ -69,13 +70,22 @@ public class CountableIngredient extends Ingredient {
 
 		@Override
 		public void encode(FriendlyByteBuf buffer, CountableIngredient value) {
-			value.ingredient.toNetwork(buffer);
-			buffer.writeInt(value.stackSize);
+			buffer.writeBoolean(value.item == null);
+			if(value.item == null) {
+				StreamCodec.RESOURCE_LOCATION.encode(buffer, value.tag.location());
+				StreamCodec.INT.encode(buffer, value.stackSize);
+			} else {
+				StreamCodec.ITEM_STACK.encode(buffer, new ItemStack(value.item, value.stackSize));
+			}
 		}
 
 		@Override
 		public CountableIngredient decode(FriendlyByteBuf buffer) {
-			return new CountableIngredient(Ingredient.fromNetwork(buffer), buffer.readInt());
+			if(buffer.readBoolean()) {
+				return new CountableIngredient(ItemTags.create(StreamCodec.RESOURCE_LOCATION.decode(buffer)), StreamCodec.INT.decode(buffer));
+			} else {
+				return new CountableIngredient(StreamCodec.ITEM_STACK.decode(buffer));
+			}
 		}
 
 	};
@@ -114,25 +124,17 @@ public class CountableIngredient extends Ingredient {
 	private ItemStack[] countedItems;
 
 	public CountableIngredient(ItemStack stack) {
-		this(Ingredient.of(stack), stack.getCount());
-	}
-
-	public CountableIngredient(Ingredient ingredient, int stackSize) {
 		super(Stream.empty());
-		this.ingredient = ingredient;
-		this.item = ingredient.getItems()[0].getItem();
-		this.stackSize = stackSize;
-
+		ingredient = Ingredient.of(stack);
+		item = stack.getItem();
+		stackSize = stack.getCount();
 	}
 
 	public CountableIngredient(TagKey<Item> tag, int stackSize) {
-		this(Ingredient.of(tag), stackSize);
+		super(Stream.empty());
+		ingredient = Ingredient.of(tag);
 		this.tag = tag;
-	}
-
-	public CountableIngredient(Item item, int stackSize) {
-		this(Ingredient.of(new ItemStack(item)), stackSize);
-		this.item = item;
+		this.stackSize = stackSize;
 	}
 
 	@Override

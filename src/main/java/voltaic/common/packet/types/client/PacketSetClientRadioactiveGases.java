@@ -6,6 +6,7 @@ import voltaic.api.gas.GasStack;
 import voltaic.api.radiation.util.RadioactiveObject;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Supplier;
 
 import net.minecraft.network.FriendlyByteBuf;
@@ -27,11 +28,10 @@ public class PacketSetClientRadioactiveGases {
         @Override
         public void encode(FriendlyByteBuf buf, PacketSetClientRadioactiveGases packet) {
             buf.writeInt(packet.gases.size());
-            packet.gases.forEach((gas, value) -> {
-                GasStack.STREAM_CODEC.encode(buf, new GasStack(gas, 1, Gas.ROOM_TEMPERATURE, Gas.PRESSURE_AT_SEA_LEVEL));
-                RadioactiveObject.STREAM_CODEC.encode(buf, value);
-            });
-
+            for(Map.Entry<Gas, RadioactiveObject> entry : packet.gases.entrySet()) {
+            	GasStack.STREAM_CODEC.encode(buf, new GasStack(entry.getKey(), 1, Gas.ROOM_TEMPERATURE, Gas.PRESSURE_AT_SEA_LEVEL));
+                RadioactiveObject.STREAM_CODEC.encode(buf, entry.getValue());
+            }
         }
 
     };

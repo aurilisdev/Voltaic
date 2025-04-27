@@ -46,12 +46,6 @@ public class GasStack {
 
         @Override
         public GasStack decode(FriendlyByteBuf buffer) {
-            int amt = buffer.readInt();
-
-            if (amt <= 0) {
-                return GasStack.EMPTY;
-            }
-
             Gas gas = buffer.readRegistryId();
     		int amount = buffer.readInt();
     		int temperature = buffer.readInt();
@@ -61,14 +55,10 @@ public class GasStack {
 
         @Override
         public void encode(FriendlyByteBuf buffer, GasStack value) {
-            if (value.isEmpty()) {
-                buffer.writeInt(0);
-            } else {
-            	buffer.writeRegistryId(VoltaicRegistries.gasRegistry(), value.gas);
-        		buffer.writeInt(value.amount);
-        		buffer.writeInt(value.temperature);
-        		buffer.writeInt(value.pressure);
-            }
+        	buffer.writeRegistryId(VoltaicRegistries.gasRegistry(), value.gas);
+    		buffer.writeInt(value.amount);
+    		buffer.writeInt(value.temperature);
+    		buffer.writeInt(value.pressure);
         }
     };
 
