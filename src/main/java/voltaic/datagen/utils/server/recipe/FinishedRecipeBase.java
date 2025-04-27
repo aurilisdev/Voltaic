@@ -7,8 +7,10 @@ import java.util.function.Consumer;
 
 import javax.annotation.Nullable;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.JsonOps;
 
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.resources.ResourceLocation;
@@ -18,14 +20,15 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.registries.ForgeRegistries;
 import voltaic.api.gas.Gas;
 import voltaic.api.gas.GasStack;
 import voltaic.common.recipe.VoltaicRecipeSerializer;
+import voltaic.common.recipe.recipeutils.CountableIngredient;
+import voltaic.common.recipe.recipeutils.FluidIngredient;
+import voltaic.common.recipe.recipeutils.GasIngredient;
 import voltaic.common.recipe.recipeutils.ProbableFluid;
 import voltaic.common.recipe.recipeutils.ProbableGas;
 import voltaic.common.recipe.recipeutils.ProbableItem;
-import voltaic.registers.VoltaicRegistries;
 
 public abstract class FinishedRecipeBase implements FinishedRecipe {
 
@@ -84,7 +87,7 @@ public abstract class FinishedRecipeBase implements FinishedRecipe {
 		return this;
 	}
 
-	public FinishedRecipeBase addGasTagInput(TagKey<Gas> tag, double amt, double temp, double pressure) {
+	public FinishedRecipeBase addGasTagInput(TagKey<Gas> tag, int amt, int temp, int pressure) {
 		tagGasIngredients.add(Pair.of(tag, new GasIngWrapper(amt, temp, pressure)));
 		return this;
 	}
@@ -120,19 +123,18 @@ public abstract class FinishedRecipeBase implements FinishedRecipe {
 			inputsFlag = true;
 			JsonObject itemInputs = new JsonObject();
 			itemInputs.addProperty(VoltaicRecipeSerializer.COUNT, itemInputsCount);
-			JsonObject itemJson;
+			JsonElement itemJson;
+			CountableIngredient ing;
 			int index = 0;
 			for (ItemStack stack : itemIngredients) {
-				itemJson = new JsonObject();
-				itemJson.addProperty("item", ForgeRegistries.ITEMS.getKey(stack.getItem()).toString());
-				itemJson.addProperty(VoltaicRecipeSerializer.COUNT, stack.getCount());
+				ing = new CountableIngredient(stack);
+				itemJson = CountableIngredient.CODEC.encodeStart(JsonOps.INSTANCE, ing).result().get();
 				itemInputs.add(index + "", itemJson);
 				index++;
 			}
 			for (Pair<TagKey<Item>, Integer> itemTags : tagItemIngredients) {
-				itemJson = new JsonObject();
-				itemJson.addProperty("tag", itemTags.getFirst().location().toString());
-				itemJson.addProperty(VoltaicRecipeSerializer.COUNT, itemTags.getSecond());
+				ing = new CountableIngredient(itemTags.getFirst(), itemTags.getSecond());
+				itemJson = CountableIngredient.CODEC.encodeStart(JsonOps.INSTANCE, ing).result().get();
 				itemInputs.add(index + "", itemJson);
 				index++;
 			}
@@ -144,19 +146,18 @@ public abstract class FinishedRecipeBase implements FinishedRecipe {
 			inputsFlag = true;
 			JsonObject fluidInputs = new JsonObject();
 			fluidInputs.addProperty(VoltaicRecipeSerializer.COUNT, fluidInputsCount);
-			JsonObject fluidJson;
+			JsonElement fluidJson;
+			FluidIngredient ing;
 			int index = 0;
 			for (FluidStack stack : fluidIngredients) {
-				fluidJson = new JsonObject();
-				fluidJson.addProperty("fluid", ForgeRegistries.FLUIDS.getKey(stack.getFluid()).toString());
-				fluidJson.addProperty("amount", stack.getAmount());
+				ing = new FluidIngredient(stack);
+				fluidJson = FluidIngredient.CODEC.encodeStart(JsonOps.INSTANCE, ing).result().get();
 				fluidInputs.add(index + "", fluidJson);
 				index++;
 			}
 			for (Pair<TagKey<Fluid>, Integer> fluidTags : tagFluidIngredients) {
-				fluidJson = new JsonObject();
-				fluidJson.addProperty("tag", fluidTags.getFirst().location().toString());
-				fluidJson.addProperty("amount", fluidTags.getSecond());
+				ing = new FluidIngredient(fluidTags.getFirst(), fluidTags.getSecond());
+				fluidJson = FluidIngredient.CODEC.encodeStart(JsonOps.INSTANCE, ing).result().get();
 				fluidInputs.add(index + "", fluidJson);
 				index++;
 			}
@@ -168,23 +169,19 @@ public abstract class FinishedRecipeBase implements FinishedRecipe {
 			inputsFlag = true;
 			JsonObject gasInputs = new JsonObject();
 			gasInputs.addProperty(VoltaicRecipeSerializer.COUNT, gasInputsCount);
-			JsonObject gasJson;
+			JsonElement gasJson;
+			GasIngredient ing;
 			int index = 0;
 			for (GasStack stack : gasIngredients) {
-				gasJson = new JsonObject();
-				gasJson.addProperty("gas", VoltaicRegistries.gasRegistry().getKey(stack.getGas()).toString());
-				gasJson.addProperty("amount", stack.getAmount());
-				gasJson.addProperty("temp", stack.getTemperature());
-				gasJson.addProperty("pressure", stack.getPressure());
+				ing = new GasIngredient(stack);
+				gasJson = GasIngredient.CODEC.encodeStart(JsonOps.INSTANCE, ing).result().get();
 				gasInputs.add(index + "", gasJson);
 				index++;
 			}
 			for (Pair<TagKey<Gas>, GasIngWrapper> gasTags : tagGasIngredients) {
-				gasJson = new JsonObject();
-				gasJson.addProperty("tag", gasTags.getFirst().location().toString());
-				gasJson.addProperty("amount", gasTags.getSecond().amt());
-				gasJson.addProperty("temp", gasTags.getSecond().temp());
-				gasJson.addProperty("pressure", gasTags.getSecond().pressure());
+				GasIngWrapper wrapper = gasTags.getSecond();
+				ing = new GasIngredient(gasTags.getFirst(), wrapper.amt, wrapper.pressure, wrapper.temp);
+				gasJson = GasIngredient.CODEC.encodeStart(JsonOps.INSTANCE, ing).result().get();
 				gasInputs.add(index + "", gasJson);
 				index++;
 			}
@@ -202,15 +199,10 @@ public abstract class FinishedRecipeBase implements FinishedRecipe {
 		if (itemBiproducts.size() > 0) {
 			JsonObject itemBiproducts = new JsonObject();
 			itemBiproducts.addProperty(VoltaicRecipeSerializer.COUNT, this.itemBiproducts.size());
-			JsonObject itemJson;
-			ItemStack stack;
+			JsonElement itemJson;
 			int index = 0;
 			for (ProbableItem biproduct : this.itemBiproducts) {
-				itemJson = new JsonObject();
-				stack = biproduct.getFullStack();
-				itemJson.addProperty("item", ForgeRegistries.ITEMS.getKey(stack.getItem()).toString());
-				itemJson.addProperty(VoltaicRecipeSerializer.COUNT, stack.getCount());
-				itemJson.addProperty("chance", biproduct.getChance());
+				itemJson = ProbableItem.CODEC.encodeStart(JsonOps.INSTANCE, biproduct).result().get();
 				itemBiproducts.add(index + "", itemJson);
 				index++;
 			}
@@ -220,15 +212,10 @@ public abstract class FinishedRecipeBase implements FinishedRecipe {
 		if (fluidBiproducts.size() > 0) {
 			JsonObject fluidBiproducts = new JsonObject();
 			fluidBiproducts.addProperty(VoltaicRecipeSerializer.COUNT, this.fluidBiproducts.size());
-			JsonObject fluidJson;
-			FluidStack stack;
+			JsonElement fluidJson;
 			int index = 0;
 			for (ProbableFluid biproduct : this.fluidBiproducts) {
-				fluidJson = new JsonObject();
-				stack = biproduct.getFullStack();
-				fluidJson.addProperty("fluid", ForgeRegistries.FLUIDS.getKey(stack.getFluid()).toString());
-				fluidJson.addProperty("amount", stack.getAmount());
-				fluidJson.addProperty("chance", biproduct.getChance());
+				fluidJson = ProbableFluid.CODEC.encodeStart(JsonOps.INSTANCE, biproduct).result().get();
 				fluidBiproducts.add(index + "", fluidJson);
 				index++;
 			}
@@ -238,17 +225,10 @@ public abstract class FinishedRecipeBase implements FinishedRecipe {
 		if (gasBiproducts.size() > 0) {
 			JsonObject gasBiproducts = new JsonObject();
 			gasBiproducts.addProperty(VoltaicRecipeSerializer.COUNT, this.gasBiproducts.size());
-			JsonObject gasJson;
-			GasStack stack;
+			JsonElement gasJson;
 			int index = 0;
 			for (ProbableGas biproduct : this.gasBiproducts) {
-				gasJson = new JsonObject();
-				stack = biproduct.getFullStack();
-				gasJson.addProperty("gas", VoltaicRegistries.gasRegistry().getKey(stack.getGas()).toString());
-				gasJson.addProperty("amount", stack.getAmount());
-				gasJson.addProperty("temp", stack.getTemperature());
-				gasJson.addProperty("pressure", stack.getPressure());
-				gasJson.addProperty("chance", biproduct.getChance());
+				gasJson = ProbableGas.CODEC.encodeStart(JsonOps.INSTANCE, biproduct).result().get();
 				gasBiproducts.add(index + "", gasJson);
 				index++;
 			}
@@ -296,7 +276,7 @@ public abstract class FinishedRecipeBase implements FinishedRecipe {
 		}
 	}
 
-	public static record GasIngWrapper(double amt, double temp, double pressure) {
+	public static record GasIngWrapper(int amt, int temp, int pressure) {
 
 	}
 

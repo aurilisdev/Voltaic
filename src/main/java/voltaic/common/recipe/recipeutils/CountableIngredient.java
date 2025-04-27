@@ -58,7 +58,7 @@ public class CountableIngredient extends Ingredient {
 		} else if (value.item != null) {
 			return Either.right(value);
 		} else {
-			throw new UnsupportedOperationException("The Fluid Ingredient neither has a tag nor a direct fluid value defined!");
+			throw new UnsupportedOperationException("The Countable Ingredient neither has a tag nor a direct item value defined!");
 		}
 
 	});
@@ -120,6 +120,7 @@ public class CountableIngredient extends Ingredient {
 	public CountableIngredient(Ingredient ingredient, int stackSize) {
 		super(Stream.empty());
 		this.ingredient = ingredient;
+		this.item = ingredient.getItems()[0].getItem();
 		this.stackSize = stackSize;
 
 	}

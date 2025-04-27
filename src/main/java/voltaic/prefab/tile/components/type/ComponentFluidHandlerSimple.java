@@ -139,8 +139,11 @@ public class ComponentFluidHandlerSimple extends PropertyFluidTank implements IC
         if (side == null) {
             return LazyOptional.empty();
         }
+        
+        IFluidHandler cap = sidedOptionals[side.ordinal()];
+        
+        return cap == null ? LazyOptional.empty() : LazyOptional.of(() -> cap).cast();
 
-        return LazyOptional.of(() -> sidedOptionals[side.ordinal()]).cast();
     }
 
     @Override

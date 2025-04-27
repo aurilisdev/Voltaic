@@ -20,7 +20,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 public class GasUtilities {
 
     public static boolean isGasReciever(BlockEntity acceptor, Direction dir) {
-        return acceptor != null && acceptor.getCapability(VoltaicCapabilities.CAPABILITY_GASHANDLER_BLOCK, dir).isPresent();
+        return acceptor != null && acceptor.getCapability(VoltaicCapabilities.CAPABILITY_GASHANDLER_BLOCK, dir).orElse(CapabilityUtils.EMPTY_GAS) != CapabilityUtils.EMPTY_GAS;
     }
 
     public static int recieveGas(BlockEntity reciever, Direction dir, GasStack gas, GasAction action) {

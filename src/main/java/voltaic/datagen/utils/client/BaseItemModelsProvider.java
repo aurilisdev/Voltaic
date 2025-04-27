@@ -110,7 +110,7 @@ public abstract class BaseItemModelsProvider extends ItemModelProvider {
 
 		GENERATED(),
 		HANDHELD(),
-		FORGE_DEFAULT("neoforge", "item/default");
+		FORGE_DEFAULT("forge", "item/default");
 
 		@Nullable
 		private final ResourceLocation loc;

@@ -20,7 +20,7 @@ import net.minecraftforge.fluids.capability.templates.FluidTank;
 public class FluidUtilities {
 
 	public static boolean isFluidReceiver(BlockEntity acceptor, Direction dir) {
-		return acceptor != null && acceptor.getCapability(ForgeCapabilities.FLUID_HANDLER, dir).isPresent();
+		return acceptor != null && acceptor.getCapability(ForgeCapabilities.FLUID_HANDLER, dir).orElse(CapabilityUtils.EMPTY_FLUID) != CapabilityUtils.EMPTY_FLUID;
 	}
 
 	public static int receiveFluid(BlockEntity acceptor, Direction direction, FluidStack perReceiver, boolean debug) {

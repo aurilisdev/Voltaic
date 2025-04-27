@@ -24,7 +24,6 @@ import voltaic.prefab.tile.components.IComponentType;
 import voltaic.prefab.tile.components.utils.IComponentGasHandler;
 import voltaic.prefab.utilities.BlockEntityUtils;
 import voltaic.prefab.utilities.math.MathUtils;
-import voltaic.registers.VoltaicGases;
 import voltaic.registers.VoltaicRegistries;
 import net.minecraft.core.Direction;
 import net.minecraft.tags.TagKey;
@@ -245,7 +244,10 @@ public class ComponentGasHandlerMulti implements IComponentGasHandler {
     	if (side == null || !isSided) {
             return LazyOptional.empty();
         }
-        return LazyOptional.of(() -> sidedOptionals[side.ordinal()]).cast();
+    	
+    	IGasHandler cap = sidedOptionals[side.ordinal()];
+        
+        return cap == null ? LazyOptional.empty() : LazyOptional.of(() -> cap).cast();
     }
 
     @Override
