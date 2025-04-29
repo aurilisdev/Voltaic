@@ -4,7 +4,9 @@ import voltaic.Voltaic;
 import voltaic.api.screen.ITexture;
 import voltaic.prefab.screen.component.button.ScreenComponentButton;
 import voltaic.prefab.utilities.RenderingUtils;
-import net.minecraft.client.gui.GuiGraphics;
+
+import com.mojang.blaze3d.vertex.PoseStack;
+
 import net.minecraft.resources.ResourceLocation;
 
 public class ButtonTankSlider extends ScreenComponentButton<ButtonTankSlider> {
@@ -17,14 +19,15 @@ public class ButtonTankSlider extends ScreenComponentButton<ButtonTankSlider> {
     }
 
     @Override
-    public void renderBackground(GuiGraphics graphics, int xAxis, int yAxis, int guiWidth, int guiHeight) {
+    public void renderBackground(PoseStack poseStack, int xAxis, int yAxis, int guiWidth, int guiHeight) {
         if (isVisible() && isHovered()) {
             RenderingUtils.setShaderColor(color);
             ITexture on = pair.on;
-            graphics.blit(on.getLocation(), guiWidth + xLocation, guiHeight + yLocation, on.textureU(), on.textureV(), on.textureWidth(), on.textureHeight(), on.imageWidth(), on.imageHeight());
+            RenderingUtils.bindTexture(on.getLocation());
+            blit(poseStack, guiWidth + xLocation, guiHeight + yLocation, on.textureU(), on.textureV(), on.textureWidth(), on.textureHeight(), on.imageWidth(), on.imageHeight());
             RenderingUtils.resetShaderColor();
         } else {
-            super.renderBackground(graphics, xAxis, yAxis, guiWidth, guiHeight);
+            super.renderBackground(poseStack, xAxis, yAxis, guiWidth, guiHeight);
         }
     }
 

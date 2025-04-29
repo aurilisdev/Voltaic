@@ -1,6 +1,6 @@
 package voltaic.datagen.utils.client;
 
-import net.minecraft.data.PackOutput;
+import net.minecraft.data.DataGenerator;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.common.data.SoundDefinition;
@@ -13,8 +13,8 @@ public abstract class BaseSoundProvider extends SoundDefinitionsProvider {
 
 	private final String modID;
 
-	public BaseSoundProvider(PackOutput output, ExistingFileHelper helper, String modID) {
-		super(output, modID, helper);
+	public BaseSoundProvider(DataGenerator gen, ExistingFileHelper exFileHelper, String modID) {
+		super(gen, modID, exFileHelper);
 		this.modID = modID;
 	}
 

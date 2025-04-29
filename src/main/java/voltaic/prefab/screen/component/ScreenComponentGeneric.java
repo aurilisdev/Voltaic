@@ -2,12 +2,13 @@ package voltaic.prefab.screen.component;
 
 import javax.annotation.Nullable;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+
 import voltaic.api.screen.ITexture;
 import voltaic.api.screen.ITexture.Textures;
 import voltaic.prefab.screen.component.utils.AbstractScreenComponent;
 import voltaic.prefab.utilities.RenderingUtils;
 import voltaic.prefab.utilities.math.Color;
-import net.minecraft.client.gui.GuiGraphics;
 
 /**
  * simple implementation of AbstractScreenComponent that allows custom images to be drawn to the screen
@@ -53,25 +54,27 @@ public class ScreenComponentGeneric extends AbstractScreenComponent {
 	}
 
 	@Override
-	public void renderBackground(GuiGraphics graphics, int xAxis, int yAxis, int guiWidth, int guiHeight) {
+	public void renderBackground(PoseStack poseStack, int xAxis, int yAxis, int guiWidth, int guiHeight) {
 		if (!isVisible()) {
 			return;
 		}
 		RenderingUtils.setShaderColor(color);
-		graphics.blit(texture.getLocation(), guiWidth + xLocation, guiHeight + yLocation, texture.textureU(), texture.textureV(), texture.textureWidth(), texture.textureHeight(), texture.imageWidth(), texture.imageHeight());
+		RenderingUtils.bindTexture(texture.getLocation());
+		blit(poseStack, guiWidth + xLocation, guiHeight + yLocation, texture.textureU(), texture.textureV(), texture.textureWidth(), texture.textureHeight(), texture.imageWidth(), texture.imageHeight());
 		if(icon != null) {
 			int xOffset = (texture.imageWidth() - icon.imageWidth()) / 2;
 			int yOffset = (texture.imageHeight() - icon.imageHeight()) / 2;
-			graphics.blit(icon.getLocation(), guiWidth + xLocation + xOffset, guiHeight + yLocation + yOffset, icon.textureU(), icon.textureV(), icon.textureWidth(), icon.textureHeight(), icon.imageWidth(), icon.imageHeight());
+			RenderingUtils.bindTexture(icon.getLocation());
+			blit(poseStack, guiWidth + xLocation + xOffset, guiHeight + yLocation + yOffset, icon.textureU(), icon.textureV(), icon.textureWidth(), icon.textureHeight(), icon.imageWidth(), icon.imageHeight());
 		}
 		RenderingUtils.resetShaderColor();
 	}
 
 	@Override
-	public void renderForeground(GuiGraphics graphics, int xAxis, int yAxis, int guiWidth, int guiHeight) {
-		super.renderForeground(graphics, xAxis, yAxis, guiWidth, guiHeight);
+	public void renderForeground(PoseStack poseStack, int xAxis, int yAxis, int guiWidth, int guiHeight) {
+		super.renderForeground(poseStack, xAxis, yAxis, guiWidth, guiHeight);
 		if (isVisible() && isHovered() && onTooltip != null) {
-			onTooltip.onTooltip(graphics, this, xAxis, yAxis);
+			onTooltip.onTooltip(poseStack, this, xAxis, yAxis);
 		}
 	}
 

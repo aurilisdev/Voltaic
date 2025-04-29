@@ -7,7 +7,6 @@ import com.mojang.serialization.JsonOps;
 import voltaic.Voltaic;
 import voltaic.api.radiation.util.RadioactiveObject;
 import voltaic.common.packet.types.client.PacketSetClientRadioactiveFluids;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.packs.resources.Resource;
@@ -23,6 +22,7 @@ import net.minecraftforge.event.OnDatapackSyncEvent;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.PacketDistributor.PacketTarget;
 import net.minecraftforge.network.simple.SimpleChannel;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import org.apache.logging.log4j.Logger;
 
@@ -102,7 +102,7 @@ public class RadioactiveFluidRegister extends SimplePreparableReloadListener<Jso
 
             } else {
 
-                radioactiveFluidMap.put(BuiltInRegistries.FLUID.get(new ResourceLocation(key)), value);
+                radioactiveFluidMap.put(ForgeRegistries.FLUIDS.getValue(new ResourceLocation(key)), value);
 
 
             }
@@ -114,9 +114,9 @@ public class RadioactiveFluidRegister extends SimplePreparableReloadListener<Jso
     public void generateTagValues() {
 
         tags.forEach((tag, value) -> {
-            BuiltInRegistries.FLUID.getTag(tag).get().forEach(gas -> {
+        	ForgeRegistries.FLUIDS.tags().getTag(tag).forEach(gas -> {
 
-                radioactiveFluidMap.put(gas.value(), value);
+                radioactiveFluidMap.put(gas, value);
 
             });
         });

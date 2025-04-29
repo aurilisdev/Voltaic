@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import voltaic.api.gas.GasStack;
 import voltaic.client.guidebook.ScreenGuidebook;
 import voltaic.client.guidebook.utils.components.Page;
 import voltaic.client.guidebook.utils.components.Page.GraphicWrapper;
@@ -12,7 +11,6 @@ import voltaic.client.guidebook.utils.components.Page.TextWrapper;
 import voltaic.client.guidebook.utils.pagedata.graphics.AbstractGraphicWrapper;
 import voltaic.client.guidebook.utils.pagedata.graphics.AbstractGraphicWrapper.GraphicTextDescriptor;
 import voltaic.compatibility.jei.screenhandlers.cliableingredients.ClickableFluidIngredient;
-import voltaic.compatibility.jei.screenhandlers.cliableingredients.ClickableGasIngredient;
 import voltaic.compatibility.jei.screenhandlers.cliableingredients.ClickableItemIngredient;
 import mezz.jei.api.gui.handlers.IGuiContainerHandler;
 import mezz.jei.api.runtime.IClickableIngredient;
@@ -99,9 +97,6 @@ public class ScreenHandlerGuidebook implements IGuiContainerHandler<ScreenGuideb
 		}
 		if (lookup instanceof FluidStack stack) {
 			return Optional.of(new ClickableFluidIngredient(area, stack));
-		}
-		if (lookup instanceof GasStack stack) {
-			return Optional.of(new ClickableGasIngredient(area, stack));
 		}
 		return Optional.empty();
 	}

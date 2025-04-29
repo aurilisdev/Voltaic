@@ -1,6 +1,8 @@
 package voltaic.client.model.block.bakerytypes;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
@@ -13,6 +15,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import com.mojang.datafixers.util.Pair;
 
 import voltaic.client.model.block.ModelStateRotation;
 import voltaic.client.model.block.modelproperties.ModelPropertyConnections;
@@ -25,7 +28,7 @@ import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.Material;
-import net.minecraft.client.resources.model.ModelBaker;
+import net.minecraft.client.resources.model.ModelBakery;
 import net.minecraft.client.resources.model.ModelState;
 import net.minecraft.client.resources.model.UnbakedModel;
 import net.minecraft.core.BlockPos;
@@ -71,7 +74,7 @@ public class CableModelLoader implements IGeometryLoader<CableModelLoader.WirePa
         }
 
         @Override
-        public BakedModel bake(IGeometryBakingContext context, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, ItemOverrides overrides, ResourceLocation modelLocation) {
+        public BakedModel bake(IGeometryBakingContext context, ModelBakery baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, ItemOverrides overrides, ResourceLocation modelLocation) {
             boolean useBlockLight = context.useBlockLight();
 
             BakedModel none = this.none.bake(baker, this.none, spriteGetter, modelState, modelLocation, useBlockLight);
@@ -90,12 +93,14 @@ public class CableModelLoader implements IGeometryLoader<CableModelLoader.WirePa
 
             return new CableModel(context.useAmbientOcclusion(), context.isGui3d(), useBlockLight, spriteGetter.apply(this.none.getMaterial("particle")), none, wires, inventories);
         }
-
+        
         @Override
-        public void resolveParents(Function<ResourceLocation, UnbakedModel> modelGetter, IGeometryBakingContext context) {
-            this.none.resolveParents(modelGetter);
-            this.wire.resolveParents(modelGetter);
-            this.inventory.resolveParents(modelGetter);
+        public Collection<Material> getMaterials(IGeometryBakingContext context, Function<ResourceLocation, UnbakedModel> modelGetter, Set<Pair<String, String>> missingTextureErrors) {
+        	Set<Material> set = new HashSet<>();
+        	set.addAll(none.getMaterials(modelGetter, missingTextureErrors));
+        	set.addAll(wire.getMaterials(modelGetter, missingTextureErrors));
+        	set.addAll(inventory.getMaterials(modelGetter, missingTextureErrors));
+        	return set;
         }
 
         @Override

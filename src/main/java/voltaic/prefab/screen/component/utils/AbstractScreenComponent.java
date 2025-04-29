@@ -1,15 +1,13 @@
 package voltaic.prefab.screen.component.utils;
 
-import javax.annotation.Nullable;
+import com.mojang.blaze3d.vertex.PoseStack;
 
 import voltaic.api.screen.IScreenWrapper;
-import net.minecraft.client.gui.ComponentPath;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.Renderable;
+import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.components.Widget;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.client.gui.navigation.FocusNavigationEvent;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 
@@ -22,7 +20,7 @@ import net.minecraft.network.chat.Component;
  *         Original Author : AurilisDev
  *
  */
-public abstract class AbstractScreenComponent implements GuiEventListener, Renderable, NarratableEntry {
+public abstract class AbstractScreenComponent extends GuiComponent implements GuiEventListener, Widget, NarratableEntry {
 
 	public int xLocation;
 	public int yLocation;
@@ -58,41 +56,41 @@ public abstract class AbstractScreenComponent implements GuiEventListener, Rende
 	}
 
 	@Override
-	public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+	public void render(PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
 		if (isVisible()) {
 			setHovered(isMouseOver(mouseX, mouseY));
 			int guiWidth = (int) gui.getGuiWidth();
 			int guiHeight = (int) gui.getGuiHeight();
-			renderBackground(graphics, mouseX - guiWidth, mouseY - guiHeight, guiWidth, guiHeight);
+			renderBackground(poseStack, mouseX - guiWidth, mouseY - guiHeight, guiWidth, guiHeight);
 		}
 
 	}
 
-	public void renderBackground(GuiGraphics graphics, int xAxis, int yAxis, int guiWidth, int guiHeight) {
+	public void renderBackground(PoseStack poseStack, int xAxis, int yAxis, int guiWidth, int guiHeight) {
 
 	}
 
-	public void renderForeground(GuiGraphics graphics, int xAxis, int yAxis, int guiWidth, int guiHeight) {
+	public void renderForeground(PoseStack poseStack, int xAxis, int yAxis, int guiWidth, int guiHeight) {
 
 	}
 
-	public void renderBoundedText(GuiGraphics graphics, Component text, int x, int y, int color, int maxLength) {
+	public void renderBoundedText(PoseStack poseStack, Component text, int x, int y, int color, int maxLength) {
 		int length = gui.getFontRenderer().width(text);
 
 		if (length <= maxLength) {
-			graphics.drawString(gui.getFontRenderer(), text, x, y, color);
+			gui.getFontRenderer().draw(poseStack, text, x, y, color);
 		} else {
 			float scale = (float) maxLength / length;
 			float reverse = 1 / scale;
 			float yAdd = 4 - scale * 8 / 2F;
 
-			graphics.pose().pushPose();
+			poseStack.pushPose();
 
-			graphics.pose().scale(scale, scale, scale);
+			poseStack.scale(scale, scale, scale);
 
-			graphics.drawString(gui.getFontRenderer(), text, (int) (x * reverse), (int) (y * reverse + yAdd), color);
+			gui.getFontRenderer().draw(poseStack, text, (int) (x * reverse), (int) (y * reverse + yAdd), color);
 
-			graphics.pose().popPose();
+			poseStack.popPose();
 		}
 	}
 
@@ -188,13 +186,11 @@ public abstract class AbstractScreenComponent implements GuiEventListener, Rende
 		return isHovered;
 	}
 
-	@Override
 	public void setFocused(boolean isFocused) {
 		this.isFocused = isFocused;
 		onFocusChanged(isFocused);
 	}
 
-	@Override
 	public boolean isFocused() {
 		return isFocused;
 	}
@@ -220,12 +216,13 @@ public abstract class AbstractScreenComponent implements GuiEventListener, Rende
 	}
 
 	@Override
-	@Nullable
-	public ComponentPath nextFocusPath(FocusNavigationEvent pEvent) {
+	public boolean changeFocus(boolean pFocus) {
 		if (isActive() && isVisible()) {
-			return !this.isFocused() ? ComponentPath.leaf(this) : null;
+			setFocused(!isFocused());
+			onFocusChanged(isFocused());
+			return isFocused();
 		}
-		return null;
+		return false;
 	}
 
 	@Override
@@ -235,7 +232,7 @@ public abstract class AbstractScreenComponent implements GuiEventListener, Rende
 
 	public static interface OnTooltip {
 
-		public void onTooltip(GuiGraphics graphics, AbstractScreenComponent component, int xAxis, int yAxis);
+		public void onTooltip(PoseStack poseStack, AbstractScreenComponent component, int xAxis, int yAxis);
 
 	}
 

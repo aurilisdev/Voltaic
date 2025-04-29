@@ -6,8 +6,7 @@ import voltaic.Voltaic;
 import voltaic.common.block.states.VoltaicBlockStates;
 import voltaic.datagen.utils.client.model.WireModelBuilder;
 import net.minecraft.core.Direction;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.data.PackOutput;
+import net.minecraft.data.DataGenerator;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.PressurePlateBlock;
@@ -20,14 +19,15 @@ import net.minecraftforge.client.model.generators.ModelFile;
 import net.minecraftforge.client.model.generators.ModelFile.ExistingModelFile;
 import net.minecraftforge.client.model.generators.loaders.ObjModelBuilder;
 import net.minecraftforge.common.data.ExistingFileHelper;
+import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
 public abstract class BaseBlockstateProvider extends BlockStateProvider {
 
     public final String modID;
 
-    public BaseBlockstateProvider(PackOutput output, ExistingFileHelper exFileHelper, String modID) {
-        super(output, modID, exFileHelper);
+    public BaseBlockstateProvider(DataGenerator gen, ExistingFileHelper exFileHelper, String modID) {
+        super(gen, modID, exFileHelper);
         this.modID = modID;
     }
 
@@ -241,7 +241,7 @@ public abstract class BaseBlockstateProvider extends BlockStateProvider {
     }
 
     public BlockModelBuilder blockTopBottom(RegistryObject<? extends Block> block, String top, String bottom, String side) {
-        return models().cubeBottomTop(BuiltInRegistries.BLOCK.getKey(block.get()).getPath(), new ResourceLocation(modID, side), new ResourceLocation(modID, bottom), new ResourceLocation(modID, top));
+        return models().cubeBottomTop(ForgeRegistries.BLOCKS.getKey(block.get()).getPath(), new ResourceLocation(modID, side), new ResourceLocation(modID, bottom), new ResourceLocation(modID, top));
     }
 
     public ItemModelBuilder blockItem(Block block, ModelFile model) {
@@ -249,7 +249,7 @@ public abstract class BaseBlockstateProvider extends BlockStateProvider {
     }
 
     public ResourceLocation key(Block block) {
-        return BuiltInRegistries.BLOCK.getKey(block);
+        return ForgeRegistries.BLOCKS.getKey(block);
     }
 
     public String name(Block block) {
@@ -261,7 +261,7 @@ public abstract class BaseBlockstateProvider extends BlockStateProvider {
     }
 
     public ExistingModelFile existingBlock(Block block) {
-        return existingBlock(BuiltInRegistries.BLOCK.getKey(block));
+        return existingBlock(ForgeRegistries.BLOCKS.getKey(block));
     }
 
     public ExistingModelFile existingBlock(ResourceLocation loc) {

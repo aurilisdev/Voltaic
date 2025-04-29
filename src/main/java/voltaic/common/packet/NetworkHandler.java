@@ -25,7 +25,6 @@ public class NetworkHandler {
     	CHANNEL.registerMessage(disc++, PacketSpawnSmokeParticle.class, PacketSpawnSmokeParticle::encode, PacketSpawnSmokeParticle::decode, PacketSpawnSmokeParticle::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
     	CHANNEL.registerMessage(disc++, PacketSetClientRadioactiveItems.class, PacketSetClientRadioactiveItems::encode, PacketSetClientRadioactiveItems::decode, PacketSetClientRadioactiveItems::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
         CHANNEL.registerMessage(disc++, PacketSetClientRadioactiveFluids.class, PacketSetClientRadioactiveFluids::encode, PacketSetClientRadioactiveFluids::decode, PacketSetClientRadioactiveFluids::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
-        CHANNEL.registerMessage(disc++, PacketSetClientRadioactiveGases.class, PacketSetClientRadioactiveGases::encode, PacketSetClientRadioactiveGases::decode, PacketSetClientRadioactiveGases::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
         CHANNEL.registerMessage(disc++, PacketSetClientRadiationShielding.class, PacketSetClientRadiationShielding::encode, PacketSetClientRadiationShielding::decode, PacketSetClientRadiationShielding::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
 
         // SERVER

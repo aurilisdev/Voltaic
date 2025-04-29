@@ -2,10 +2,12 @@ package voltaic.prefab.screen.component.types;
 
 import java.util.function.Consumer;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+
 import voltaic.Voltaic;
 import voltaic.api.screen.ITexture;
 import voltaic.prefab.screen.component.ScreenComponentGeneric;
-import net.minecraft.client.gui.GuiGraphics;
+import voltaic.prefab.utilities.RenderingUtils;
 import net.minecraft.resources.ResourceLocation;
 
 public class ScreenComponentVerticalSlider extends ScreenComponentGeneric {
@@ -70,11 +72,12 @@ public class ScreenComponentVerticalSlider extends ScreenComponentGeneric {
     }
 
     @Override
-    public void renderBackground(GuiGraphics graphics, int xAxis, int yAxis, int guiWidth, int guiHeight) {
+    public void renderBackground(PoseStack poseStack, int xAxis, int yAxis, int guiWidth, int guiHeight) {
 
         ITexture bg = VerticalSliderTextures.SLIDER_BACKGROUND;
+        RenderingUtils.bindTexture(bg.getLocation());
 
-        graphics.blit(bg.getLocation(), guiWidth + xLocation - 1, guiHeight + yLocation, width, 1, bg.textureU(), bg.textureV(), bg.textureWidth(), 1, bg.imageWidth(), bg.imageHeight());
+        blit(poseStack, guiWidth + xLocation - 1, guiHeight + yLocation, width, 1, bg.textureU(), bg.textureV(), bg.textureWidth(), 1, bg.imageWidth(), bg.imageHeight());
 
         int permutations = (int) ((height - 2) / 28.0D);
 
@@ -82,13 +85,13 @@ public class ScreenComponentVerticalSlider extends ScreenComponentGeneric {
 
         for (int i = 0; i < permutations; i++) {
 
-            graphics.blit(bg.getLocation(), guiWidth + xLocation - 1, guiHeight + yLocation + 1 + i * 28, width, 28, bg.textureU(), bg.textureV() + 1, bg.textureWidth(), 28, bg.imageWidth(), bg.imageHeight());
+        	blit(poseStack, guiWidth + xLocation - 1, guiHeight + yLocation + 1 + i * 28, width, 28, bg.textureU(), bg.textureV() + 1, bg.textureWidth(), 28, bg.imageWidth(), bg.imageHeight());
 
         }
 
-        graphics.blit(bg.getLocation(), guiWidth + xLocation - 1, guiHeight + yLocation + 1 + 28 * permutations, width, remainder, bg.textureU(), bg.textureV() + 1, bg.textureWidth(), remainder, bg.imageWidth(), bg.imageHeight());
+        blit(poseStack, guiWidth + xLocation - 1, guiHeight + yLocation + 1 + 28 * permutations, width, remainder, bg.textureU(), bg.textureV() + 1, bg.textureWidth(), remainder, bg.imageWidth(), bg.imageHeight());
 
-        graphics.blit(bg.getLocation(), guiWidth + xLocation - 1, guiHeight + yLocation + height - 1, width, 1, bg.textureU(), bg.textureV() + 29, bg.textureWidth(), 1, bg.imageWidth(), bg.imageHeight());
+        blit(poseStack, guiWidth + xLocation - 1, guiHeight + yLocation + height - 1, width, 1, bg.textureU(), bg.textureV() + 29, bg.textureWidth(), 1, bg.imageWidth(), bg.imageHeight());
 
         ITexture slider;
 
@@ -101,8 +104,8 @@ public class ScreenComponentVerticalSlider extends ScreenComponentGeneric {
             slider = VerticalSliderTextures.SLIDER_INACTIVE;
 
         }
-
-        graphics.blit(slider.getLocation(), guiWidth + xLocation , guiHeight + yLocation + 1 + sliderYOffset, slider.textureWidth(), slider.textureHeight(), slider.textureU(), slider.textureV(), slider.textureWidth(), slider.textureHeight(), slider.imageWidth(), slider.imageHeight());
+        RenderingUtils.bindTexture(slider.getLocation());
+        blit(poseStack, guiWidth + xLocation , guiHeight + yLocation + 1 + sliderYOffset, slider.textureWidth(), slider.textureHeight(), slider.textureU(), slider.textureV(), slider.textureWidth(), slider.textureHeight(), slider.imageWidth(), slider.imageHeight());
 
     }
 

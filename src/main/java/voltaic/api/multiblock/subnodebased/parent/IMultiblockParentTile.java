@@ -55,7 +55,7 @@ public interface IMultiblockParentTile {
             subnodeBlock = subnodeState.getBlock();
 
             if (update) {
-                if (subnodeState.canBeReplaced()) {
+                if (subnodeState.getMaterial().isReplaceable()) {
                     world.setBlockAndUpdate(offset, VoltaicBlocks.BLOCK_MULTISUBNODE.get().defaultBlockState());
                 }
                 TileMultiSubnode subnodeTile = (TileMultiSubnode) world.getBlockEntity(offset);

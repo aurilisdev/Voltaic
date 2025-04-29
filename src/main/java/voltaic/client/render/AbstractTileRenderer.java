@@ -12,11 +12,11 @@ import voltaic.prefab.tile.GenericTile;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.block.model.ItemTransforms.TransformType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
@@ -54,8 +54,8 @@ public abstract class AbstractTileRenderer<T extends GenericTile> implements Blo
 		return Minecraft.getInstance().getModelManager().getModel(model);
 	}
 
-	public void renderItem(ItemStack stack, ItemDisplayContext context, int light, int overlay, PoseStack poseStack, MultiBufferSource bufferSource, @Nullable Level world, int seed) {
-		Minecraft.getInstance().getItemRenderer().renderStatic(stack, context, light, overlay, poseStack, bufferSource, world, seed);
+	public void renderItem(ItemStack stack, TransformType context, int light, int overlay, PoseStack poseStack, MultiBufferSource bufferSource, @Nullable Level world, int seed) {
+		Minecraft.getInstance().getItemRenderer().renderStatic(stack, context, light, overlay, poseStack, bufferSource, seed);
 	}
 
 	@Override

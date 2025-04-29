@@ -5,8 +5,7 @@ import java.util.Locale;
 import javax.annotation.Nullable;
 
 import voltaic.client.VoltaicClientRegister;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.data.PackOutput;
+import net.minecraft.data.DataGenerator;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
@@ -16,14 +15,15 @@ import net.minecraftforge.client.model.generators.ModelFile;
 import net.minecraftforge.client.model.generators.ModelFile.ExistingModelFile;
 import net.minecraftforge.client.model.generators.loaders.DynamicFluidContainerModelBuilder;
 import net.minecraftforge.common.data.ExistingFileHelper;
+import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
 public abstract class BaseItemModelsProvider extends ItemModelProvider {
 
 	public final String modID;
 
-	public BaseItemModelsProvider(PackOutput output, ExistingFileHelper existingFileHelper, String modID) {
-		super(output, modID, existingFileHelper);
+	public BaseItemModelsProvider(DataGenerator gen, ExistingFileHelper exFileHelper, String modID) {
+		super(gen, modID, exFileHelper);
 		this.modID = modID;
 	}
 
@@ -75,7 +75,7 @@ public abstract class BaseItemModelsProvider extends ItemModelProvider {
 	}
 
 	public ResourceLocation key(Block block) {
-		return BuiltInRegistries.BLOCK.getKey(block);
+		return ForgeRegistries.BLOCKS.getKey(block);
 	}
 
 	public ResourceLocation itemLoc(String texture) {
@@ -91,7 +91,7 @@ public abstract class BaseItemModelsProvider extends ItemModelProvider {
 	}
 
 	public String name(Item item) {
-		return BuiltInRegistries.ITEM.getKey(item).getPath();
+		return ForgeRegistries.ITEMS.getKey(item).getPath();
 	}
 
 	public ExistingModelFile existingBlock(RegistryObject<? extends Block> block) {
@@ -99,7 +99,7 @@ public abstract class BaseItemModelsProvider extends ItemModelProvider {
 	}
 
 	public ExistingModelFile existingBlock(Block block) {
-		return existingBlock(BuiltInRegistries.BLOCK.getKey(block));
+		return existingBlock(ForgeRegistries.BLOCKS.getKey(block));
 	}
 
 	public ExistingModelFile existingBlock(ResourceLocation loc) {

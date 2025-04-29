@@ -74,8 +74,6 @@ public class ComponentInventory implements IComponent, WorldlyContainer {
     private int biproducts = 0;
     private int bucketInputs = 0;
     private int bucketOutputs = 0;
-    private int gasInputs = 0;
-    private int gasOutputs = 0;
 
     private int inputsPerProc = 0;
     private int outputsPerProc = 0;
@@ -110,10 +108,8 @@ public class ComponentInventory implements IComponent, WorldlyContainer {
             biproducts = builder.builderBiproducts;
             bucketInputs = builder.builderBucketInputs;
             bucketOutputs = builder.builderBucketOutputs;
-            gasInputs = builder.builderGasInputs;
-            gasOutputs = builder.builderGasOutputs;
 
-            inventorySize = inputs + outputs + upgrades + biproducts + bucketInputs + bucketOutputs + gasInputs + gasOutputs + upgrades;
+            inventorySize = inputs + outputs + upgrades + biproducts + bucketInputs + bucketOutputs + upgrades;
 
             inputsPerProc = builder.builderInputsPerProc;
             outputsPerProc = builder.builderOutputsPerProc;
@@ -439,14 +435,6 @@ public class ComponentInventory implements IComponent, WorldlyContainer {
         return bucketOutputs;
     }
 
-    public int gasInputs() {
-        return gasInputs;
-    }
-
-    public int gasOutputs() {
-        return gasOutputs;
-    }
-
     /*
      * Utility methods so you don't have to think as much
      */
@@ -471,16 +459,8 @@ public class ComponentInventory implements IComponent, WorldlyContainer {
         return getInputBucketStartIndex() + bucketInputs;
     }
 
-    public int getInputGasStartIndex() {
-        return getOutputBucketStartIndex() + bucketOutputs;
-    }
-
-    public int getOutputGasStartIndex() {
-        return getInputGasStartIndex() + gasInputs;
-    }
-
     public int getUpgradeSlotStartIndex() {
-        return getOutputGasStartIndex() + gasOutputs;
+        return getOutputBucketStartIndex() + bucketOutputs;
     }
 
     public List<ItemStack> getInputContents() {
@@ -501,14 +481,6 @@ public class ComponentInventory implements IComponent, WorldlyContainer {
 
     public List<ItemStack> getOutputBucketContents() {
         return items.getValue().subList(getOutputBucketStartIndex(), getUpgradeSlotStartIndex());
-    }
-
-    public List<ItemStack> getInputGasContents() {
-        return items.getValue().subList(getInputGasStartIndex(), getOutputGasStartIndex());
-    }
-
-    public List<ItemStack> getOutputGasContents() {
-        return items.getValue().subList(getOutputGasStartIndex(), getUpgradeSlotStartIndex());
     }
 
     public List<ItemStack> getUpgradeContents() {

@@ -1,16 +1,9 @@
 package voltaic.prefab.tile.types;
 
-import voltaic.api.gas.IGasHandlerItem;
-import voltaic.api.gas.GasAction;
-import voltaic.api.gas.GasStack;
-import voltaic.api.gas.GasTank;
 import voltaic.prefab.tile.GenericTile;
 import voltaic.prefab.tile.components.IComponentType;
 import voltaic.prefab.tile.components.utils.IComponentFluidHandler;
-import voltaic.prefab.tile.components.utils.IComponentGasHandler;
 import voltaic.prefab.utilities.CapabilityUtils;
-import voltaic.registers.VoltaicCapabilities;
-import voltaic.registers.VoltaicSounds;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -108,67 +101,6 @@ public class GenericMaterialTile extends GenericTile {
             }
         }
 
-        IGasHandlerItem handlerGasItem = used.getCapability(VoltaicCapabilities.CAPABILITY_GASHANDLER_ITEM).orElse(CapabilityUtils.EMPTY_GAS_ITEM);
-
-        if (handlerGasItem != CapabilityUtils.EMPTY_GAS_ITEM && hasComponent(IComponentType.GasHandler)) {
-
-            IComponentGasHandler gasHandler = getComponent(IComponentType.GasHandler);
-
-            // first try to drain the item
-            for (GasTank tank : gasHandler.getInputTanks()) {
-
-                int space = tank.getSpace();
-
-                GasStack containedGas = handlerGasItem.drain(space, GasAction.SIMULATE);
-
-                if (containedGas.isEmpty()) {
-                    continue;
-                }
-
-                if (!world.isClientSide) {
-
-                    tank.fill(containedGas, GasAction.EXECUTE);
-
-                    if (!player.isCreative()) {
-
-                        handlerGasItem.drain(space, GasAction.EXECUTE);
-
-                    }
-
-                    world.playSound(null, player.blockPosition(), VoltaicSounds.SOUND_PRESSURERELEASE.get(), SoundSource.PLAYERS, 1, 1);
-
-                    player.setItemInHand(handIn, handlerGasItem.getContainer());
-
-                }
-
-                return InteractionResult.CONSUME;
-
-            }
-            // now try to fill it
-            for (GasTank tank : gasHandler.getOutputTanks()) {
-
-                GasStack tankGas = tank.getGas();
-
-                int taken = handlerGasItem.fill(tankGas, GasAction.EXECUTE);
-
-                if (taken <= 0) {
-                    continue;
-                }
-
-                if (!world.isClientSide) {
-
-                    tank.drain(taken, GasAction.EXECUTE);
-
-                    world.playSound(null, player.blockPosition(), VoltaicSounds.SOUND_PRESSURERELEASE.get(), SoundSource.PLAYERS, 1, 1);
-
-                    player.setItemInHand(handIn, handlerGasItem.getContainer());
-
-                }
-
-                return InteractionResult.CONSUME;
-
-            }
-        }
         return super.use(player, handIn, hit);
     }
 

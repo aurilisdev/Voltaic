@@ -3,7 +3,10 @@ package voltaic.prefab.screen.component.button.type;
 import voltaic.Voltaic;
 import voltaic.api.screen.ITexture;
 import voltaic.prefab.screen.component.button.ScreenComponentButton;
-import net.minecraft.client.gui.GuiGraphics;
+import voltaic.prefab.utilities.RenderingUtils;
+
+import com.mojang.blaze3d.vertex.PoseStack;
+
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 
@@ -18,12 +21,13 @@ public class ButtonGuidebook extends ScreenComponentButton<ButtonGuidebook> {
 	}
 
 	@Override
-	public void renderBackground(GuiGraphics graphics, int xAxis, int yAxis, int guiWidth, int guiHeight) {
+	public void renderBackground(PoseStack poseStack, int xAxis, int yAxis, int guiWidth, int guiHeight) {
 		if (isActiveAndVisible() && isHovered()) {
 			ITexture on = type.on;
-			graphics.blit(on.getLocation(), xLocation + guiWidth, yLocation + guiHeight, on.textureU(), on.textureV(), on.textureWidth(), on.textureHeight(), on.imageWidth(), on.imageHeight());
+			RenderingUtils.bindTexture(on.getLocation());
+			blit(poseStack, xLocation + guiWidth, yLocation + guiHeight, on.textureU(), on.textureV(), on.textureWidth(), on.textureHeight(), on.imageWidth(), on.imageHeight());
 		} else {
-			super.renderBackground(graphics, xAxis, yAxis, guiWidth, guiHeight);
+			super.renderBackground(poseStack, xAxis, yAxis, guiWidth, guiHeight);
 		}
 
 	}

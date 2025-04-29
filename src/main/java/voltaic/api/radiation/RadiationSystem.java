@@ -50,7 +50,7 @@ public class RadiationSystem {
 	@SubscribeEvent
 	public static void entityTick(LivingTickEvent event) {
 		
-		if(event.getEntity().level().isClientSide() || !(event.getEntity() instanceof LivingEntity)) {
+		if(event.getEntity().level.isClientSide() || !(event.getEntity() instanceof LivingEntity)) {
 			return;
 		}
 		IRadiationRecipient capability = event.getEntity().getCapability(VoltaicCapabilities.CAPABILITY_RADIATIONRECIPIENT).orElse(CapabilityUtils.EMPTY_RADIATION_REPIPIENT);

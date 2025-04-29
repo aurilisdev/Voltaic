@@ -6,10 +6,8 @@ import voltaic.prefab.tile.components.type.ComponentInventory;
 import voltaic.prefab.utilities.BlockEntityUtils;
 import voltaic.prefab.utilities.CapabilityUtils;
 import net.minecraft.core.Direction;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
@@ -177,11 +175,6 @@ public class FluidUtilities {
 
 			inv.setItem(index, handler.getContainer());
 		}
-	}
-
-	@Deprecated(since = "don't set a filter if you want to allow for all fluids")
-	public static Fluid[] getAllRegistryFluids() {
-	    return BuiltInRegistries.FLUID.stream().toArray(Fluid[]::new);
 	}
 
 }

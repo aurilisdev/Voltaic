@@ -7,7 +7,6 @@ import com.mojang.serialization.JsonOps;
 import voltaic.Voltaic;
 import voltaic.api.radiation.util.RadiationShielding;
 import voltaic.common.packet.types.client.PacketSetClientRadiationShielding;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.packs.resources.Resource;
@@ -23,6 +22,7 @@ import net.minecraftforge.event.OnDatapackSyncEvent;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.PacketDistributor.PacketTarget;
 import net.minecraftforge.network.simple.SimpleChannel;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import org.apache.logging.log4j.Logger;
 
@@ -102,7 +102,7 @@ public class RadiationShieldingRegister extends SimplePreparableReloadListener<J
 
             } else {
 
-                radiationShieldingMap.put(BuiltInRegistries.BLOCK.get(new ResourceLocation(key)), value);
+                radiationShieldingMap.put(ForgeRegistries.BLOCKS.getValue(new ResourceLocation(key)), value);
 
 
             }
@@ -114,9 +114,9 @@ public class RadiationShieldingRegister extends SimplePreparableReloadListener<J
     public void generateTagValues() {
 
         tags.forEach((tag, value) -> {
-            BuiltInRegistries.BLOCK.getTag(tag).get().forEach(block -> {
+        	ForgeRegistries.BLOCKS.tags().getTag(tag).forEach(block -> {
 
-                radiationShieldingMap.put(block.value(), value);
+                radiationShieldingMap.put(block, value);
 
             });
         });

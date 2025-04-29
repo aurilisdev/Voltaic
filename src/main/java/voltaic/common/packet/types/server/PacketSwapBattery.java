@@ -34,7 +34,7 @@ public class PacketSwapBattery {
     public static void handle(PacketSwapBattery message, Supplier<Context> context) {
 		Context ctx = context.get();
 		ctx.enqueueWork(() -> {
-			ServerLevel world = context.get().getSender().serverLevel();
+			ServerLevel world = context.get().getSender().getLevel();
 			if (world != null) {
 				ServerBarrierMethods.handleSwapBattery(world, message.playerId);
 			}

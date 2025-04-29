@@ -11,14 +11,13 @@ import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.registries.ForgeRegistries;
 import voltaic.api.codec.StreamCodec;
 
 /**
@@ -35,7 +34,7 @@ public class FluidIngredient extends Ingredient {
     //
     instance.group(
             //
-            BuiltInRegistries.FLUID.byNameCodec().fieldOf("fluid").forGetter(instance0 -> instance0.fluid),
+            ForgeRegistries.FLUIDS.getCodec().fieldOf("fluid").forGetter(instance0 -> instance0.fluid),
             //
             Codec.INT.fieldOf("amount").forGetter(instance0 -> instance0.amount)
 
@@ -49,7 +48,7 @@ public class FluidIngredient extends Ingredient {
     //
     instance.group(
             //
-            TagKey.codec(Registries.FLUID).fieldOf("tag").forGetter(instance0 -> instance0.tag),
+            TagKey.codec(ForgeRegistries.Keys.FLUIDS).fieldOf("tag").forGetter(instance0 -> instance0.tag),
             //
             Codec.INT.fieldOf("amount").forGetter(instance0 -> instance0.amount)
 
@@ -191,8 +190,8 @@ public class FluidIngredient extends Ingredient {
 
             if (tag != null) {
 
-                BuiltInRegistries.FLUID.getTag(tag).get().forEach(h -> {
-                    fluidStacks.add(new FluidStack(h.get(), amount));
+                ForgeRegistries.FLUIDS.tags().getTag(tag).forEach(h -> {
+                    fluidStacks.add(new FluidStack(h, amount));
                 });
 
             } else if (fluid != null) {

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Locale;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import com.mojang.blaze3d.vertex.PoseStack;
 
 import voltaic.Voltaic;
 import voltaic.client.guidebook.utils.components.Chapter;
@@ -35,10 +36,10 @@ import voltaic.prefab.screen.component.button.type.ButtonSpecificPage;
 import voltaic.prefab.screen.component.editbox.type.EditBoxSpecificPage;
 import voltaic.prefab.screen.component.types.ScreenComponentGuidebookArrow;
 import voltaic.prefab.screen.component.types.ScreenComponentGuidebookArrow.ArrowTextures;
+import voltaic.prefab.utilities.RenderingUtils;
 import voltaic.prefab.utilities.VoltaicTextUtils;
 import voltaic.prefab.utilities.math.Color;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
@@ -571,38 +572,40 @@ public class ScreenGuidebook extends GenericScreen<ContainerGuidebook> {
 	}
 
 	@Override
-	protected void renderBg(GuiGraphics graphics, float partialTick, int x, int y) {
+	protected void renderBg(PoseStack poseStack, float partialTick, int x, int y) {
 
 		int guiWidth = (width - imageWidth) / 2;
 		int guiHeight = (height - imageHeight) / 2;
+		
+		RenderingUtils.bindTexture(PAGE_TEXTURE_LEFT);
+		blit(poseStack, guiWidth + LEFT_X_SHIFT, guiHeight, 0, 0, LEFT_TEXTURE_WIDTH, LEFT_TEXTURE_HEIGHT);
 
-		graphics.blit(PAGE_TEXTURE_LEFT, guiWidth + LEFT_X_SHIFT, guiHeight, 0, 0, LEFT_TEXTURE_WIDTH, LEFT_TEXTURE_HEIGHT);
-
-		graphics.blit(PAGE_TEXTURE_RIGHT, guiWidth + RIGHT_X_SHIFT, guiHeight, 0, 0, RIGHT_TEXTURE_WIDTH, RIGHT_TEXTURE_HEIGHT);
+		RenderingUtils.bindTexture(PAGE_TEXTURE_RIGHT);
+		blit(poseStack, guiWidth + RIGHT_X_SHIFT, guiHeight, 0, 0, RIGHT_TEXTURE_WIDTH, RIGHT_TEXTURE_HEIGHT);
 
 		updatePageArrowVis();
 
-		renderPageBackground(graphics, LEFT_X_SHIFT, guiWidth, guiHeight, getCurrentPage());
-		renderPageBackground(graphics, RIGHT_X_SHIFT - 8, guiWidth, guiHeight, getNextPage());
+		renderPageBackground(poseStack, LEFT_X_SHIFT, guiWidth, guiHeight, getCurrentPage());
+		renderPageBackground(poseStack, RIGHT_X_SHIFT - 8, guiWidth, guiHeight, getNextPage());
 
 	}
 
-	private void renderPageBackground(GuiGraphics graphics, int xShift, int guiWidth, int guiHeight, Page page) {
+	private void renderPageBackground(PoseStack poseStack, int xShift, int guiWidth, int guiHeight, Page page) {
 
 		for (GraphicWrapper graphic : page.graphics) {
-			graphic.graphic().render(graphics, graphic.x(), graphic.y(), xShift, guiWidth, guiHeight, page);
+			graphic.graphic().render(poseStack, graphic.x(), graphic.y(), xShift, guiWidth, guiHeight, page);
 		}
 
 	}
 
 	@Override
-	protected void renderLabels(GuiGraphics graphics, int x, int y) {
+	protected void renderLabels(PoseStack poseStack, int x, int y) {
 
 		int refX = getXRef();
 		int refY = getYRef();
 
-		renderPageLabels(graphics, LEFT_X_SHIFT, refX, refY, getCurrentPage());
-		renderPageLabels(graphics, RIGHT_X_SHIFT - 8, refX, refY, getNextPage());
+		renderPageLabels(poseStack, LEFT_X_SHIFT, refX, refY, getCurrentPage());
+		renderPageLabels(poseStack, RIGHT_X_SHIFT - 8, refX, refY, getNextPage());
 
 		int guiWidth = (width - imageWidth) / 2;
 		int guiHeight = (height - imageHeight) / 2;
@@ -610,20 +613,20 @@ public class ScreenGuidebook extends GenericScreen<ContainerGuidebook> {
 		int xAxis = x - guiWidth;
 		int yAxis = y - guiHeight;
 
-		renderPageTooltips(graphics, LEFT_X_SHIFT, x, y, refX, refY, xAxis, yAxis, guiWidth, guiHeight, getCurrentPage());
-		renderPageTooltips(graphics, RIGHT_X_SHIFT - 8, x, y, refX, refY, xAxis, yAxis, guiWidth, guiHeight, getNextPage());
+		renderPageTooltips(poseStack, LEFT_X_SHIFT, x, y, refX, refY, xAxis, yAxis, guiWidth, guiHeight, getCurrentPage());
+		renderPageTooltips(poseStack, RIGHT_X_SHIFT - 8, x, y, refX, refY, xAxis, yAxis, guiWidth, guiHeight, getNextPage());
 
 	}
 
-	private void renderPageLabels(GuiGraphics graphics, int xPageShift, int refX, int refY, Page page) {
+	private void renderPageLabels(PoseStack poseStack, int xPageShift, int refX, int refY, Page page) {
 
 		for (TextWrapper text : page.text) {
 
 			if (text.centered()) {
 				int xShift = (TEXT_WIDTH - font.width(text.characters())) / 2;
-				graphics.drawString(getFontRenderer(), Language.getInstance().getVisualOrder(text.characters()), text.x() + refX + xShift + xPageShift, refY + text.y(), text.color().color(), false);
+				getFontRenderer().draw(poseStack, Language.getInstance().getVisualOrder(text.characters()), text.x() + refX + xShift + xPageShift, refY + text.y(), text.color().color());
 			} else {
-				graphics.drawString(getFontRenderer(), Language.getInstance().getVisualOrder(text.characters()), text.x() + refX + xPageShift, text.y() + refY, text.color().color(), false);
+				getFontRenderer().draw(poseStack, Language.getInstance().getVisualOrder(text.characters()), text.x() + refX + xPageShift, text.y() + refY, text.color().color());
 			}
 
 		}
@@ -633,16 +636,16 @@ public class ScreenGuidebook extends GenericScreen<ContainerGuidebook> {
 			AbstractGraphicWrapper<?> graphic = wrapper.graphic();
 
 			for (GraphicTextDescriptor descriptor : graphic.descriptors) {
-				graphics.drawString(getFontRenderer(), descriptor.text, refX + wrapper.x() + descriptor.xOffsetFromImage + xPageShift, refY + wrapper.y() + descriptor.yOffsetFromImage, descriptor.color, false);
+				getFontRenderer().draw(poseStack, descriptor.text, refX + wrapper.x() + descriptor.xOffsetFromImage + xPageShift, refY + wrapper.y() + descriptor.yOffsetFromImage, descriptor.color);
 			}
 
 		}
 
-		page.renderAdditionalText(graphics, refX, refY, xPageShift, font, TEXT_WIDTH, TEXT_START_X);
+		page.renderAdditionalText(poseStack, refX, refY, xPageShift, font, TEXT_WIDTH, TEXT_START_X);
 
 	}
 
-	private void renderPageTooltips(GuiGraphics graphics, int xPageShift, int mouseX, int mouseY, int refX, int refY, int xAxis, int yAxis, int guiWidth, int guiHeight, Page page) {
+	private void renderPageTooltips(PoseStack poseStack, int xPageShift, int mouseX, int mouseY, int refX, int refY, int xAxis, int yAxis, int guiWidth, int guiHeight, Page page) {
 
 		int textWidth = 0;
 		int xShift = 0;
@@ -659,7 +662,7 @@ public class ScreenGuidebook extends GenericScreen<ContainerGuidebook> {
 			}
 
 			if (isPointInRegionText(refX + xShift + xPageShift + text.x(), refY + text.y(), xAxis, yAxis, textWidth, LINE_HEIGHT)) {
-				text.onTooltip().onTooltip(graphics, xAxis, yAxis, this);
+				text.onTooltip().onTooltip(poseStack, xAxis, yAxis, this);
 			}
 
 		}
@@ -671,13 +674,13 @@ public class ScreenGuidebook extends GenericScreen<ContainerGuidebook> {
 			AbstractGraphicWrapper<?> graphic = wrapper.graphic();
 
 			if (isPointInRegionGraphic(mouseX, mouseY, guiWidth + wrapper.x() + graphic.lookupXOffset + xPageShift, guiHeight + wrapper.y() + graphic.lookupYOffset - graphic.descriptorTopOffset, graphic.width, graphic.height)) {
-				wrapper.onTooltip().onTooltip(graphics, xAxis, yAxis, this);
+				wrapper.onTooltip().onTooltip(poseStack, xAxis, yAxis, this);
 			}
 
 			for (GraphicTextDescriptor descriptor : graphic.descriptors) {
 
 				if (descriptor.onTooltip != null && isPointInRegionText(refX + wrapper.x() + descriptor.xOffsetFromImage + xPageShift, refY + wrapper.y() + descriptor.yOffsetFromImage, xAxis, yAxis, font.width(descriptor.text), LINE_HEIGHT)) {
-					descriptor.onTooltip.onTooltip(graphics, xAxis, yAxis, this);
+					descriptor.onTooltip.onTooltip(poseStack, xAxis, yAxis, this);
 				}
 
 			}

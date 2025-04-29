@@ -6,7 +6,6 @@ import java.util.function.Consumer;
 import voltaic.api.electricity.formatting.MeasurementUnits;
 import voltaic.common.reloadlistener.RadiationShieldingRegister;
 import voltaic.common.reloadlistener.RadioactiveFluidRegister;
-import voltaic.common.reloadlistener.RadioactiveGasRegister;
 import voltaic.common.reloadlistener.RadioactiveItemRegister;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -20,8 +19,6 @@ import voltaic.common.settings.VoltaicConstants;
 import voltaic.common.tags.VoltaicTags;
 import voltaic.prefab.configuration.ConfigurationHandler;
 import voltaic.registers.UnifiedVoltaicRegister;
-import voltaic.registers.VoltaicGases;
-import voltaic.registers.VoltaicRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.api.distmarker.Dist;
@@ -80,11 +77,7 @@ public class Voltaic {
         VoltaicTags.init();
         RadioactiveItemRegister.INSTANCE = new RadioactiveItemRegister().subscribeAsSyncable(NetworkHandler.CHANNEL);
         RadioactiveFluidRegister.INSTANCE = new RadioactiveFluidRegister().subscribeAsSyncable(NetworkHandler.CHANNEL);
-        RadioactiveGasRegister.INSTANCE = new RadioactiveGasRegister().subscribeAsSyncable(NetworkHandler.CHANNEL);
         RadiationShieldingRegister.INSTANCE = new RadiationShieldingRegister().subscribeAsSyncable(NetworkHandler.CHANNEL);
-        event.enqueueWork(() -> {
-        	VoltaicRegistries.gasRegistry().forEach(gas -> VoltaicGases.MAPPED_GASSES.put(gas.getCondensedFluid(), gas));
-        });
         // CraftingHelper.register(ConfigCondition.Serializer.INSTANCE); // Probably wrong location after update from 1.18.2 to
         // 1.19.2
 

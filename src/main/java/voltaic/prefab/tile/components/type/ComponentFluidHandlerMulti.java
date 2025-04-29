@@ -19,7 +19,6 @@ import voltaic.prefab.tile.components.IComponentType;
 import voltaic.prefab.tile.components.utils.IComponentFluidHandler;
 import voltaic.prefab.utilities.BlockEntityUtils;
 import net.minecraft.core.Direction;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -29,6 +28,7 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
+import net.minecraftforge.registries.ForgeRegistries;
 
 /**
  * This class is separate from ComponentFluidHandlerSimple as it has segregated input and output tanks. These tanks are
@@ -380,8 +380,8 @@ public class ComponentFluidHandlerMulti implements IComponentFluidHandler {
             }
             if (validInputFluidTags != null) {
                 for (TagKey<Fluid> tag : validInputFluidTags) {
-                    BuiltInRegistries.FLUID.getTag(tag).get().stream().forEach(holder -> {
-                        inputValidatorFluids.add(holder.value());
+                    ForgeRegistries.FLUIDS.tags().getTag(tag).stream().forEach(holder -> {
+                        inputValidatorFluids.add(holder);
                     });
                 }
             }
@@ -392,8 +392,8 @@ public class ComponentFluidHandlerMulti implements IComponentFluidHandler {
             }
             if (validOutputFluidTags != null) {
                 for (TagKey<Fluid> tag : validOutputFluidTags) {
-                    BuiltInRegistries.FLUID.getTag(tag).get().stream().forEach(holder -> {
-                        outputValidatorFluids.add(holder.value());
+                    ForgeRegistries.FLUIDS.tags().getTag(tag).stream().forEach(holder -> {
+                        outputValidatorFluids.add(holder);
                     });
                 }
             }

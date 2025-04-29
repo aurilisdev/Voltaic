@@ -161,13 +161,12 @@ public class AdvancementBuilder implements IForgeAdvancementBuilder {
 			this.requirements = this.requirementsStrategy.createRequirements(this.criteria.keySet());
 		}
 
-		return new Advancement(id, this.parent, this.display, this.rewards, this.criteria, this.requirements, false);
+		return new Advancement(id, this.parent, this.display, this.rewards, this.criteria, this.requirements);
 	}
 
-	public Advancement save(Consumer<Advancement> consumer) {
-		Advancement adv = build();
-		consumer.accept(adv);
-		return adv;
+	public Advancement save(Consumer<AdvancementBuilder> consumer) {
+		consumer.accept(this);
+		return this.build();
 	}
 
 	public JsonObject serializeToJson() {

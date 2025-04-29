@@ -23,6 +23,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.BooleanOp;
@@ -139,7 +140,7 @@ public abstract class AbstractConnectBlock extends GenericEntityBlockWaterloggab
 	@Override
 	public BlockState getStateForPlacement(BlockPlaceContext context) {
 		BlockState superState = super.getStateForPlacement(context);
-		Level world = context.getPlayer().level();
+		Level world = context.getPlayer().level;
 		boolean set = false;
 		if (world.getBlockState(context.getClickedPos()).getBlock() instanceof BlockScaffold) {
 			superState = superState.setValue(VoltaicBlockStates.HAS_SCAFFOLDING, true);
@@ -207,7 +208,7 @@ public abstract class AbstractConnectBlock extends GenericEntityBlockWaterloggab
 					if (!worldIn.isClientSide) {
 						if (!player.isCreative()) {
 							if (!player.addItem(new ItemStack(connect.getCamoBlock().getBlock()))) {
-								worldIn.addFreshEntity(new ItemEntity(player.level(), (int) player.getX(), (int) player.getY(), (int) player.getZ(), new ItemStack(connect.getCamoBlock().getBlock())));
+								worldIn.addFreshEntity(new ItemEntity(player.level, (int) player.getX(), (int) player.getY(), (int) player.getZ(), new ItemStack(connect.getCamoBlock().getBlock())));
 							}
 							stack.shrink(1);
 							player.setItemInHand(handIn, stack);
@@ -225,7 +226,7 @@ public abstract class AbstractConnectBlock extends GenericEntityBlockWaterloggab
 	}
 
 	@Override
-	public List<ItemStack> getDrops(BlockState state, net.minecraft.world.level.storage.loot.LootParams.Builder builder) {
+	public List<ItemStack> getDrops(BlockState state, LootContext.Builder builder) {
 		ArrayList<ItemStack> drops = new ArrayList<>(super.getDrops(state, builder));
 		if (state.getValue(VoltaicBlockStates.HAS_SCAFFOLDING) && builder.getOptionalParameter(LootContextParams.BLOCK_ENTITY) instanceof GenericConnectTile connect) {
 			drops.add(new ItemStack(connect.getScaffoldBlock().getBlock()));
@@ -284,7 +285,7 @@ public abstract class AbstractConnectBlock extends GenericEntityBlockWaterloggab
 
 	@Override
 	public void onRotate(ItemStack stack, BlockPos pos, Player player) {
-		Level level = player.level();
+		Level level = player.level;
 		if (level.isClientSide()) {
 			return;
 		}
@@ -297,7 +298,7 @@ public abstract class AbstractConnectBlock extends GenericEntityBlockWaterloggab
 
 				if (!player.isCreative()) {
 					if (!player.addItem(new ItemStack(camo))) {
-						level.addFreshEntity(new ItemEntity(player.level(), (int) player.getX(), (int) player.getY(), (int) player.getZ(), new ItemStack(camo)));
+						level.addFreshEntity(new ItemEntity(player.level, (int) player.getX(), (int) player.getY(), (int) player.getZ(), new ItemStack(camo)));
 					}
 				}
 
@@ -312,7 +313,7 @@ public abstract class AbstractConnectBlock extends GenericEntityBlockWaterloggab
 
 				if (!player.isCreative()) {
 					if (!player.addItem(new ItemStack(scaffold))) {
-						level.addFreshEntity(new ItemEntity(player.level(), (int) player.getX(), (int) player.getY(), (int) player.getZ(), new ItemStack(scaffold)));
+						level.addFreshEntity(new ItemEntity(player.level, (int) player.getX(), (int) player.getY(), (int) player.getZ(), new ItemStack(scaffold)));
 					}
 				}
 

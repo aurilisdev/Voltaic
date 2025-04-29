@@ -13,12 +13,12 @@ import voltaic.compatibility.jei.utils.gui.types.BackgroundObject;
 import voltaic.prefab.utilities.CapabilityUtils;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.RecipeType;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
+import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 
 public abstract class Fluid2ItemRecipeCategory<T extends Fluid2ItemRecipe> extends AbstractRecipeCategory<T> {
@@ -41,7 +41,7 @@ public abstract class Fluid2ItemRecipeCategory<T extends Fluid2ItemRecipe> exten
         for (FluidIngredient ing : recipe.getFluidIngredients()) {
             List<FluidStack> fluids = new ArrayList<>();
             for (FluidStack stack : ing.getMatchingFluids()) {
-                if (!BuiltInRegistries.FLUID.getKey(stack.getFluid()).toString().toLowerCase(Locale.ROOT).contains("flow")) {
+                if (!ForgeRegistries.FLUIDS.getKey(stack.getFluid()).toString().toLowerCase(Locale.ROOT).contains("flow")) {
                     fluids.add(stack);
                 }
             }

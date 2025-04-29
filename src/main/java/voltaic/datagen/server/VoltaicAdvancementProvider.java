@@ -2,34 +2,34 @@ package voltaic.datagen.server;
 
 import voltaic.Voltaic;
 import voltaic.common.condition.ConfigCondition;
+import voltaic.datagen.utils.server.advancement.AdvancementBuilder;
 import voltaic.datagen.utils.server.advancement.BaseAdvancementProvider;
-import net.minecraft.advancements.Advancement;
+import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.advancements.AdvancementRewards.Builder;
+import net.minecraft.advancements.critereon.EntityPredicate;
 import net.minecraft.advancements.critereon.PlayerTrigger;
-import net.minecraft.core.HolderLookup.Provider;
+import net.minecraft.data.DataGenerator;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.common.data.ExistingFileHelper;
 
 import java.util.function.Consumer;
 
 public class VoltaicAdvancementProvider extends BaseAdvancementProvider {
 
-    public VoltaicAdvancementProvider() {
-        super(Voltaic.ID);
-    }
+	public VoltaicAdvancementProvider(DataGenerator generator) {
+		super(generator, Voltaic.ID);
+	}
 
-    public void generate(Provider registries, Consumer<Advancement> saver, ExistingFileHelper existingFileHelper) {
+	public void registerAdvancements(Consumer<AdvancementBuilder> consumer) {
 
-        advancement("dispenseguidebook")
-                //
-                .addCriterion("SpawnIn", PlayerTrigger.TriggerInstance.tick())
-                //
-                .rewards(Builder.loot(new ResourceLocation("advancement_reward/electroguidebook")))
-                //
-                .condition(new ConfigCondition())
+		advancement("dispenseguidebook")
 				//
-				.save(saver);
+				.addCriterion("SpawnIn", new PlayerTrigger.TriggerInstance(CriteriaTriggers.TICK.getId(), EntityPredicate.Composite.ANY))
+				//
+				.rewards(Builder.loot(new ResourceLocation("advancement_reward/electroguidebook")))
+				//
+				.condition(new ConfigCondition())
+				//
+				.save(consumer);
 
-
-    }
+	}
 }

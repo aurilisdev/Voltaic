@@ -10,14 +10,13 @@ import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraftforge.registries.ForgeRegistries;
 import voltaic.api.codec.StreamCodec;
 
 public class CountableIngredient extends Ingredient {
@@ -26,7 +25,7 @@ public class CountableIngredient extends Ingredient {
 	//
 	instance.group(
 			//
-			BuiltInRegistries.ITEM.byNameCodec().fieldOf("item").forGetter(instance0 -> instance0.item),
+			ForgeRegistries.ITEMS.getCodec().fieldOf("item").forGetter(instance0 -> instance0.item),
 			//
 			Codec.INT.fieldOf("count").forGetter(instance0 -> instance0.stackSize)
 
@@ -40,7 +39,7 @@ public class CountableIngredient extends Ingredient {
 	//
 	instance.group(
 			//
-			TagKey.codec(Registries.ITEM).fieldOf("tag").forGetter(instance0 -> instance0.tag),
+			TagKey.codec(ForgeRegistries.Keys.ITEMS).fieldOf("tag").forGetter(instance0 -> instance0.tag),
 			//
 			Codec.INT.fieldOf("count").forGetter(instance0 -> instance0.stackSize)
 

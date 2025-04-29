@@ -5,13 +5,13 @@ import java.util.function.Supplier;
 import javax.annotation.Nullable;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 
 import voltaic.api.screen.ITexture;
 import voltaic.prefab.screen.component.ScreenComponentGeneric;
 import voltaic.prefab.utilities.RenderingUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.sounds.SoundManager;
@@ -38,7 +38,7 @@ public class ScreenComponentButton<T extends ScreenComponentButton<?>> extends S
     @Nullable
     public Supplier<Component> label = null;
 
-    public SoundEvent pressSound = SoundEvents.UI_BUTTON_CLICK.value();
+    public SoundEvent pressSound = SoundEvents.UI_BUTTON_CLICK;
 
     public ScreenComponentButton(ITexture texture, int x, int y) {
         super(texture, x, y);
@@ -78,27 +78,29 @@ public class ScreenComponentButton<T extends ScreenComponentButton<?>> extends S
     }
 
     @Override
-    public void renderBackground(GuiGraphics graphics, int xAxis, int yAxis, int guiWidth, int guiHeight) {
+    public void renderBackground(PoseStack poseStack, int xAxis, int yAxis, int guiWidth, int guiHeight) {
         if (isVanillaRender && isVisible()) {
             Minecraft minecraft = Minecraft.getInstance();
             RenderingUtils.setShaderColor(color);
             int i = this.getVanillaYImage(isHovered());
             RenderSystem.enableBlend();
             RenderSystem.enableDepthTest();
-            graphics.blit(AbstractWidget.WIDGETS_LOCATION, this.xLocation + guiWidth, this.yLocation + guiHeight, 0, 46 + i * 20, this.width / 2, this.height, 256, 256);
-			graphics.blit(AbstractWidget.WIDGETS_LOCATION, this.xLocation + guiWidth + this.width / 2, this.yLocation + guiHeight, 200 - this.width / 2, 46 + i * 20, this.width / 2, this.height, 256, 256);
+            RenderingUtils.bindTexture(AbstractWidget.WIDGETS_LOCATION);
+            blit(poseStack, this.xLocation + guiWidth, this.yLocation + guiHeight, 0, 46 + i * 20, this.width / 2, this.height, 256, 256);
+            blit(poseStack, this.xLocation + guiWidth + this.width / 2, this.yLocation + guiHeight, 200 - this.width / 2, 46 + i * 20, this.width / 2, this.height, 256, 256);
             if(icon != null) {
                 int xOffset = (width - icon.imageWidth()) / 2;
                 int yOffset = (height - icon.imageHeight()) / 2;
-                graphics.blit(icon.getLocation(), guiWidth + xLocation + xOffset, guiHeight + yLocation + yOffset, icon.textureU(), icon.textureV(), icon.textureWidth(), icon.textureHeight(), icon.imageWidth(), icon.imageHeight());
+                RenderingUtils.bindTexture(icon.getLocation());
+                blit(poseStack, guiWidth + xLocation + xOffset, guiHeight + yLocation + yOffset, icon.textureU(), icon.textureV(), icon.textureWidth(), icon.textureHeight(), icon.imageWidth(), icon.imageHeight());
             }
             Font font = minecraft.font;
             if (label != null) {
-                graphics.drawCenteredString(font, label.get(), this.xLocation + guiWidth + this.width / 2, this.yLocation + guiHeight + (this.height - 8) / 2, color.color());
+                drawCenteredString(poseStack, font, label.get(), this.xLocation + guiWidth + this.width / 2, this.yLocation + guiHeight + (this.height - 8) / 2, color.color());
             }
             RenderingUtils.resetShaderColor();
         } else {
-            super.renderBackground(graphics, xAxis, yAxis, guiWidth, guiHeight);
+            super.renderBackground(poseStack, xAxis, yAxis, guiWidth, guiHeight);
         }
     }
 

@@ -4,13 +4,13 @@ import voltaic.Voltaic;
 import voltaic.common.item.subtype.SubtypeItemUpgrade;
 import voltaic.datagen.utils.client.BaseItemModelsProvider;
 import voltaic.registers.VoltaicItems;
-import net.minecraft.data.PackOutput;
+import net.minecraft.data.DataGenerator;
 import net.minecraftforge.common.data.ExistingFileHelper;
 
 public class VoltaicItemModelsProvider extends BaseItemModelsProvider {
 
-    public VoltaicItemModelsProvider(PackOutput output, ExistingFileHelper existingFileHelper) {
-        super(output, existingFileHelper, Voltaic.ID);
+    public VoltaicItemModelsProvider(DataGenerator generator, ExistingFileHelper existingFileHelper) {
+        super(generator, existingFileHelper, Voltaic.ID);
     }
 
     @Override

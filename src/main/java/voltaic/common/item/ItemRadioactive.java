@@ -25,7 +25,7 @@ public class ItemRadioactive extends ItemVoltaic {
 
     @Override
     public boolean onEntityItemUpdate(ItemStack stack, ItemEntity entity) {
-        Level world = entity.level();
+        Level world = entity.level;
         RadioactiveObject rad = RadioactiveItemRegister.getValue(stack.getItem());
         double amount = stack.getCount() * rad.amount();
         int range = (int) (Math.sqrt(amount) / (5 * Math.sqrt(2)) * 1.25);

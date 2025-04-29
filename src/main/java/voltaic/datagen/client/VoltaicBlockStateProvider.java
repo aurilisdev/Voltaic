@@ -2,14 +2,14 @@ package voltaic.datagen.client;
 
 import voltaic.Voltaic;
 import voltaic.datagen.utils.client.BaseBlockstateProvider;
-import net.minecraft.data.PackOutput;
+import net.minecraft.data.DataGenerator;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import voltaic.registers.VoltaicBlocks;
 
 public class VoltaicBlockStateProvider extends BaseBlockstateProvider {
 
-    public VoltaicBlockStateProvider(PackOutput output, ExistingFileHelper exFileHelper) {
-        super(output, exFileHelper, Voltaic.ID);
+    public VoltaicBlockStateProvider(DataGenerator generator, ExistingFileHelper exFileHelper) {
+        super(generator, exFileHelper, Voltaic.ID);
     }
 
     @Override

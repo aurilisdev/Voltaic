@@ -10,6 +10,7 @@ import voltaic.api.item.IItemElectric;
 import voltaic.common.item.ItemVoltaic;
 import voltaic.prefab.utilities.VoltaicTextUtils;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.SlotAccess;
 import net.minecraft.world.entity.player.Player;
@@ -32,17 +33,17 @@ public class ItemElectric extends ItemVoltaic implements IItemElectric {
 		this.properties = properties;
 		this.getBatteryItem = getBatteryItem;
 	}
-
+	
 	@Override
-	public void addCreativeModeItems(CreativeModeTab group, List<ItemStack> items) {
-
-		ItemStack empty = new ItemStack(this);
-		//IItemElectric.setEnergyStored(empty, 0);
-		items.add(empty);
-		ItemStack charged = new ItemStack(this);
-		IItemElectric.setEnergyStored(charged, getMaximumCapacity(charged));
-		items.add(charged);
-
+	public void fillItemCategory(CreativeModeTab category, NonNullList<ItemStack> items) {
+		if(allowedIn(category)) {
+			ItemStack empty = new ItemStack(this);
+			//IItemElectric.setEnergyStored(empty, 0);
+			items.add(empty);
+			ItemStack charged = new ItemStack(this);
+			IItemElectric.setEnergyStored(charged, getMaximumCapacity(charged));
+			items.add(charged);
+		}
 	}
 
 	@Override

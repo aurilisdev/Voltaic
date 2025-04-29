@@ -15,8 +15,6 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 import net.minecraftforge.items.IItemHandler;
-import voltaic.api.gas.IGasHandler;
-import voltaic.api.gas.IGasHandlerItem;
 import voltaic.api.radiation.SimpleRadiationSource;
 import voltaic.api.radiation.util.BlockPosVolume;
 import voltaic.api.radiation.util.IRadiationManager;
@@ -24,69 +22,8 @@ import voltaic.api.radiation.util.IRadiationRecipient;
 import voltaic.api.radiation.util.RadioactiveObject;
 import voltaic.prefab.utilities.object.TransferPack;
 import voltaic.api.electricity.ICapabilityElectrodynamic;
-import voltaic.api.gas.GasAction;
-import voltaic.api.gas.GasStack;
 
 public class CapabilityUtils {
-
-	public static final IGasHandler EMPTY_GAS = new IGasHandler() {
-
-		@Override
-		public int getTanks() {
-			return 1;
-		}
-
-		@Override
-		public GasStack getGasInTank(int tank) {
-			return GasStack.EMPTY;
-		}
-
-		@Override
-		public int getTankCapacity(int tank) {
-			return 0;
-		}
-
-		@Override
-		public int getTankMaxTemperature(int tank) {
-			return 0;
-		}
-
-		@Override
-		public int getTankMaxPressure(int tank) {
-			return 0;
-		}
-
-		@Override
-		public boolean isGasValid(int tank, GasStack gas) {
-			return false;
-		}
-
-		@Override
-		public int fill(GasStack gas, GasAction action) {
-			return 0;
-		}
-
-		@Override
-		public GasStack drain(GasStack gas, GasAction action) {
-			return GasStack.EMPTY;
-		}
-
-		@Override
-		public GasStack drain(int maxFill, GasAction action) {
-			return GasStack.EMPTY;
-		}
-
-		@Override
-		public int heat(int tank, int deltaTemperature, GasAction action) {
-			return -1;
-		}
-
-		@Override
-		public int bringPressureTo(int tank, int atm, GasAction action) {
-			return -1;
-		}
-
-	};
 
 	public static final IFluidHandler EMPTY_FLUID = new IFluidHandler() {
 
@@ -278,69 +215,6 @@ public class CapabilityUtils {
 
 		@Override
 		public @NotNull ItemStack getContainer() {
-			return ItemStack.EMPTY;
-		}
-	};
-	
-	public static final IGasHandlerItem EMPTY_GAS_ITEM = new IGasHandlerItem() {
-		
-		@Override
-		public int getTanks() {
-			return 1;
-		}
-
-		@Override
-		public GasStack getGasInTank(int tank) {
-			return GasStack.EMPTY;
-		}
-
-		@Override
-		public int getTankCapacity(int tank) {
-			return 0;
-		}
-
-		@Override
-		public int getTankMaxTemperature(int tank) {
-			return 0;
-		}
-
-		@Override
-		public int getTankMaxPressure(int tank) {
-			return 0;
-		}
-
-		@Override
-		public boolean isGasValid(int tank, GasStack gas) {
-			return false;
-		}
-
-		@Override
-		public int fill(GasStack gas, GasAction action) {
-			return 0;
-		}
-
-		@Override
-		public GasStack drain(GasStack gas, GasAction action) {
-			return GasStack.EMPTY;
-		}
-
-		@Override
-		public GasStack drain(int maxFill, GasAction action) {
-			return GasStack.EMPTY;
-		}
-
-		@Override
-		public int heat(int tank, int deltaTemperature, GasAction action) {
-			return -1;
-		}
-
-		@Override
-		public int bringPressureTo(int tank, int atm, GasAction action) {
-			return -1;
-		}
-
-		@Override
-		public ItemStack getContainer() {
 			return ItemStack.EMPTY;
 		}
 	};

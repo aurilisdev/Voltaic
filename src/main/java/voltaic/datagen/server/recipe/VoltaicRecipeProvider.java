@@ -1,12 +1,12 @@
 package voltaic.datagen.server.recipe;
 
-import net.minecraft.data.PackOutput;
+import net.minecraft.data.DataGenerator;
 import voltaic.datagen.utils.server.recipe.BaseRecipeProvider;
 
 public class VoltaicRecipeProvider extends BaseRecipeProvider {
 
-    public VoltaicRecipeProvider(PackOutput output) {
-        super(output);
+    public VoltaicRecipeProvider(DataGenerator generator) {
+        super(generator);
     }
 
     @Override

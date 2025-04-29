@@ -8,7 +8,6 @@ import voltaic.common.recipe.recipeutils.AbstractMaterialRecipe;
 import voltaic.common.recipe.recipeutils.CountableIngredient;
 import voltaic.common.recipe.recipeutils.FluidIngredient;
 import voltaic.common.recipe.recipeutils.ProbableFluid;
-import voltaic.common.recipe.recipeutils.ProbableGas;
 import voltaic.common.recipe.recipeutils.ProbableItem;
 import voltaic.prefab.tile.components.IComponentType;
 import voltaic.prefab.tile.components.type.ComponentFluidHandlerMulti;
@@ -23,8 +22,8 @@ public abstract class FluidItem2ItemRecipe extends AbstractMaterialRecipe {
     private List<FluidIngredient> fluidIngredients;
     private ItemStack outputItemStack;
 
-    public FluidItem2ItemRecipe(ResourceLocation group, List<CountableIngredient> itemInputs, List<FluidIngredient> fluidInputs, ItemStack itemOutput, double experience, int ticks, double usagePerTick, List<ProbableItem> itemBiproducts, List<ProbableFluid> fluidBiproducts, List<ProbableGas> gasBiproducts) {
-        super(group, experience, ticks, usagePerTick, itemBiproducts, fluidBiproducts, gasBiproducts);
+    public FluidItem2ItemRecipe(ResourceLocation group, List<CountableIngredient> itemInputs, List<FluidIngredient> fluidInputs, ItemStack itemOutput, double experience, int ticks, double usagePerTick, List<ProbableItem> itemBiproducts, List<ProbableFluid> fluidBiproducts) {
+        super(group, experience, ticks, usagePerTick, itemBiproducts, fluidBiproducts);
         ingredients = itemInputs;
         fluidIngredients = fluidInputs;
         outputItemStack = itemOutput;
@@ -60,7 +59,7 @@ public abstract class FluidItem2ItemRecipe extends AbstractMaterialRecipe {
 
     public interface Factory<T extends FluidItem2ItemRecipe> {
 
-        T create(ResourceLocation group, List<CountableIngredient> itemInputs, List<FluidIngredient> fluidInputs, ItemStack itemOutput, double experience, int ticks, double usagePerTick, List<ProbableItem> itemBiproducts, List<ProbableFluid> fluidBiproducts, List<ProbableGas> gasBiproducts);
+        T create(ResourceLocation group, List<CountableIngredient> itemInputs, List<FluidIngredient> fluidInputs, ItemStack itemOutput, double experience, int ticks, double usagePerTick, List<ProbableItem> itemBiproducts, List<ProbableFluid> fluidBiproducts);
 
     }
 

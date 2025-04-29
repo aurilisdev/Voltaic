@@ -4,7 +4,6 @@ import voltaic.api.electricity.formatting.ChatFormatter;
 import voltaic.api.electricity.formatting.DisplayUnits;
 import voltaic.common.recipe.VoltaicRecipe;
 import voltaic.common.recipe.recipeutils.ProbableFluid;
-import voltaic.common.recipe.recipeutils.ProbableGas;
 import voltaic.common.recipe.recipeutils.ProbableItem;
 import voltaic.compatibility.jei.recipecategories.AbstractRecipeCategory;
 import voltaic.compatibility.jei.utils.label.AbstractLabelWrapper;
@@ -40,18 +39,11 @@ public class BiproductPercentWrapperElectroRecipe extends AbstractLabelWrapper {
 					return ChatFormatter.getChatDisplayShort(item.getChance() * 100, DisplayUnits.PERCENTAGE);
 				}
 				break;
-			case GAS:
-				electro = (VoltaicRecipe) recipe;
-				if (electro.hasGasBiproducts() && index < electro.getFluidBiproducts().size()) {
-					ProbableGas item = electro.getGasBiproducts().get(index);
-					return ChatFormatter.getChatDisplayShort(item.getChance() * 100, DisplayUnits.PERCENTAGE);
-				}
-				break;
 		}
 		return Component.empty();
 	}
 
 	public static enum BiproductType {
-		ITEM, FLUID, GAS;
+		ITEM, FLUID;
 	}
 }

@@ -1,20 +1,21 @@
 package voltaic.datagen.utils.server.loottable;
 
 import voltaic.prefab.tile.GenericTile;
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.data.DataGenerator;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
 public abstract class BaseLootTablesProvider extends AbstractLootTableProvider {
 
-    public BaseLootTablesProvider(String modID) {
-        super(modID);
+    public BaseLootTablesProvider(DataGenerator dataGeneratorIn, String modID) {
+        super(dataGeneratorIn, modID);
     }
 
     public <T extends GenericTile> void addMachineTable(Block block, RegistryObject<BlockEntityType<T>> tilereg, boolean items, boolean fluids, boolean gases, boolean energy, boolean additional) {
-        add(block, machineTable(name(block), block, tilereg.get(), items, fluids, gases, energy, additional));
+    	lootTables.put(block, machineTable(name(block), block, tilereg.get(), items, fluids, gases, energy, additional));
     }
 
     /**
@@ -25,7 +26,7 @@ public abstract class BaseLootTablesProvider extends AbstractLootTableProvider {
      */
     public void addSilkTouchOnlyTable(RegistryObject<? extends Block> reg) {
         Block block = reg.get();
-        add(block, createSilkTouchOnlyTable(name(block), block));
+        lootTables.put(block, createSilkTouchOnlyTable(name(block), block));
     }
 
     public void addFortuneAndSilkTouchTable(RegistryObject<? extends Block> reg, Item nonSilk, int minDrop, int maxDrop) {
@@ -33,7 +34,7 @@ public abstract class BaseLootTablesProvider extends AbstractLootTableProvider {
     }
 
     public void addFortuneAndSilkTouchTable(Block block, Item nonSilk, int minDrop, int maxDrop) {
-        add(block, createSilkTouchAndFortuneTable(name(block), block, nonSilk, minDrop, maxDrop));
+    	lootTables.put(block, createSilkTouchAndFortuneTable(name(block), block, nonSilk, minDrop, maxDrop));
     }
 
     public void addSimpleBlock(RegistryObject<? extends Block> reg) {
@@ -42,11 +43,11 @@ public abstract class BaseLootTablesProvider extends AbstractLootTableProvider {
 
     public void addSimpleBlock(Block block) {
 
-        add(block, createSimpleBlockTable(name(block), block));
+    	lootTables.put(block, createSimpleBlockTable(name(block), block));
     }
 
     public String name(Block block) {
-        return BuiltInRegistries.BLOCK.getKey(block).getPath();
+        return ForgeRegistries.BLOCKS.getKey(block).getPath();
     }
 
 

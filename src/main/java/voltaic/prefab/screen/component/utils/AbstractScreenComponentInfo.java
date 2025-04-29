@@ -20,8 +20,9 @@ public abstract class AbstractScreenComponentInfo extends ScreenComponentGeneric
 	public AbstractScreenComponentInfo(ITexture texture, TextPropertySupplier infoHandler, int x, int y) {
 		super(texture, x, y);
 		this.infoHandler = infoHandler;
-		onTooltip((graphics, component, xAxis, yAxis) -> {
-			graphics.renderTooltip(gui.getFontRenderer(), getInfo(infoHandler.getInfo()), xAxis, yAxis);
+		onTooltip((poseStack, component, xAxis, yAxis) -> {
+			
+			gui.displayTooltips(poseStack, getInfo(infoHandler.getInfo()), xAxis, yAxis);
 		});
 	}
 

@@ -1,10 +1,11 @@
 package voltaic.client.guidebook.utils.pagedata;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+
 import voltaic.client.guidebook.ScreenGuidebook;
-import net.minecraft.client.gui.GuiGraphics;
 
 public interface OnTooltip {
 
-	public void onTooltip(GuiGraphics graphics, int xAxis, int yAxis, ScreenGuidebook screen);
+	public void onTooltip(PoseStack poseStack, int xAxis, int yAxis, ScreenGuidebook screen);
 
 }

@@ -6,14 +6,12 @@ import java.util.UUID;
 import com.mojang.serialization.Codec;
 
 import voltaic.api.codec.StreamCodec;
-import voltaic.api.gas.GasStack;
 import voltaic.prefab.utilities.BlockEntityUtils;
 import voltaic.prefab.utilities.object.Location;
 import voltaic.prefab.utilities.object.TransferPack;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.UUIDUtil;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
@@ -22,6 +20,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.registries.ForgeRegistries;
 
 public class PropertyTypes {
 
@@ -214,16 +213,6 @@ public class PropertyTypes {
             //
     );
 
-    public static final SinglePropertyType<GasStack, FriendlyByteBuf> GAS_STACK = new SinglePropertyType<>(
-            //
-            Objects::equals,
-            //
-            GasStack.STREAM_CODEC,
-            //
-            GasStack.CODEC
-            //
-    );
-
     public static final SinglePropertyType<ItemStack, FriendlyByteBuf> ITEM_STACK = new SinglePropertyType<>(
             //
             ItemStack::matches,
@@ -252,7 +241,7 @@ public class PropertyTypes {
             //
             StreamCodec.BLOCK,
             //
-            BuiltInRegistries.BLOCK.byNameCodec()
+            ForgeRegistries.BLOCKS.getCodec()
             //
     );
 

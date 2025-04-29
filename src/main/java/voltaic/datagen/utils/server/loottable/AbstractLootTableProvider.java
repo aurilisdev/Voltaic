@@ -1,12 +1,20 @@
 package voltaic.datagen.utils.server.loottable;
 
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
+import voltaic.Voltaic;
 import voltaic.prefab.tile.components.type.ComponentInventory;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.data.loot.packs.VanillaBlockLoot;
+
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.Map;
+
+import net.minecraft.advancements.critereon.EnchantmentPredicate;
+import net.minecraft.advancements.critereon.ItemPredicate;
+import net.minecraft.advancements.critereon.MinMaxBounds;
+import net.minecraft.data.CachedOutput;
+import net.minecraft.data.DataGenerator;
+import net.minecraft.data.DataProvider;
+import net.minecraft.data.loot.LootTableProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.enchantment.Enchantments;
@@ -14,6 +22,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.level.storage.loot.LootTables;
 import net.minecraft.world.level.storage.loot.entries.AlternativesEntry;
 import net.minecraft.world.level.storage.loot.entries.DynamicLoot;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
@@ -23,15 +32,21 @@ import net.minecraft.world.level.storage.loot.functions.CopyNameFunction;
 import net.minecraft.world.level.storage.loot.functions.CopyNbtFunction;
 import net.minecraft.world.level.storage.loot.functions.SetContainerContents;
 import net.minecraft.world.level.storage.loot.functions.SetItemCountFunction;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
+import net.minecraft.world.level.storage.loot.predicates.MatchTool;
 import net.minecraft.world.level.storage.loot.providers.nbt.ContextNbtProvider;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
 
-public abstract class AbstractLootTableProvider extends VanillaBlockLoot {
+public abstract class AbstractLootTableProvider extends LootTableProvider {
 
+	protected final Map<Block, LootTable.Builder> lootTables = new HashMap<>();
+	private final DataGenerator generator;
 	private final String modID;
 
-	public AbstractLootTableProvider(String modID) {
+	public AbstractLootTableProvider(DataGenerator dataGeneratorIn, String modID) {
+		super(dataGeneratorIn);
+		this.generator = dataGeneratorIn;
 		this.modID = modID;
 	}
 
@@ -88,7 +103,7 @@ public abstract class AbstractLootTableProvider extends VanillaBlockLoot {
 						//
 						AlternativesEntry.alternatives(
 								//
-								LootItem.lootTableItem(block).when(HAS_SILK_TOUCH),
+								LootItem.lootTableItem(block).when(MatchTool.toolMatches(ItemPredicate.Builder.item().hasEnchantment(new EnchantmentPredicate(Enchantments.SILK_TOUCH, MinMaxBounds.Ints.atLeast(1))))),
 								//
 								LootItem.lootTableItem(lootItem)
 										//
@@ -112,7 +127,7 @@ public abstract class AbstractLootTableProvider extends VanillaBlockLoot {
 	 * @author SeaRobber69
 	 */
 	protected LootTable.Builder createSilkTouchOnlyTable(String name, Block block) {
-		LootPool.Builder builder = LootPool.lootPool().name(name).setRolls(ConstantValue.exactly(1)).add(LootItem.lootTableItem(block).when(HAS_SILK_TOUCH)
+		LootPool.Builder builder = LootPool.lootPool().name(name).setRolls(ConstantValue.exactly(1)).add(LootItem.lootTableItem(block).when(MatchTool.toolMatches(ItemPredicate.Builder.item().hasEnchantment(new EnchantmentPredicate(Enchantments.SILK_TOUCH, MinMaxBounds.Ints.atLeast(1)))))
 
 		);
 		return LootTable.lootTable().withPool(builder);
@@ -124,11 +139,30 @@ public abstract class AbstractLootTableProvider extends VanillaBlockLoot {
 	}
 
 	@Override
-	protected Iterable<Block> getKnownBlocks() {
+	public void run(CachedOutput cache) {
+		addTables();
 
-		return BuiltInRegistries.BLOCK.entrySet().stream().filter(e -> e.getKey().location().getNamespace().equals(modID) && !getExcludedBlocks().contains(e.getValue())).map(Map.Entry::getValue).collect(Collectors.toList());
+		Map<ResourceLocation, LootTable> tables = new HashMap<>();
+		for (Map.Entry<Block, LootTable.Builder> entry : lootTables.entrySet()) {
+			tables.put(entry.getKey().getLootTable(), entry.getValue().setParamSet(LootContextParamSets.BLOCK).build());
+		}
+
+		Path outputFolder = generator.getOutputFolder();
+		tables.forEach((key, lootTable) -> {
+			Path path = outputFolder.resolve("data/" + key.getNamespace() + "/loot_tables/" + key.getPath() + ".json");
+			try {
+				DataProvider.saveStable(cache, LootTables.serialize(lootTable), path);
+			} catch (IOException e) {
+				Voltaic.LOGGER.error("Couldn't write loot table {}", path, e);
+			}
+		});
 	}
+	
+	protected abstract void addTables();
 
-	public abstract List<Block> getExcludedBlocks();
+	@Override
+	public String getName() {
+		return modID + " LootTables";
+	}
 
 }

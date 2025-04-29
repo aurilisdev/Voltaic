@@ -6,21 +6,19 @@ import javax.annotation.Nullable;
 
 import com.google.gson.JsonObject;
 
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.AbstractCookingRecipe;
-import net.minecraft.world.item.crafting.CookingBookCategory;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraftforge.registries.ForgeRegistries;
 
 public class CustomCookingRecipe implements FinishedRecipe {
 
 	private final ResourceLocation id;
-	private final CookingBookCategory category;
 	private final Ingredient ingredient;
 	private final Item result;
 	private final float experience;
@@ -29,7 +27,6 @@ public class CustomCookingRecipe implements FinishedRecipe {
 
 	private CustomCookingRecipe(ResourceLocation id, Ingredient input, Item result, float experience, int cookingTime, RecipeSerializer<? extends AbstractCookingRecipe> serializer) {
 		this.id = id;
-		this.category = CookingBookCategory.MISC;
 		ingredient = input;
 		this.result = result;
 		this.experience = experience;
@@ -45,9 +42,8 @@ public class CustomCookingRecipe implements FinishedRecipe {
 
 	@Override
 	public void serializeRecipeData(JsonObject pJson) {
-		pJson.addProperty("category", this.category.getSerializedName());
 		pJson.add("ingredient", this.ingredient.toJson());
-		pJson.addProperty("result", BuiltInRegistries.ITEM.getKey(this.result).toString());
+		pJson.addProperty("result", ForgeRegistries.ITEMS.getKey(this.result).toString());
 		pJson.addProperty("experience", this.experience);
 		pJson.addProperty("cookingtime", this.cookingTime);
 	}

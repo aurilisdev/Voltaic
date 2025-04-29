@@ -142,9 +142,9 @@ public class WorldUtils {
 			ServerLevel level = (ServerLevel) chunk.getLevel();
 			chunk.setUnsaved(true);
 			LevelLightEngine lightManager = level.getLightEngine();
-			lightManager.setLightEnabled(chunk.getPos(), false);
+			lightManager.enableLightSources(chunk.getPos(), false);
 
-			ClientboundLevelChunkWithLightPacket packet = new ClientboundLevelChunkWithLightPacket(chunk, lightManager, null, null);
+			ClientboundLevelChunkWithLightPacket packet = new ClientboundLevelChunkWithLightPacket(chunk, lightManager, null, null, false);
 			level.getChunkSource().chunkMap.getPlayers(chunk.getPos(), false).forEach(e -> e.connection.send(packet));
 			level.getChunkSource().updateChunkForced(chunk.getPos(), true);
 		}
@@ -190,7 +190,7 @@ public class WorldUtils {
 
 	public static Direction getDirectionFromPosDelta(BlockPos from, BlockPos to) {
 		BlockPos delta = to.subtract(from);
-		return Direction.fromDelta(delta.getX(), delta.getY(), delta.getZ());
+		return BlockEntityUtils.fromDelta(delta.getX(), delta.getY(), delta.getZ());
 	}
 
 	public static boolean shouldUpdateFromRedstoneChange(Level world, BlockPos ourPos, BlockPos neighborPos) {

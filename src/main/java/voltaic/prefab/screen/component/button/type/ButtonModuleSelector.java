@@ -2,7 +2,10 @@ package voltaic.prefab.screen.component.button.type;
 
 import voltaic.Voltaic;
 import voltaic.api.screen.ITexture;
-import net.minecraft.client.gui.GuiGraphics;
+import voltaic.prefab.utilities.RenderingUtils;
+
+import com.mojang.blaze3d.vertex.PoseStack;
+
 import net.minecraft.resources.ResourceLocation;
 
 public class ButtonModuleSelector extends ButtonSpecificPage {
@@ -19,13 +22,14 @@ public class ButtonModuleSelector extends ButtonSpecificPage {
 	}
 
 	@Override
-	public void renderBackground(GuiGraphics graphics, int xAxis, int yAxis, int guiWidth, int guiHeight) {
+	public void renderBackground(PoseStack poseStack, int xAxis, int yAxis, int guiWidth, int guiHeight) {
 
 		if (selected && isVisible()) {
 			ITexture texture = GuidebookButtonTextures.CHECKBOX_ON;
-			graphics.blit(texture.getLocation(), this.xLocation + guiWidth, this.yLocation + guiHeight, texture.textureU(), texture.textureV(), texture.textureWidth(), texture.textureHeight(), texture.imageWidth(), texture.imageHeight());
+			RenderingUtils.bindTexture(texture.getLocation());
+			blit(poseStack, this.xLocation + guiWidth, this.yLocation + guiHeight, texture.textureU(), texture.textureV(), texture.textureWidth(), texture.textureHeight(), texture.imageWidth(), texture.imageHeight());
 		} else {
-			super.renderBackground(graphics, xAxis, yAxis, guiWidth, guiHeight);
+			super.renderBackground(poseStack, xAxis, yAxis, guiWidth, guiHeight);
 		}
 
 	}
