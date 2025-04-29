@@ -4,12 +4,14 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+
 import voltaic.Voltaic;
 import voltaic.api.screen.ITexture;
 import voltaic.api.screen.component.TextPropertySupplier;
 import voltaic.prefab.screen.component.types.ScreenComponentSlot.IconType;
 import voltaic.prefab.screen.component.utils.AbstractScreenComponentInfo;
-import net.minecraft.client.gui.GuiGraphics;
+import voltaic.prefab.utilities.RenderingUtils;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
 
@@ -29,14 +31,15 @@ public class ScreenComponentGuiTab extends AbstractScreenComponentInfo {
 	}
 
 	@Override
-	public void renderBackground(GuiGraphics graphics, int xAxis, int yAxis, int guiWidth, int guiHeight) {
-		super.renderBackground(graphics, xAxis, yAxis, guiWidth, guiHeight);
+	public void renderBackground(PoseStack poseStack, int xAxis, int yAxis, int guiWidth, int guiHeight) {
+		super.renderBackground(poseStack, xAxis, yAxis, guiWidth, guiHeight);
 		if (iconType == IconType.NONE) {
 			return;
 		}
 		int slotXOffset = (texture.imageWidth() - iconType.imageWidth()) / 2;
 		int slotYOffset = (texture.imageHeight() - iconType.imageHeight()) / 2;
-		graphics.blit(iconType.getLocation(), guiWidth + xLocation + slotXOffset, guiHeight + yLocation + slotYOffset, iconType.textureU(), iconType.textureV(), iconType.textureWidth(), iconType.textureHeight(), iconType.imageWidth(), iconType.imageHeight());
+		RenderingUtils.bindTexture(iconType.getLocation());
+		blit(poseStack, guiWidth + xLocation + slotXOffset, guiHeight + yLocation + slotYOffset, iconType.textureU(), iconType.textureV(), iconType.textureWidth(), iconType.textureHeight(), iconType.imageWidth(), iconType.imageHeight());
 	}
 
 	public enum GuiInfoTabTextures implements ITexture {

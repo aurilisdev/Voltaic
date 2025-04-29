@@ -9,13 +9,9 @@ import javax.annotation.Nullable;
 
 import com.mojang.datafixers.util.Pair;
 
-import voltaic.api.gas.GasStack;
-import voltaic.api.gas.GasTank;
 import voltaic.common.recipe.recipeutils.CountableIngredient;
 import voltaic.common.recipe.recipeutils.FluidIngredient;
-import voltaic.common.recipe.recipeutils.GasIngredient;
 import voltaic.common.recipe.recipeutils.ProbableFluid;
-import voltaic.common.recipe.recipeutils.ProbableGas;
 import voltaic.common.recipe.recipeutils.ProbableItem;
 import voltaic.prefab.tile.components.type.ComponentProcessor;
 import net.minecraft.core.NonNullList;
@@ -40,22 +36,19 @@ public abstract class VoltaicRecipe implements Recipe<RecipeWrapper> {
     private final List<ProbableItem> itemBiproducts;
     private final List<ProbableFluid> fluidBiproducts;
 
-    private final List<ProbableGas> gasBiproducts;
-
     private final HashMap<Integer, List<Integer>> itemArrangements = new HashMap<>();
     @Nullable
     private List<Integer> fluidArrangement;
     @Nullable
     private List<Integer> gasArrangement;
 
-    public VoltaicRecipe(ResourceLocation recipeGroup, double experience, int ticks, double usagePerTick, List<ProbableItem> itemBiproducts, List<ProbableFluid> fluidBiproducts, List<ProbableGas> gasBiproducts) {
+    public VoltaicRecipe(ResourceLocation recipeGroup, double experience, int ticks, double usagePerTick, List<ProbableItem> itemBiproducts, List<ProbableFluid> fluidBiproducts) {
         group = recipeGroup;
         xp = experience;
         this.ticks = ticks;
         this.usagePerTick = usagePerTick;
         this.itemBiproducts = itemBiproducts;
         this.fluidBiproducts = fluidBiproducts;
-        this.gasBiproducts = gasBiproducts;
     }
 
     /**
@@ -90,10 +83,6 @@ public abstract class VoltaicRecipe implements Recipe<RecipeWrapper> {
         return fluidBiproducts.size() != 0;
     }
 
-    public boolean hasGasBiproducts() {
-        return gasBiproducts.size() != 0;
-    }
-
     @Nullable
     public List<ProbableItem> getItemBiproducts() {
         return itemBiproducts;
@@ -102,11 +91,6 @@ public abstract class VoltaicRecipe implements Recipe<RecipeWrapper> {
     @Nullable
     public List<ProbableFluid> getFluidBiproducts() {
         return fluidBiproducts;
-    }
-
-    @Nullable
-    public List<ProbableGas> getGasBiproducts() {
-        return gasBiproducts;
     }
 
     public ItemStack[] getFullItemBiStacks() {
@@ -125,24 +109,12 @@ public abstract class VoltaicRecipe implements Recipe<RecipeWrapper> {
         return fluids;
     }
 
-    public GasStack[] getFullGasBiStacks() {
-        GasStack[] gases = new GasStack[getGasBiproductCount()];
-        for (int i = 0; i < getGasBiproductCount(); i++) {
-            gases[i] = gasBiproducts.get(i).getFullStack();
-        }
-        return gases;
-    }
-
     public int getItemBiproductCount() {
         return itemBiproducts.size();
     }
 
     public int getFluidBiproductCount() {
         return fluidBiproducts.size();
-    }
-
-    public int getGasBiproductCount() {
-        return gasBiproducts.size();
     }
 
     public double getXp() {
@@ -225,28 +197,6 @@ public abstract class VoltaicRecipe implements Recipe<RecipeWrapper> {
             int tankNum = -1;
             for (int j = 0; j < fluidTanks.length; j++) {
                 if (ing.testFluid(fluidTanks[j].getFluid())) {
-                    tankNum = j;
-                    break;
-                }
-            }
-            if (tankNum > -1 && !tankOrientation.contains(tankNum)) {
-                tankOrientation.add(tankNum);
-            }
-        }
-        if (tankOrientation.size() < ingredients.size()) {
-            valid = false;
-        }
-        return Pair.of(tankOrientation, valid);
-    }
-
-    public static Pair<List<Integer>, Boolean> areGasesValid(List<GasIngredient> ingredients, GasTank[] gasTanks) {
-        Boolean valid = true;
-        List<Integer> tankOrientation = new ArrayList<>();
-        for (int i = 0; i < ingredients.size(); i++) {
-            GasIngredient ing = ingredients.get(i);
-            int tankNum = -1;
-            for (int j = 0; j < gasTanks.length; j++) {
-                if (ing.testGas(gasTanks[j].getGas(), true, true)) {
                     tankNum = j;
                     break;
                 }

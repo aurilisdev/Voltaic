@@ -3,12 +3,12 @@ package voltaic.datagen.client;
 import voltaic.Voltaic;
 import voltaic.datagen.utils.client.BaseSoundProvider;
 import voltaic.registers.VoltaicSounds;
-import net.minecraft.data.PackOutput;
+import net.minecraft.data.DataGenerator;
 import net.minecraftforge.common.data.ExistingFileHelper;
 
 public class VoltaicSoundProvider extends BaseSoundProvider {
-    public VoltaicSoundProvider(PackOutput output, ExistingFileHelper helper) {
-        super(output, helper, Voltaic.ID);
+    public VoltaicSoundProvider(DataGenerator generator, ExistingFileHelper helper) {
+        super(generator, helper, Voltaic.ID);
     }
 
     @Override

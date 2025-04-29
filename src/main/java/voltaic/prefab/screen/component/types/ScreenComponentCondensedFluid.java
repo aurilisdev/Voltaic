@@ -2,6 +2,8 @@ package voltaic.prefab.screen.component.types;
 
 import java.util.function.Supplier;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+
 import voltaic.common.packet.NetworkHandler;
 import voltaic.common.packet.types.server.PacketUpdateCarriedItemServer;
 import voltaic.prefab.inventory.container.types.GenericContainerBlockEntity;
@@ -10,8 +12,8 @@ import voltaic.prefab.screen.GenericScreen;
 import voltaic.prefab.screen.component.ScreenComponentGeneric;
 import voltaic.prefab.screen.component.types.ScreenComponentSlot.IconType;
 import voltaic.prefab.tile.GenericTile;
+import voltaic.prefab.utilities.RenderingUtils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.ItemStack;
@@ -30,9 +32,9 @@ public class ScreenComponentCondensedFluid extends ScreenComponentGeneric {
     }
 
     @Override
-    public void renderBackground(GuiGraphics graphics, int xAxis, int yAxis, int guiWidth, int guiHeight) {
+    public void renderBackground(PoseStack poseStack, int xAxis, int yAxis, int guiWidth, int guiHeight) {
 
-        super.renderBackground(graphics, xAxis, yAxis, guiWidth, guiHeight);
+        super.renderBackground(poseStack, xAxis, yAxis, guiWidth, guiHeight);
 
         SingleProperty<FluidStack> fluidProperty = fluidPropertySupplier.get();
 
@@ -41,8 +43,10 @@ public class ScreenComponentCondensedFluid extends ScreenComponentGeneric {
         }
 
         IconType fluidFull = IconType.FLUID_BLUE;
+        
+        RenderingUtils.bindTexture(fluidFull.getLocation());
 
-        graphics.blit(fluidFull.getLocation(), guiWidth + xLocation + 1, guiHeight + yLocation + 1, fluidFull.textureU(), fluidFull.textureV(), fluidFull.textureWidth(), fluidFull.textureHeight(), fluidFull.imageWidth(), fluidFull.imageHeight());
+        blit(poseStack, guiWidth + xLocation + 1, guiHeight + yLocation + 1, fluidFull.textureU(), fluidFull.textureV(), fluidFull.textureWidth(), fluidFull.textureHeight(), fluidFull.imageWidth(), fluidFull.imageHeight());
     }
 
     @Override

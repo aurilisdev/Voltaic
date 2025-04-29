@@ -9,14 +9,13 @@ import javax.annotation.Nullable;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
-import net.minecraft.core.registries.Registries;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.data.recipes.ShapelessRecipeBuilder;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.common.crafting.conditions.ICondition;
@@ -27,7 +26,7 @@ public class CustomShapelessCraftingRecipe extends ShapelessRecipeBuilder.Result
 	private ICondition[] recipeConditions;
 
 	private CustomShapelessCraftingRecipe(ResourceLocation recipeId, Item result, int count, List<Ingredient> ingredients, ICondition[] recipeConditions) {
-		super(recipeId, result, count, "", CraftingBookCategory.MISC, ingredients, null, null);
+		super(recipeId, result, count, "", ingredients, null, null);
 		this.recipeConditions = recipeConditions;
 	}
 
@@ -105,7 +104,7 @@ public class CustomShapelessCraftingRecipe extends ShapelessRecipeBuilder.Result
 		}
 
 		private TagKey<Item> itemTag(ResourceLocation tag) {
-			return TagKey.create(Registries.ITEM, tag);
+			return ItemTags.create(tag);
 		}
 
 	}

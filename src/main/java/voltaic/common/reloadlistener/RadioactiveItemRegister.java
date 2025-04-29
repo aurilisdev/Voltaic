@@ -7,7 +7,6 @@ import com.mojang.serialization.JsonOps;
 import voltaic.Voltaic;
 import voltaic.api.radiation.util.RadioactiveObject;
 import voltaic.common.packet.types.client.PacketSetClientRadioactiveItems;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.packs.resources.Resource;
@@ -23,6 +22,7 @@ import net.minecraftforge.event.OnDatapackSyncEvent;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.PacketDistributor.PacketTarget;
 import net.minecraftforge.network.simple.SimpleChannel;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import org.apache.logging.log4j.Logger;
 
@@ -106,7 +106,7 @@ public class RadioactiveItemRegister extends SimplePreparableReloadListener<Json
 
             } else {
 
-                radioactiveItemMap.put(BuiltInRegistries.ITEM.get(new ResourceLocation(key)), value);
+                radioactiveItemMap.put(ForgeRegistries.ITEMS.getValue(new ResourceLocation(key)), value);
 
 
             }
@@ -118,9 +118,9 @@ public class RadioactiveItemRegister extends SimplePreparableReloadListener<Json
     public void generateTagValues() {
 
         tags.forEach((tag, value) -> {
-            BuiltInRegistries.ITEM.getTag(tag).get().forEach(item -> {
+        	ForgeRegistries.ITEMS.tags().getTag(tag).forEach(item -> {
 
-                radioactiveItemMap.put(item.value(), value);
+                radioactiveItemMap.put(item, value);
 
             });
         });

@@ -7,7 +7,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import voltaic.api.IWrenchItem;
-import voltaic.api.gas.GasTank;
 import voltaic.common.block.states.VoltaicBlockStates;
 import voltaic.common.item.ItemUpgrade;
 import voltaic.prefab.properties.PropertyManager;
@@ -189,9 +188,6 @@ public abstract class GenericTile extends BlockEntity implements Nameable, IProp
 		if (cap == ForgeCapabilities.ITEM_HANDLER && components[IComponentType.Inventory.ordinal()] != null) {
 			return components[IComponentType.Inventory.ordinal()].getCapability(cap, side, null);
 		}
-		if (cap == VoltaicCapabilities.CAPABILITY_GASHANDLER_BLOCK && components[IComponentType.GasHandler.ordinal()] != null) {
-			return components[IComponentType.GasHandler.ordinal()].getCapability(cap, side, null);
-		}
 		if (cap == ForgeCapabilities.ENERGY && components[IComponentType.ForgeEnergy.ordinal()] != null) {
 			return components[IComponentType.ForgeEnergy.ordinal()].getCapability(cap, side, null);
 		}
@@ -244,10 +240,6 @@ public abstract class GenericTile extends BlockEntity implements Nameable, IProp
 
 	public void onFluidTankChange(FluidTank tank) {
 		// hook method for now
-	}
-
-	public void onGasTankChange(GasTank tank) {
-
 	}
 
 	// This is ceded to the tile to allow for greater control with the use function
@@ -350,9 +342,7 @@ public abstract class GenericTile extends BlockEntity implements Nameable, IProp
 		//
 		x < i.getOutputStartIndex() ||
 		//
-				x >= i.getInputBucketStartIndex() && x < i.getInputGasStartIndex() && y.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM) != null ||
-				//
-				x >= i.getInputGasStartIndex() && x < i.getUpgradeSlotStartIndex() && y.getCapability(VoltaicCapabilities.CAPABILITY_GASHANDLER_ITEM) != null ||
+				x >= i.getInputBucketStartIndex() && x < i.getUpgradeSlotStartIndex() && y.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM) != null ||
 				//
 				x >= i.getUpgradeSlotStartIndex() && y.getItem() instanceof ItemUpgrade upgrade && i.isUpgradeValid(upgrade.subtype);
 		//

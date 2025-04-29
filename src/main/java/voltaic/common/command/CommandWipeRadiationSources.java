@@ -14,7 +14,7 @@ public class CommandWipeRadiationSources {
         dispatcher.register(Commands.literal(Voltaic.ID).requires(source -> source.hasPermission(3)).then(Commands.literal("wiperadiationsources").executes(source -> {
 
             RadiationSystem.wipeAllSources(source.getSource().getLevel());
-            source.getSource().sendSuccess(() -> Component.literal("wiped"), true);
+            source.getSource().sendSuccess(Component.literal("wiped"), true);
             return 1;
 
         })));

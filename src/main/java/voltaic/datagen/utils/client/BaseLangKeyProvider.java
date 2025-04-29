@@ -1,9 +1,6 @@
 package voltaic.datagen.utils.client;
 
-import voltaic.api.gas.Gas;
-import voltaic.registers.VoltaicRegistries;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.data.PackOutput;
+import net.minecraft.data.DataGenerator;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.item.Item;
@@ -11,6 +8,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.common.data.LanguageProvider;
+import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
 public abstract class BaseLangKeyProvider extends LanguageProvider {
@@ -18,8 +16,8 @@ public abstract class BaseLangKeyProvider extends LanguageProvider {
 	public final Locale locale;
 	public final String modID;
 
-	public BaseLangKeyProvider(PackOutput output, Locale locale, String modID) {
-		super(output, modID, locale.toString());
+	public BaseLangKeyProvider(DataGenerator gen, Locale locale, String modID) {
+		super(gen, modID, locale.toString());
 		this.locale = locale;
 		this.modID = modID;
 	}
@@ -48,15 +46,7 @@ public abstract class BaseLangKeyProvider extends LanguageProvider {
 		addFluid(fluid.get(), translation);
 	}
 	public void addFluid(Fluid fluid, String translation) {
-		add("fluid." + modID + "." + BuiltInRegistries.FLUID.getKey(fluid).getPath(), translation);
-	}
-
-	public void addGas(RegistryObject<Gas> gas, String translation) {
-		addGas(gas.get(), translation);
-	}
-
-	public void addGas(Gas gas, String translation) {
-		add("gas." + modID + "." + VoltaicRegistries.gasRegistry().getKey(gas).getPath(), translation);
+		add("fluid." + modID + "." + ForgeRegistries.FLUIDS.getKey(fluid).getPath(), translation);
 	}
 
 	public void addContainer(String key, String translation) {

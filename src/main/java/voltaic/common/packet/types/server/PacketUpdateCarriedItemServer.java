@@ -39,7 +39,7 @@ public class PacketUpdateCarriedItemServer {
     public static void handle(PacketUpdateCarriedItemServer message, Supplier<Context> context) {
 		Context ctx = context.get();
 		ctx.enqueueWork(() -> {
-			ServerBarrierMethods.handleUpdateCarriedItemServer(context.get().getSender().level(), message.carriedItem, message.tilePos, message.playerId);
+			ServerBarrierMethods.handleUpdateCarriedItemServer(context.get().getSender().level, message.carriedItem, message.tilePos, message.playerId);
 		});
 		ctx.setPacketHandled(true);
 	}

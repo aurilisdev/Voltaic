@@ -8,15 +8,15 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import voltaic.Voltaic;
 import voltaic.api.codec.StreamCodec;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.registries.ForgeRegistries;
 
 public class ProbableFluid {
 
     public static final Codec<ProbableFluid> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             //
-            BuiltInRegistries.FLUID.byNameCodec().fieldOf("fluid").forGetter(instance0 -> instance0.fluid.getFluid()),
+            ForgeRegistries.FLUIDS.getCodec().fieldOf("fluid").forGetter(instance0 -> instance0.fluid.getFluid()),
             //
             Codec.INT.fieldOf("amount").forGetter(instance0 -> instance0.fluid.getAmount()),
             //

@@ -1,8 +1,10 @@
 package voltaic.prefab.screen.component.button.type;
 
 import voltaic.client.guidebook.utils.pagedata.text.TextWrapperObject;
+
+import com.mojang.blaze3d.vertex.PoseStack;
+
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
@@ -23,10 +25,10 @@ public class ButtonSearchedText extends ButtonSpecificPage {
 	}
 
 	@Override
-	public void renderBackground(GuiGraphics graphics, int xAxis, int yAxis, int guiWidth, int guiHeight) {
-		super.renderBackground(graphics, xAxis, yAxis, guiWidth, guiHeight);
-		drawCenteredStringNoShadow(graphics, gui.getFontRenderer(), chapter.getVisualOrderText(), this.xLocation + this.width / 2 + guiWidth, this.yLocation + guiHeight - 10, TextWrapperObject.DEFAULT_COLOR.color());
-		drawCenteredStringNoShadow(graphics, gui.getFontRenderer(), Language.getInstance().getVisualOrder(line), this.xLocation + guiWidth + this.width / 2, this.yLocation + guiHeight + (this.height - 8) / 2, color.color());
+	public void renderBackground(PoseStack poseStack, int xAxis, int yAxis, int guiWidth, int guiHeight) {
+		super.renderBackground(poseStack, xAxis, yAxis, guiWidth, guiHeight);
+		drawCenteredStringNoShadow(poseStack, gui.getFontRenderer(), chapter.getVisualOrderText(), this.xLocation + this.width / 2 + guiWidth, this.yLocation + guiHeight - 10, TextWrapperObject.DEFAULT_COLOR.color());
+		drawCenteredStringNoShadow(poseStack, gui.getFontRenderer(), Language.getInstance().getVisualOrder(line), this.xLocation + guiWidth + this.width / 2, this.yLocation + guiHeight + (this.height - 8) / 2, color.color());
 
 	}
 
@@ -51,8 +53,8 @@ public class ButtonSearchedText extends ButtonSpecificPage {
 		return super.isVisible() && shouldShow;
 	}
 
-	public static void drawCenteredStringNoShadow(GuiGraphics graphics, Font font, FormattedCharSequence text, int pX, int pY, int pColor) {
-		graphics.drawString(font, text, pX - font.width(text) / 2, pY, pColor, false);
+	public void drawCenteredStringNoShadow(PoseStack poseStack, Font font, FormattedCharSequence text, int pX, int pY, int pColor) {
+		drawString(poseStack, font, text, pX - font.width(text) / 2, pY, pColor);
 	}
 
 }

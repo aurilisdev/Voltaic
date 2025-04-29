@@ -1,8 +1,9 @@
 package voltaic.prefab.screen.component.types;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+
 import voltaic.prefab.screen.component.ScreenComponentGeneric;
 import voltaic.prefab.utilities.math.Color;
-import net.minecraft.client.gui.GuiGraphics;
 
 public class ScreenComponentFillArea extends ScreenComponentGeneric {
 
@@ -20,11 +21,11 @@ public class ScreenComponentFillArea extends ScreenComponentGeneric {
     }
 
     @Override
-    public void renderBackground(GuiGraphics graphics, int xAxis, int yAxis, int guiWidth, int guiHeight) {
+    public void renderBackground(PoseStack poseStack, int xAxis, int yAxis, int guiWidth, int guiHeight) {
         if(!isVisible()) {
             return;
         }
-        graphics.fill(xLocation + guiWidth, yLocation + guiHeight, xLocation + guiWidth + width, yLocation + guiHeight + height, fill.color());
-        graphics.renderOutline(xLocation + guiWidth - 1, yLocation + guiHeight - 1, width + 1, height + 1, outline.color());
+        fill(poseStack, xLocation + guiWidth - 1, yLocation + guiHeight - 1, width + 1, height + 1, outline.color());
+        fill(poseStack, xLocation + guiWidth, yLocation + guiHeight, xLocation + guiWidth + width, yLocation + guiHeight + height, fill.color());
     }
 }

@@ -18,14 +18,10 @@ import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.registries.ForgeRegistries;
 import voltaic.api.codec.StreamCodec;
-import voltaic.api.gas.GasStack;
 import voltaic.common.recipe.recipeutils.CountableIngredient;
 import voltaic.common.recipe.recipeutils.FluidIngredient;
-import voltaic.common.recipe.recipeutils.GasIngredient;
 import voltaic.common.recipe.recipeutils.ProbableFluid;
-import voltaic.common.recipe.recipeutils.ProbableGas;
 import voltaic.common.recipe.recipeutils.ProbableItem;
-import voltaic.registers.VoltaicRegistries;
 
 public abstract class VoltaicRecipeSerializer<T extends VoltaicRecipe> implements RecipeSerializer<T> {
 	
@@ -96,25 +92,6 @@ public abstract class VoltaicRecipeSerializer<T extends VoltaicRecipe> implement
 		return fluidIngredients;
 	}
 
-	public static List<GasIngredient> getGasIngredients(ResourceLocation recipeId, JsonObject json) {
-		if (!json.has(GAS_INPUTS)) {
-			throw new UnsupportedOperationException(recipeId.toString() + ": There are no Gas Inputs!");
-		}
-		JsonObject fluidInputs = GsonHelper.getAsJsonObject(json, GAS_INPUTS);
-		if (!fluidInputs.has(COUNT)) {
-			throw new UnsupportedOperationException(recipeId.toString() + ": You must include a count field");
-		}
-		int count = fluidInputs.get(COUNT).getAsInt();
-		List<GasIngredient> gasIngredients = new ArrayList<>();
-		for (int i = 0; i < count; i++) {
-			if (!fluidInputs.has(i + "")) {
-				throw new UnsupportedOperationException(recipeId.toString() + ": The count field does not match the input count");
-			}
-			GasIngredient.CODEC.decode(JsonOps.INSTANCE, fluidInputs.get(i + "").getAsJsonObject()).result().ifPresent(pair -> gasIngredients.add(pair.getFirst()));
-		}
-		return gasIngredients;
-	}
-
 	@Nullable
 	public static List<ProbableItem> getItemBiproducts(ResourceLocation recipeId, JsonObject json) {
 		if (!json.has(ITEM_BIPRODUCTS)) {
@@ -156,25 +133,6 @@ public abstract class VoltaicRecipeSerializer<T extends VoltaicRecipe> implement
 		return gases;
 	}
 
-	public static List<ProbableGas> getGasBiproducts(ResourceLocation recipeId, JsonObject json) {
-		if (!json.has(GAS_BIPRODUCTS)) {
-			return Collections.emptyList();
-		}
-		JsonObject gasBiproducts = GsonHelper.getAsJsonObject(json, GAS_BIPRODUCTS);
-		if (!gasBiproducts.has(COUNT)) {
-			throw new UnsupportedOperationException(recipeId.toString() + ": You must include a count field");
-		}
-		int count = gasBiproducts.get(COUNT).getAsInt();
-		List<ProbableGas> fluids = new ArrayList<>();
-		for (int i = 0; i < count; i++) {
-			if (!gasBiproducts.has(i + "")) {
-				throw new UnsupportedOperationException(recipeId.toString() + ": The count field does not match the input count");
-			}
-			ProbableGas.CODEC.decode(JsonOps.INSTANCE, gasBiproducts.get(i + "").getAsJsonObject()).result().ifPresent(pair -> fluids.add(pair.getFirst()));
-		}
-		return fluids;
-	}
-
 	public static ItemStack getItemOutput(ResourceLocation recipeId, JsonObject json) {
 		if (!json.has(OUTPUT)) {
 			throw new UnsupportedOperationException(recipeId.toString() + ": You must include an Item output!");
@@ -190,18 +148,6 @@ public abstract class VoltaicRecipeSerializer<T extends VoltaicRecipe> implement
 		ResourceLocation resourceLocation = new ResourceLocation(GsonHelper.getAsString(fluid, "fluid"));
 		int amount = GsonHelper.getAsInt(fluid, "amount");
 		return new FluidStack(ForgeRegistries.FLUIDS.getValue(resourceLocation), amount);
-	}
-
-	public static GasStack getGasOutput(ResourceLocation recipeId, JsonObject json) {
-		if (!json.has(OUTPUT)) {
-			throw new UnsupportedOperationException(recipeId.toString() + ": You must include a Gas output!");
-		}
-		JsonObject gas = json.get(OUTPUT).getAsJsonObject();
-		ResourceLocation resourceLocation = new ResourceLocation(GsonHelper.getAsString(gas, "gas"));
-		int amount = GsonHelper.getAsInt(gas, "amount");
-		int temperature = GsonHelper.getAsInt(gas, "temp");
-		int pressure = GsonHelper.getAsInt(gas, "pressure");
-		return new GasStack(VoltaicRegistries.gasRegistry().getValue(resourceLocation), amount, temperature, pressure);
 	}
 
 	public static double getExperience(JsonObject json) {

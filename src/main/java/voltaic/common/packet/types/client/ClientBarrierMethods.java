@@ -1,12 +1,10 @@
 package voltaic.common.packet.types.client;
 
-import voltaic.api.gas.Gas;
 import voltaic.api.radiation.util.RadiationShielding;
 import voltaic.api.radiation.util.RadioactiveObject;
 import voltaic.client.guidebook.ScreenGuidebook;
 import voltaic.common.reloadlistener.RadiationShieldingRegister;
 import voltaic.common.reloadlistener.RadioactiveFluidRegister;
-import voltaic.common.reloadlistener.RadioactiveGasRegister;
 import voltaic.common.reloadlistener.RadioactiveItemRegister;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -50,10 +48,6 @@ public class ClientBarrierMethods {
 
     public static void handleSetClientRadioactiveFluids(HashMap<Fluid, RadioactiveObject> fluids) {
         RadioactiveFluidRegister.INSTANCE.setClientValues(fluids);
-    }
-
-    public static void handleSetClientRadioactiveGases(HashMap<Gas, RadioactiveObject> gases) {
-        RadioactiveGasRegister.INSTANCE.setClientValues(gases);
     }
 
     public static void handleSetClientRadiationShielding(HashMap<Block, RadiationShielding> shielding) {

@@ -3,6 +3,8 @@ package voltaic.prefab.screen.component.types;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+
 import voltaic.Voltaic;
 import voltaic.api.screen.ITexture;
 import voltaic.api.screen.component.ISlotTexture;
@@ -10,9 +12,9 @@ import voltaic.api.screen.component.TextSupplier;
 import voltaic.common.item.subtype.SubtypeItemUpgrade;
 import voltaic.prefab.inventory.container.slot.utils.IUpgradeSlot;
 import voltaic.prefab.screen.component.ScreenComponentGeneric;
+import voltaic.prefab.utilities.RenderingUtils;
 import voltaic.prefab.utilities.VoltaicTextUtils;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -35,11 +37,11 @@ public class ScreenComponentSlot extends ScreenComponentGeneric {
 		this.slotType = slotType;
 		this.iconType = iconType;
 		this.slot = slot;
-		onTooltip((graphics, component, xAxis, yAxis) -> {
+		onTooltip((poseStack, component, xAxis, yAxis) -> {
 			if(tooltip == null){
 				return;
 			}
-			graphics.renderTooltip(gui.getFontRenderer(), tooltip.getText(), xAxis, yAxis);
+			gui.displayTooltip(poseStack, tooltip.getText().getVisualOrderText(), xAxis, yAxis);
 		});
 	}
 
@@ -62,22 +64,23 @@ public class ScreenComponentSlot extends ScreenComponentGeneric {
 	}
 
 	@Override
-	public void renderBackground(GuiGraphics graphics, final int xAxis, final int yAxis, final int guiWidth, final int guiHeight) {
-		super.renderBackground(graphics, xAxis, yAxis, guiWidth, guiHeight);
+	public void renderBackground(PoseStack poseStack, final int xAxis, final int yAxis, final int guiWidth, final int guiHeight) {
+		super.renderBackground(poseStack, xAxis, yAxis, guiWidth, guiHeight);
 		if (iconType == IconType.NONE) {
 			return;
 		}
 		int slotXOffset = (slotType.imageWidth() - iconType.imageWidth()) / 2;
 		int slotYOffset = (slotType.imageHeight() - iconType.imageHeight()) / 2;
-		graphics.blit(iconType.getLocation(), guiWidth + xLocation + slotXOffset, guiHeight + yLocation + slotYOffset, iconType.textureU(), iconType.textureV(), iconType.textureWidth(), iconType.textureHeight(), iconType.imageWidth(), iconType.imageHeight());
+		RenderingUtils.bindTexture(iconType.getLocation());
+		blit(poseStack, guiWidth + xLocation + slotXOffset, guiHeight + yLocation + slotYOffset, iconType.textureU(), iconType.textureV(), iconType.textureWidth(), iconType.textureHeight(), iconType.imageWidth(), iconType.imageHeight());
 	}
 
 	@Override
-	public void renderForeground(GuiGraphics graphics, int xAxis, int yAxis, int guiWidth, int guiHeight) {
+	public void renderForeground(PoseStack poseStack, int xAxis, int yAxis, int guiWidth, int guiHeight) {
 		if (!slot.isActive()) {
 			return;
 		}
-		super.renderForeground(graphics, xAxis, yAxis, guiWidth, guiHeight);
+		super.renderForeground(poseStack, xAxis, yAxis, guiWidth, guiHeight);
 		if (isHoveredOrFocused()) {
 
 			if (Screen.hasControlDown() && slot instanceof IUpgradeSlot upgrade) {
@@ -87,7 +90,7 @@ public class ScreenComponentSlot extends ScreenComponentGeneric {
 				for (SubtypeItemUpgrade item : upgrade.getUpgrades()) {
 					tooltips.add(item.name.withStyle(ChatFormatting.GRAY).getVisualOrderText());
 				}
-				graphics.renderTooltip(gui.getFontRenderer(), tooltips, xAxis, yAxis);
+				gui.displayTooltips(poseStack, tooltips, xAxis, yAxis);
 			}
 		}
 	}

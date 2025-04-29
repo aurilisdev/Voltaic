@@ -11,14 +11,13 @@ import javax.annotation.Nullable;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
-import net.minecraft.core.registries.Registries;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.common.crafting.conditions.ICondition;
@@ -29,7 +28,7 @@ public class CustomShapedCraftingRecipe extends ShapedRecipeBuilder.Result {
 	private ICondition[] recipeConditions;
 
 	private CustomShapedCraftingRecipe(ResourceLocation recipeId, Item result, int count, List<String> pattern, Map<Character, Ingredient> keys, ICondition[] recipeConditions) {
-		super(recipeId, result, count, "", CraftingBookCategory.MISC, pattern, keys, null, null, false);
+		super(recipeId, result, count, "", pattern, keys, null, null);
 		this.recipeConditions = recipeConditions;
 	}
 
@@ -136,7 +135,7 @@ public class CustomShapedCraftingRecipe extends ShapedRecipeBuilder.Result {
 		}
 
 		private TagKey<Item> itemTag(ResourceLocation tag) {
-			return TagKey.create(Registries.ITEM, tag);
+			return ItemTags.create(tag);
 		}
 
 	}

@@ -61,7 +61,7 @@ public class PacketSendUpdatePropertiesServer {
     public static void handle(PacketSendUpdatePropertiesServer message, Supplier<Context> context) {
 		Context ctx = context.get();
 		ctx.enqueueWork(() -> {
-			ServerLevel world = context.get().getSender().serverLevel();
+			ServerLevel world = context.get().getSender().getLevel();
 			if (world != null) {
 				ServerBarrierMethods.handleSendUpdatePropertiesServer(world, message.tilePos, message.data, message.index);
 			}

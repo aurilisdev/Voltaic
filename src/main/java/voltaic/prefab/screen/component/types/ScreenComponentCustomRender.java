@@ -2,24 +2,25 @@ package voltaic.prefab.screen.component.types;
 
 import java.util.function.Consumer;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+
 import voltaic.prefab.screen.component.utils.AbstractScreenComponent;
-import net.minecraft.client.gui.GuiGraphics;
 
 public class ScreenComponentCustomRender extends AbstractScreenComponent {
 
-    private final Consumer<GuiGraphics> graphicsConsumer;
+    private final Consumer<PoseStack> poseStackConsumer;
 
-    public ScreenComponentCustomRender(int x, int y, Consumer<GuiGraphics> graphicsConsumer) {
+    public ScreenComponentCustomRender(int x, int y, Consumer<PoseStack> poseStackConsumer) {
         super(x, y, 0, 0);
-        this.graphicsConsumer = graphicsConsumer;
+        this.poseStackConsumer = poseStackConsumer;
     }
 
     @Override
-    public void renderBackground(GuiGraphics graphics, int xAxis, int yAxis, int guiWidth, int guiHeight) {
+    public void renderBackground(PoseStack poseStack, int xAxis, int yAxis, int guiWidth, int guiHeight) {
         if(!isVisible()){
             return;
         }
-        graphicsConsumer.accept(graphics);
+        poseStackConsumer.accept(poseStack);
     }
 
     @Override

@@ -6,7 +6,6 @@ import java.util.Set;
 import voltaic.prefab.inventory.container.GenericContainer;
 import voltaic.prefab.screen.GenericScreen;
 import voltaic.prefab.screen.component.types.gauges.ScreenComponentFluidGauge;
-import voltaic.prefab.screen.component.types.gauges.ScreenComponentGasGauge;
 import voltaic.prefab.screen.component.utils.AbstractScreenComponent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
@@ -24,7 +23,6 @@ import net.minecraft.world.entity.player.Inventory;
 public class GenericMaterialScreen<T extends GenericContainer> extends GenericScreen<T> {
 
 	private Set<ScreenComponentFluidGauge> fluidGauges = new HashSet<>();
-	private Set<ScreenComponentGasGauge> gasGauges = new HashSet<>();
 
 	public GenericMaterialScreen(T container, Inventory inv, Component titleIn) {
 		super(container, inv, titleIn);
@@ -36,18 +34,12 @@ public class GenericMaterialScreen<T extends GenericContainer> extends GenericSc
 
 		if (component instanceof ScreenComponentFluidGauge gauge) {
 			fluidGauges.add(gauge);
-		} else if (component instanceof ScreenComponentGasGauge gauge) {
-			gasGauges.add(gauge);
-		}
+		} 
 		return component;
 	}
 
 	public Set<ScreenComponentFluidGauge> getFluidGauges() {
 		return fluidGauges;
-	}
-
-	public Set<ScreenComponentGasGauge> getGasGauges() {
-		return gasGauges;
 	}
 
 }

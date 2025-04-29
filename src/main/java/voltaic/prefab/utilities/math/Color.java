@@ -1,6 +1,6 @@
 package voltaic.prefab.utilities.math;
 
-import org.joml.Vector3f;
+import com.mojang.math.Vector3f;
 
 /**
  * Wrapper class that standardizes all color value operations into fields

@@ -16,7 +16,7 @@ import voltaic.prefab.utilities.VoltaicTextUtils;
 import voltaic.prefab.utilities.math.Color;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Direction;
-import net.minecraft.network.chat.Component;
+import net.minecraft.util.FormattedCharSequence;
 
 public class WrapperInventoryIO {
 
@@ -63,18 +63,18 @@ public class WrapperInventoryIO {
 				updateVisibility(false);
 			}
 
-		}).onTooltip((graphics, but, xAxis, yAxis) -> {
+		}).onTooltip((poseStack, but, xAxis, yAxis) -> {
 			//
 			ScreenComponentButton<?> button = (ScreenComponentButton<?>) but;
-			List<Component> tooltips = new ArrayList<>();
-			tooltips.add(VoltaicTextUtils.tooltip("inventoryio").withStyle(ChatFormatting.DARK_GRAY));
+			List<FormattedCharSequence> tooltips = new ArrayList<>();
+			tooltips.add(VoltaicTextUtils.tooltip("inventoryio").withStyle(ChatFormatting.DARK_GRAY).getVisualOrderText());
 			if (!button.isPressed) {
-				tooltips.add(VoltaicTextUtils.tooltip("inventoryio.presstoshow").withStyle(ChatFormatting.ITALIC, ChatFormatting.GRAY));
+				tooltips.add(VoltaicTextUtils.tooltip("inventoryio.presstoshow").withStyle(ChatFormatting.ITALIC, ChatFormatting.GRAY).getVisualOrderText());
 			} else {
-				tooltips.add(VoltaicTextUtils.tooltip("inventoryio.presstohide").withStyle(ChatFormatting.ITALIC, ChatFormatting.GRAY));
+				tooltips.add(VoltaicTextUtils.tooltip("inventoryio.presstohide").withStyle(ChatFormatting.ITALIC, ChatFormatting.GRAY).getVisualOrderText());
 			}
 
-			graphics.renderComponentTooltip(this.screen.getFontRenderer(), tooltips, xAxis, yAxis);
+			screen.displayTooltips(poseStack, tooltips, xAxis, yAxis);
 
 		}).setIcon(ScreenComponentSlot.IconType.INVENTORY_IO));
 

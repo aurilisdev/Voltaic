@@ -1,10 +1,6 @@
 package voltaic.common.tags;
 
 import voltaic.Voltaic;
-import voltaic.api.gas.Gas;
-import voltaic.registers.VoltaicRegistries;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.tags.ItemTags;
@@ -13,6 +9,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.Fluid;
+import net.minecraftforge.registries.ForgeRegistries;
 
 public class VoltaicTags {
 
@@ -20,7 +17,6 @@ public class VoltaicTags {
 		Items.init();
 		Blocks.init();
 		Fluids.init();
-		Gases.init();
 		Enchantments.init();
 	}
 
@@ -336,33 +332,6 @@ public class VoltaicTags {
 
 	}
 
-	public static class Gases {
-
-		public static final TagKey<Gas> HYDROGEN = forgeTag("hydrogen");
-		public static final TagKey<Gas> OXYGEN = forgeTag("oxygen");
-		public static final TagKey<Gas> STEAM = forgeTag("steam");
-		public static final TagKey<Gas> NITROGEN = forgeTag("nitrogen");
-		public static final TagKey<Gas> CARBON_DIOXIDE = forgeTag("carbondioxide");
-		public static final TagKey<Gas> ARGON = forgeTag("argon");
-		public static final TagKey<Gas> SULFUR_DIOXIDE = forgeTag("sulfurdioxide");
-		public static final TagKey<Gas> AMMONIA = forgeTag("ammonia");
-
-
-		public static final TagKey<Gas> IS_CORROSIVE = forgeTag("iscorrosive");
-
-		private static void init() {
-
-		}
-
-		private static TagKey<Gas> forgeTag(String name) {
-			return create(Voltaic.forgerl(name));
-		}
-
-		public static TagKey<Gas> create(ResourceLocation loc) {
-			return TagKey.create(VoltaicRegistries.GAS_REGISTRY_KEY, loc);
-		}
-	}
-
 	public static class Enchantments {
 
 		public static final TagKey<Enchantment> EFFICIENCY = forgeTag("efficiency");
@@ -373,7 +342,7 @@ public class VoltaicTags {
 		private static void init()  { }
 
 		private static TagKey<Enchantment> forgeTag(String name) {
-			return TagKey.create(Registries.ENCHANTMENT, Voltaic.forgerl(name));
+			return TagKey.create(ForgeRegistries.Keys.ENCHANTMENTS, Voltaic.forgerl(name));
 		}
 	}
 

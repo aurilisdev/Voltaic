@@ -11,7 +11,6 @@ import voltaic.common.recipe.recipeutils.AbstractMaterialRecipe;
 import voltaic.common.recipe.recipeutils.CountableIngredient;
 import voltaic.common.recipe.recipeutils.FluidIngredient;
 import voltaic.common.recipe.recipeutils.ProbableFluid;
-import voltaic.common.recipe.recipeutils.ProbableGas;
 import voltaic.common.recipe.recipeutils.ProbableItem;
 import voltaic.prefab.tile.components.IComponentType;
 import voltaic.prefab.tile.components.type.ComponentInventory;
@@ -22,8 +21,8 @@ public abstract class Item2FluidRecipe extends AbstractMaterialRecipe {
     private List<CountableIngredient> inputItems;
     private FluidStack outputFluid;
 
-    public Item2FluidRecipe(ResourceLocation group, List<CountableIngredient> itemInputs, FluidStack fluidOutput, double experience, int ticks, double usagePerTick, List<ProbableItem> itemBiproducts, List<ProbableFluid> fluidBiproducts, List<ProbableGas> gasBiproducts) {
-        super(group, experience, ticks, usagePerTick, itemBiproducts, fluidBiproducts, gasBiproducts);
+    public Item2FluidRecipe(ResourceLocation group, List<CountableIngredient> itemInputs, FluidStack fluidOutput, double experience, int ticks, double usagePerTick, List<ProbableItem> itemBiproducts, List<ProbableFluid> fluidBiproducts) {
+        super(group, experience, ticks, usagePerTick, itemBiproducts, fluidBiproducts);
         inputItems = itemInputs;
         outputFluid = fluidOutput;
     }
@@ -58,7 +57,7 @@ public abstract class Item2FluidRecipe extends AbstractMaterialRecipe {
 
     public interface Factory<T extends Item2FluidRecipe> {
 
-        T create(ResourceLocation group, List<CountableIngredient> itemInputs, FluidStack fluidOutput, double experience, int ticks, double usagePerTick, List<ProbableItem> itemBiproducts, List<ProbableFluid> fluidBiproducts, List<ProbableGas> gasBiproducts);
+        T create(ResourceLocation group, List<CountableIngredient> itemInputs, FluidStack fluidOutput, double experience, int ticks, double usagePerTick, List<ProbableItem> itemBiproducts, List<ProbableFluid> fluidBiproducts);
 
     }
 

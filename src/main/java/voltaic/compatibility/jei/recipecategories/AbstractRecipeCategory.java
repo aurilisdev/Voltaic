@@ -3,7 +3,8 @@ package voltaic.compatibility.jei.recipecategories;
 import java.util.ArrayList;
 import java.util.List;
 
-import voltaic.api.gas.GasStack;
+import com.mojang.blaze3d.vertex.PoseStack;
+
 import voltaic.api.screen.ITexture;
 import voltaic.compatibility.jei.utils.gui.ScreenObject;
 import voltaic.compatibility.jei.utils.gui.types.ArrowAnimatedObject;
@@ -11,8 +12,6 @@ import voltaic.compatibility.jei.utils.gui.types.BackgroundObject;
 import voltaic.compatibility.jei.utils.gui.types.ItemSlotObject;
 import voltaic.compatibility.jei.utils.gui.types.fluidgauge.AbstractFluidGaugeObject;
 import voltaic.compatibility.jei.utils.gui.types.gasgauge.AbstractGasGaugeObject;
-import voltaic.compatibility.jei.utils.ingredients.VoltaicJeiTypes;
-import voltaic.compatibility.jei.utils.ingredients.IngredientRendererGasStack;
 import voltaic.compatibility.jei.utils.label.AbstractLabelWrapper;
 import voltaic.prefab.utilities.math.MathUtils;
 import mezz.jei.api.constants.VanillaTypes;
@@ -29,7 +28,6 @@ import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
@@ -93,26 +91,26 @@ public abstract class AbstractRecipeCategory<T> implements IRecipeCategory<T> {
     }
 
     @Override
-    public void draw(T recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics graphics, double mouseX, double mouseY) {
+    public void draw(T recipe, IRecipeSlotsView recipeSlotsView, PoseStack poseStack, double mouseX, double mouseY) {
 
-        drawnBackground(recipe, recipeSlotsView, graphics);
+        drawnBackground(recipe, recipeSlotsView, poseStack);
 
-        drawPre(graphics, recipe);
+        drawPre(poseStack, recipe);
 
-        drawStatic(graphics);
-        drawAnimated(graphics);
+        drawStatic(poseStack);
+        drawAnimated(poseStack);
 
-        drawPost(graphics, recipe);
+        drawPost(poseStack, recipe);
 
-        preLabels(graphics, recipe);
+        preLabels(poseStack, recipe);
 
-        addLabels(graphics, recipe);
+        addLabels(poseStack, recipe);
 
-        postLabels(graphics, recipe);
+        postLabels(poseStack, recipe);
     }
 
-    public void drawnBackground(T recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics graphics) {
-        //background.draw(graphics);
+    public void drawnBackground(T recipe, IRecipeSlotsView recipeSlotsView, PoseStack poseStack) {
+        //background.draw(poseStack);
     }
 
     @Override
@@ -121,8 +119,6 @@ public abstract class AbstractRecipeCategory<T> implements IRecipeCategory<T> {
         setFluidInputs(getFluidInputs(recipe), builder);
         setItemOutputs(getItemOutputs(recipe), builder);
         setFluidOutputs(getFluidOutputs(recipe), builder);
-        setGasInputs(getGasInputs(recipe), builder);
-        setGasOutputs(getGasOutputs(recipe), builder);
     }
 
     public int getAnimationTime() {
@@ -305,109 +301,43 @@ public abstract class AbstractRecipeCategory<T> implements IRecipeCategory<T> {
         }
     }
 
-    public void setGasInputs(List<List<GasStack>> inputs, IRecipeLayoutBuilder builder) {
-
-        AbstractGasGaugeObject wrapper;
-        RecipeIngredientRole role = RecipeIngredientRole.INPUT;
-        List<GasStack> stacks;
-
-        int maxGaugeCap = 0;
-
-        for (List<GasStack> stackz : inputs) {
-            GasStack stack = stackz.get(0);
-            int gaugeCap = (int) Math.pow(10, MathUtils.nearestPowerOf10(stack.getAmount(), true));
-            if (gaugeCap > maxGaugeCap) {
-                maxGaugeCap = gaugeCap;
-            }
-        }
-
-        for (int i = 0; i < gasInputWrappers.length; i++) {
-
-            wrapper = gasInputWrappers[i];
-            stacks = inputs.get(i);
-
-            double amt = stacks.get(0).getAmount();
-
-            //double gaugeCap = Math.pow(10, MathUtils.nearestPowerOf10(amt, true));
-
-            int height = (int) (Math.ceil(amt / maxGaugeCap * (wrapper.getHeight() - 2)));
-
-            int oneMinusHeight = wrapper.getHeight() - height;
-
-            builder.addSlot(role, wrapper.getX() + 1, wrapper.getY() + wrapper.getHeight() - height).addIngredients(VoltaicJeiTypes.GAS_STACK, stacks).setCustomRenderer(VoltaicJeiTypes.GAS_STACK, new IngredientRendererGasStack(maxGaugeCap, -oneMinusHeight + 1, height, wrapper.getBarsTexture()));
-        }
-
-    }
-
-    public void setGasOutputs(List<GasStack> outputs, IRecipeLayoutBuilder builder) {
-
-        AbstractGasGaugeObject wrapper;
-        RecipeIngredientRole role = RecipeIngredientRole.OUTPUT;
-        GasStack stack;
-
-        int maxGaugeCap = 0;
-
-        for (GasStack s : outputs) {
-            int gaugeCap = (int) Math.pow(10, MathUtils.nearestPowerOf10(s.getAmount(), true));
-            if (gaugeCap > maxGaugeCap) {
-                maxGaugeCap = gaugeCap;
-            }
-        }
-
-        for (int i = 0; i < gasOutputWrappers.length; i++) {
-
-            wrapper = gasOutputWrappers[i];
-            stack = outputs.get(i);
-
-            double amt = stack.getAmount();
-
-            //double gaugeCap = Math.pow(10, MathUtils.nearestPowerOf10(amt, true));
-
-            int height = (int) (Math.ceil(amt / maxGaugeCap * (wrapper.getHeight() - 2)));
-
-            int oneMinusHeight = wrapper.getHeight() - height;
-
-            builder.addSlot(role, wrapper.getX() + 1, wrapper.getY() + wrapper.getHeight() - height).addIngredient(VoltaicJeiTypes.GAS_STACK, stack).setCustomRenderer(VoltaicJeiTypes.GAS_STACK, new IngredientRendererGasStack(maxGaugeCap, -oneMinusHeight + 1, height, wrapper.getBarsTexture()));
-        }
-    }
-
-    public void drawStatic(GuiGraphics graphics) {
+    public void drawStatic(PoseStack poseStack) {
         for (StaticWrapper wrapper : staticDrawables) {
-            wrapper.stat().draw(graphics, wrapper.x(), wrapper.y());
+            wrapper.stat().draw(poseStack, wrapper.x(), wrapper.y());
         }
     }
 
-    public void drawAnimated(GuiGraphics graphics) {
+    public void drawAnimated(PoseStack poseStack) {
         for (AnimatedWrapper wrapper : animatedDrawables) {
-            wrapper.anim().draw(graphics, wrapper.x(), wrapper.y());
+            wrapper.anim().draw(poseStack, wrapper.x(), wrapper.y());
         }
     }
 
-    public void drawPre(GuiGraphics graphics, T recipe) {
+    public void drawPre(PoseStack poseStack, T recipe) {
 
     }
 
-    public void drawPost(GuiGraphics graphics, T recipe) {
+    public void drawPost(PoseStack poseStack, T recipe) {
 
     }
 
-    public void addLabels(GuiGraphics graphics, T recipe) {
+    public void addLabels(PoseStack poseStack, T recipe) {
         Font font = Minecraft.getInstance().font;
         for (AbstractLabelWrapper wrap : labels) {
             Component text = wrap.getComponent(this, recipe);
             if (wrap.xIsEnd()) {
-                graphics.drawString(font, text, wrap.getXPos() - font.width(text.getVisualOrderText()), wrap.getYPos(), wrap.getColor().color(), false);
+                font.draw(poseStack, text, wrap.getXPos() - font.width(text.getVisualOrderText()), wrap.getYPos(), wrap.getColor().color());
             } else {
-                graphics.drawString(font, text, wrap.getXPos(), wrap.getYPos(), wrap.getColor().color(), false);
+            	font.draw(poseStack, text, wrap.getXPos(), wrap.getYPos(), wrap.getColor().color());
             }
         }
     }
 
-    public void preLabels(GuiGraphics graphics, T recipe) {
+    public void preLabels(PoseStack poseStack, T recipe) {
 
     }
 
-    public void postLabels(GuiGraphics graphics, T recipe) {
+    public void postLabels(PoseStack poseStack, T recipe) {
 
     }
 
@@ -427,13 +357,6 @@ public abstract class AbstractRecipeCategory<T> implements IRecipeCategory<T> {
         return new ArrayList<>();
     }
 
-    public List<List<GasStack>> getGasInputs(T recipe) {
-        return new ArrayList<>();
-    }
-
-    public List<GasStack> getGasOutputs(T recipe) {
-        return new ArrayList<>();
-    }
 
     public static record SlotDataWrapper(int x, int y, RecipeIngredientRole role) {
 

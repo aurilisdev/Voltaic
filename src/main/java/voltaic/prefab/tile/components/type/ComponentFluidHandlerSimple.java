@@ -15,7 +15,6 @@ import voltaic.prefab.tile.components.IComponentType;
 import voltaic.prefab.tile.components.utils.IComponentFluidHandler;
 import voltaic.prefab.utilities.BlockEntityUtils;
 import net.minecraft.core.Direction;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
@@ -23,6 +22,7 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.registries.ForgeRegistries;
 
 /**
  * Extension of PropertyFluidTank implementing directional I/O and the Component system
@@ -197,8 +197,8 @@ public class ComponentFluidHandlerSimple extends PropertyFluidTank implements IC
         }
         if (validFluidTags != null) {
             for (TagKey<Fluid> tag : validFluidTags) {
-                BuiltInRegistries.FLUID.getTag(tag).get().stream().forEach(holder -> {
-                    validatorFluids.add(holder.value());
+                ForgeRegistries.FLUIDS.tags().getTag(tag).stream().forEach(holder -> {
+                    validatorFluids.add(holder);
                 });
             }
         }

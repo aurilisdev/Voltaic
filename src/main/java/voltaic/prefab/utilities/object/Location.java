@@ -1,7 +1,6 @@
 package voltaic.prefab.utilities.object;
 
-import org.joml.Vector3f;
-
+import com.mojang.math.Vector3f;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 

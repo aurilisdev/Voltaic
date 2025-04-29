@@ -10,7 +10,6 @@ import voltaic.prefab.utilities.CodecUtils;
 import voltaic.registers.VoltaicParticles;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.registries.ForgeRegistries;
 
@@ -107,7 +106,7 @@ public class ParticleOptionPlasmaBall extends ParticleType<ParticleOptionPlasmaB
 
 	@Override
 	public String toString() {
-		return BuiltInRegistries.PARTICLE_TYPE.getKey(getType()).toString() + ", scale: " + scale + ", gravity: " + gravity + ", maxage: " + maxAge + ", r: " + r + ", g: " + g + ", b: " + b + ", a: " + a;
+		return ForgeRegistries.PARTICLE_TYPES.getKey(getType()).toString() + ", scale: " + scale + ", gravity: " + gravity + ", maxage: " + maxAge + ", r: " + r + ", g: " + g + ", b: " + b + ", a: " + a;
 	}
 
 	@Override

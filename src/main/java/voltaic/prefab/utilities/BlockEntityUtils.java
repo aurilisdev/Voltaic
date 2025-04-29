@@ -2,6 +2,9 @@ package voltaic.prefab.utilities;
 
 import voltaic.common.block.states.VoltaicBlockStates;
 import voltaic.prefab.tile.GenericTile;
+
+import javax.annotation.Nullable;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
@@ -42,8 +45,40 @@ public class BlockEntityUtils {
 		return false;
 	}
 
-	public static Direction directionFromPos(BlockPos thisPos, BlockPos otherPos){
-		return Direction.fromDelta(otherPos.getX() - thisPos.getX(), otherPos.getY() - thisPos.getY(), otherPos.getZ() - thisPos.getZ());
+	@Nullable
+	public static Direction directionFromPos(BlockPos thisPos, BlockPos otherPos) {
+		int x = otherPos.getX() - thisPos.getX();
+		int y = otherPos.getY() - thisPos.getY();
+		int z = otherPos.getZ() - thisPos.getZ();
+		return fromDelta(x, y, z);
+	}
+	
+	@Nullable
+	public static Direction fromDelta(int x, int y, int z) {
+		if (x == 0) {
+            if (y == 0) {
+                if (z > 0) {
+                    return Direction.SOUTH;
+                }
+
+                if (z < 0) {
+                    return Direction.NORTH;
+                }
+            } else if (z == 0) {
+                if (y > 0) {
+                    return Direction.UP;
+                }
+
+                return Direction.DOWN;
+            }
+        } else if (y == 0 && z == 0) {
+            if (x > 0) {
+                return Direction.EAST;
+            }
+
+            return Direction.WEST;
+        }
+		return null;
 	}
 
 

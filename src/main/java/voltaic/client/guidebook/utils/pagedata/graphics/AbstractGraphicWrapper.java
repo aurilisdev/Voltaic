@@ -2,13 +2,14 @@ package voltaic.client.guidebook.utils.pagedata.graphics;
 
 import javax.annotation.Nullable;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+
 import voltaic.client.guidebook.ScreenGuidebook;
 import voltaic.client.guidebook.utils.components.Page;
 import voltaic.client.guidebook.utils.pagedata.AbstractWrapperObject;
 import voltaic.client.guidebook.utils.pagedata.OnClick;
 import voltaic.client.guidebook.utils.pagedata.OnKeyPress;
 import voltaic.client.guidebook.utils.pagedata.OnTooltip;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 
 /**
@@ -80,7 +81,7 @@ public abstract class AbstractGraphicWrapper<T extends AbstractGraphicWrapper<?>
 		return (T) this;
 	}
 
-	public abstract void render(GuiGraphics graphics, int wrapperX, int wrapperY, int xShift, int guiWidth, int guiHeight, Page page);
+	public abstract void render(PoseStack stack, int wrapperX, int wrapperY, int xShift, int guiWidth, int guiHeight, Page page);
 
 	public static class GraphicTextDescriptor {
 

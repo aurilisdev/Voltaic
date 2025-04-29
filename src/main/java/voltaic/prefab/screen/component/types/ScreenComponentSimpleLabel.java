@@ -2,9 +2,10 @@ package voltaic.prefab.screen.component.types;
 
 import java.util.function.Supplier;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+
 import voltaic.prefab.screen.component.utils.AbstractScreenComponent;
 import voltaic.prefab.utilities.math.Color;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 
 public class ScreenComponentSimpleLabel extends AbstractScreenComponent {
@@ -28,9 +29,9 @@ public class ScreenComponentSimpleLabel extends AbstractScreenComponent {
 	}
 
 	@Override
-	public void renderForeground(GuiGraphics graphics, int xAxis, int yAxis, int guiWidth, int guiHeight) {
+	public void renderForeground(PoseStack poseStack, int xAxis, int yAxis, int guiWidth, int guiHeight) {
 		if (isVisible()) {
-			graphics.drawString(gui.getFontRenderer(), text.get(), xLocation, yLocation, color.color(), false);
+			gui.getFontRenderer().draw(poseStack, text.get(), xLocation, yLocation, color.color());
 		}
 	}
 

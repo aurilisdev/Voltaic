@@ -8,7 +8,6 @@ import voltaic.api.codec.StreamCodec;
 import voltaic.common.recipe.VoltaicRecipeSerializer;
 import voltaic.common.recipe.recipeutils.FluidIngredient;
 import voltaic.common.recipe.recipeutils.ProbableFluid;
-import voltaic.common.recipe.recipeutils.ProbableGas;
 import voltaic.common.recipe.recipeutils.ProbableItem;
 import voltaic.prefab.utilities.CodecUtils;
 import net.minecraft.resources.ResourceLocation;
@@ -28,7 +27,6 @@ public class Fluid2ItemRecipeSerializer<T extends Fluid2ItemRecipe> extends Volt
                 StreamCodec.DOUBLE, T::getUsagePerTick,
                 ProbableItem.LIST_STREAM_CODEC, T::getItemBiproducts,
                 ProbableFluid.LIST_STREAM_CODEC, T::getFluidBiproducts,
-                ProbableGas.LIST_STREAM_CODEC, T::getGasBiproducts,
                 factory::create
 
         ));
@@ -44,8 +42,7 @@ public class Fluid2ItemRecipeSerializer<T extends Fluid2ItemRecipe> extends Volt
 		double usagePerTick = getUsagePerTick(recipeId, recipeJson);
 		List<ProbableItem> itemBi = getItemBiproducts(recipeId, recipeJson);
 		List<ProbableFluid> fluidBi = getFluidBiproducts(recipeId, recipeJson);
-		List<ProbableGas> gasBi = getGasBiproducts(recipeId, recipeJson);
-    	return factory.create(recipeId, inputs, output, experience, ticks, usagePerTick, itemBi, fluidBi, gasBi);
+    	return factory.create(recipeId, inputs, output, experience, ticks, usagePerTick, itemBi, fluidBi);
     }
 
     /*

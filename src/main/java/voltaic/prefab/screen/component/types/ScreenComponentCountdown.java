@@ -4,14 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.DoubleSupplier;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+
 import voltaic.Voltaic;
 import voltaic.api.electricity.formatting.ChatFormatter;
 import voltaic.api.electricity.formatting.DisplayUnits;
 import voltaic.api.screen.ITexture;
 import voltaic.api.screen.component.TextPropertySupplier;
 import voltaic.prefab.screen.component.utils.AbstractScreenComponentInfo;
+import voltaic.prefab.utilities.RenderingUtils;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
 
@@ -33,10 +35,11 @@ public class ScreenComponentCountdown extends AbstractScreenComponentInfo {
 	}
 
 	@Override
-	public void renderBackground(GuiGraphics graphics, int xAxis, int yAxis, int guiWidth, int guiHeight) {
-		super.renderBackground(graphics, xAxis, yAxis, guiWidth, guiHeight);
+	public void renderBackground(PoseStack poseStack, int xAxis, int yAxis, int guiWidth, int guiHeight) {
+		super.renderBackground(poseStack, xAxis, yAxis, guiWidth, guiHeight);
 		int lengthBar = (int) (progressInfoHandler.getAsDouble() * CountdownTextures.COUNTDOWN_BAR_DEFAULT.textureWidth());
-		graphics.blit(CountdownTextures.BACKGROUND_DEFAULT.getLocation(), guiWidth + xLocation + 1, guiHeight + yLocation + 1, CountdownTextures.COUNTDOWN_BAR_DEFAULT.textureU(), CountdownTextures.COUNTDOWN_BAR_DEFAULT.textureV(), lengthBar, CountdownTextures.COUNTDOWN_BAR_DEFAULT.textureHeight(), CountdownTextures.COUNTDOWN_BAR_DEFAULT.imageWidth(), CountdownTextures.COUNTDOWN_BAR_DEFAULT.imageHeight());
+		RenderingUtils.bindTexture(CountdownTextures.BACKGROUND_DEFAULT.getLocation());
+		blit(poseStack, guiWidth + xLocation + 1, guiHeight + yLocation + 1, CountdownTextures.COUNTDOWN_BAR_DEFAULT.textureU(), CountdownTextures.COUNTDOWN_BAR_DEFAULT.textureV(), lengthBar, CountdownTextures.COUNTDOWN_BAR_DEFAULT.textureHeight(), CountdownTextures.COUNTDOWN_BAR_DEFAULT.imageWidth(), CountdownTextures.COUNTDOWN_BAR_DEFAULT.imageHeight());
 
 	}
 

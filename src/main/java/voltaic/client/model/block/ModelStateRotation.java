@@ -2,8 +2,7 @@ package voltaic.client.model.block;
 
 import java.util.HashMap;
 
-import org.joml.Quaternionf;
-
+import com.mojang.math.Quaternion;
 import com.mojang.math.Transformation;
 
 import net.minecraft.Util;
@@ -38,10 +37,9 @@ public class ModelStateRotation implements ModelState {
 
     private ModelStateRotation(int x, int y, int z) {
         float d2r = (float) (Math.PI / 180F);
-        Quaternionf q = new Quaternionf();
-        q.setAngleAxis(-z * d2r, 0F, 0F, 1F);
-        q.mul(new Quaternionf().setAngleAxis(-y * d2r, 0F, 1F, 0F));
-        q.mul(new Quaternionf().setAngleAxis(-x * d2r, 1F, 0F, 0F));
+        Quaternion q = new Quaternion(-z * d2r, 0F, 0F, 1F);
+        q.mul(new Quaternion(-y * d2r, 0F, 1F, 0F));
+        q.mul(new Quaternion(-x * d2r, 1F, 0F, 0F));
         this.transformation = new Transformation(null, q, null, null);
     }
 

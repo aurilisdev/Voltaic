@@ -1,15 +1,14 @@
 package voltaic.common.blockitem;
 
-import java.util.List;
 import java.util.function.Supplier;
 
-import voltaic.api.creativetab.CreativeTabSupplier;
+import net.minecraft.core.NonNullList;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 
-public class BlockItemVoltaic extends BlockItem implements CreativeTabSupplier {
+public class BlockItemVoltaic extends BlockItem {
 
 	private final Supplier<CreativeModeTab> creativeTab;
 
@@ -17,20 +16,17 @@ public class BlockItemVoltaic extends BlockItem implements CreativeTabSupplier {
 		super(block, properties);
 		this.creativeTab = creativeTab;
 	}
-
+	
 	@Override
-	public void addCreativeModeItems(CreativeModeTab tab, List<ItemStack> items) {
-		items.add(new ItemStack(this));
+	protected boolean allowedIn(CreativeModeTab category) {
+		return creativeTab != null && category == creativeTab.get();
 	}
-
+	
 	@Override
-	public boolean isAllowedInCreativeTab(CreativeModeTab tab) {
-		return creativeTab.get() == tab;
-	}
-
-	@Override
-	public boolean hasCreativeTab() {
-		return creativeTab != null;
+	public void fillItemCategory(CreativeModeTab group, NonNullList<ItemStack> items) {
+		if(allowedIn(group)) {
+			this.getBlock().fillItemCategory(group, items);
+		}
 	}
 
 }

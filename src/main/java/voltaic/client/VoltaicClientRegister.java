@@ -15,21 +15,16 @@ import voltaic.client.screen.ScreenDO2OProcessor;
 import voltaic.client.screen.ScreenO2OProcessor;
 import voltaic.client.screen.ScreenO2OProcessorDouble;
 import voltaic.client.screen.ScreenO2OProcessorTriple;
-import voltaic.client.texture.atlas.AtlasHolderVoltaicCustom;
 import voltaic.registers.VoltaicMenuTypes;
 import voltaic.registers.VoltaicParticles;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.resources.FileToIdConverter;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.client.event.ModelEvent;
-import net.minecraftforge.client.event.ModelEvent.RegisterAdditional;
 import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
 import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -48,8 +43,6 @@ public class VoltaicClientRegister {
     public static final ResourceLocation TEXTURE_GAS = Voltaic.rl("block/custom/gastexture");
     public static final ResourceLocation TEXTURE_MULTISUBNODE = Voltaic.rl("block/multisubnode");
 
-    private static final String MULTIBLOCK_API_MODEL_FOLDER = "multiblockmodels";
-
     private static final HashMap<ResourceLocation, TextureAtlasSprite> CACHED_TEXTUREATLASSPRITES = new HashMap<>();
     // for registration purposes only!
     private static final List<ResourceLocation> CUSTOM_TEXTURES = List.of(VoltaicClientRegister.TEXTURE_WHITE, VoltaicClientRegister.TEXTURE_MERCURY, VoltaicClientRegister.TEXTURE_GAS, VoltaicClientRegister.TEXTURE_MULTISUBNODE);
@@ -61,14 +54,13 @@ public class VoltaicClientRegister {
         MenuScreens.register(VoltaicMenuTypes.CONTAINER_O2OPROCESSORTRIPLE.get(), ScreenO2OProcessorTriple::new);
         MenuScreens.register(VoltaicMenuTypes.CONTAINER_DO2OPROCESSOR.get(), ScreenDO2OProcessor::new);
     }
-
+    
     @SubscribeEvent
-    public static void onModelEvent(RegisterAdditional event) {
-
-        ResourceManager manager = Minecraft.getInstance().getResourceManager();
-        FileToIdConverter converter = FileToIdConverter.json("models/" + MULTIBLOCK_API_MODEL_FOLDER);
-        converter.listMatchingResources(manager).forEach((location, resource) -> event.register(converter.fileToId(location).withPrefix(MULTIBLOCK_API_MODEL_FOLDER + "/")));
-    }
+	public static void addCustomTextureAtlases(TextureStitchEvent.Pre event) {
+		if (event.getAtlas().location().equals(TextureAtlas.LOCATION_BLOCKS)) {
+			CUSTOM_TEXTURES.forEach(event::addSprite);
+		}
+	}
 
     @SubscribeEvent
     public static void cacheCustomTextureAtlases(TextureStitchEvent.Post event) {
@@ -82,14 +74,13 @@ public class VoltaicClientRegister {
 
     @SubscribeEvent
     public static void registerParticles(RegisterParticleProvidersEvent event) {
-        event.registerSpriteSet(VoltaicParticles.PARTICLE_PLASMA_BALL.get(), ParticlePlasmaBall.Factory::new);
-        event.registerSpriteSet(VoltaicParticles.PARTICLE_LAVAWITHPHYSICS.get(), ParticleLavaWithPhysics.Factory::new);
-        event.registerSpriteSet(VoltaicParticles.PARTICLE_FLUIDDROP.get(), ParticleFluidDrop.Factory::new);
+        event.register(VoltaicParticles.PARTICLE_PLASMA_BALL.get(), ParticlePlasmaBall.Factory::new);
+        event.register(VoltaicParticles.PARTICLE_LAVAWITHPHYSICS.get(), ParticleLavaWithPhysics.Factory::new);
+        event.register(VoltaicParticles.PARTICLE_FLUIDDROP.get(), ParticleFluidDrop.Factory::new);
     }
 
     @SubscribeEvent
     public static void registerClientReloadListeners(RegisterClientReloadListenersEvent event) {
-        event.registerReloadListener(AtlasHolderVoltaicCustom.INSTANCE = new AtlasHolderVoltaicCustom(Minecraft.getInstance().getTextureManager()));
         event.registerReloadListener(new ReloadListenerResetGuidebook());
     }
 

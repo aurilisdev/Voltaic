@@ -3,13 +3,13 @@ package voltaic.datagen.client;
 import voltaic.Voltaic;
 import voltaic.datagen.utils.client.BaseLangKeyProvider;
 import voltaic.registers.*;
-import net.minecraft.data.PackOutput;
+import net.minecraft.data.DataGenerator;
 import net.minecraft.world.level.Level;
 
 public class VoltaicLangKeyProvider extends BaseLangKeyProvider {
 
-    public VoltaicLangKeyProvider(PackOutput output, Locale local) {
-        super(output, local, Voltaic.ID);
+    public VoltaicLangKeyProvider(DataGenerator generator, Locale local) {
+        super(generator, local, Voltaic.ID);
     }
 
     @Override
@@ -19,7 +19,7 @@ public class VoltaicLangKeyProvider extends BaseLangKeyProvider {
             case EN_US:
             default:
 
-                addCreativeTab("main", "Voltaic");
+            	add("itemGroup.itemgroup" + Voltaic.ID, "Voltaic");
 
                 addItem(VoltaicItems.GUIDEBOOK, "VEC 1st Edition");
                 addItem(VoltaicItems.ITEM_WRENCH, "Wrench");
@@ -39,8 +39,6 @@ public class VoltaicLangKeyProvider extends BaseLangKeyProvider {
                 //addItem(VoltaicAPIItems.ITEMS_UPGRADE.getValue(SubtypeItemUpgrade.unbreaking), "Unbreaking Upgrade");
                 //addItem(VoltaicAPIItems.ITEM_ANTIDOTE, "Antidote");
                 //addItem(VoltaicAPIItems.ITEM_IODINETABLET, "Iodine Tablet");
-
-                addGas(VoltaicGases.EMPTY, "Empty");
 
                 addContainer("guidebook", "Guidebook");
 

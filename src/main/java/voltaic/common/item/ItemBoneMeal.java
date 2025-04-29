@@ -1,14 +1,13 @@
 package voltaic.common.item;
 
-import java.util.List;
 import java.util.function.Supplier;
 
-import voltaic.api.creativetab.CreativeTabSupplier;
+import net.minecraft.core.NonNullList;
 import net.minecraft.world.item.BoneMealItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 
-public class ItemBoneMeal extends BoneMealItem implements CreativeTabSupplier {
+public class ItemBoneMeal extends BoneMealItem {
 
 	private final Supplier<CreativeModeTab> creativeTab;
 
@@ -18,19 +17,15 @@ public class ItemBoneMeal extends BoneMealItem implements CreativeTabSupplier {
 	}
 
 	@Override
-	public void addCreativeModeItems(CreativeModeTab tab, List<ItemStack> items) {
-		items.add(new ItemStack(this));
-
+	protected boolean allowedIn(CreativeModeTab category) {
+		return creativeTab != null && creativeTab.get() == category;
 	}
 
 	@Override
-	public boolean isAllowedInCreativeTab(CreativeModeTab tab) {
-		return creativeTab.get() == tab;
-	}
-
-	@Override
-	public boolean hasCreativeTab() {
-		return creativeTab != null;
+	public void fillItemCategory(CreativeModeTab category, NonNullList<ItemStack> items) {
+		if (this.allowedIn(category)) {
+			items.add(new ItemStack(this));
+		}
 	}
 
 }

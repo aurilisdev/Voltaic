@@ -5,8 +5,7 @@ import java.util.function.Supplier;
 
 import javax.annotation.Nonnull;
 
-import org.joml.Matrix4f;
-
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
@@ -16,31 +15,32 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.VertexFormat;
+import com.mojang.math.Matrix4f;
+import com.mojang.math.Quaternion;
+import com.mojang.math.Vector3f;
 
 import voltaic.Voltaic;
 import voltaic.common.block.states.VoltaicBlockStates;
 import voltaic.prefab.utilities.math.Color;
-import voltaic.prefab.utilities.math.MathUtils;
-import net.minecraft.CrashReport;
-import net.minecraft.CrashReportCategory;
-import net.minecraft.ReportedException;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.MultiBufferSource.BufferSource;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
+import net.minecraft.client.renderer.block.model.ItemTransforms.TransformType;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
@@ -53,74 +53,63 @@ import net.minecraftforge.fluids.FluidStack;
 
 public class RenderingUtils {
 
-    private static final Matrix4f ITEM_MATRIX = (new Matrix4f()).scaling(1.0F, -1.0F, 1.0F);
-
     public static final boolean[] ALL_FACES = {true, true, true, true, true, true}; //DUNSWE
 
     public static void renderStar(PoseStack stack, MultiBufferSource bufferIn, float time, int starFrags, float r, float g, float b, float a, boolean star) {
-        stack.pushPose();
-        try {
-            float f5 = time / 200.0F;
-            Random random = new Random(432L);
-            VertexConsumer vertexconsumer2 = bufferIn.getBuffer(RenderType.lightning());
-            stack.pushPose();
-            stack.translate(0.0D, -1.0D, 0.0D);
+    	stack.pushPose();
+		try {
+			float f5 = time / 200.0F;
+			Random random = new Random(432L);
+			VertexConsumer vertexconsumer2 = bufferIn.getBuffer(RenderType.lightning());
+			stack.pushPose();
+			stack.translate(0.0D, -1.0D, 0.0D);
 
-            for (int i = 0; i < starFrags; ++i) {
-                stack.mulPose(MathUtils.rotVectorQuaternionDeg(random.nextFloat() * 360.0F, MathUtils.XP));
-                stack.mulPose(MathUtils.rotVectorQuaternionDeg(random.nextFloat() * 360.0F, MathUtils.YP));
-                stack.mulPose(MathUtils.rotVectorQuaternionDeg(random.nextFloat() * 360.0F, MathUtils.ZP));
-                stack.mulPose(MathUtils.rotVectorQuaternionDeg(random.nextFloat() * 360.0F, MathUtils.XP));
-                stack.mulPose(MathUtils.rotVectorQuaternionDeg(random.nextFloat() * 360.0F, MathUtils.YP));
-                stack.mulPose(MathUtils.rotVectorQuaternionDeg(random.nextFloat() * 360.0F + f5 * 90.0F, MathUtils.ZP));
-                // stack.mulPose(XP.rotationDegrees(random.nextFloat() * 360.0F));
-                // stack.mulPose(YP.rotationDegrees(random.nextFloat() * 360.0F));
-                // stack.mulPose(ZP.rotationDegrees(random.nextFloat() * 360.0F));
-                // stack.mulPose(XP.rotationDegrees(random.nextFloat() * 360.0F));
-                // stack.mulPose(YP.rotationDegrees(random.nextFloat() * 360.0F));
-                // stack.mulPose(ZP.rotationDegrees(random.nextFloat() * 360.0F + f5 * 90.0F));
-                float f3 = random.nextFloat() * 20.0F + 1.0F;
-                float f4 = random.nextFloat() * 2.0F + 1.0F + (star ? 0 : 100);
-                Matrix4f matrix4f = stack.last().pose();
-                vertexconsumer2.vertex(matrix4f, 0.0F, 0.0F, 0.0F).color((int) (255 * r), (int) (255 * g), (int) (255 * b), (int) (255 * a));
-                vertexconsumer2.vertex(matrix4f, -0.866f * f4, f3, -0.5F * f4).color((int) (255 * r), (int) (255 * g), (int) (255 * b), (int) (255 * a));
-                vertexconsumer2.vertex(matrix4f, -0.866f * f4, f3, -0.5F * f4).color((int) (255 * r), (int) (255 * g), (int) (255 * b), (int) (255 * a));
-                vertexconsumer2.vertex(matrix4f, 0.0F, 0.0F, 0.0F).color((int) (255 * r), (int) (255 * g), (int) (255 * b), (int) (255 * a));
-                vertexconsumer2.vertex(matrix4f, -0.866f * f4, f3, -0.5F * f4).color((int) (255 * r), (int) (255 * g), (int) (255 * b), (int) (255 * a));
-                vertexconsumer2.vertex(matrix4f, 0.0F, f3, 1.0F * f4).color((int) (255 * r), (int) (255 * g), (int) (255 * b), (int) (255 * a));
-                vertexconsumer2.vertex(matrix4f, 0.0F, 0.0F, 0.0F).color((int) (255 * r), (int) (255 * g), (int) (255 * b), (int) (255 * a));
-                vertexconsumer2.vertex(matrix4f, -0.866f * f4, f3, -0.5F * f4).color((int) (255 * r), (int) (255 * g), (int) (255 * b), (int) (255 * a));
-            }
+			for (int i = 0; i < starFrags; ++i) {
+				stack.mulPose(Vector3f.XP.rotationDegrees(random.nextFloat() * 360.0F));
+				stack.mulPose(Vector3f.YP.rotationDegrees(random.nextFloat() * 360.0F));
+				stack.mulPose(Vector3f.ZP.rotationDegrees(random.nextFloat() * 360.0F));
+				stack.mulPose(Vector3f.XP.rotationDegrees(random.nextFloat() * 360.0F));
+				stack.mulPose(Vector3f.YP.rotationDegrees(random.nextFloat() * 360.0F));
+				stack.mulPose(Vector3f.ZP.rotationDegrees(random.nextFloat() * 360.0F + f5 * 90.0F));
+				float f3 = random.nextFloat() * 20.0F + 1.0F;
+				float f4 = random.nextFloat() * 2.0F + 1.0F + (star ? 0 : 100);
+				Matrix4f matrix4f = stack.last().pose();
+				vertexconsumer2.vertex(matrix4f, 0.0F, 0.0F, 0.0F).color((int) (255 * r), (int) (255 * g), (int) (255 * b), (int) (255 * a)).endVertex();
+				vertexconsumer2.vertex(matrix4f, -0.866f * f4, f3, -0.5F * f4).color((int) (255 * r), (int) (255 * g), (int) (255 * b), (int) (255 * a)).endVertex();
+				vertexconsumer2.vertex(matrix4f, -0.866f * f4, f3, -0.5F * f4).color((int) (255 * r), (int) (255 * g), (int) (255 * b), (int) (255 * a)).endVertex();
+				vertexconsumer2.vertex(matrix4f, 0.0F, 0.0F, 0.0F).color((int) (255 * r), (int) (255 * g), (int) (255 * b), (int) (255 * a)).endVertex();
+				vertexconsumer2.vertex(matrix4f, -0.866f * f4, f3, -0.5F * f4).color((int) (255 * r), (int) (255 * g), (int) (255 * b), (int) (255 * a)).endVertex();
+				vertexconsumer2.vertex(matrix4f, 0.0F, f3, 1.0F * f4).color((int) (255 * r), (int) (255 * g), (int) (255 * b), (int) (255 * a)).endVertex();
+				vertexconsumer2.vertex(matrix4f, 0.0F, 0.0F, 0.0F).color((int) (255 * r), (int) (255 * g), (int) (255 * b), (int) (255 * a)).endVertex();
+				vertexconsumer2.vertex(matrix4f, -0.866f * f4, f3, -0.5F * f4).color((int) (255 * r), (int) (255 * g), (int) (255 * b), (int) (255 * a)).endVertex();
+			}
 
-            stack.popPose();
-            if (bufferIn instanceof BufferSource source) {
-                source.endBatch(RenderType.lightning());
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        stack.popPose();
+			stack.popPose();
+			if (bufferIn instanceof BufferSource source) {
+				source.endBatch(RenderType.lightning());
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		stack.popPose();
     }
 
     public static void renderModel(BakedModel model, BlockEntity tile, RenderType type, PoseStack stack, MultiBufferSource buffer, int combinedLightIn, int combinedOverlayIn) {
-        Minecraft.getInstance().getItemRenderer().render(new ItemStack(type == RenderType.translucent() ? Items.BLACK_STAINED_GLASS : Blocks.STONE), ItemDisplayContext.NONE, false, stack, buffer, combinedLightIn, combinedOverlayIn, model);
+        Minecraft.getInstance().getItemRenderer().render(new ItemStack(type == RenderType.translucent() ? Items.BLACK_STAINED_GLASS : Blocks.STONE), TransformType.NONE, false, stack, buffer, combinedLightIn, combinedOverlayIn, model);
     }
 
     public static void prepareRotationalTileModel(BlockEntity tile, PoseStack stack) {
         BlockState state = tile.getBlockState();
         stack.translate(0.5, 7.0 / 16.0, 0.5);
         if (state.hasProperty(VoltaicBlockStates.FACING)) {
-            Direction facing = state.getValue(VoltaicBlockStates.FACING);
-            if (facing == Direction.NORTH) {
-                stack.mulPose(MathUtils.rotQuaternionDeg(0, 90, 0));
-                // stack.mulPose(new Quaternionf(0, 90, 0, true));
-            } else if (facing == Direction.SOUTH) {
-                stack.mulPose(MathUtils.rotQuaternionDeg(0, 270, 0));
-                // stack.mulPose(new Quaternionf(0, 270, 0, true));
-            } else if (facing == Direction.WEST) {
-                stack.mulPose(MathUtils.rotQuaternionDeg(0, 180, 0));
-                // stack.mulPose(new Quaternionf(0, 180, 0, true));
-            }
+        	Direction facing = state.getValue(VoltaicBlockStates.FACING);
+			if (facing == Direction.NORTH) {
+				stack.mulPose(new Quaternion(0, 90, 0, true));
+			} else if (facing == Direction.SOUTH) {
+				stack.mulPose(new Quaternion(0, 270, 0, true));
+			} else if (facing == Direction.WEST) {
+				stack.mulPose(new Quaternion(0, 180, 0, true));
+			}
         }
     }
 
@@ -271,41 +260,42 @@ public class RenderingUtils {
 
     }
 
-    public static void renderItemScaled(GuiGraphics graphics, Item item, int x, int y, float scale) {
-        ItemStack stack = new ItemStack(item);
-        Minecraft minecraft = Minecraft.getInstance();
-        ItemRenderer itemRenderer = minecraft.getItemRenderer();
-        BakedModel model = itemRenderer.getModel(stack, (Level) null, (LivingEntity) null, 0);
+    public static void renderItemScaled(Item item, int x, int y, float scale) {
+    	ItemStack stack = new ItemStack(item);
+		Minecraft minecraft = Minecraft.getInstance();
+		ItemRenderer itemRenderer = minecraft.getItemRenderer();
+		BakedModel model = itemRenderer.getModel(stack, (Level) null, (LivingEntity) null, 0);
+		TextureManager manager = minecraft.getTextureManager();
 
-        PoseStack poseStack = graphics.pose();
+		manager.getTexture(TextureAtlas.LOCATION_BLOCKS).setFilter(false, false);
+		RenderSystem.setShaderTexture(0, TextureAtlas.LOCATION_BLOCKS);
+		RenderSystem.enableBlend();
+		RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+		PoseStack posestack = RenderSystem.getModelViewStack();
+		posestack.pushPose();
+		posestack.translate(x, y, 100.0F + itemRenderer.blitOffset);
+		posestack.translate(8.0D, 8.0D, 0.0D);
+		posestack.scale(1.0F, -1.0F, 1.0F);
+		posestack.scale(16.0F, 16.0F, 16.0F);
+		posestack.scale(scale, scale, scale);
+		RenderSystem.applyModelViewMatrix();
+		PoseStack posestack1 = new PoseStack();
+		MultiBufferSource.BufferSource buffersource = Minecraft.getInstance().renderBuffers().bufferSource();
+		boolean flag = !model.usesBlockLight();
+		if (flag) {
+			Lighting.setupForFlatItems();
+		}
 
-        poseStack.pushPose();
-        poseStack.translate(x + 8, y + 8, (150));
+		itemRenderer.render(stack, ItemTransforms.TransformType.GUI, false, posestack1, buffersource, 15728880, OverlayTexture.NO_OVERLAY, model);
+		buffersource.endBatch();
+		RenderSystem.enableDepthTest();
+		if (flag) {
+			Lighting.setupFor3DItems();
+		}
 
-        try {
-            poseStack.mulPoseMatrix(ITEM_MATRIX);
-            poseStack.scale(16.0F, 16.0F, 16.0F);
-            poseStack.scale(scale, scale, scale);
-            boolean flag = !model.usesBlockLight();
-            if (flag) {
-                Lighting.setupForFlatItems();
-            }
-
-            minecraft.getItemRenderer().render(stack, ItemDisplayContext.GUI, false, poseStack, graphics.bufferSource(), 15728880, OverlayTexture.NO_OVERLAY, model);
-            graphics.flush();
-            if (flag) {
-                Lighting.setupFor3DItems();
-            }
-        } catch (Throwable throwable) {
-            CrashReport crashreport = CrashReport.forThrowable(throwable, "Rendering item");
-            CrashReportCategory crashreportcategory = crashreport.addCategory("Item being rendered");
-            crashreportcategory.setDetail("Item Type", () -> String.valueOf(stack.getItem()));
-            crashreportcategory.setDetail("Item NBT", () -> String.valueOf(stack.getTag()));
-            crashreportcategory.setDetail("Item Foil", () -> String.valueOf(stack.hasFoil()));
-            throw new ReportedException(crashreport);
-        }
-
-        poseStack.popPose();
+		posestack.popPose();
+		RenderSystem.applyModelViewMatrix();
 
     }
 

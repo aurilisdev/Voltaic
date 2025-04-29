@@ -1,7 +1,11 @@
 package voltaic.client.guidebook.utils.pagedata.graphics;
 
 import voltaic.client.guidebook.utils.components.Page;
-import net.minecraft.client.gui.GuiGraphics;
+import voltaic.prefab.utilities.RenderingUtils;
+
+import com.mojang.blaze3d.vertex.PoseStack;
+
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.resources.ResourceLocation;
 
 /**
@@ -33,8 +37,10 @@ public class ImageWrapperObject extends AbstractGraphicWrapper<ImageWrapperObjec
 	}
 
 	@Override
-	public void render(GuiGraphics graphics, int wrapperX, int wrapperY, int xShift, int guiWidth, int guiHeight, Page page) {
-		graphics.blit(location, guiWidth + wrapperX + xOffset + xShift, guiHeight + wrapperY + yOffset - descriptorTopOffset, uStart, vStart, width, height, imgheight, imgwidth);
+	public void render(PoseStack stack, int wrapperX, int wrapperY, int xShift, int guiWidth, int guiHeight, Page page) {
+		RenderingUtils.bindTexture(location);
+		Screen.blit(stack, guiWidth + wrapperX + xOffset + xShift, guiHeight + wrapperY + yOffset - descriptorTopOffset, uStart, vStart, width, height, imgheight, imgwidth);
+		RenderingUtils.resetShaderColor();
 	}
 
 }

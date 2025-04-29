@@ -3,13 +3,13 @@ package voltaic.prefab.screen.component.types.gauges;
 import java.util.List;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 
 import voltaic.Voltaic;
 import voltaic.api.screen.ITexture;
 import voltaic.prefab.screen.component.ScreenComponentGeneric;
 import voltaic.prefab.utilities.RenderingUtils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
@@ -24,24 +24,24 @@ public abstract class AbstractScreenComponentGauge extends ScreenComponentGeneri
 
 	public AbstractScreenComponentGauge(int x, int y) {
 		super(GaugeTextures.BACKGROUND_DEFAULT, x, y);
-		onTooltip((graphics, component, xAxis, yAxis) -> {
+		onTooltip((poseStack, component, xAxis, yAxis) -> {
 			List<? extends FormattedCharSequence> tooltips = getTooltips();
 			if (!tooltips.isEmpty()) {
-				graphics.renderTooltip(gui.getFontRenderer(), tooltips, xAxis, yAxis);
+				gui.displayTooltips(poseStack, tooltips, xAxis, yAxis);
 			}
 		});
 	}
 
 	@Override
-	public void renderBackground(GuiGraphics graphics, int xAxis, int yAxis, int guiWidth, int guiHeight) {
-		super.renderBackground(graphics, xAxis, yAxis, guiWidth, guiHeight);
+	public void renderBackground(PoseStack poseStack, int xAxis, int yAxis, int guiWidth, int guiHeight) {
+		super.renderBackground(poseStack, xAxis, yAxis, guiWidth, guiHeight);
 		ResourceLocation texture = getTexture();
 		int scale = getScaledLevel();
 
 		if (texture != null && scale > 0) {
 			ResourceLocation blocks = InventoryMenu.BLOCK_ATLAS;
 			TextureAtlasSprite sprite = Minecraft.getInstance().getTextureAtlas(blocks).apply(texture);
-			RenderingUtils.bindTexture(sprite.atlasLocation());
+			RenderingUtils.bindTexture(sprite.atlas().location());
 			applyColor();
 			for (int i = 0; i < 16; i += 16) {
 				for (int j = 0; j < scale; j += 16) {
@@ -51,14 +51,14 @@ public abstract class AbstractScreenComponentGauge extends ScreenComponentGeneri
 					int drawX = guiWidth + xLocation + 1;
 					int drawY = guiHeight + yLocation - 1 + super.texture.textureHeight() - Math.min(scale - j, super.texture.textureHeight());
 
-					graphics.blit(drawX, drawY, 0, drawWidth, drawHeight, sprite);
+					blit(poseStack, drawX, drawY, 0, drawWidth, drawHeight, sprite);
 
 				}
 			}
 			RenderSystem.setShaderColor(1, 1, 1, 1);
 		}
-
-		graphics.blit(super.texture.getLocation(), guiWidth + xLocation, guiHeight + yLocation, GaugeTextures.LEVEL_DEFAULT.textureU(), 0, GaugeTextures.LEVEL_DEFAULT.textureWidth(), GaugeTextures.LEVEL_DEFAULT.textureHeight(), GaugeTextures.LEVEL_DEFAULT.imageWidth(), GaugeTextures.LEVEL_DEFAULT.imageHeight());
+		RenderingUtils.bindTexture(super.texture.getLocation());
+		blit(poseStack, guiWidth + xLocation, guiHeight + yLocation, GaugeTextures.LEVEL_DEFAULT.textureU(), 0, GaugeTextures.LEVEL_DEFAULT.textureWidth(), GaugeTextures.LEVEL_DEFAULT.textureHeight(), GaugeTextures.LEVEL_DEFAULT.imageWidth(), GaugeTextures.LEVEL_DEFAULT.imageHeight());
 	}
 
 	protected abstract void applyColor();
