@@ -11,7 +11,6 @@ import voltaic.compatibility.jei.utils.gui.types.ArrowAnimatedObject;
 import voltaic.compatibility.jei.utils.gui.types.BackgroundObject;
 import voltaic.compatibility.jei.utils.gui.types.ItemSlotObject;
 import voltaic.compatibility.jei.utils.gui.types.fluidgauge.AbstractFluidGaugeObject;
-import voltaic.compatibility.jei.utils.gui.types.gasgauge.AbstractGasGaugeObject;
 import voltaic.compatibility.jei.utils.label.AbstractLabelWrapper;
 import voltaic.prefab.utilities.math.MathUtils;
 import mezz.jei.api.constants.VanillaTypes;
@@ -52,8 +51,6 @@ public abstract class AbstractRecipeCategory<T> implements IRecipeCategory<T> {
     protected SlotDataWrapper[] outputSlotWrappers = new SlotDataWrapper[0];
     protected AbstractFluidGaugeObject[] fluidInputWrappers = new AbstractFluidGaugeObject[0];
     protected AbstractFluidGaugeObject[] fluidOutputWrappers = new AbstractFluidGaugeObject[0];
-    protected AbstractGasGaugeObject[] gasInputWrappers = new AbstractGasGaugeObject[0];
-    protected AbstractGasGaugeObject[] gasOutputWrappers = new AbstractGasGaugeObject[0];
 
     public AbstractRecipeCategory(IGuiHelper guiHelper, Component title, ItemStack inputMachine, BackgroundObject wrapper, RecipeType<T> recipeType, int animationTime) {
 
@@ -174,26 +171,6 @@ public abstract class AbstractRecipeCategory<T> implements IRecipeCategory<T> {
         for (AbstractFluidGaugeObject gauge : fluidOutputWrappers) {
             ITexture texture = gauge.getTexture();
             staticDrawables.add(new StaticWrapper(gauge.getX(), gauge.getY(), guiHelper.drawableBuilder(texture.getLocation(), texture.textureU(), texture.textureV(), gauge.getWidth(), gauge.getHeight()).setTextureSize(texture.imageWidth(), texture.imageHeight()).build()));
-        }
-    }
-
-    public void setGasInputs(IGuiHelper guiHelper, AbstractGasGaugeObject... gauges) {
-        gasInputWrappers = gauges;
-        for (AbstractGasGaugeObject gauge : gasInputWrappers) {
-
-            ITexture texture = gauge.getTexture();
-            staticDrawables.add(new StaticWrapper(gauge.getX(), gauge.getY(), guiHelper.drawableBuilder(texture.getLocation(), texture.textureU(), texture.textureV(), gauge.getWidth(), gauge.getHeight()).setTextureSize(texture.imageWidth(), texture.imageHeight()).build()));
-
-        }
-    }
-
-    public void setGasOutputs(IGuiHelper guiHelper, AbstractGasGaugeObject... gauges) {
-        gasOutputWrappers = gauges;
-        for (AbstractGasGaugeObject gauge : gasOutputWrappers) {
-
-            ITexture texture = gauge.getTexture();
-            staticDrawables.add(new StaticWrapper(gauge.getX(), gauge.getY(), guiHelper.drawableBuilder(texture.getLocation(), texture.textureU(), texture.textureV(), gauge.getWidth(), gauge.getHeight()).setTextureSize(texture.imageWidth(), texture.imageHeight()).build()));
-
         }
     }
 
