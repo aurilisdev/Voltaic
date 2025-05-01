@@ -54,13 +54,13 @@ public class DataGenerators {
             VoltaicTagsProvider.addTagProviders(generator, output, datapacks.getRegistryProvider(), helper);
             generator.addProvider(true, new VoltaicRecipeProvider(output));
             generator.addProvider(true, new ForgeAdvancementProvider(output, event.getLookupProvider(), helper, List.of(new VoltaicAdvancementProvider())));
+            generator.addProvider(true, new VoltaicRadiationShieldingProvider(output));
         }
         if (event.includeClient()) {
             generator.addProvider(true, new VoltaicBlockStateProvider(output, helper));
             generator.addProvider(true, new VoltaicItemModelsProvider(output, helper));
             generator.addProvider(true, new VoltaicLangKeyProvider(output, Locale.EN_US));
             generator.addProvider(true, new VoltaicSoundProvider(output, helper));
-            generator.addProvider(true, new VoltaicRadiationShieldingProvider(output));
         }
     }
 
