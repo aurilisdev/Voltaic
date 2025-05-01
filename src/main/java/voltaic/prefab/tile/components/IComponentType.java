@@ -10,7 +10,6 @@ public enum IComponentType {
 	MultiblockSource,
 	FluidHandler,
 	Processor,
-	GasHandler,
 	UpgradeHandler,
 	ForgeEnergy;
 }

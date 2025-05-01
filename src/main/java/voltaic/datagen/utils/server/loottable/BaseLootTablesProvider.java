@@ -29,11 +29,11 @@ public abstract class BaseLootTablesProvider extends AbstractLootTableProvider {
         lootTables.put(block, createSilkTouchOnlyTable(name(block), block));
     }
 
-    public void addFortuneAndSilkTouchTable(RegistryObject<? extends Block> reg, Item nonSilk, int minDrop, int maxDrop) {
+    public <T extends Block, A extends Item> void addFortuneAndSilkTouchTable(RegistryObject<T> reg, A nonSilk, int minDrop, int maxDrop) {
         addFortuneAndSilkTouchTable(reg.get(), nonSilk, minDrop, maxDrop);
     }
 
-    public void addFortuneAndSilkTouchTable(Block block, Item nonSilk, int minDrop, int maxDrop) {
+    public <T extends Block, A extends Item> void addFortuneAndSilkTouchTable(T block, A nonSilk, int minDrop, int maxDrop) {
     	lootTables.put(block, createSilkTouchAndFortuneTable(name(block), block, nonSilk, minDrop, maxDrop));
     }
 
@@ -41,12 +41,12 @@ public abstract class BaseLootTablesProvider extends AbstractLootTableProvider {
         addSimpleBlock(reg.get());
     }
 
-    public void addSimpleBlock(Block block) {
+    public <T extends Block> void addSimpleBlock(T block) {
 
     	lootTables.put(block, createSimpleBlockTable(name(block), block));
     }
 
-    public String name(Block block) {
+    public <T extends Block> String name(T block) {
         return ForgeRegistries.BLOCKS.getKey(block).getPath();
     }
 
