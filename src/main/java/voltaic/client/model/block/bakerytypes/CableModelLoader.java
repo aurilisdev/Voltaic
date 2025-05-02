@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -34,33 +35,38 @@ import net.minecraft.client.resources.model.UnbakedModel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.GsonHelper;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.client.ChunkRenderTypeSet;
-import net.minecraftforge.client.model.IDynamicBakedModel;
-import net.minecraftforge.client.model.data.ModelData;
-import net.minecraftforge.client.model.geometry.IGeometryBakingContext;
-import net.minecraftforge.client.model.geometry.IGeometryLoader;
-import net.minecraftforge.client.model.geometry.IUnbakedGeometry;
+import net.minecraftforge.client.model.IModelConfiguration;
+import net.minecraftforge.client.model.IModelLoader;
+import net.minecraftforge.client.model.data.IDynamicBakedModel;
+import net.minecraftforge.client.model.data.IModelData;
+import net.minecraftforge.client.model.data.ModelDataMap;
+import net.minecraftforge.client.model.geometry.IModelGeometry;
 
-public class CableModelLoader implements IGeometryLoader<CableModelLoader.WirePartGeometry> {
+public class CableModelLoader implements IModelLoader<CableModelLoader.WirePartGeometry> {
 
     public static final String ID = "voltaiccableloader";
 
     public static final CableModelLoader INSTANCE = new CableModelLoader();
 
     @Override
-    public WirePartGeometry read(JsonObject json, JsonDeserializationContext context) throws JsonParseException {
+    public WirePartGeometry read(JsonDeserializationContext context, JsonObject json) throws JsonParseException {
 
         BlockModel none = context.deserialize(GsonHelper.getAsJsonObject(json, EnumConnectType.NONE.toString()), BlockModel.class);
         BlockModel wire = context.deserialize(GsonHelper.getAsJsonObject(json, EnumConnectType.WIRE.toString()), BlockModel.class);
         BlockModel inventory = context.deserialize(GsonHelper.getAsJsonObject(json, EnumConnectType.INVENTORY.toString()), BlockModel.class);
         return new WirePartGeometry(none, wire, inventory);
     }
+    
+    @Override
+    public void onResourceManagerReload(ResourceManager pResourceManager) {
 
-    public static class WirePartGeometry implements IUnbakedGeometry<WirePartGeometry> {
+    }
+
+    public static class WirePartGeometry implements IModelGeometry<WirePartGeometry> {
 
         private final BlockModel none;
         private final BlockModel wire;
@@ -74,10 +80,10 @@ public class CableModelLoader implements IGeometryLoader<CableModelLoader.WirePa
         }
 
         @Override
-        public BakedModel bake(IGeometryBakingContext context, ModelBakery baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, ItemOverrides overrides, ResourceLocation modelLocation) {
-            boolean useBlockLight = context.useBlockLight();
+        public BakedModel bake(IModelConfiguration context, ModelBakery bakery, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, ItemOverrides overrides, ResourceLocation modelLocation) {
+            boolean useBlockLight = context.useSmoothLighting();
 
-            BakedModel none = this.none.bake(baker, this.none, spriteGetter, modelState, modelLocation, useBlockLight);
+            BakedModel none = this.none.bake(bakery, this.none, spriteGetter, modelState, modelLocation, useBlockLight);
 
             BakedModel[] wires = new BakedModel[6];
             BakedModel[] inventories = new BakedModel[6];
@@ -86,26 +92,21 @@ public class CableModelLoader implements IGeometryLoader<CableModelLoader.WirePa
 
                 ModelState transform = ModelStateRotation.ROTATIONS.get(dir);
 
-                wires[dir.ordinal()] = this.wire.bake(baker, this.wire, spriteGetter, transform, modelLocation, useBlockLight);
-                inventories[dir.ordinal()] = this.inventory.bake(baker, this.inventory, spriteGetter, transform, modelLocation, useBlockLight);
+                wires[dir.ordinal()] = this.wire.bake(bakery, this.wire, spriteGetter, transform, modelLocation, useBlockLight);
+                inventories[dir.ordinal()] = this.inventory.bake(bakery, this.inventory, spriteGetter, transform, modelLocation, useBlockLight);
 
             }
 
-            return new CableModel(context.useAmbientOcclusion(), context.isGui3d(), useBlockLight, spriteGetter.apply(this.none.getMaterial("particle")), none, wires, inventories);
+            return new CableModel(context.useSmoothLighting(), context.isShadedInGui(), useBlockLight, spriteGetter.apply(this.none.getMaterial("particle")), none, wires, inventories);
         }
         
         @Override
-        public Collection<Material> getMaterials(IGeometryBakingContext context, Function<ResourceLocation, UnbakedModel> modelGetter, Set<Pair<String, String>> missingTextureErrors) {
+        public Collection<Material> getTextures(IModelConfiguration owner, Function<ResourceLocation, UnbakedModel> modelGetter, Set<Pair<String, String>> missingTextureErrors) {
         	Set<Material> set = new HashSet<>();
         	set.addAll(none.getMaterials(modelGetter, missingTextureErrors));
         	set.addAll(wire.getMaterials(modelGetter, missingTextureErrors));
         	set.addAll(inventory.getMaterials(modelGetter, missingTextureErrors));
         	return set;
-        }
-
-        @Override
-        public Set<String> getConfigurableComponentNames() {
-            return IUnbakedGeometry.super.getConfigurableComponentNames();
         }
 
     }
@@ -164,15 +165,8 @@ public class CableModelLoader implements IGeometryLoader<CableModelLoader.WirePa
         }
 
         @Override
-        public ChunkRenderTypeSet getRenderTypes(@NotNull BlockState state, @NotNull RandomSource rand, @NotNull ModelData data) {
-
-            return none.getRenderTypes(state, rand, data);
-
-        }
-
-        @Override
-        public @NotNull List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @NotNull RandomSource rand, @NotNull ModelData extraData, @Nullable RenderType renderType) {
-            @Nullable Supplier<EnumConnectType[]> m = extraData.get(ModelPropertyConnections.INSTANCE);
+        public @NotNull List<BakedQuad> getQuads(BlockState state, Direction side, Random rand, IModelData extraData) {
+            @Nullable Supplier<EnumConnectType[]> m = extraData.getData(ModelPropertyConnections.INSTANCE);
             if (m == null) {
                 return NO_QUADS;
             }
@@ -192,11 +186,10 @@ public class CableModelLoader implements IGeometryLoader<CableModelLoader.WirePa
                         none = true;
                         break;
                     case WIRE:
-                        quads.addAll(this.wires[i].getQuads(state, side, rand, extraData, renderType));
+                        quads.addAll(this.wires[i].getQuads(state, side, rand, extraData));
                         break;
                     case INVENTORY:
-                        quads.addAll(this.inventories[i].getQuads(state, side, rand, extraData, renderType));
-                        break;
+                        quads.addAll(this.inventories[i].getQuads(state, side, rand, extraData));
                     default:
                         none = true;
                         break;
@@ -204,16 +197,16 @@ public class CableModelLoader implements IGeometryLoader<CableModelLoader.WirePa
             }
 
             if (none) {
-                quads.addAll(this.none.getQuads(state, side, rand, extraData, renderType));
+                quads.addAll(this.none.getQuads(state, side, rand, extraData));
             }
 
             return quads;
         }
 
         @Override
-        public @NotNull ModelData getModelData(@NotNull BlockAndTintGetter level, @NotNull BlockPos pos, @NotNull BlockState state, @NotNull ModelData modelData) {
+        public @NotNull IModelData getModelData(@NotNull BlockAndTintGetter level, @NotNull BlockPos pos, @NotNull BlockState state, @NotNull IModelData modelData) {
             if (level.getBlockEntity(pos) instanceof IConnectTile tile) {
-                return ModelData.builder().with(ModelPropertyConnections.INSTANCE, () -> tile.readConnections()).build();
+                return new ModelDataMap.Builder().withInitial(ModelPropertyConnections.INSTANCE, () -> tile.readConnections()).build();
             }
             return modelData;
         }

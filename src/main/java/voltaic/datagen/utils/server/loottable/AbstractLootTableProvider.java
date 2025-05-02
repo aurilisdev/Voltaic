@@ -8,12 +8,15 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import net.minecraft.advancements.critereon.EnchantmentPredicate;
 import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.advancements.critereon.MinMaxBounds;
-import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
+import net.minecraft.data.HashCache;
 import net.minecraft.data.loot.LootTableProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
@@ -39,6 +42,8 @@ import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
 
 public abstract class AbstractLootTableProvider extends LootTableProvider {
+	
+	private static final Gson GSON = (new GsonBuilder()).setPrettyPrinting().disableHtmlEscaping().create();
 
 	protected final Map<Block, LootTable.Builder> lootTables = new HashMap<>();
 	private final DataGenerator generator;
@@ -139,7 +144,7 @@ public abstract class AbstractLootTableProvider extends LootTableProvider {
 	}
 
 	@Override
-	public void run(CachedOutput cache) {
+	public void run(HashCache cache) {
 		addTables();
 
 		Map<ResourceLocation, LootTable> tables = new HashMap<>();
@@ -151,7 +156,9 @@ public abstract class AbstractLootTableProvider extends LootTableProvider {
 		tables.forEach((key, lootTable) -> {
 			Path path = outputFolder.resolve("data/" + key.getNamespace() + "/loot_tables/" + key.getPath() + ".json");
 			try {
-				DataProvider.saveStable(cache, LootTables.serialize(lootTable), path);
+				
+				DataProvider.save(GSON, cache, LootTables.serialize(lootTable), path);
+				
 			} catch (IOException e) {
 				Voltaic.LOGGER.error("Couldn't write loot table {}", path, e);
 			}

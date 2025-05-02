@@ -7,8 +7,10 @@ import voltaic.common.inventory.container.ContainerGuidebook;
 import voltaic.common.item.ItemVoltaic;
 import voltaic.prefab.utilities.VoltaicTextUtils;
 import net.minecraft.ChatFormatting;
+import net.minecraft.Util;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.MenuProvider;
@@ -22,7 +24,7 @@ import net.minecraft.world.level.Level;
 public class ItemGuidebook extends ItemVoltaic {
 
 	private static final String LINK = "https://wiki.aurilis.dev";
-	private static final Component CONTAINER_TITLE = Component.translatable("container.guidebook");
+	private static final Component CONTAINER_TITLE = new TranslatableComponent("container.guidebook");
 
 	public ItemGuidebook(Properties properties, Supplier<CreativeModeTab> creativeTab) {
 		super(properties, creativeTab);
@@ -39,7 +41,7 @@ public class ItemGuidebook extends ItemVoltaic {
 	public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand handIn) {
 		if (world.isClientSide) {
 			if (player.isShiftKeyDown()) {
-				player.sendSystemMessage(VoltaicTextUtils.chatMessage("guidebookclick").withStyle(ChatFormatting.BOLD, ChatFormatting.RED).withStyle(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, LINK))));
+				player.sendMessage(VoltaicTextUtils.chatMessage("guidebookclick").withStyle(ChatFormatting.BOLD, ChatFormatting.RED).withStyle(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, LINK))), Util.NIL_UUID);
 				return InteractionResultHolder.pass(player.getItemInHand(handIn));
 			}
 		} else if(!player.isShiftKeyDown()) {

@@ -9,6 +9,7 @@ import voltaic.compatibility.jei.recipecategories.AbstractRecipeCategory;
 import voltaic.compatibility.jei.utils.label.AbstractLabelWrapper;
 import voltaic.prefab.utilities.math.Color;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 
 public class BiproductPercentWrapperElectroRecipe extends AbstractLabelWrapper {
 
@@ -40,7 +41,7 @@ public class BiproductPercentWrapperElectroRecipe extends AbstractLabelWrapper {
 				}
 				break;
 		}
-		return Component.empty();
+		return TextComponent.EMPTY;
 	}
 
 	public static enum BiproductType {

@@ -8,8 +8,8 @@ import voltaic.prefab.utilities.CapabilityUtils;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
 import net.minecraftforge.fluids.capability.IFluidHandlerItem;
@@ -18,7 +18,7 @@ import net.minecraftforge.fluids.capability.templates.FluidTank;
 public class FluidUtilities {
 
 	public static boolean isFluidReceiver(BlockEntity acceptor, Direction dir) {
-		return acceptor != null && acceptor.getCapability(ForgeCapabilities.FLUID_HANDLER, dir).orElse(CapabilityUtils.EMPTY_FLUID) != CapabilityUtils.EMPTY_FLUID;
+		return acceptor != null && acceptor.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, dir).orElse(CapabilityUtils.EMPTY_FLUID) != CapabilityUtils.EMPTY_FLUID;
 	}
 
 	public static int receiveFluid(BlockEntity acceptor, Direction direction, FluidStack perReceiver, boolean debug) {
@@ -27,7 +27,7 @@ public class FluidUtilities {
 	        return 0;
 	    }
 	    
-	    IFluidHandler handler = acceptor.getCapability(ForgeCapabilities.FLUID_HANDLER, direction).orElse(CapabilityUtils.EMPTY_FLUID);
+	    IFluidHandler handler = acceptor.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, direction).orElse(CapabilityUtils.EMPTY_FLUID);
 	    
 		if(handler == CapabilityUtils.EMPTY_FLUID) {
 		    return 0;
@@ -63,7 +63,7 @@ public class FluidUtilities {
 				continue;
 			}
 
-			IFluidHandler handler = tile.getCapability(ForgeCapabilities.FLUID_HANDLER, direction.getOpposite()).orElse(CapabilityUtils.EMPTY_FLUID);
+			IFluidHandler handler = tile.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, direction.getOpposite()).orElse(CapabilityUtils.EMPTY_FLUID);
 
 			if(handler == null) {
 			    continue;
@@ -111,7 +111,7 @@ public class FluidUtilities {
 				continue;
 			}
 
-			IFluidHandlerItem handler = stack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).orElse(CapabilityUtils.EMPTY_FLUID_ITEM);
+			IFluidHandlerItem handler = stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).orElse(CapabilityUtils.EMPTY_FLUID_ITEM);
 			
 			if(handler == null) {
 			    continue;
@@ -161,7 +161,7 @@ public class FluidUtilities {
 				continue;
 			}
 			
-			IFluidHandlerItem handler = stack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).orElse(CapabilityUtils.EMPTY_FLUID_ITEM);
+			IFluidHandlerItem handler = stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).orElse(CapabilityUtils.EMPTY_FLUID_ITEM);
 			
 			if(handler == null) {
 			    continue;

@@ -346,14 +346,5 @@ public abstract class AbstractRecipeCategory<T> implements IRecipeCategory<T> {
     public static record AnimatedWrapper(int x, int y, IDrawableAnimated anim) {
 
     }
-
-    @Override
-    public int getWidth() {
-        return background.getWidth();
-    }
-
-    @Override
-    public int getHeight() {
-        return background.getHeight();
-    }
+    
 }

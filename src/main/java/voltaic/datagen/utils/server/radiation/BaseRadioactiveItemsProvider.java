@@ -1,13 +1,15 @@
 package voltaic.datagen.utils.server.radiation;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
 import voltaic.Voltaic;
 import voltaic.api.radiation.util.RadioactiveObject;
 import voltaic.common.reloadlistener.RadioactiveItemRegister;
-import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
+import net.minecraft.data.HashCache;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -16,6 +18,8 @@ import java.io.IOException;
 import java.nio.file.Path;
 
 public abstract class BaseRadioactiveItemsProvider implements DataProvider {
+	
+	private static final Gson GSON = (new GsonBuilder()).setPrettyPrinting().disableHtmlEscaping().create();
 
 	public static final String LOC = "data/" + Voltaic.ID + "/" + RadioactiveItemRegister.FOLDER + "/" + RadioactiveItemRegister.FILE_NAME;
 
@@ -28,14 +32,14 @@ public abstract class BaseRadioactiveItemsProvider implements DataProvider {
 	}
 
 	@Override
-	public void run(CachedOutput cache) {
+	public void run(HashCache cache) {
 		JsonObject json = new JsonObject();
 		getRadioactiveItems(json);
 
 		Path parent = dataGenerator.getOutputFolder().resolve(LOC + ".json");
 		try {
 
-			DataProvider.saveStable(cache, json, parent);
+			DataProvider.save(GSON, cache, json, parent);
 
 		} catch (IOException e) {
 			e.printStackTrace();

@@ -54,8 +54,8 @@ public class BlockItemDescriptable extends BlockItemVoltaic {
     }
 
     @Override
-    public int getMaxStackSize(ItemStack stack) {
-    	return stack.hasTag() && stack.getTag().getDouble("joules") > 0 ? 1 : super.getMaxStackSize(stack);
+    public int getItemStackLimit(ItemStack stack) {
+    	return stack.hasTag() && stack.getTag().getDouble("joules") > 0 ? 1 : super.getItemStackLimit(stack);
     }
 
     public static void addDescription(Supplier<Block> block, MutableComponent description) {

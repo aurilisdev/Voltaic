@@ -22,7 +22,7 @@ public class ConfigCondition implements ICondition {
 	}
 
 	@Override
-	public boolean test(IContext context) {
+	public boolean test() {
 		return VoltaicConstants.DISPENSE_GUIDEBOOK;
 	}
 

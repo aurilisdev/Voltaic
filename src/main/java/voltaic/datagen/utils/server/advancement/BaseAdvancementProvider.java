@@ -6,37 +6,41 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import com.google.common.collect.Sets;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
-import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
-import net.minecraft.data.DataGenerator.PathProvider;
+import net.minecraft.data.HashCache;
 import net.minecraft.resources.ResourceLocation;
 import voltaic.Voltaic;
 
 public abstract class BaseAdvancementProvider implements DataProvider {
+	
+	private static final Gson GSON = (new GsonBuilder()).setPrettyPrinting().disableHtmlEscaping().create();
 
 	public final String modID;
-	private final PathProvider pathProvider;
+	public final DataGenerator generator;
 
-	public BaseAdvancementProvider(DataGenerator generatorIn, String modID) {
-		this.pathProvider = generatorIn.createPathProvider(DataGenerator.Target.DATA_PACK, "advancements");
+	public BaseAdvancementProvider(DataGenerator generator, String modID) {
+		this.generator = generator;
 		this.modID = modID;
 	}
 
 	@Override
-	public void run(CachedOutput pOutput) throws IOException {
+	public void run(HashCache cache) throws IOException {
 		Set<ResourceLocation> registeredAdvancements = Sets.newHashSet();
+		Path path = generator.getOutputFolder();
 		Consumer<AdvancementBuilder> consumer = advancementBuilder -> {
 			if (!registeredAdvancements.add(advancementBuilder.id)) {
 				throw new IllegalStateException("Duplicate advancement " + advancementBuilder.id);
 			}
-			Path path = this.pathProvider.json(advancementBuilder.id);
+			Path filePath = path.resolve("data/" + advancementBuilder.id.getNamespace() + "/advancements/" + advancementBuilder.id.getPath() + ".json");
 
 			try {
-				DataProvider.saveStable(pOutput, advancementBuilder.serializeToJson(), path);
+				DataProvider.save(GSON, cache, advancementBuilder.serializeToJson(), filePath);
 			} catch (IOException ioexception) {
-				Voltaic.LOGGER.error("Couldn't save advancement {}", path, ioexception);
+				Voltaic.LOGGER.error("Couldn't save advancement {}", filePath, ioexception);
 			}
 		};
 

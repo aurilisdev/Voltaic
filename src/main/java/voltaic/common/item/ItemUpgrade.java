@@ -14,6 +14,7 @@ import voltaic.prefab.utilities.NBTUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -41,14 +42,14 @@ public class ItemUpgrade extends ItemVoltaic {
 		if (subtype == SubtypeItemUpgrade.advancedcapacity || subtype == SubtypeItemUpgrade.basiccapacity) {
 			double capacityMultiplier = subtype == SubtypeItemUpgrade.advancedcapacity ? 2.25 : 1.5;
 			double voltageMultiplier = subtype == SubtypeItemUpgrade.advancedcapacity ? 4 : 2;
-			tooltip.add(VoltaicTextUtils.tooltip("info.upgradecapacity", Component.literal(capacityMultiplier + "x").withStyle(ChatFormatting.GREEN)).withStyle(ChatFormatting.GRAY));
-			tooltip.add(VoltaicTextUtils.tooltip("info.upgradeenergytransfer", Component.literal(capacityMultiplier + "x").withStyle(ChatFormatting.GREEN)).withStyle(ChatFormatting.GRAY));
-			tooltip.add(VoltaicTextUtils.tooltip("info.upgradevoltage", Component.literal(voltageMultiplier + "x").withStyle(ChatFormatting.GREEN)).withStyle(ChatFormatting.GRAY));
+			tooltip.add(VoltaicTextUtils.tooltip("info.upgradecapacity", new TextComponent(capacityMultiplier + "x").withStyle(ChatFormatting.GREEN)).withStyle(ChatFormatting.GRAY));
+			tooltip.add(VoltaicTextUtils.tooltip("info.upgradeenergytransfer", new TextComponent(capacityMultiplier + "x").withStyle(ChatFormatting.GREEN)).withStyle(ChatFormatting.GRAY));
+			tooltip.add(VoltaicTextUtils.tooltip("info.upgradevoltage", new TextComponent(voltageMultiplier + "x").withStyle(ChatFormatting.GREEN)).withStyle(ChatFormatting.GRAY));
 		}
 		if (subtype == SubtypeItemUpgrade.advancedspeed || subtype == SubtypeItemUpgrade.basicspeed) {
 			double speedMultiplier = subtype == SubtypeItemUpgrade.advancedspeed ? 2.25 : 1.5;
-			tooltip.add(VoltaicTextUtils.tooltip("info.upgradespeed", Component.literal(speedMultiplier + "x").withStyle(ChatFormatting.GREEN)).withStyle(ChatFormatting.GRAY));
-			tooltip.add(VoltaicTextUtils.tooltip("info.upgradeenergyusage", Component.literal(speedMultiplier + "x").withStyle(ChatFormatting.RED)).withStyle(ChatFormatting.GRAY));
+			tooltip.add(VoltaicTextUtils.tooltip("info.upgradespeed", new TextComponent(speedMultiplier + "x").withStyle(ChatFormatting.GREEN)).withStyle(ChatFormatting.GRAY));
+			tooltip.add(VoltaicTextUtils.tooltip("info.upgradeenergyusage", new TextComponent(speedMultiplier + "x").withStyle(ChatFormatting.RED)).withStyle(ChatFormatting.GRAY));
 		}
 		if (subtype == SubtypeItemUpgrade.itemoutput || subtype == SubtypeItemUpgrade.iteminput) {
 			if (subtype == SubtypeItemUpgrade.itemoutput) {
@@ -64,7 +65,7 @@ public class ItemUpgrade extends ItemVoltaic {
 				tooltip.add(VoltaicTextUtils.tooltip("info.dirlist").withStyle(ChatFormatting.BLUE));
 				for (int i = 0; i < dirs.size(); i++) {
 					Direction dir = dirs.get(i);
-					tooltip.add(Component.literal(i + 1 + ". " + StringUtils.capitalize(dir.getName())).withStyle(ChatFormatting.BLUE));
+					tooltip.add(new TextComponent(i + 1 + ". " + StringUtils.capitalize(dir.getName())).withStyle(ChatFormatting.BLUE));
 				}
 				tooltip.add(VoltaicTextUtils.tooltip("info.cleardirs").withStyle(ChatFormatting.GRAY));
 			} else {
@@ -74,7 +75,7 @@ public class ItemUpgrade extends ItemVoltaic {
 		}
 		if (subtype == SubtypeItemUpgrade.experience) {
 			double storedXp = stack.getOrCreateTag().getDouble(NBTUtils.XP);
-			tooltip.add(VoltaicTextUtils.tooltip("info.xpstored", Component.literal(FORMATTER.format(storedXp)).withStyle(ChatFormatting.LIGHT_PURPLE)).withStyle(ChatFormatting.GRAY));
+			tooltip.add(VoltaicTextUtils.tooltip("info.xpstored", new TextComponent(FORMATTER.format(storedXp)).withStyle(ChatFormatting.LIGHT_PURPLE)).withStyle(ChatFormatting.GRAY));
 			tooltip.add(VoltaicTextUtils.tooltip("info.xpusage").withStyle(ChatFormatting.GRAY));
 
 		}

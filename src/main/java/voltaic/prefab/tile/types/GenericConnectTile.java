@@ -13,7 +13,8 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.client.model.data.ModelData;
+import net.minecraftforge.client.model.data.IModelData;
+import net.minecraftforge.client.model.data.ModelDataMap;
 
 public abstract class GenericConnectTile extends GenericTile implements IConnectTile {
 
@@ -221,8 +222,8 @@ public abstract class GenericConnectTile extends GenericTile implements IConnect
     }
 
     @Override
-    public @NotNull ModelData getModelData() {
-        return ModelData.builder().with(ModelPropertyConnections.INSTANCE, () -> readConnections()).build();
+    public @NotNull IModelData getModelData() {
+        return new ModelDataMap.Builder().withInitial(ModelPropertyConnections.INSTANCE, () -> readConnections()).build();
     }
 
 

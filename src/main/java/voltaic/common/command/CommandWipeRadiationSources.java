@@ -5,7 +5,7 @@ import voltaic.Voltaic;
 import voltaic.api.radiation.RadiationSystem;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 
 public class CommandWipeRadiationSources {
 
@@ -14,7 +14,7 @@ public class CommandWipeRadiationSources {
         dispatcher.register(Commands.literal(Voltaic.ID).requires(source -> source.hasPermission(3)).then(Commands.literal("wiperadiationsources").executes(source -> {
 
             RadiationSystem.wipeAllSources(source.getSource().getLevel());
-            source.getSource().sendSuccess(Component.literal("wiped"), true);
+            source.getSource().sendSuccess(new TextComponent("wiped"), true);
             return 1;
 
         })));

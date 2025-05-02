@@ -17,13 +17,14 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.ForgeRegistryEntry;
 import voltaic.api.codec.StreamCodec;
 import voltaic.common.recipe.recipeutils.CountableIngredient;
 import voltaic.common.recipe.recipeutils.FluidIngredient;
 import voltaic.common.recipe.recipeutils.ProbableFluid;
 import voltaic.common.recipe.recipeutils.ProbableItem;
 
-public abstract class VoltaicRecipeSerializer<T extends VoltaicRecipe> implements RecipeSerializer<T> {
+public abstract class VoltaicRecipeSerializer<T extends VoltaicRecipe> extends ForgeRegistryEntry<RecipeSerializer<?>> implements RecipeSerializer<T> {
 	
 	private final StreamCodec<FriendlyByteBuf, T> streamCodec;
 	

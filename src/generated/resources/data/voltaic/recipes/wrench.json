@@ -1,25 +1,25 @@
 {
   "type": "minecraft:crafting_shaped",
-  "conditions": [
-    {
-      "type": "forge:not",
-      "value": {
-        "type": "forge:mod_loaded",
-        "modid": "electrodynamics"
-      }
-    }
+  "pattern": [
+    " S ",
+    " SS",
+    "S  "
   ],
   "key": {
     "S": {
       "tag": "forge:ingots/iron"
     }
   },
-  "pattern": [
-    " S ",
-    " SS",
-    "S  "
-  ],
   "result": {
     "item": "voltaic:wrench"
-  }
+  },
+  "conditions": [
+    {
+      "value": {
+        "modid": "electrodynamics",
+        "type": "forge:mod_loaded"
+      },
+      "type": "forge:not"
+    }
+  ]
 }

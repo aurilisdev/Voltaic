@@ -13,7 +13,7 @@ import net.minecraftforge.client.model.generators.ItemModelBuilder;
 import net.minecraftforge.client.model.generators.ItemModelProvider;
 import net.minecraftforge.client.model.generators.ModelFile;
 import net.minecraftforge.client.model.generators.ModelFile.ExistingModelFile;
-import net.minecraftforge.client.model.generators.loaders.DynamicFluidContainerModelBuilder;
+import net.minecraftforge.client.model.generators.loaders.DynamicBucketModelBuilder;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
@@ -62,12 +62,12 @@ public abstract class BaseItemModelsProvider extends ItemModelProvider {
 		return builder;
 	}
 
-	public DynamicFluidContainerModelBuilder<ItemModelBuilder> getBucketModel(RegistryObject<? extends Item> item, Parent parent) {
+	public DynamicBucketModelBuilder<ItemModelBuilder> getBucketModel(RegistryObject<? extends Item> item, Parent parent) {
 		return getBucketModel(name(item), parent);
 	}
 
-	public DynamicFluidContainerModelBuilder<ItemModelBuilder> getBucketModel(String name, Parent parent) {
-		return withExistingParent(name, parent.loc).customLoader(DynamicFluidContainerModelBuilder::begin);
+	public DynamicBucketModelBuilder<ItemModelBuilder> getBucketModel(String name, Parent parent) {
+		return withExistingParent(name, parent.loc).customLoader(DynamicBucketModelBuilder::begin);
 	}
 
 	public ItemModelBuilder simpleBlockItem(Block block, ModelFile model) {

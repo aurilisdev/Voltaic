@@ -7,10 +7,11 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import voltaic.prefab.screen.component.utils.AbstractScreenComponent;
 import voltaic.prefab.utilities.math.Color;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 
 public class ScreenComponentSimpleLabel extends AbstractScreenComponent {
 
-	private Supplier<Component> text = Component::empty;
+	private Supplier<Component> text = () -> TextComponent.EMPTY;
 	public Color color = Color.WHITE;
 
 	public ScreenComponentSimpleLabel(int x, int y, int height, Color color, Component text) {

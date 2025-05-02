@@ -50,7 +50,7 @@ public class PropertyFluidTank extends FluidTank {
 
 	@Override
 	public String toString() {
-		return "Fluid: " + getFluid().getFluid().getFluidType().getDescriptionId() + "\nAmount: " + getFluidAmount() + "\nCapacity: " + getCapacity();
+		return "Fluid: " + getFluid().getTranslationKey() + "\nAmount: " + getFluidAmount() + "\nCapacity: " + getCapacity();
 	}
 
 	@Override

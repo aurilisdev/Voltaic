@@ -18,18 +18,19 @@ import voltaic.prefab.utilities.math.Color;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
-import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.fluids.capability.IFluidHandlerItem;
+import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 
 @OnlyIn(Dist.CLIENT)
@@ -59,8 +60,8 @@ public class ScreenComponentFluidGauge extends AbstractScreenComponentGauge {
 		if (tank != null) {
 			FluidStack fluidStack = tank.getFluid();
 			if (!fluidStack.isEmpty()) {
-				IClientFluidTypeExtensions extensions = IClientFluidTypeExtensions.of(fluidStack.getFluid());
-				RenderingUtils.setShaderColor(new Color(extensions.getTintColor(fluidStack)));
+				FluidAttributes extensions = fluidStack.getFluid().getAttributes();
+				RenderingUtils.setShaderColor(new Color(extensions.getColor(fluidStack)));
 			}
 		}
 	}
@@ -70,7 +71,7 @@ public class ScreenComponentFluidGauge extends AbstractScreenComponentGauge {
 		IFluidTank tank = fluidInfoHandler.getTank();
 		if (tank != null) {
 			FluidStack fluidStack = tank.getFluid();
-			IClientFluidTypeExtensions extensions = IClientFluidTypeExtensions.of(fluidStack.getFluid());
+			FluidAttributes extensions = fluidStack.getFluid().getAttributes();
 			return extensions.getStillTexture();
 		}
 		return texture.getLocation();
@@ -83,10 +84,10 @@ public class ScreenComponentFluidGauge extends AbstractScreenComponentGauge {
 		if (tank != null) {
 			FluidStack fluidStack = tank.getFluid();
 			if (fluidStack.getAmount() > 0) {
-				tooltips.add(Component.translatable(fluidStack.getTranslationKey()).getVisualOrderText());
+				tooltips.add(new TranslatableComponent(fluidStack.getTranslationKey()).getVisualOrderText());
 				tooltips.add(VoltaicTextUtils.ratio(ChatFormatter.formatFluidMilibuckets(tank.getFluidAmount()), ChatFormatter.formatFluidMilibuckets(tank.getCapacity())).withStyle(ChatFormatting.GRAY).getVisualOrderText());
 			} else {
-				tooltips.add(VoltaicTextUtils.ratio(Component.literal("0"), ChatFormatter.formatFluidMilibuckets(tank.getCapacity())).withStyle(ChatFormatting.GRAY).getVisualOrderText());
+				tooltips.add(VoltaicTextUtils.ratio(new TextComponent("0"), ChatFormatter.formatFluidMilibuckets(tank.getCapacity())).withStyle(ChatFormatting.GRAY).getVisualOrderText());
 			}
 		}
 		return tooltips;
@@ -132,7 +133,7 @@ public class ScreenComponentFluidGauge extends AbstractScreenComponentGauge {
 
 		ItemStack stack = screen.getMenu().getCarried();
 
-		IFluidHandlerItem handler = stack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).resolve().orElse(CapabilityUtils.EMPTY_FLUID_ITEM);
+		IFluidHandlerItem handler = stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).resolve().orElse(CapabilityUtils.EMPTY_FLUID_ITEM);
 
 		if(handler == CapabilityUtils.EMPTY_FLUID_ITEM) {
 			return;

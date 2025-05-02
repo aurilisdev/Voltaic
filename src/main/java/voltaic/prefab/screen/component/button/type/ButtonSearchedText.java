@@ -8,13 +8,14 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.util.FormattedCharSequence;
 
 //height was 20
 public class ButtonSearchedText extends ButtonSpecificPage {
 
-	private Component chapter = Component.empty();
-	private FormattedText line = Component.empty();
+	private Component chapter = TextComponent.EMPTY;
+	private FormattedText line = TextComponent.EMPTY;
 
 	public int specifiedPage;
 

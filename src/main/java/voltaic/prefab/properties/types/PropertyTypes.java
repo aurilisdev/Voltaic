@@ -7,11 +7,11 @@ import com.mojang.serialization.Codec;
 
 import voltaic.api.codec.StreamCodec;
 import voltaic.prefab.utilities.BlockEntityUtils;
+import voltaic.prefab.utilities.CodecUtils;
 import voltaic.prefab.utilities.object.Location;
 import voltaic.prefab.utilities.object.TransferPack;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.UUIDUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
@@ -152,7 +152,7 @@ public class PropertyTypes {
             //
             StreamCodec.UUID,
             //
-            UUIDUtil.CODEC
+            CodecUtils.UUID_CODEC
             //
     );
 
@@ -281,7 +281,7 @@ public class PropertyTypes {
             //
             StreamCodec.VEC3,
             //
-            Vec3.CODEC
+            CodecUtils.VEC3_CODEC
             //
     );
 

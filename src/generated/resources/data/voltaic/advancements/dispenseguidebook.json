@@ -1,8 +1,13 @@
 {
+  "rewards": {
+    "loot": [
+      "minecraft:advancement_reward/electroguidebook"
+    ]
+  },
   "criteria": {
     "SpawnIn": {
-      "conditions": {},
-      "trigger": "minecraft:tick"
+      "trigger": "minecraft:tick",
+      "conditions": {}
     }
   },
   "requirements": [
@@ -10,10 +15,9 @@
       "SpawnIn"
     ]
   ],
-  "rewards": {
-    "loot": [
-      "minecraft:advancement_reward/electroguidebook"
-    ]
-  },
-  "sends_telemetry_event": false
+  "conditions": [
+    {
+      "type": "voltaic:config"
+    }
+  ]
 }

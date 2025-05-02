@@ -5,14 +5,13 @@ import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.Block;
 
 public class DistanceSound extends AbstractTickableSoundInstance {
 	private Block block;
 
 	public DistanceSound(SoundEvent soundIn, SoundSource categoryIn, float volumeIn, float pitchIn, BlockPos pos) {
-		super(soundIn, categoryIn, RandomSource.create());
+		super(soundIn, categoryIn);
 		volume = volumeIn;
 		pitch = pitchIn;
 		x = pos.getX();

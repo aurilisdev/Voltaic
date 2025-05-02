@@ -7,6 +7,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
 
@@ -42,7 +43,7 @@ public class VoltaicTextUtils {
 	}
 
 	public static MutableComponent jeiTranslated(String key, Object... additional) {
-		return Component.translatable(JEI_BASE + "." + key, additional);
+		return new TranslatableComponent(JEI_BASE + "." + key, additional);
 	}
 
 	public static MutableComponent jeiItemTranslated(String key, Object... additional) {
@@ -78,7 +79,7 @@ public class VoltaicTextUtils {
 	}
 
 	public static MutableComponent translated(String base, String key, Object... additional) {
-		return Component.translatable(base + "." + Voltaic.ID + "." + key, additional);
+		return new TranslatableComponent(base + "." + Voltaic.ID + "." + key, additional);
 	}
 
 	public static boolean guiExists(String key) {

@@ -35,13 +35,13 @@ public class ItemVoltaicArmor extends ArmorItem {
 	}
 
 	@Override
-	protected boolean allowedIn(CreativeModeTab category) {
+	protected boolean allowdedIn(CreativeModeTab category) {
 		return creativeTab != null && creativeTab.get() == category;
 	}
 
 	@Override
 	public void fillItemCategory(CreativeModeTab category, NonNullList<ItemStack> items) {
-		if (this.allowedIn(category)) {
+		if (this.allowdedIn(category)) {
 			items.add(new ItemStack(this));
 		}
 	}

@@ -225,12 +225,12 @@ public interface StreamCodec<A, T> {
 
 		@Override
 		public void encode(FriendlyByteBuf buffer, Block value) {
-			buffer.writeId(Block.BLOCK_STATE_REGISTRY, value.defaultBlockState());
+			buffer.writeRegistryId(value);
 		}
 
 		@Override
 		public Block decode(FriendlyByteBuf buffer) {
-			return buffer.readById(Block.BLOCK_STATE_REGISTRY).getBlock();
+			return buffer.readRegistryId();
 		}
 
 	};
@@ -239,12 +239,12 @@ public interface StreamCodec<A, T> {
 
 		@Override
 		public void encode(FriendlyByteBuf buffer, BlockState value) {
-			buffer.writeId(Block.BLOCK_STATE_REGISTRY, value);
+			buffer.writeInt(Block.BLOCK_STATE_REGISTRY.getId(value));
 		}
 
 		@Override
 		public BlockState decode(FriendlyByteBuf buffer) {
-			return buffer.readById(Block.BLOCK_STATE_REGISTRY);
+			return Block.BLOCK_STATE_REGISTRY.byId(buffer.readInt());
 		}
 
 	};

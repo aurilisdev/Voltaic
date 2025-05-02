@@ -19,6 +19,7 @@ import voltaic.registers.VoltaicCapabilities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
@@ -37,10 +38,12 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.common.util.TriPredicate;
+import net.minecraftforge.energy.CapabilityEnergy;
+import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
+import net.minecraftforge.items.CapabilityItemHandler;
 
 public abstract class GenericTile extends BlockEntity implements Nameable, IPropertyHolderTile {
 
@@ -171,7 +174,7 @@ public abstract class GenericTile extends BlockEntity implements Nameable, IProp
 
 	@Override
 	public net.minecraft.network.chat.@NotNull Component getName() {
-		return hasComponent(IComponentType.Name) ? this.<ComponentName>getComponent(IComponentType.Name).getName() : net.minecraft.network.chat.Component.literal(Voltaic.ID + ".default.tile.name");
+		return hasComponent(IComponentType.Name) ? this.<ComponentName>getComponent(IComponentType.Name).getName() : new TextComponent(Voltaic.ID + ".default.tile.name");
 	}
 
 	/* Since you have to register it anyway, might as well make it somewhat faster */
@@ -182,13 +185,13 @@ public abstract class GenericTile extends BlockEntity implements Nameable, IProp
 		if (cap == VoltaicCapabilities.CAPABILITY_ELECTRODYNAMIC_BLOCK && components[IComponentType.Electrodynamic.ordinal()] != null) {
 			return components[IComponentType.Electrodynamic.ordinal()].getCapability(cap, side, null);
 		}
-		if (cap == ForgeCapabilities.FLUID_HANDLER && components[IComponentType.FluidHandler.ordinal()] != null) {
+		if (cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY && components[IComponentType.FluidHandler.ordinal()] != null) {
 			return components[IComponentType.FluidHandler.ordinal()].getCapability(cap, side, null);
 		}
-		if (cap == ForgeCapabilities.ITEM_HANDLER && components[IComponentType.Inventory.ordinal()] != null) {
+		if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY && components[IComponentType.Inventory.ordinal()] != null) {
 			return components[IComponentType.Inventory.ordinal()].getCapability(cap, side, null);
 		}
-		if (cap == ForgeCapabilities.ENERGY && components[IComponentType.ForgeEnergy.ordinal()] != null) {
+		if (cap == CapabilityEnergy.ENERGY && components[IComponentType.ForgeEnergy.ordinal()] != null) {
 			return components[IComponentType.ForgeEnergy.ordinal()].getCapability(cap, side, null);
 		}
 		return LazyOptional.empty();
@@ -332,9 +335,7 @@ public abstract class GenericTile extends BlockEntity implements Nameable, IProp
 
 	public void updateCarriedItemInContainer(ItemStack stack, UUID playerId) {
 		Player player = getLevel().getPlayerByUUID(playerId);
-		if (player.hasContainerOpen()) {
-			player.containerMenu.setCarried(stack);
-		}
+		player.containerMenu.setCarried(stack);
 	}
 
 	protected static TriPredicate<Integer, ItemStack, ComponentInventory> machineValidator() {
@@ -342,7 +343,7 @@ public abstract class GenericTile extends BlockEntity implements Nameable, IProp
 		//
 		x < i.getOutputStartIndex() ||
 		//
-				x >= i.getInputBucketStartIndex() && x < i.getUpgradeSlotStartIndex() && y.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM) != null ||
+				x >= i.getInputBucketStartIndex() && x < i.getUpgradeSlotStartIndex() && y.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY) != null ||
 				//
 				x >= i.getUpgradeSlotStartIndex() && y.getItem() instanceof ItemUpgrade upgrade && i.isUpgradeValid(upgrade.subtype);
 		//

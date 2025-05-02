@@ -2,13 +2,13 @@ package voltaic.datagen.utils.client.model;
 
 import com.google.gson.JsonObject;
 
-import net.minecraftforge.client.model.generators.IGeneratedBlockState;
+import net.minecraftforge.client.model.generators.IGeneratedBlockstate;
 import net.minecraftforge.client.model.generators.ModelFile;
 import voltaic.Voltaic;
 import voltaic.client.model.block.bakerytypes.CableModelLoader;
 import voltaic.common.block.connect.EnumConnectType;
 
-public class GeneratedBlockStateCableModel implements IGeneratedBlockState {
+public class GeneratedBlockStateCableModel implements IGeneratedBlockstate {
 
 	private final ModelFile none;
 	private final ModelFile wire;

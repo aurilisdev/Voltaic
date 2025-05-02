@@ -3,6 +3,7 @@ package voltaic.client.guidebook.utils.pagedata.text;
 import voltaic.client.guidebook.utils.pagedata.AbstractWrapperObject;
 import voltaic.prefab.utilities.math.Color;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 
 /**
  * A simple wrapper class that contains a segment of text along with basic formatting data for it
@@ -12,7 +13,7 @@ import net.minecraft.network.chat.Component;
  */
 public class TextWrapperObject extends AbstractWrapperObject<TextWrapperObject> {
 
-	public static final TextWrapperObject BLANK_LINE = new TextWrapperObject(Component.empty());
+	public static final TextWrapperObject BLANK_LINE = new TextWrapperObject(TextComponent.EMPTY);
 
 	public static final Color DEFAULT_COLOR = new Color(4210752);
 

@@ -18,13 +18,13 @@ public class BlockItemVoltaic extends BlockItem {
 	}
 	
 	@Override
-	protected boolean allowedIn(CreativeModeTab category) {
+	protected boolean allowdedIn(CreativeModeTab category) {
 		return creativeTab != null && category == creativeTab.get();
 	}
 	
 	@Override
 	public void fillItemCategory(CreativeModeTab group, NonNullList<ItemStack> items) {
-		if(allowedIn(group)) {
+		if(allowdedIn(group)) {
 			this.getBlock().fillItemCategory(group, items);
 		}
 	}

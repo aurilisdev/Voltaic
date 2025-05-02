@@ -3,7 +3,6 @@ package voltaic.prefab.sound;
 import voltaic.prefab.utilities.WorldUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
-import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
@@ -22,7 +21,7 @@ public class TickableSoundTile<T extends BlockEntity & ITickableSound> extends A
     }
 
     public TickableSoundTile(SoundEvent event, SoundSource source, T tile, float volume, float pitch, boolean repeat) {
-        super(event, source, SoundInstance.createUnseededRandom());
+        super(event, source);
         this.tile = tile;
         this.volume = volume;
         this.pitch = pitch;
