@@ -100,6 +100,7 @@ public class ArrayProperty<T> extends AbstractProperty<T[], ArrayPropertyType<T,
         return shouldUpdate;
     }
 
+    @Override
     public void loadFromTag(CompoundTag tag) {
         try {
             T[] data = (T[]) getType().readFromTag(new IPropertyType.TagReader(this, tag));

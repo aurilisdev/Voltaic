@@ -41,7 +41,7 @@ public class ScreenHandlerGuidebook implements IGuiContainerHandler<ScreenGuideb
 		return getJeiLookup(ScreenGuidebook.RIGHT_X_SHIFT - 8, (int) mouseX, (int) mouseY, refX, refY, xAxis, yAxis, guiWidth, guiHeight, screen.getNextPage(), screen);
 	}
 
-	private Optional<IClickableIngredient<?>> getJeiLookup(int xPageShift, int mouseX, int mouseY, int refX, int refY, int xAxis, int yAxis, int guiWidth, int guiHeight, Page page, ScreenGuidebook screen) {
+	private static Optional<IClickableIngredient<?>> getJeiLookup(int xPageShift, int mouseX, int mouseY, int refX, int refY, int xAxis, int yAxis, int guiWidth, int guiHeight, Page page, ScreenGuidebook screen) {
 
 		int textWidth = 0;
 		int xShift = 0;
@@ -93,7 +93,7 @@ public class ScreenHandlerGuidebook implements IGuiContainerHandler<ScreenGuideb
 		return Optional.empty();
 	}
 
-	private Optional<IClickableIngredient<?>> handleLookup(Object lookup, Rect2i area) {
+	private static Optional<IClickableIngredient<?>> handleLookup(Object lookup, Rect2i area) {
 		if (lookup instanceof ItemStack stack) {
 			return Optional.of(new ClickableItemIngredient(area, stack));
 		}

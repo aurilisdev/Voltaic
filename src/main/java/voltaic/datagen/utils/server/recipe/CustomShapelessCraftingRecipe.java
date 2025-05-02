@@ -104,7 +104,7 @@ public class CustomShapelessCraftingRecipe extends ShapelessRecipeBuilder.Result
 			consumer.accept(new CustomShapelessCraftingRecipe(new ResourceLocation(parent, name), item, count, ingredients, recipeConditions));
 		}
 
-		private TagKey<Item> itemTag(ResourceLocation tag) {
+		private static TagKey<Item> itemTag(ResourceLocation tag) {
 			return TagKey.create(Registries.ITEM, tag);
 		}
 

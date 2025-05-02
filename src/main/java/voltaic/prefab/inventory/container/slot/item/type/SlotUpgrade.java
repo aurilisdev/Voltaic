@@ -25,7 +25,7 @@ public class SlotUpgrade extends SlotGeneric implements IUpgradeSlot {
 
 	@Override
 	public boolean mayPlace(ItemStack stack) {
-		return stack.getItem() instanceof ItemUpgrade upgrade && upgrades.contains(upgrade);
+		return stack.getItem() instanceof ItemUpgrade upgrade && upgrades.contains(upgrade.subtype);
 	}
 
 	@Override

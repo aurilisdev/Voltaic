@@ -85,9 +85,8 @@ public class CapabilityRadiationRecipient implements IRadiationRecipient, ICapab
             	recieved += rads;
                 recievedStrength += strength;
                 return;
-            } else {
-                rads = rads * VoltaicConstants.IODINE_RAD_REDUCTION;
             }
+	    rads = rads * VoltaicConstants.IODINE_RAD_REDUCTION;
         }
 
         int count = 0;

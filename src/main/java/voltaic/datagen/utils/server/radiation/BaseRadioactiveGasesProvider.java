@@ -39,7 +39,6 @@ public abstract class BaseRadioactiveGasesProvider implements DataProvider {
 
     public abstract void getRadioactiveItems(JsonObject json);
 
-    @SuppressWarnings("unused")
     public void addItem(Gas gas, double radiationAmount, double radiationStrength, JsonObject json) {
         JsonObject data = new JsonObject();
         json.add(VoltaicRegistries.gasRegistry().getKey(gas).toString(), RadioactiveObject.CODEC.encode(new RadioactiveObject(radiationStrength, radiationAmount), JsonOps.INSTANCE, data).result().get());

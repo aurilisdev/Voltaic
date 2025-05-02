@@ -1,24 +1,23 @@
 package voltaic.api.radiation;
 
-import voltaic.Voltaic;
-import voltaic.api.radiation.util.BlockPosVolume;
-import voltaic.api.radiation.util.IRadiationManager;
-import voltaic.api.radiation.util.IRadiationRecipient;
-import voltaic.prefab.utilities.CapabilityUtils;
-import voltaic.registers.VoltaicCapabilities;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.event.TickEvent.LevelTickEvent;
 import net.minecraftforge.event.TickEvent.Phase;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingTickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
+import voltaic.Voltaic;
+import voltaic.api.radiation.util.BlockPosVolume;
+import voltaic.api.radiation.util.IRadiationManager;
+import voltaic.api.radiation.util.IRadiationRecipient;
+import voltaic.prefab.utilities.CapabilityUtils;
+import voltaic.registers.VoltaicCapabilities;
 
 @EventBusSubscriber(modid = Voltaic.ID, bus = EventBusSubscriber.Bus.FORGE)
 public class RadiationSystem {
@@ -50,14 +49,14 @@ public class RadiationSystem {
 	@SubscribeEvent
 	public static void entityTick(LivingTickEvent event) {
 		
-		if(event.getEntity().level().isClientSide() || !(event.getEntity() instanceof LivingEntity)) {
+		if(event.getEntity().level().isClientSide() || event.getEntity() == null) {
 			return;
 		}
 		IRadiationRecipient capability = event.getEntity().getCapability(VoltaicCapabilities.CAPABILITY_RADIATIONRECIPIENT).orElse(CapabilityUtils.EMPTY_RADIATION_REPIPIENT);
 		if(capability == CapabilityUtils.EMPTY_RADIATION_REPIPIENT) {
 			return;
 		}
-		capability.tick((LivingEntity) event.getEntity());
+		capability.tick(event.getEntity());
 
 	}
 

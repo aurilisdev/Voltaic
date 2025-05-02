@@ -166,14 +166,13 @@ public interface StreamCodec<A, T> {
 			byte b0 = buffer.readByte();
 			if (b0 == 0) {
 				return null;
-			} else {
-				buffer.readerIndex(i);
+			}
+			buffer.readerIndex(i);
 
-				try {
-					return NbtIo.read(new ByteBufInputStream(buffer), new NbtAccounter(2097152L));
-				} catch (IOException ioexception) {
-					throw new EncoderException(ioexception);
-				}
+			try {
+				return NbtIo.read(new ByteBufInputStream(buffer), new NbtAccounter(2097152L));
+			} catch (IOException ioexception) {
+				throw new EncoderException(ioexception);
 			}
 		}
 

@@ -83,9 +83,8 @@ public class CountableIngredient extends Ingredient {
 		public CountableIngredient decode(FriendlyByteBuf buffer) {
 			if(buffer.readBoolean()) {
 				return new CountableIngredient(ItemTags.create(StreamCodec.RESOURCE_LOCATION.decode(buffer)), StreamCodec.INT.decode(buffer));
-			} else {
-				return new CountableIngredient(StreamCodec.ITEM_STACK.decode(buffer));
 			}
+			return new CountableIngredient(StreamCodec.ITEM_STACK.decode(buffer));
 		}
 
 	};

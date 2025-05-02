@@ -282,9 +282,10 @@ public class ListProperty<T> extends AbstractProperty<List<T>, ListPropertyType<
         return shouldUpdate;
     }
 
+    @Override
     public void loadFromTag(CompoundTag tag) {
         try {
-            List<T> data = (List<T>) getType().readFromTag(new IPropertyType.TagReader(this, tag));
+            List<T> data = getType().readFromTag(new IPropertyType.TagReader(this, tag));
             if (data != null) {
                 value = data;
                 onLoadedFromTag(this, value);

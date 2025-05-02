@@ -213,7 +213,7 @@ public class ScreenGuidebook extends GenericScreen<ContainerGuidebook> {
 		addComponent(down);
 	}
 
-	private void sortModules() {
+	private static void sortModules() {
 		if(GUIDEBOOK_MODULES.isEmpty()) {
 			return;
 		}
@@ -587,7 +587,7 @@ public class ScreenGuidebook extends GenericScreen<ContainerGuidebook> {
 
 	}
 
-	private void renderPageBackground(GuiGraphics graphics, int xShift, int guiWidth, int guiHeight, Page page) {
+	private static void renderPageBackground(GuiGraphics graphics, int xShift, int guiWidth, int guiHeight, Page page) {
 
 		for (GraphicWrapper graphic : page.graphics) {
 			graphic.graphic().render(graphics, graphic.x(), graphic.y(), xShift, guiWidth, guiHeight, page);
@@ -734,7 +734,7 @@ public class ScreenGuidebook extends GenericScreen<ContainerGuidebook> {
 		setPageNumber(1);
 	}
 
-	private void movePage(int number) {
+	private static void movePage(int number) {
 		currPageNumber += number;
 		currPageNumber = Mth.clamp(currPageNumber, 0, PAGES.size() - 4);
 	}
@@ -746,7 +746,7 @@ public class ScreenGuidebook extends GenericScreen<ContainerGuidebook> {
 		currPageNumber = number;
 	}
 
-	private void updatePageArrowVis() {
+	private static void updatePageArrowVis() {
 		forward.setVisible(currPageNumber < PAGES.size() - 4);
 		back.setVisible(currPageNumber > GUIDEBOOK_STARTING_PAGE && currPageNumber < PAGES.size() - 2);
 		home.setVisible(currPageNumber != 0);
@@ -993,7 +993,7 @@ public class ScreenGuidebook extends GenericScreen<ContainerGuidebook> {
 
 	}
 
-	private void resetSearchButtons() {
+	private static void resetSearchButtons() {
 		for (ButtonSearchedText button : SEARCH_BUTTONS) {
 			button.setLine(Component.empty());
 			button.setChapter(Component.empty());

@@ -337,7 +337,7 @@ public class VoltaicCraftingTableRecipes extends AbstractRecipeGenerator {
 
     }
 
-    private void addGear(Consumer<FinishedRecipe> output) {
+    private static void addGear(Consumer<FinishedRecipe> output) {
 
         CustomShapelessCraftingRecipe.start(VoltaicItems.GUIDEBOOK.get(), 1)
                 //

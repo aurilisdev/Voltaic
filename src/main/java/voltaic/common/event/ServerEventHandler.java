@@ -47,7 +47,7 @@ public class ServerEventHandler {
 	@SubscribeEvent
 	public static void registerEntityCaps(AttachCapabilitiesEvent<Entity> event) {
 		Entity entity = event.getObject();
-		if(entity instanceof LivingEntity living && entity.getCapability(VoltaicCapabilities.CAPABILITY_RADIATIONRECIPIENT).orElse(CapabilityUtils.EMPTY_RADIATION_REPIPIENT) == CapabilityUtils.EMPTY_RADIATION_REPIPIENT) {
+		if(entity instanceof LivingEntity && entity.getCapability(VoltaicCapabilities.CAPABILITY_RADIATIONRECIPIENT).orElse(CapabilityUtils.EMPTY_RADIATION_REPIPIENT) == CapabilityUtils.EMPTY_RADIATION_REPIPIENT) {
 			event.addCapability(Voltaic.rl("radiationrecipient"), new CapabilityRadiationRecipient());
 		}
 	}

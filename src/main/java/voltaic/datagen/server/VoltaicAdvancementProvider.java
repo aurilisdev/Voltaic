@@ -18,6 +18,7 @@ public class VoltaicAdvancementProvider extends BaseAdvancementProvider {
         super(Voltaic.ID);
     }
 
+    @Override
     public void generate(Provider registries, Consumer<Advancement> saver, ExistingFileHelper existingFileHelper) {
 
         advancement("dispenseguidebook")
