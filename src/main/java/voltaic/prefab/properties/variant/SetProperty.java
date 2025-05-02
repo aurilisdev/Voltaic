@@ -172,7 +172,7 @@ public class SetProperty<T> extends AbstractProperty<HashSet<T>, SetPropertyType
     @Override
     public void loadFromTag(CompoundTag tag, HolderLookup.Provider registries) {
         try {
-            HashSet<T> data = (HashSet<T>) getType().readFromTag(new IPropertyType.TagReader(this, tag, registries));
+            HashSet<T> data = getType().readFromTag(new IPropertyType.TagReader(this, tag, registries));
             if (data != null) {
                 value = data;
                 onLoadedFromTag(this, value);

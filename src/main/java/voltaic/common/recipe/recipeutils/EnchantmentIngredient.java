@@ -104,23 +104,22 @@ public class EnchantmentIngredient implements ICustomIngredient {
             return true;
 
 
-        } else {
-            for (TagKey<Enchantment> enchantment : enchantments) {
-                if (EnchantmentHelper.hasTag(stack, enchantment)) {
-                    return true;
-                }
-
-                if (!stack.has(DataComponents.STORED_ENCHANTMENTS)) {
-                    continue;
-                }
-
-                for (var enchantmentHolder : stack.get(DataComponents.STORED_ENCHANTMENTS).keySet()) {
-                    if (enchantmentHolder.is(enchantment)) {
-                        return true;
-                    }
-                }
-            }
         }
+	for (TagKey<Enchantment> enchantment : enchantments) {
+	    if (EnchantmentHelper.hasTag(stack, enchantment)) {
+	        return true;
+	    }
+
+	    if (!stack.has(DataComponents.STORED_ENCHANTMENTS)) {
+	        continue;
+	    }
+
+	    for (var enchantmentHolder : stack.get(DataComponents.STORED_ENCHANTMENTS).keySet()) {
+	        if (enchantmentHolder.is(enchantment)) {
+	            return true;
+	        }
+	    }
+	}
 
 
         return false;

@@ -37,10 +37,9 @@ public class CustomAdvancementProvider implements DataProvider {
             Consumer<AdvancementHolder> consumer = holder -> {
                 if (!set.add(holder.id())) {
                     throw new IllegalStateException("Duplicate advancement " + holder.id());
-                } else {
-                    Path path = this.pathProvider.json(holder.id());
-                    list.add(DataProvider.saveStable(output, provider, Advancement.CODEC, holder.value(), path));// TODO: make conditional
                 }
+		Path path = this.pathProvider.json(holder.id());
+		list.add(DataProvider.saveStable(output, provider, Advancement.CODEC, holder.value(), path));// TODO: make conditional
             };
 
             for (AdvancementSubProvider advancementsubprovider : this.subProviders) {

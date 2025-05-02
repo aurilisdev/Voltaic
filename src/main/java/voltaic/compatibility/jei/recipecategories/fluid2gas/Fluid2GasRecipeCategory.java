@@ -79,7 +79,7 @@ public abstract class Fluid2GasRecipeCategory<T extends Fluid2GasRecipe> extends
 
         IGasHandlerItem outputHandler = bucket.getCapability(VoltaicCapabilities.CAPABILITY_GASHANDLER_ITEM);
 
-        outputHandler.fill(recipe.getGasRecipeOutput(), GasAction.EXECUTE);
+//        outputHandler.fill(recipe.getGasRecipeOutput(), GasAction.EXECUTE); Check this maybe? why check below, when you already do it here?
 
         if (outputHandler != null) {
 

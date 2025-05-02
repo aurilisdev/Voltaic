@@ -106,7 +106,7 @@ public abstract class AbstractConnectBlock extends GenericEntityBlockWaterloggab
 		return getCamoShape(shape, camoShape);
 	}
 
-	private VoxelShape getCamoShape(VoxelShape wireShape, VoxelShape camoShape) {
+	private static VoxelShape getCamoShape(VoxelShape wireShape, VoxelShape camoShape) {
 		if (camoShape == Shapes.empty()) return wireShape;
 		if (camoShape == Shapes.block()) return camoShape;
 		return Shapes.join(wireShape, camoShape, BooleanOp.OR);

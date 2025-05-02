@@ -35,9 +35,8 @@ public class CapabilityRadiationRecipient implements IRadiationRecipient {
                 entity.setData(VoltaicAttachmentTypes.RECIEVED_RADIATIONAMOUNT, entity.getData(VoltaicAttachmentTypes.RECIEVED_RADIATIONAMOUNT) + rads);
                 entity.setData(VoltaicAttachmentTypes.RECIEVED_RADIATIONSTRENGTH, entity.getData(VoltaicAttachmentTypes.RECIEVED_RADIATIONSTRENGTH) + strength);
                 return;
-            } else {
-                rads = rads * VoltaicConstants.IODINE_RAD_REDUCTION;
             }
+	    rads *= VoltaicConstants.IODINE_RAD_REDUCTION;
         }
 
         int count = 0;

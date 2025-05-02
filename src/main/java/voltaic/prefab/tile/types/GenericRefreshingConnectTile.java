@@ -116,7 +116,7 @@ public abstract class GenericRefreshingConnectTile<CABLETYPE, CONDUCTOR extends 
     }
 
     @Override
-    public void updateNetwork(Direction[] dirs) {
+    public void updateNetwork(Direction... dirs) {
         if (isRemoved()) {
             return;
         }

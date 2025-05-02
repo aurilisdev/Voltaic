@@ -16,7 +16,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.neoforged.neoforge.fluids.FluidStack;
 
 public class Fluid2FluidRecipeSerializer<T extends Fluid2FluidRecipe> extends VoltaicRecipeSerializer<T> {
-
+    @SuppressWarnings("unused") 
     private final Fluid2FluidRecipe.Factory<T> factory;
     private final MapCodec<T> codec;
 

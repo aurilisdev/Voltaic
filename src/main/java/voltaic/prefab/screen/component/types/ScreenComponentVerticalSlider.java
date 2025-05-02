@@ -36,9 +36,8 @@ public class ScreenComponentVerticalSlider extends ScreenComponentGeneric {
         if (isValidClick(button)) {
             this.onMouseDrag(mouseX, mouseY, dragX, dragY);
             return true;
-        } else {
-            return false;
         }
+	return false;
     }
 
     @Override

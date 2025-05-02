@@ -115,41 +115,36 @@ public class IndexedSidedInvWrapper implements IItemHandlerModifiable {
                 }
 
                 return ItemStack.EMPTY;
-            } else {
-                // copy the stack to not modify the original one
-                stack = stack.copy();
-                if (!simulate) {
-                    ItemStack copy = stack.split(m);
-                    copy.grow(stackInSlot.getCount());
-                    setInventorySlotContents(slot1, copy);
-                    return stack;
-                } else {
-                    stack.shrink(m);
-                    return stack;
-                }
             }
-        } else {
-            if (!inv.canPlaceItemThroughFace(slot1, stack, side) || !inv.canPlaceItem(slot1, stack))
-                return stack;
-
-            m = newStackInsertLimit.limitInsert(slot, slot1, stack);
-
-            if (m < stack.getCount()) {
-                // copy the stack to not modify the original one
-                stack = stack.copy();
-                if (!simulate) {
-                    setInventorySlotContents(slot1, stack.split(m));
-                    return stack;
-                } else {
-                    stack.shrink(m);
-                    return stack;
-                }
-            } else {
-                if (!simulate)
-                    setInventorySlotContents(slot1, stack);
-                return ItemStack.EMPTY;
-            }
+	    // copy the stack to not modify the original one
+	    stack = stack.copy();
+	    if (!simulate) {
+	        ItemStack copy = stack.split(m);
+	        copy.grow(stackInSlot.getCount());
+	        setInventorySlotContents(slot1, copy);
+	        return stack;
+	    }
+	    stack.shrink(m);
+	    return stack;
         }
+	if (!inv.canPlaceItemThroughFace(slot1, stack, side) || !inv.canPlaceItem(slot1, stack))
+	    return stack;
+
+	m = newStackInsertLimit.limitInsert(slot, slot1, stack);
+
+	if (m < stack.getCount()) {
+	    // copy the stack to not modify the original one
+	    stack = stack.copy();
+	    if (!simulate) {
+	        setInventorySlotContents(slot1, stack.split(m));
+	        return stack;
+	    }
+	    stack.shrink(m);
+	    return stack;
+	}
+	if (!simulate)
+	    setInventorySlotContents(slot1, stack);
+	return ItemStack.EMPTY;
     }
 
     @Override
@@ -185,17 +180,15 @@ public class IndexedSidedInvWrapper implements IItemHandlerModifiable {
         if (simulate) {
             if (stackInSlot.getCount() < amount) {
                 return stackInSlot.copy();
-            } else {
-                ItemStack copy = stackInSlot.copy();
-                copy.setCount(amount);
-                return copy;
             }
-        } else {
-            int m = Math.min(stackInSlot.getCount(), amount);
-            ItemStack ret = inv.removeItem(slot1, m);
-            inv.setChanged();
-            return ret;
+	    ItemStack copy = stackInSlot.copy();
+	    copy.setCount(amount);
+	    return copy;
         }
+	int m = Math.min(stackInSlot.getCount(), amount);
+	ItemStack ret = inv.removeItem(slot1, m);
+	inv.setChanged();
+	return ret;
     }
 
     @Override

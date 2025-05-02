@@ -111,7 +111,7 @@ public class ShapedCraftingRecipeBuilder implements RecipeBuilder {
 
     }
 
-    private TagKey<Item> itemTag(ResourceLocation tag) {
+    private static TagKey<Item> itemTag(ResourceLocation tag) {
         return TagKey.create(Registries.ITEM, tag);
     }
 

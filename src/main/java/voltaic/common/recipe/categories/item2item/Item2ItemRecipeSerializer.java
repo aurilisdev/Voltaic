@@ -16,7 +16,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
 
 public class Item2ItemRecipeSerializer<T extends Item2ItemRecipe> extends VoltaicRecipeSerializer<T> {
-
+    @SuppressWarnings("unused") 
     private final Item2ItemRecipe.Factory<T> factory;
     private final MapCodec<T> codec;
     private final StreamCodec<RegistryFriendlyByteBuf, T> streamCodec;

@@ -65,9 +65,8 @@ public class MathUtils {
 		double power = Math.log10(value);
 		if(roundUp) {
 			return (int) Math.ceil(power);
-		} else {
-			return (int) Math.floor(power);
 		}
+		return (int) Math.floor(power);
 	}
 
 	/**

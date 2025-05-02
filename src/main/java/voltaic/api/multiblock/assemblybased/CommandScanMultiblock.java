@@ -165,9 +165,7 @@ public class CommandScanMultiblock {
 				throw throwable1;
 			}
 
-			if (bufferedwriter != null) {
-				bufferedwriter.close();
-			}
+			bufferedwriter.close();
 
 		} catch (IOException e) {
 			e.printStackTrace();

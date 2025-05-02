@@ -278,12 +278,11 @@ public class GasStack {
 
         if (amount <= 0) {
             return GasStack.EMPTY;
-        } else {
-            Gas gas = VoltaicGases.GAS_REGISTRY.get(ResourceLocation.parse(tag.getString("name")));
-            int temperature = tag.getInt("temperature");
-            int pressure = tag.getInt("pressure");
-            return new GasStack(gas, amount, temperature, pressure);
         }
+	Gas gas = VoltaicGases.GAS_REGISTRY.get(ResourceLocation.parse(tag.getString("name")));
+	int temperature = tag.getInt("temperature");
+	int pressure = tag.getInt("pressure");
+	return new GasStack(gas, amount, temperature, pressure);
     }
 
     /**

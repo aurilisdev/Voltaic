@@ -12,6 +12,7 @@ import net.minecraft.data.recipes.RecipeProvider;
 public abstract class BaseRecipeProvider extends RecipeProvider {
 
     public final List<AbstractRecipeGenerator> generators = new ArrayList<>();
+    @SuppressWarnings("unused") 
     private final CompletableFuture<HolderLookup.Provider> lookupProvider;
 
 

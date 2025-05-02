@@ -562,9 +562,8 @@ public class ComponentFluidHandlerMulti implements IComponentFluidHandler {
 
             if (inputType == CapabilityInputType.INPUT) {
                 return inputSidedOptionals[side.ordinal()];
-            } else {
-                return outputSidedOptionals[side.ordinal()];
             }
+	    return outputSidedOptionals[side.ordinal()];
 
         }
 

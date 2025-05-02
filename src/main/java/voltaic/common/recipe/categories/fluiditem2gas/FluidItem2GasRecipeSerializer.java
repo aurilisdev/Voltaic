@@ -17,7 +17,7 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 
 public class FluidItem2GasRecipeSerializer<T extends FluidItem2GasRecipe> extends VoltaicRecipeSerializer<T> {
-
+    @SuppressWarnings("unused") 
     private final FluidItem2GasRecipe.Factory<T> factory;
     private final MapCodec<T> codec;
 
@@ -80,57 +80,37 @@ public class FluidItem2GasRecipeSerializer<T extends FluidItem2GasRecipe> extend
     }
 
     /*
-    @Override
-    public T fromNetwork(FriendlyByteBuf buffer) {
-        String group = buffer.readUtf();
-        boolean hasItemBi = buffer.readBoolean();
-        boolean hasFluidBi = buffer.readBoolean();
-        boolean hasGasBi = buffer.readBoolean();
-        List<CountableIngredient> inputs = CountableIngredient.readList(buffer);
-        List<FluidIngredient> fluidInputs = FluidIngredient.readList(buffer);
-        GasStack output = GasStack.readFromBuffer(buffer);
-        double experience = buffer.readDouble();
-        int ticks = buffer.readInt();
-        double usagePerTick = buffer.readDouble();
-        List<ProbableItem> itemBi = null;
-        List<ProbableFluid> fluidBi = null;
-        List<ProbableGas> gasBi = null;
-        if (hasItemBi) {
-            itemBi = ProbableItem.readList(buffer);
-        }
-        if (hasFluidBi) {
-            fluidBi = ProbableFluid.readList(buffer);
-
-        }
-        if (hasGasBi) {
-            gasBi = ProbableGas.readList(buffer);
-        }
-        return factory.create(group, inputs, fluidInputs, output, experience, ticks, usagePerTick, itemBi, fluidBi, gasBi);
-    }
-
-    @Override
-    public void toNetwork(FriendlyByteBuf buffer, T recipe) {
-        buffer.writeUtf(recipe.getGroup());
-        buffer.writeBoolean(recipe.hasItemBiproducts());
-        buffer.writeBoolean(recipe.hasFluidBiproducts());
-        buffer.writeBoolean(recipe.hasGasBiproducts());
-        CountableIngredient.writeList(buffer, recipe.getCountedIngredients());
-        FluidIngredient.writeList(buffer, recipe.getFluidIngredients());
-        recipe.getGasRecipeOutput().writeToBuffer(buffer);
-        buffer.writeDouble(recipe.getXp());
-        buffer.writeInt(recipe.getTicks());
-        buffer.writeDouble(recipe.getUsagePerTick());
-        if (recipe.hasItemBiproducts()) {
-            ProbableItem.writeList(buffer, recipe.getItemBiproducts());
-        }
-        if (recipe.hasFluidBiproducts()) {
-            ProbableFluid.writeList(buffer, recipe.getFluidBiproducts());
-        }
-        if (recipe.hasGasBiproducts()) {
-            ProbableGas.writeList(buffer, recipe.getGasBiproducts());
-        }
-    }
-
+     * @Override public T fromNetwork(FriendlyByteBuf buffer) { String group =
+     * buffer.readUtf(); boolean hasItemBi = buffer.readBoolean(); boolean
+     * hasFluidBi = buffer.readBoolean(); boolean hasGasBi = buffer.readBoolean();
+     * List<CountableIngredient> inputs = CountableIngredient.readList(buffer);
+     * List<FluidIngredient> fluidInputs = FluidIngredient.readList(buffer);
+     * GasStack output = GasStack.readFromBuffer(buffer); double experience =
+     * buffer.readDouble(); int ticks = buffer.readInt(); double usagePerTick =
+     * buffer.readDouble(); List<ProbableItem> itemBi = null; List<ProbableFluid>
+     * fluidBi = null; List<ProbableGas> gasBi = null; if (hasItemBi) { itemBi =
+     * ProbableItem.readList(buffer); } if (hasFluidBi) { fluidBi =
+     * ProbableFluid.readList(buffer);
+     * 
+     * } if (hasGasBi) { gasBi = ProbableGas.readList(buffer); } return
+     * factory.create(group, inputs, fluidInputs, output, experience, ticks,
+     * usagePerTick, itemBi, fluidBi, gasBi); }
+     * 
+     * @Override public void toNetwork(FriendlyByteBuf buffer, T recipe) {
+     * buffer.writeUtf(recipe.getGroup());
+     * buffer.writeBoolean(recipe.hasItemBiproducts());
+     * buffer.writeBoolean(recipe.hasFluidBiproducts());
+     * buffer.writeBoolean(recipe.hasGasBiproducts());
+     * CountableIngredient.writeList(buffer, recipe.getCountedIngredients());
+     * FluidIngredient.writeList(buffer, recipe.getFluidIngredients());
+     * recipe.getGasRecipeOutput().writeToBuffer(buffer);
+     * buffer.writeDouble(recipe.getXp()); buffer.writeInt(recipe.getTicks());
+     * buffer.writeDouble(recipe.getUsagePerTick()); if (recipe.hasItemBiproducts())
+     * { ProbableItem.writeList(buffer, recipe.getItemBiproducts()); } if
+     * (recipe.hasFluidBiproducts()) { ProbableFluid.writeList(buffer,
+     * recipe.getFluidBiproducts()); } if (recipe.hasGasBiproducts()) {
+     * ProbableGas.writeList(buffer, recipe.getGasBiproducts()); } }
+     * 
      */
 
 }

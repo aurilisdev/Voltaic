@@ -21,7 +21,7 @@ public class VoltaicItemModelsProvider extends BaseItemModelsProvider {
         //layeredItem(VoltaicAPIItems.ITEM_ANTIDOTE, Parent.GENERATED, itemLoc("antidote"));
         //layeredItem(VoltaicAPIItems.ITEM_IODINETABLET, Parent.GENERATED, itemLoc("iodinetablet"));
 
-        for (SubtypeItemUpgrade upgrade : SubtypeItemUpgrade.values()) {
+        for (@SuppressWarnings("unused") SubtypeItemUpgrade upgrade : SubtypeItemUpgrade.values()) {
             //layeredBuilder(name(VoltaicAPIItems.ITEMS_UPGRADE.getValue(upgrade)), Parent.GENERATED, itemLoc("upgrade/" + upgrade.tag())).transforms().transform(ItemDisplayContext.GUI).scale(0.8F).end();
         }
 
