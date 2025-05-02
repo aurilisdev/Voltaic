@@ -15,6 +15,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
+import net.minecraft.network.chat.TextComponent;
 
 public class Page {
 
@@ -51,7 +52,7 @@ public class Page {
 		xShift = (textWidth - font.width(chapTitle)) / 2;
 		font.draw(poseStack, chapTitle, refX + textStartX + xShift + xPageShift, refY + 26, Color.TEXT_GRAY.color());
 
-		Component pageNumber = Component.literal(getPage() + 1 + "");
+		Component pageNumber = new TextComponent(getPage() + 1 + "");
 		xShift = (textWidth - font.width(pageNumber)) / 2;
 		font.draw(poseStack, pageNumber, refX + textStartX + xShift + xPageShift, refY + 200, Color.TEXT_GRAY.color());
 

@@ -13,7 +13,6 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
 
 public class FluidWrapperObject extends AbstractGraphicWrapper<FluidWrapperObject> {
 
@@ -27,13 +26,13 @@ public class FluidWrapperObject extends AbstractGraphicWrapper<FluidWrapperObjec
 	@Override
 	public void render(PoseStack poseStack, int wrapperX, int wrapperY, int xShift, int guiWidth, int guiHeight, Page page) {
 
-		ResourceLocation texture = IClientFluidTypeExtensions.of(fluid).getStillTexture();
+		ResourceLocation texture = fluid.getAttributes().getStillTexture();
 
 		TextureAtlasSprite sprite = Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(texture);
 
 		RenderSystem.setShaderTexture(0, sprite.atlas().getId());
 
-		RenderingUtils.setShaderColor(new Color(IClientFluidTypeExtensions.of(fluid).getTintColor()));
+		RenderingUtils.setShaderColor(new Color(fluid.getAttributes().getColor()));
 
 		GuiComponent.blit(poseStack, guiWidth + wrapperX + xShift, guiHeight + wrapperY, 0, width, height, sprite);
 

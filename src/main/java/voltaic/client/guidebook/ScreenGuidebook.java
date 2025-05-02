@@ -45,6 +45,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
@@ -134,7 +135,7 @@ public class ScreenGuidebook extends GenericScreen<ContainerGuidebook> {
 
 	private Color color = Color.BLACK;
 	private boolean centered = false;
-	private MutableComponent mergedText = Component.empty();
+	private MutableComponent mergedText = new TextComponent("");
 
 	private OnTooltip textOnTooltip = null;
 
@@ -377,7 +378,7 @@ public class ScreenGuidebook extends GenericScreen<ContainerGuidebook> {
 							textOnClick = textWrapper.onClick;
 							textOnKeyPress = textWrapper.onKeyPress;
 
-							MutableComponent indentions = Component.empty();
+							MutableComponent indentions = new TextComponent("");
 
 							for (int i = 0; i < textWrapper.numberOfIndentions; i++) {
 								indentions = indentions.append("    ");
@@ -501,7 +502,7 @@ public class ScreenGuidebook extends GenericScreen<ContainerGuidebook> {
 
 	private Page writeCurrentTextToPage(Page currentPage, Chapter chapter) {
 
-		if (mergedText.equals(Component.empty())) {
+		if (mergedText.equals(new TextComponent(""))) {
 			return currentPage;
 		}
 
@@ -513,7 +514,7 @@ public class ScreenGuidebook extends GenericScreen<ContainerGuidebook> {
 		}
 
 		List<FormattedText> text = new ArrayList<>(font.getSplitter().splitLines(mergedText, TEXT_WIDTH, Style.EMPTY));
-		mergedText = Component.empty();
+		mergedText = new TextComponent("");
 
 		while (text.size() > 0) {
 
@@ -998,8 +999,8 @@ public class ScreenGuidebook extends GenericScreen<ContainerGuidebook> {
 
 	private void resetSearchButtons() {
 		for (ButtonSearchedText button : SEARCH_BUTTONS) {
-			button.setLine(Component.empty());
-			button.setChapter(Component.empty());
+			button.setLine(TextComponent.EMPTY);
+			button.setChapter(TextComponent.EMPTY);
 			button.setShouldShow(false);
 			button.setPage(0);
 		}

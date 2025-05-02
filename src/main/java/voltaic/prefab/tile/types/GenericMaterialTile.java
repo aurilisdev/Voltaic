@@ -15,9 +15,9 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
+import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
 
@@ -39,7 +39,7 @@ public class GenericMaterialTile extends GenericTile {
     	
     	Level world = getLevel();
 
-        IFluidHandlerItem handlerFluidItem = used.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).resolve().orElse(CapabilityUtils.EMPTY_FLUID_ITEM);
+        IFluidHandlerItem handlerFluidItem = used.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).resolve().orElse(CapabilityUtils.EMPTY_FLUID_ITEM);
 
         if (handlerFluidItem != CapabilityUtils.EMPTY_FLUID_ITEM && hasComponent(IComponentType.FluidHandler)) {
 

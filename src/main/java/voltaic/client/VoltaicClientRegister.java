@@ -15,18 +15,24 @@ import voltaic.client.screen.ScreenDO2OProcessor;
 import voltaic.client.screen.ScreenO2OProcessor;
 import voltaic.client.screen.ScreenO2OProcessorDouble;
 import voltaic.client.screen.ScreenO2OProcessorTriple;
+import voltaic.registers.VoltaicBlocks;
 import voltaic.registers.VoltaicMenuTypes;
 import voltaic.registers.VoltaicParticles;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraft.client.particle.ParticleEngine;
+import net.minecraft.client.renderer.ItemBlockRenderTypes;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.TextureStitchEvent;
-import net.minecraftforge.client.event.ModelEvent;
+import net.minecraftforge.client.model.ModelLoaderRegistry;
+import net.minecraftforge.client.event.ModelRegistryEvent;
+import net.minecraftforge.client.event.ParticleFactoryRegisterEvent;
 import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
-import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 
@@ -53,6 +59,8 @@ public class VoltaicClientRegister {
         MenuScreens.register(VoltaicMenuTypes.CONTAINER_O2OPROCESSORDOUBLE.get(), ScreenO2OProcessorDouble::new);
         MenuScreens.register(VoltaicMenuTypes.CONTAINER_O2OPROCESSORTRIPLE.get(), ScreenO2OProcessorTriple::new);
         MenuScreens.register(VoltaicMenuTypes.CONTAINER_DO2OPROCESSOR.get(), ScreenDO2OProcessor::new);
+        
+        ItemBlockRenderTypes.setRenderLayer(VoltaicBlocks.BLOCK_MULTISUBNODE.get(), RenderType.cutout());
     }
     
     @SubscribeEvent
@@ -73,10 +81,11 @@ public class VoltaicClientRegister {
     }
 
     @SubscribeEvent
-    public static void registerParticles(RegisterParticleProvidersEvent event) {
-        event.register(VoltaicParticles.PARTICLE_PLASMA_BALL.get(), ParticlePlasmaBall.Factory::new);
-        event.register(VoltaicParticles.PARTICLE_LAVAWITHPHYSICS.get(), ParticleLavaWithPhysics.Factory::new);
-        event.register(VoltaicParticles.PARTICLE_FLUIDDROP.get(), ParticleFluidDrop.Factory::new);
+    public static void registerParticles(ParticleFactoryRegisterEvent event) {
+    	ParticleEngine engine = Minecraft.getInstance().particleEngine;
+        engine.register(VoltaicParticles.PARTICLE_PLASMA_BALL.get(), ParticlePlasmaBall.Factory::new);
+        engine.register(VoltaicParticles.PARTICLE_LAVAWITHPHYSICS.get(), ParticleLavaWithPhysics.Factory::new);
+        engine.register(VoltaicParticles.PARTICLE_FLUIDDROP.get(), ParticleFluidDrop.Factory::new);
     }
 
     @SubscribeEvent
@@ -85,8 +94,8 @@ public class VoltaicClientRegister {
     }
 
     @SubscribeEvent
-    public static void registerGeometryLoaders(final ModelEvent.RegisterGeometryLoaders event) {
-        event.register(CableModelLoader.ID, CableModelLoader.INSTANCE);
+    public static void registerGeometryLoaders(final ModelRegistryEvent event) {
+        ModelLoaderRegistry.registerLoader(Voltaic.rl(CableModelLoader.ID), CableModelLoader.INSTANCE);
     }
 
     public static TextureAtlasSprite getSprite(ResourceLocation sprite) {

@@ -1,19 +1,17 @@
 package voltaic.compatibility.jei.screenhandlers;
 
-import java.util.Optional;
+import javax.annotation.Nullable;
 
-import voltaic.compatibility.jei.screenhandlers.cliableingredients.ClickableFluidIngredient;
 import voltaic.prefab.screen.component.types.gauges.ScreenComponentFluidGauge;
 import voltaic.prefab.screen.types.GenericMaterialScreen;
 import mezz.jei.api.gui.handlers.IGuiContainerHandler;
-import mezz.jei.api.runtime.IClickableIngredient;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidTank;
 
 public class ScreenHandlerMaterialScreen implements IGuiContainerHandler<GenericMaterialScreen<?>> {
 
 	@Override
-	public Optional<IClickableIngredient<?>> getClickableIngredientUnderMouse(GenericMaterialScreen<?> screen, double mouseX, double mouseY) {
+	public @Nullable Object getIngredientUnderMouse(GenericMaterialScreen<?> screen, double mouseX, double mouseY) {
 
 		double xAxis = mouseX - screen.getGuiWidth();
 		double yAxis = mouseY - screen.getGuiHeight();
@@ -30,11 +28,11 @@ public class ScreenHandlerMaterialScreen implements IGuiContainerHandler<Generic
 				if (stack.isEmpty()) {
 					continue;
 				}
-				return Optional.of(new ClickableFluidIngredient(gauge.getClickArea(), stack));
+				return stack;
 			}
 		}
 
-		return Optional.empty();
+		return null;
 	}
 
 }

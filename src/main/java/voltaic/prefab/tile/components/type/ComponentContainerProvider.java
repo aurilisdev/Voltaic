@@ -5,6 +5,7 @@ import java.util.function.BiFunction;
 import voltaic.prefab.tile.GenericTile;
 import voltaic.prefab.tile.components.IComponent;
 import voltaic.prefab.tile.components.IComponentType;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -53,7 +54,7 @@ public class ComponentContainerProvider implements IComponent, MenuProvider {
 
 	@Override
 	public net.minecraft.network.chat.Component getDisplayName() {
-		return net.minecraft.network.chat.Component.translatable(name);
+		return new TranslatableComponent(name);
 	}
 
 	@Override

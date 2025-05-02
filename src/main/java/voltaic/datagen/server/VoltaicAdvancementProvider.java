@@ -7,7 +7,7 @@ import voltaic.datagen.utils.server.advancement.BaseAdvancementProvider;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.advancements.AdvancementRewards.Builder;
 import net.minecraft.advancements.critereon.EntityPredicate;
-import net.minecraft.advancements.critereon.PlayerTrigger;
+import net.minecraft.advancements.critereon.TickTrigger;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.resources.ResourceLocation;
 
@@ -23,7 +23,7 @@ public class VoltaicAdvancementProvider extends BaseAdvancementProvider {
 
 		advancement("dispenseguidebook")
 				//
-				.addCriterion("SpawnIn", new PlayerTrigger.TriggerInstance(CriteriaTriggers.TICK.getId(), EntityPredicate.Composite.ANY))
+				.addCriterion("SpawnIn", new TickTrigger.TriggerInstance(EntityPredicate.Composite.ANY))
 				//
 				.rewards(Builder.loot(new ResourceLocation("advancement_reward/electroguidebook")))
 				//

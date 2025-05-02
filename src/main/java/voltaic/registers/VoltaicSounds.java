@@ -14,7 +14,7 @@ public class VoltaicSounds {
     public static final RegistryObject<SoundEvent> SOUND_PRESSURERELEASE = sound("pressurerelease");
 
     private static RegistryObject<SoundEvent> sound(String name) {
-        return SOUNDS.register(name, () -> new SoundEvent(Voltaic.rl(name), 16.0F));
+        return SOUNDS.register(name, () -> new SoundEvent(Voltaic.rl(name)));
     }
 
 }

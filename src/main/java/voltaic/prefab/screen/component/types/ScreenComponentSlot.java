@@ -16,7 +16,7 @@ import voltaic.prefab.utilities.RenderingUtils;
 import voltaic.prefab.utilities.VoltaicTextUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.inventory.Slot;
@@ -59,7 +59,7 @@ public class ScreenComponentSlot extends ScreenComponentGeneric {
 	}
 
 	public ScreenComponentSlot setHoverText(Slot slot) {
-		tooltip = () -> slot.getItem().isEmpty() ? Component.empty() : slot.getItem().getHoverName();
+		tooltip = () -> slot.getItem().isEmpty() ? TextComponent.EMPTY : slot.getItem().getHoverName();
 		return this;
 	}
 

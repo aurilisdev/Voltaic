@@ -9,9 +9,9 @@ import voltaic.registers.VoltaicCapabilities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.event.TickEvent.LevelTickEvent;
 import net.minecraftforge.event.TickEvent.Phase;
-import net.minecraftforge.event.entity.living.LivingEvent.LivingTickEvent;
+import net.minecraftforge.event.TickEvent.PlayerTickEvent;
+import net.minecraftforge.event.TickEvent.WorldTickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 
@@ -24,13 +24,13 @@ import java.util.List;
 public class RadiationSystem {
 
 	@SubscribeEvent
-	public static void tickServer(LevelTickEvent event) {
+	public static void tickServer(WorldTickEvent event) {
 		
 		if(event.phase == Phase.END) {
 			return;
 		}
 
-		Level level = event.level;
+		Level level = event.world;
 
 		if(level.isClientSide()) {
 			return;
@@ -48,16 +48,16 @@ public class RadiationSystem {
 	}
 
 	@SubscribeEvent
-	public static void entityTick(LivingTickEvent event) {
+	public static void entityTick(PlayerTickEvent event) {
 		
-		if(event.getEntity().level.isClientSide() || !(event.getEntity() instanceof LivingEntity)) {
+		if(event.player == null || event.player.level.isClientSide()) {
 			return;
 		}
-		IRadiationRecipient capability = event.getEntity().getCapability(VoltaicCapabilities.CAPABILITY_RADIATIONRECIPIENT).orElse(CapabilityUtils.EMPTY_RADIATION_REPIPIENT);
+		IRadiationRecipient capability = event.player.getCapability(VoltaicCapabilities.CAPABILITY_RADIATIONRECIPIENT).orElse(CapabilityUtils.EMPTY_RADIATION_REPIPIENT);
 		if(capability == CapabilityUtils.EMPTY_RADIATION_REPIPIENT) {
 			return;
 		}
-		capability.tick((LivingEntity) event.getEntity());
+		capability.tick((LivingEntity) event.player);
 
 	}
 

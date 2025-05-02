@@ -21,7 +21,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 
 public enum SubtypeItemUpgrade implements ISubtype {
@@ -198,7 +198,7 @@ public enum SubtypeItemUpgrade implements ISubtype {
             return;
         }
 
-        IItemHandler item = entity.getCapability(ForgeCapabilities.ITEM_HANDLER, dir.getOpposite()).orElse(CapabilityUtils.EMPTY_ITEM_HANDLER);
+        IItemHandler item = entity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, dir.getOpposite()).orElse(CapabilityUtils.EMPTY_ITEM_HANDLER);
 
         if (item == CapabilityUtils.EMPTY_ITEM_HANDLER) {
             return;
@@ -214,7 +214,7 @@ public enum SubtypeItemUpgrade implements ISubtype {
             return;
         }
 
-        IItemHandler item = entity.getCapability(ForgeCapabilities.ITEM_HANDLER, dir.getOpposite()).orElse(CapabilityUtils.EMPTY_ITEM_HANDLER);
+        IItemHandler item = entity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, dir.getOpposite()).orElse(CapabilityUtils.EMPTY_ITEM_HANDLER);
 
         if (item == CapabilityUtils.EMPTY_ITEM_HANDLER) {
             return;
@@ -253,7 +253,7 @@ public enum SubtypeItemUpgrade implements ISubtype {
         if (entity == null) {
             return;
         }
-        IItemHandler item = entity.getCapability(ForgeCapabilities.ITEM_HANDLER, dir.getOpposite()).orElse(CapabilityUtils.EMPTY_ITEM_HANDLER);
+        IItemHandler item = entity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, dir.getOpposite()).orElse(CapabilityUtils.EMPTY_ITEM_HANDLER);
 
         if (item == CapabilityUtils.EMPTY_ITEM_HANDLER) {
             return;
@@ -265,7 +265,7 @@ public enum SubtypeItemUpgrade implements ISubtype {
         if (entity == null) {
             return;
         }
-        IItemHandler item = entity.getCapability(ForgeCapabilities.ITEM_HANDLER, dir.getOpposite()).orElse(CapabilityUtils.EMPTY_ITEM_HANDLER);
+        IItemHandler item = entity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, dir.getOpposite()).orElse(CapabilityUtils.EMPTY_ITEM_HANDLER);
 
         if (item == CapabilityUtils.EMPTY_ITEM_HANDLER) {
             return;

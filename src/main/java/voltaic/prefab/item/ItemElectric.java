@@ -36,7 +36,7 @@ public class ItemElectric extends ItemVoltaic implements IItemElectric {
 	
 	@Override
 	public void fillItemCategory(CreativeModeTab category, NonNullList<ItemStack> items) {
-		if(allowedIn(category)) {
+		if(allowdedIn(category)) {
 			ItemStack empty = new ItemStack(this);
 			//IItemElectric.setEnergyStored(empty, 0);
 			items.add(empty);

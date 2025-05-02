@@ -1,10 +1,10 @@
 package voltaic.client.event;
 
 import net.minecraft.client.Minecraft;
-import net.minecraftforge.client.event.InputEvent.Key;
+import net.minecraftforge.client.event.InputEvent.KeyInputEvent;
 
 public abstract class AbstractKeyPressHandler {
 
-	public abstract void handler(Key event, Minecraft minecraft);
+	public abstract void handler(KeyInputEvent event, Minecraft minecraft);
 
 }

@@ -1,6 +1,7 @@
 package voltaic.api.electricity.formatting;
 
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 
 public class DisplayUnit implements IDisplayUnit {
 
@@ -17,7 +18,7 @@ public class DisplayUnit implements IDisplayUnit {
     }
 
     public DisplayUnit(Component name, Component namePlural, Component symbol) {
-        this(name, namePlural, symbol, Component.literal(" "));
+        this(name, namePlural, symbol, new TextComponent(" "));
     }
 
     @Override

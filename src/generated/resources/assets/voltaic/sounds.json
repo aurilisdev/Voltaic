@@ -1,14 +1,14 @@
 {
   "batteryswap": {
+    "subtitle": "subtitles.voltaic.batteryswap",
     "sounds": [
       "voltaic:batteryswap"
-    ],
-    "subtitle": "subtitles.voltaic.batteryswap"
+    ]
   },
   "pressurerelease": {
+    "subtitle": "subtitles.voltaic.pressurerelease",
     "sounds": [
       "voltaic:pressurerelease"
-    ],
-    "subtitle": "subtitles.voltaic.pressurerelease"
+    ]
   }
 }

@@ -1,7 +1,5 @@
 package voltaic.datagen.utils.client;
 
-import javax.annotation.Nullable;
-
 import voltaic.Voltaic;
 import voltaic.common.block.states.VoltaicBlockStates;
 import voltaic.datagen.utils.client.model.WireModelBuilder;
@@ -17,7 +15,7 @@ import net.minecraftforge.client.model.generators.ConfiguredModel;
 import net.minecraftforge.client.model.generators.ItemModelBuilder;
 import net.minecraftforge.client.model.generators.ModelFile;
 import net.minecraftforge.client.model.generators.ModelFile.ExistingModelFile;
-import net.minecraftforge.client.model.generators.loaders.ObjModelBuilder;
+import net.minecraftforge.client.model.generators.loaders.OBJLoaderBuilder;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
@@ -51,33 +49,12 @@ public abstract class BaseBlockstateProvider extends BlockStateProvider {
         return simpleBlock(block, models().cubeAll(name(block), texture), registerItem);
     }
 
-    public ItemModelBuilder glassBlock(RegistryObject<? extends Block> block, ResourceLocation texture, boolean registerItem) {
-        return glassBlock(block.get(), texture, registerItem);
-    }
-
-    public ItemModelBuilder glassBlock(Block block, ResourceLocation texture, boolean registerItem) {
-        return simpleBlockCustomRenderType(block, texture, Voltaic.vanillarl("cutout"), registerItem);
-    }
-
-    public ItemModelBuilder simpleBlockCustomRenderType(Block block, ResourceLocation texture, ResourceLocation renderType, boolean registerItem) {
-        BlockModelBuilder builder = models().cubeAll(name(block), texture).renderType(renderType);
-        getVariantBuilder(block).partialState().setModels(new ConfiguredModel(builder));
-        if (registerItem) {
-            return blockItem(block, builder);
-        }
-        return null;
-    }
-
-    public ItemModelBuilder simpleBlockCustomRenderType(RegistryObject<? extends Block> block, ResourceLocation texture, ResourceLocation renderType, boolean registerItem) {
-        return simpleBlockCustomRenderType(block.get(), texture, renderType, registerItem);
-    }
-
     public ItemModelBuilder airBlock(RegistryObject<? extends Block> block, String particleTexture, boolean registerItem) {
         return airBlock(block.get(), particleTexture, registerItem);
     }
 
     public ItemModelBuilder airBlock(Block block, String particleTexture, boolean registerItem) {
-        BlockModelBuilder builder = models().getBuilder(name(block)).texture("particle", modLoc(particleTexture)).renderType("cutout");
+        BlockModelBuilder builder = models().getBuilder(name(block)).texture("particle", modLoc(particleTexture));
         getVariantBuilder(block).partialState().setModels(new ConfiguredModel(builder));
         if (registerItem) {
             return blockItem(block, builder);
@@ -171,7 +148,7 @@ public abstract class BaseBlockstateProvider extends BlockStateProvider {
      *
      */
     public void wire(Block block, ModelFile none, ModelFile side, boolean registerItem) {
-        ModelFile model = models().withExistingParent(name(block), Voltaic.vanillarl("cube")).customLoader(WireModelBuilder::begin).models(none, side, side).end().renderType(Voltaic.vanillarl("cutout"));
+        ModelFile model = models().withExistingParent(name(block), Voltaic.vanillarl("cube")).customLoader(WireModelBuilder::begin).models(none, side, side).end();
 
         getVariantBuilder(block).partialState().addModels(new ConfiguredModel(model));
 
@@ -191,17 +168,13 @@ public abstract class BaseBlockstateProvider extends BlockStateProvider {
     }
 
     // gotta love dealing with mojank
-    public ItemModelBuilder pressurePlateBlock(PressurePlateBlock block, ResourceLocation texture, @Nullable ResourceLocation renderType, boolean registerItem) {
+    public ItemModelBuilder pressurePlateBlock(PressurePlateBlock block, ResourceLocation texture, boolean registerItem) {
         ModelFile pressurePlate = models().pressurePlate(name(block), texture);
         ModelFile pressurePlateDown = models().pressurePlateDown(name(block) + "_down", texture);
-        if (renderType != null) {
-            pressurePlate = models().pressurePlate(name(block), texture).renderType(renderType);
-            pressurePlateDown = models().pressurePlateDown(name(block) + "_down", texture).renderType(renderType);
-        }
-        return pressurePlateBlock(block, pressurePlate, pressurePlateDown, renderType, registerItem);
+        return pressurePlateBlock(block, pressurePlate, pressurePlateDown, registerItem);
     }
 
-    public ItemModelBuilder pressurePlateBlock(PressurePlateBlock block, ModelFile pressurePlate, ModelFile pressurePlateDown, @Nullable ResourceLocation renderType, boolean registerItem) {
+    public ItemModelBuilder pressurePlateBlock(PressurePlateBlock block, ModelFile pressurePlate, ModelFile pressurePlateDown, boolean registerItem) {
         getVariantBuilder(block).partialState().with(PressurePlateBlock.POWERED, true).addModels(new ConfiguredModel(pressurePlateDown)).partialState().with(PressurePlateBlock.POWERED, false).addModels(new ConfiguredModel(pressurePlate));
         if (registerItem) {
             return blockItem(block, pressurePlate);
@@ -218,17 +191,12 @@ public abstract class BaseBlockstateProvider extends BlockStateProvider {
         return null;
     }
 
-    public ItemModelBuilder crossBlock(RegistryObject<? extends Block> block, ResourceLocation texture, @Nullable ResourceLocation renderType, boolean registerItem) {
-        return crossBlock(block.get(), texture, renderType, registerItem);
+    public ItemModelBuilder crossBlock(RegistryObject<? extends Block> block, ResourceLocation texture, boolean registerItem) {
+        return crossBlock(block.get(), texture, registerItem);
     }
 
-    public ItemModelBuilder crossBlock(Block block, ResourceLocation texture, @Nullable ResourceLocation renderType, boolean registerItem) {
-        ModelFile cross;
-        if (renderType == null) {
-            cross = models().cross(name(block), texture);
-        } else {
-            cross = models().cross(name(block), texture).renderType(renderType);
-        }
+    public ItemModelBuilder crossBlock(Block block, ResourceLocation texture, boolean registerItem) {
+        ModelFile cross = models().cross(name(block), texture);
         getVariantBuilder(block).partialState().setModels(new ConfiguredModel(cross));
         if (registerItem) {
             return blockItem(block, cross);
@@ -237,7 +205,7 @@ public abstract class BaseBlockstateProvider extends BlockStateProvider {
     }
 
     public BlockModelBuilder getObjModel(String name, String modelLoc) {
-        return models().withExistingParent("block/" + name, "cube").customLoader(ObjModelBuilder::begin).flipV(true).modelLocation(modLoc("models/" + modelLoc + ".obj")).end();
+        return models().withExistingParent("block/" + name, "cube").customLoader(OBJLoaderBuilder::begin).flipV(true).modelLocation(modLoc("models/" + modelLoc + ".obj")).end();
     }
 
     public BlockModelBuilder blockTopBottom(RegistryObject<? extends Block> block, String top, String bottom, String side) {

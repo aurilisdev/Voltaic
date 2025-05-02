@@ -11,7 +11,7 @@ import voltaic.client.guidebook.ScreenGuidebook;
 public class VoltaicClientEvents {
 
     @SubscribeEvent
-    public static void wipeRenderHashes(ClientPlayerNetworkEvent.LoggingOut event) {
+    public static void wipeRenderHashes(ClientPlayerNetworkEvent.LoggedOutEvent event) {
         ScreenGuidebook.setInitNotHappened();
     }
 

@@ -32,7 +32,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.function.Consumer;
 
 public class RadioactiveItemRegister extends SimplePreparableReloadListener<JsonObject> {
@@ -55,38 +54,49 @@ public class RadioactiveItemRegister extends SimplePreparableReloadListener<Json
 
     @Override
     protected JsonObject prepare(ResourceManager manager, ProfilerFiller profiler) {
-        JsonObject combined = new JsonObject();
+    	JsonObject combined = new JsonObject();
 
-        List<Entry<ResourceLocation, Resource>> resources = new ArrayList<>(manager.listResources(FOLDER, RadioactiveItemRegister::isJson).entrySet());
-        Collections.reverse(resources);
+		List<ResourceLocation> resources = new ArrayList<>(manager.listResources(FOLDER, RadioactiveItemRegister::isJson));
 
-        for (Entry<ResourceLocation, Resource> entry : resources) {
-            ResourceLocation loc = entry.getKey();
-            final String namespace = loc.getNamespace();
-            final String filePath = loc.getPath();
-            final String dataPath = filePath.substring(FOLDER.length() + 1, filePath.length() - JSON_EXTENSION_LENGTH);
+		Collections.reverse(resources);
 
-            final ResourceLocation jsonFile = new ResourceLocation(namespace, dataPath);
+		for (ResourceLocation entry : resources) {
 
-            Resource resource = entry.getValue();
-            try (final InputStream inputStream = resource.open(); final Reader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));) {
-                final JsonObject json = (JsonObject) GsonHelper.fromJson(GSON, reader, JsonElement.class);
+			final String namespace = entry.getNamespace();
+			final String filePath = entry.getPath();
+			final String dataPath = filePath.substring(FOLDER.length() + 1, filePath.length() - JSON_EXTENSION_LENGTH);
 
-                json.entrySet().forEach(set -> {
+			final ResourceLocation jsonFile = new ResourceLocation(namespace, dataPath);
 
-                    if (combined.has(set.getKey())) {
-                        combined.remove(set.getKey());
-                    }
+			try {
 
-                    combined.add(set.getKey(), set.getValue());
-                });
+				for (Resource resource : manager.getResources(entry)) {
 
-            } catch (RuntimeException | IOException exception) {
-                logger.error("Data loader for {} could not read data {} from file {} in data pack {}", FOLDER, jsonFile, loc, resource.sourcePackId(), exception);
-            }
+					try (final InputStream inputStream = resource.getInputStream(); final Reader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));) {
+						final JsonObject json = (JsonObject) GsonHelper.fromJson(GSON, reader, JsonElement.class);
 
-        }
-        return combined;
+						json.entrySet().forEach(set -> {
+
+							if (combined.has(set.getKey())) {
+								combined.remove(set.getKey());
+							}
+
+							combined.add(set.getKey(), set.getValue());
+						});
+
+					} catch (RuntimeException | IOException exception) {
+						logger.error("Data loader for {} could not read data {} from file {} in data pack {}", FOLDER, jsonFile, entry, resource.getSourceName(), exception);
+					}
+
+				}
+
+			} catch (IOException exception) {
+
+				this.logger.error("Data loader for {} could not read data {} from file {}", FOLDER, jsonFile, entry, exception);
+
+			}
+		}
+		return combined;
     }
 
     @Override
@@ -156,8 +166,8 @@ public class RadioactiveItemRegister extends SimplePreparableReloadListener<Json
         return INSTANCE.radioactiveItemMap.getOrDefault(item, RadioactiveObject.ZERO);
     }
 
-    private static boolean isJson(final ResourceLocation filename) {
-        return filename.getPath().contains(FILE_NAME + JSON_EXTENSION);
+    private static boolean isJson(final String filename) {
+        return filename.endsWith(FILE_NAME + JSON_EXTENSION);
     }
 
 }

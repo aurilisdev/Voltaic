@@ -1,7 +1,7 @@
 package voltaic.api.electricity.formatting;
 
 import voltaic.prefab.utilities.VoltaicTextUtils;
-import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 
 public class DisplayUnits {
 
@@ -35,7 +35,7 @@ public class DisplayUnits {
 
     public static final DisplayUnit PRESSURE_ATM = new DisplayUnit(VoltaicTextUtils.gui("displayunit.pressureatm.name"), VoltaicTextUtils.gui("displayunit.pressureatm.nameplural"), VoltaicTextUtils.gui("displayunit.pressureatm.symbol"));
 
-    public static final DisplayUnit PERCENTAGE = new DisplayUnit(VoltaicTextUtils.gui("displayunit.percentage.name"), VoltaicTextUtils.gui("displayunit.percentage.nameplural"), VoltaicTextUtils.gui("displayunit.percentage.symbol"), Component.empty());
+    public static final DisplayUnit PERCENTAGE = new DisplayUnit(VoltaicTextUtils.gui("displayunit.percentage.name"), VoltaicTextUtils.gui("displayunit.percentage.nameplural"), VoltaicTextUtils.gui("displayunit.percentage.symbol"), TextComponent.EMPTY);
 
     public static final DisplayUnit FORGE_ENERGY_UNIT = new DisplayUnit(VoltaicTextUtils.gui("displayunit.forgeenergyunit.name"), VoltaicTextUtils.gui("displayunit.forgeenergyunit.nameplural"), VoltaicTextUtils.gui("displayunit.forgeenergyunit.symbol"));
 
