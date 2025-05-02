@@ -18,6 +18,7 @@ public class VoltaicAdvancementProvider extends BaseAdvancementProvider {
         super(output, registries, Voltaic.ID);
     }
 
+    @Override
     public void generate(HolderLookup.Provider registries) {
 
         advancement("dispenseguidebook")

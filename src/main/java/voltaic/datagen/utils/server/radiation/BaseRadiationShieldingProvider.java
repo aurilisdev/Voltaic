@@ -1,18 +1,19 @@
 package voltaic.datagen.utils.server.radiation;
 
+import java.nio.file.Path;
+import java.util.concurrent.CompletableFuture;
+
 import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
-import voltaic.Voltaic;
-import voltaic.api.radiation.util.RadiationShielding;
-import voltaic.common.reloadlistener.RadiationShieldingRegister;
+
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
-import java.nio.file.Path;
-import java.util.concurrent.CompletableFuture;
+import voltaic.Voltaic;
+import voltaic.api.radiation.util.RadiationShielding;
+import voltaic.common.reloadlistener.RadiationShieldingRegister;
 
 public abstract class BaseRadiationShieldingProvider implements DataProvider {
 

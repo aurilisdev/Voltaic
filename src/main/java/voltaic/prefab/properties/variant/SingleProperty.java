@@ -96,6 +96,7 @@ public class SingleProperty<T> extends AbstractProperty<T, SinglePropertyType<T,
     /**
      * This method is called by the tile on the server once Level is present
      */
+    @Override
     public void onTileLoaded() {
         onTileLoaded.accept(this);
     }

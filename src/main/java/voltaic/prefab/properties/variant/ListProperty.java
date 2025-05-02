@@ -1,17 +1,18 @@
 package voltaic.prefab.properties.variant;
 
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.level.block.Block;
-import org.apache.commons.lang3.function.TriConsumer;
-import voltaic.Voltaic;
-import voltaic.prefab.properties.PropertyManager;
-import voltaic.prefab.properties.types.IPropertyType;
-import voltaic.prefab.properties.types.ListPropertyType;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+
+import org.apache.commons.lang3.function.TriConsumer;
+
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.Block;
+import voltaic.Voltaic;
+import voltaic.prefab.properties.PropertyManager;
+import voltaic.prefab.properties.types.IPropertyType.TagReader;
+import voltaic.prefab.properties.types.ListPropertyType;
 
 public class ListProperty<T> extends AbstractProperty<List<T>, ListPropertyType<T, ?>> {
 
@@ -282,9 +283,10 @@ public class ListProperty<T> extends AbstractProperty<List<T>, ListPropertyType<
         return shouldUpdate;
     }
 
+    @Override
     public void loadFromTag(CompoundTag tag, HolderLookup.Provider registries) {
         try {
-            List<T> data = (List<T>) getType().readFromTag(new IPropertyType.TagReader(this, tag, registries));
+            List<T> data = getType().readFromTag(new TagReader<List<T>>(this, tag, registries));
             if (data != null) {
                 value = data;
                 onLoadedFromTag(this, value);

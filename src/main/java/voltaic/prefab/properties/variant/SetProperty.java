@@ -169,6 +169,7 @@ public class SetProperty<T> extends AbstractProperty<HashSet<T>, SetPropertyType
         overwriteValue(otherVal);
     }
 
+    @Override
     public void loadFromTag(CompoundTag tag, HolderLookup.Provider registries) {
         try {
             HashSet<T> data = (HashSet<T>) getType().readFromTag(new IPropertyType.TagReader(this, tag, registries));
