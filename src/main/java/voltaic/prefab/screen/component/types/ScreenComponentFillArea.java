@@ -25,7 +25,9 @@ public class ScreenComponentFillArea extends ScreenComponentGeneric {
         if(!isVisible()) {
             return;
         }
-        fill(poseStack, xLocation + guiWidth - 1, yLocation + guiHeight - 1, width + 1, height + 1, outline.color());
-        fill(poseStack, xLocation + guiWidth, yLocation + guiHeight, xLocation + guiWidth + width, yLocation + guiHeight + height, fill.color());
+        int x = xLocation + guiWidth;
+        int y = yLocation + guiHeight;
+        fill(poseStack, x - 1, y - 1, x + width + 1, y + height + 1, outline.color());
+        fill(poseStack, x, y, x + width, y + height, fill.color());
     }
 }
