@@ -55,7 +55,7 @@ public class GasStack {
 
         @Override
         public void encode(FriendlyByteBuf buffer, GasStack value) {
-        	buffer.writeRegistryId(VoltaicRegistries.gasRegistry(), value.gas);
+        	buffer.writeRegistryId(VoltaicRegistries.gasRegistry(), value.gas == null ? VoltaicGases.EMPTY.get() : value.gas);
     		buffer.writeInt(value.amount);
     		buffer.writeInt(value.temperature);
     		buffer.writeInt(value.pressure);
