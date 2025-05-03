@@ -28,6 +28,7 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 
@@ -69,6 +70,16 @@ public abstract class AbstractRecipeCategory<T> implements IRecipeCategory<T> {
     @Override
     public RecipeType<T> getRecipeType() {
         return recipeType;
+    }
+    
+    @Override
+    public ResourceLocation getUid() {
+    	return recipeType.getUid();
+    }
+    
+    @Override
+    public Class<? extends T> getRecipeClass() {
+    	return recipeType.getRecipeClass();
     }
     
     @Override
