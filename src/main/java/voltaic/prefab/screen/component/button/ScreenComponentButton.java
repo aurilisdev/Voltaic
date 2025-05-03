@@ -4,18 +4,19 @@ import java.util.function.Supplier;
 
 import javax.annotation.Nullable;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 
+import voltaic.Voltaic;
 import voltaic.api.screen.ITexture;
 import voltaic.prefab.screen.component.ScreenComponentGeneric;
+import voltaic.prefab.screen.component.editbox.ScreenComponentEditBox;
 import voltaic.prefab.utilities.RenderingUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 
@@ -80,14 +81,17 @@ public class ScreenComponentButton<T extends ScreenComponentButton<?>> extends S
     @Override
     public void renderBackground(PoseStack poseStack, int xAxis, int yAxis, int guiWidth, int guiHeight) {
         if (isVanillaRender && isVisible()) {
-            Minecraft minecraft = Minecraft.getInstance();
-            RenderingUtils.setShaderColor(color);
-            int i = this.getVanillaYImage(isHovered());
-            RenderSystem.enableBlend();
-            RenderSystem.enableDepthTest();
-            RenderingUtils.bindTexture(AbstractWidget.WIDGETS_LOCATION);
-            blit(poseStack, this.xLocation + guiWidth, this.yLocation + guiHeight, 0, 46 + i * 20, this.width / 2, this.height, 256, 256);
-            blit(poseStack, this.xLocation + guiWidth + this.width / 2, this.yLocation + guiHeight, 200 - this.width / 2, 46 + i * 20, this.width / 2, this.height, 256, 256);
+            
+        	Minecraft minecraft = Minecraft.getInstance();
+            
+        	ITexture buttonTexture = isHovered() ? VanillaButtonTextures.BUTTON_ON : VanillaButtonTextures.BUTTON_OFF;
+            
+        	RenderingUtils.setShaderColor(color);
+        	
+            RenderingUtils.bindTexture(buttonTexture.getLocation());
+            
+            ScreenComponentEditBox.drawExpandedBox(poseStack, xLocation + guiWidth, yLocation + guiHeight, width, height);
+            
             if(icon != null) {
                 int xOffset = (width - icon.imageWidth()) / 2;
                 int yOffset = (height - icon.imageHeight()) / 2;
@@ -172,6 +176,64 @@ public class ScreenComponentButton<T extends ScreenComponentButton<?>> extends S
 
         public void onPress(ScreenComponentButton<?> button);
 
+    }
+    
+    public static enum VanillaButtonTextures implements ITexture {
+		BUTTON_OFF(18, 18, 0, 0, 18, 18, "vanilla_button_off"), BUTTON_ON(18, 18, 0, 0, 18, 18, "vanilla_button_on");
+    	
+    	private final int textureWidth;
+		private final int textureHeight;
+		private final int textureU;
+		private final int textureV;
+		private final int imageWidth;
+		private final int imageHeight;
+		private final ResourceLocation loc;
+
+		VanillaButtonTextures(int textureWidth, int textureHeight, int textureU, int textureV, int imageWidth, int imageHeight, String name) {
+			this.textureWidth = textureWidth;
+			this.textureHeight = textureHeight;
+			this.textureU = textureU;
+			this.textureV = textureV;
+			this.imageWidth = imageWidth;
+			this.imageHeight = imageHeight;
+			loc = Voltaic.rl("textures/screen/component/button/" + name + ".png");
+		}
+
+		@Override
+		public ResourceLocation getLocation() {
+			return loc;
+		}
+
+		@Override
+		public int imageHeight() {
+			return imageHeight;
+		}
+
+		@Override
+		public int imageWidth() {
+			return imageWidth;
+		}
+
+		@Override
+		public int textureHeight() {
+			return textureHeight;
+		}
+
+		@Override
+		public int textureU() {
+			return textureU;
+		}
+
+		@Override
+		public int textureV() {
+			return textureV;
+		}
+
+		@Override
+		public int textureWidth() {
+			return textureWidth;
+		}
+    	
     }
 
 }

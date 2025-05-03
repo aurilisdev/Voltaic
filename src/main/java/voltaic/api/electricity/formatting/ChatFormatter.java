@@ -3,6 +3,7 @@ package voltaic.api.electricity.formatting;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import voltaic.prefab.utilities.VoltaicTextUtils;
 import net.minecraft.network.chat.Component;
@@ -11,7 +12,7 @@ import net.minecraft.network.chat.TextComponent;
 
 public class ChatFormatter {
 
-	private static final ArrayList<IMeasurementUnit> MEASUREMENT_UNITS = new ArrayList<>();
+	private static final ArrayList<IMeasurementUnit> MEASUREMENT_UNITS = new ArrayList<>(Arrays.asList(MeasurementUnits.PICO, MeasurementUnits.NANO, MeasurementUnits.MICRO, MeasurementUnits.MILLI, MeasurementUnits.NONE, MeasurementUnits.KILO, MeasurementUnits.MEGA, MeasurementUnits.GIGA));
 
 	public static MutableComponent getChatDisplay(double value, IDisplayUnit unit, int decimalPlaces, boolean isShort) {
 		if (value < Long.MIN_VALUE + 10000) {
