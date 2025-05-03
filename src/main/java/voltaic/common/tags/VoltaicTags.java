@@ -216,6 +216,7 @@ public class VoltaicTags {
 		public static final TagKey<Item> LOGISTICAL_TIN_WIRES = forgeTag("wires/logistical_tin");
 		
 		public static final TagKey<Item> CURES_RADIATION = forgeTag("cures_radiation");
+		public static final TagKey<Item> CONCRETES = forgeTag("hardened_blocks/concretes");
 
 		private static void init() {
 		}
@@ -273,6 +274,8 @@ public class VoltaicTags {
 		public static final TagKey<Block> ELECTRIC_DRILL_BLOCKS = forgeTag("electricdrillblocks");
 
 		public static final TagKey<Block> ORES = forgeTag("ores");
+		
+		public static final TagKey<Block> CONCRETES = forgeTag("hardened_blocks/concretes");
 
 		private static void init() {
 		}
@@ -295,6 +298,7 @@ public class VoltaicTags {
 		public static final TagKey<Fluid> ETHANOL = forgeTag("ethanol");
 		public static final TagKey<Fluid> POLYETHLYENE = forgeTag("polyethylene");
 		public static final TagKey<Fluid> CLAY = forgeTag("clay");
+		public static final TagKey<Fluid> CONCRETE = forgeTag("concrete");
 		public static final TagKey<Fluid> OXYGEN = forgeTag("oxygen");
 		public static final TagKey<Fluid> HYDROGEN = forgeTag("hydrogen");
 		public static final TagKey<Fluid> HYDRAULIC_FLUID = forgeTag("hydraulic_fluid");
