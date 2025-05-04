@@ -30,7 +30,7 @@ public class GasStack {
                     //
                     instance.group(
                             //
-                            VoltaicRegistries.gasRegistry().getCodec().optionalFieldOf("gas", VoltaicGases.EMPTY.get()).forGetter(GasStack::getGas),
+                            VoltaicRegistries.gasRegistry().getCodec().fieldOf("gas").forGetter(instance0 -> instance0.getGas() == null ? VoltaicGases.EMPTY.get() : instance0.getGas()),
                             //
                             Codec.INT.fieldOf("amount").forGetter(instance0 -> instance0.amount),
                             //
