@@ -1,22 +1,22 @@
 package voltaic.prefab.inventory.container.types;
 
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.container.ContainerType;
+import net.minecraft.util.IIntArray;
 import voltaic.prefab.inventory.container.GenericContainer;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.inventory.ContainerData;
-import net.minecraft.world.inventory.MenuType;
 
 public abstract class GenericContainerSlotData<CONTAINERTYPE> extends GenericContainer<CONTAINERTYPE> {
 
-    private final ContainerData data;
+    private final IIntArray data;
 
-    public GenericContainerSlotData(MenuType<?> type, int id, Inventory playerinv, CONTAINERTYPE inventory, ContainerData data) {
+    public GenericContainerSlotData(ContainerType<?> type, int id, PlayerInventory playerinv, CONTAINERTYPE inventory, IIntArray data) {
         super(type, id, playerinv, inventory);
         checkContainerDataCount(data, data.getCount());
         this.data = data;
         addDataSlots(this.data);
     }
 
-    public ContainerData getData() {
+    public IIntArray getData() {
         return data;
     }
 }

@@ -7,21 +7,21 @@ import com.mojang.serialization.JsonOps;
 import voltaic.Voltaic;
 import voltaic.api.radiation.util.RadioactiveObject;
 import voltaic.common.packet.types.client.PacketSetClientRadioactiveItems;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.packs.resources.Resource;
-import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
+import voltaic.prefab.reloadlistener.AbstractReloadListener;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.item.Item;
+import net.minecraft.profiler.IProfiler;
+import net.minecraft.resources.IResource;
+import net.minecraft.resources.IResourceManager;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.tags.TagKey;
-import net.minecraft.util.GsonHelper;
-import net.minecraft.util.profiling.ProfilerFiller;
-import net.minecraft.world.item.Item;
+import net.minecraft.tags.ITag.INamedTag;
+import net.minecraft.util.JSONUtils;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.OnDatapackSyncEvent;
-import net.minecraftforge.network.PacketDistributor;
-import net.minecraftforge.network.PacketDistributor.PacketTarget;
-import net.minecraftforge.network.simple.SimpleChannel;
+import net.minecraftforge.fml.network.PacketDistributor;
+import net.minecraftforge.fml.network.PacketDistributor.PacketTarget;
+import net.minecraftforge.fml.network.simple.SimpleChannel;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import org.apache.logging.log4j.Logger;
@@ -34,7 +34,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class RadioactiveItemRegister extends SimplePreparableReloadListener<JsonObject> {
+public class RadioactiveItemRegister extends AbstractReloadListener<JsonObject> {
 
     public static RadioactiveItemRegister INSTANCE = null;
 
@@ -46,14 +46,14 @@ public class RadioactiveItemRegister extends SimplePreparableReloadListener<Json
 
     private static final Gson GSON = new Gson();
 
-    private final HashMap<TagKey<Item>, RadioactiveObject> tags = new HashMap<>();
+    private final HashMap<INamedTag<Item>, RadioactiveObject> tags = new HashMap<>();
 
     private final HashMap<Item, RadioactiveObject> radioactiveItemMap = new HashMap<>();
 
     private final Logger logger = Voltaic.LOGGER;
 
     @Override
-    protected JsonObject prepare(ResourceManager manager, ProfilerFiller profiler) {
+    protected JsonObject prepare(IResourceManager manager, IProfiler profiler) {
     	JsonObject combined = new JsonObject();
 
 		List<ResourceLocation> resources = new ArrayList<>(manager.listResources(FOLDER, RadioactiveItemRegister::isJson));
@@ -70,10 +70,10 @@ public class RadioactiveItemRegister extends SimplePreparableReloadListener<Json
 
 			try {
 
-				for (Resource resource : manager.getResources(entry)) {
+				for (IResource resource : manager.getResources(entry)) {
 
 					try (final InputStream inputStream = resource.getInputStream(); final Reader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));) {
-						final JsonObject json = (JsonObject) GsonHelper.fromJson(GSON, reader, JsonElement.class);
+						final JsonObject json = (JsonObject) JSONUtils.fromJson(GSON, reader, JsonElement.class);
 
 						json.entrySet().forEach(set -> {
 
@@ -100,7 +100,7 @@ public class RadioactiveItemRegister extends SimplePreparableReloadListener<Json
     }
 
     @Override
-    protected void apply(JsonObject json, ResourceManager manager, ProfilerFiller profiler) {
+    protected void apply(JsonObject json, IResourceManager manager, IProfiler profiler) {
         tags.clear();
 
         json.entrySet().forEach(set -> {
@@ -112,7 +112,7 @@ public class RadioactiveItemRegister extends SimplePreparableReloadListener<Json
 
                 key = key.substring(1);
 
-                tags.put(ItemTags.create(new ResourceLocation(key)), value);
+                tags.put(ItemTags.createOptional(new ResourceLocation(key)), value);
 
             } else {
 
@@ -128,7 +128,7 @@ public class RadioactiveItemRegister extends SimplePreparableReloadListener<Json
     public void generateTagValues() {
 
         tags.forEach((tag, value) -> {
-        	ForgeRegistries.ITEMS.tags().getTag(tag).forEach(item -> {
+        	ItemTags.getAllTags().getTag(tag.getName()).getValues().forEach(item -> {
 
                 radioactiveItemMap.put(item, value);
 
@@ -146,7 +146,7 @@ public class RadioactiveItemRegister extends SimplePreparableReloadListener<Json
     private Consumer<OnDatapackSyncEvent> getDatapackSyncListener(final SimpleChannel channel) {
         return event -> {
             generateTagValues();
-            ServerPlayer player = event.getPlayer();
+            ServerPlayerEntity player = event.getPlayer();
             PacketSetClientRadioactiveItems packet = new PacketSetClientRadioactiveItems(radioactiveItemMap);
             PacketTarget target = player == null ? PacketDistributor.ALL.noArg() : PacketDistributor.PLAYER.with(() -> player);
 			channel.send(target, packet);

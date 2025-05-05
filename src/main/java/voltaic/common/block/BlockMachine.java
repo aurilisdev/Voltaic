@@ -1,25 +1,24 @@
 package voltaic.common.block;
 
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockRenderType;
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.item.BlockItemUseContext;
+import net.minecraft.item.ItemStack;
+import net.minecraft.state.StateContainer;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Direction;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockReader;
+import net.minecraft.world.IWorldReader;
+import net.minecraft.world.World;
 import voltaic.api.multiblock.subnodebased.parent.IMultiblockParentBlock;
 import voltaic.api.multiblock.subnodebased.parent.IMultiblockParentTile;
 import voltaic.api.tile.IMachine;
 import voltaic.common.block.states.VoltaicBlockStates;
 import voltaic.prefab.block.GenericMachineBlock;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelReader;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.RenderShape;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.StateDefinition.Builder;
-import net.minecraft.world.phys.HitResult;
+import voltaic.prefab.utilities.BlockEntityUtils;
 
 public class BlockMachine extends GenericMachineBlock implements IMultiblockParentBlock {
 
@@ -35,7 +34,7 @@ public class BlockMachine extends GenericMachineBlock implements IMultiblockPare
     }
 
     @Override
-    public boolean propagatesSkylightDown(BlockState pState, BlockGetter pLevel, BlockPos pPos) {
+    public boolean propagatesSkylightDown(BlockState pState, IBlockReader pLevel, BlockPos pPos) {
         if (machine.propegatesLightDown()) {
             return true;
         }
@@ -43,7 +42,7 @@ public class BlockMachine extends GenericMachineBlock implements IMultiblockPare
     }
 
     @Override
-    public boolean canSurvive(BlockState state, LevelReader worldIn, BlockPos pos) {
+    public boolean canSurvive(BlockState state, IWorldReader worldIn, BlockPos pos) {
 
         if(machine.isMultiblock()) {
             return isValidMultiblockPlacement(state, worldIn, pos, machine.getSubnodes().getSubnodes(state.hasProperty(VoltaicBlockStates.FACING) ? state.getValue(VoltaicBlockStates.FACING) : Direction.NORTH));
@@ -53,40 +52,43 @@ public class BlockMachine extends GenericMachineBlock implements IMultiblockPare
     }
 
     @Override
-    public RenderShape getRenderShape(BlockState state) {
+    public BlockRenderType getRenderShape(BlockState state) {
         return machine.getRenderShape();
     }
 
     @Override
-    public int getLightEmission(BlockState state, BlockGetter world, BlockPos pos) {
+    public int getLightValue(BlockState state, IBlockReader world, BlockPos pos) {
 
         if (machine.getLitBrightness() > 0 && state.hasProperty(VoltaicBlockStates.LIT) && state.getValue(VoltaicBlockStates.LIT)) {
             return machine.getLitBrightness();
         }
 
-        return super.getLightEmission(state, world, pos);
+        return super.getLightValue(state, world, pos);
     }
 
     @Override
-    public void setPlacedBy(Level worldIn, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
+    public void setPlacedBy(World worldIn, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
         super.setPlacedBy(worldIn, pos, state, placer, stack);
-        BlockEntity tile = worldIn.getBlockEntity(pos);
-        if (hasMultiBlock() && tile instanceof IMultiblockParentTile multi) {
+        TileEntity tile = worldIn.getBlockEntity(pos);
+        if (hasMultiBlock() && tile instanceof IMultiblockParentTile) {
+        	IMultiblockParentTile multi = (IMultiblockParentTile) tile;
             multi.onNodePlaced(worldIn, pos, state, placer, stack);
         }
     }
 
     @Override
-    public void onRemove(BlockState state, Level worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
-        BlockEntity tile = worldIn.getBlockEntity(pos);
+    public void onRemove(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
+        TileEntity tile = worldIn.getBlockEntity(pos);
         if (!(state.getBlock() == newState.getBlock() && state.getValue(VoltaicBlockStates.FACING) != newState.getValue(VoltaicBlockStates.FACING))) {
 
-            if (tile instanceof IMultiblockParentTile multi) {
+        	if (hasMultiBlock() && tile instanceof IMultiblockParentTile) {
+            	IMultiblockParentTile multi = (IMultiblockParentTile) tile;
                 multi.onNodeReplaced(worldIn, pos, true);
             }
         }
-        if (newState.isAir()) {
-            if (tile instanceof IMultiblockParentTile multi) {
+        if (newState.isAir(worldIn, pos)) {
+        	if (hasMultiBlock() && tile instanceof IMultiblockParentTile) {
+            	IMultiblockParentTile multi = (IMultiblockParentTile) tile;
                 multi.onNodeReplaced(worldIn, pos, false);
             }
         }
@@ -106,22 +108,22 @@ public class BlockMachine extends GenericMachineBlock implements IMultiblockPare
     }
     
     @Override
-    public ItemStack getCloneItemStack(BlockState state, HitResult target, BlockGetter level, BlockPos pos, Player player) {
-    	ItemStack stack = super.getCloneItemStack(state, target, level, pos, player);
-        BlockEntity tile = level.getBlockEntity(pos);
+    public ItemStack getCloneItemStack(IBlockReader level, BlockPos pos, BlockState state) {
+    	ItemStack stack = super.getCloneItemStack(level, pos, state);
+        TileEntity tile = level.getBlockEntity(pos);
         if (tile != null) {
-            tile.saveToItem(stack);
+        	BlockEntityUtils.saveToItem(tile, stack);
         }
         return stack;
     }
 
     @Override
-    public BlockState getStateForPlacement(BlockPlaceContext context) {
+    public BlockState getStateForPlacement(BlockItemUseContext context) {
         return super.getStateForPlacement(context).setValue(VoltaicBlockStates.LIT, false);
     }
 
     @Override
-    protected void createBlockStateDefinition(Builder<Block, BlockState> builder) {
+    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
         super.createBlockStateDefinition(builder);
         builder.add(VoltaicBlockStates.LIT);
     }

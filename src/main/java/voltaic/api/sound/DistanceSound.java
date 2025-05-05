@@ -1,16 +1,16 @@
 package voltaic.api.sound;
 
+import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
-import net.minecraft.core.BlockPos;
-import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.level.block.Block;
+import net.minecraft.client.audio.TickableSound;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvent;
+import net.minecraft.util.math.BlockPos;
 
-public class DistanceSound extends AbstractTickableSoundInstance {
+public class DistanceSound extends TickableSound {
 	private Block block;
 
-	public DistanceSound(SoundEvent soundIn, SoundSource categoryIn, float volumeIn, float pitchIn, BlockPos pos) {
+	public DistanceSound(SoundEvent soundIn, SoundCategory categoryIn, float volumeIn, float pitchIn, BlockPos pos) {
 		super(soundIn, categoryIn);
 		volume = volumeIn;
 		pitch = pitchIn;
@@ -18,7 +18,7 @@ public class DistanceSound extends AbstractTickableSoundInstance {
 		y = pos.getY();
 		z = pos.getZ();
 		block = Minecraft.getInstance().level.getBlockState(pos).getBlock();
-		attenuation = Attenuation.LINEAR;
+		attenuation = AttenuationType.LINEAR;
 	}
 
 	@Override

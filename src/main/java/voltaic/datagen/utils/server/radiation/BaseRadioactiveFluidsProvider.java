@@ -8,16 +8,16 @@ import voltaic.Voltaic;
 import voltaic.api.radiation.util.RadioactiveObject;
 import voltaic.common.reloadlistener.RadioactiveFluidRegister;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.data.DataProvider;
-import net.minecraft.data.HashCache;
-import net.minecraft.tags.TagKey;
-import net.minecraft.world.level.material.Fluid;
+import net.minecraft.data.DirectoryCache;
+import net.minecraft.data.IDataProvider;
+import net.minecraft.fluid.Fluid;
+import net.minecraft.tags.ITag.INamedTag;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.io.IOException;
 import java.nio.file.Path;
 
-public abstract class BaseRadioactiveFluidsProvider implements DataProvider {
+public abstract class BaseRadioactiveFluidsProvider implements IDataProvider {
 	
 	private static final Gson GSON = (new GsonBuilder()).setPrettyPrinting().disableHtmlEscaping().create();
 
@@ -32,14 +32,14 @@ public abstract class BaseRadioactiveFluidsProvider implements DataProvider {
 	}
 
 	@Override
-	public void run(HashCache cache) {
+	public void run(DirectoryCache cache) {
 		JsonObject json = new JsonObject();
 		getRadioactiveItems(json);
 
 		Path parent = dataGenerator.getOutputFolder().resolve(LOC + ".json");
 		try {
 
-			DataProvider.save(GSON, cache, json, parent);
+			IDataProvider.save(GSON, cache, json, parent);
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -54,9 +54,9 @@ public abstract class BaseRadioactiveFluidsProvider implements DataProvider {
 		json.add(ForgeRegistries.FLUIDS.getKey(fluid).toString(), RadioactiveObject.CODEC.encode(new RadioactiveObject(radiationStrength, radiationAmount), JsonOps.INSTANCE, data).result().get());
 	}
 
-	public void addTag(TagKey<Fluid> tag, double radiationAmount, double radiationStrength, JsonObject json) {
+	public void addTag(INamedTag<Fluid> tag, double radiationAmount, double radiationStrength, JsonObject json) {
 		JsonObject data = new JsonObject();
-		json.add("#" + tag.location().toString(), RadioactiveObject.CODEC.encode(new RadioactiveObject(radiationStrength, radiationAmount), JsonOps.INSTANCE, data).result().get());
+		json.add("#" + tag.getName().toString(), RadioactiveObject.CODEC.encode(new RadioactiveObject(radiationStrength, radiationAmount), JsonOps.INSTANCE, data).result().get());
 	}
 
 	@Override

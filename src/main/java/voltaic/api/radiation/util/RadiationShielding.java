@@ -5,7 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.netty.buffer.ByteBuf;
 import voltaic.api.codec.StreamCodec;
 
-public record RadiationShielding(double amount, double level) {
+public class RadiationShielding {
 
     public static final RadiationShielding ZERO = new RadiationShielding(0, 0);
 
@@ -27,5 +27,21 @@ public record RadiationShielding(double amount, double level) {
 			return new RadiationShielding(buffer.readDouble(), buffer.readDouble());
 		}
 	};
+	
+	private final double amount;
+	private final double level;
+	
+	public RadiationShielding(double amount, double level) {
+		this.amount = amount;
+		this.level = level;
+	}
+	
+	public double amount() {
+		return amount;
+	}
+	
+	public double level() {
+		return level;
+	}
 
 }

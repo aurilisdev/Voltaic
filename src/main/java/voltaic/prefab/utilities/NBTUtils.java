@@ -3,13 +3,14 @@ package voltaic.prefab.utilities;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.core.Direction;
-import net.minecraft.core.Registry;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.Direction;
+import net.minecraft.util.RegistryKey;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.world.World;
+
 
 public class NBTUtils {
 
@@ -34,7 +35,7 @@ public class NBTUtils {
 
 	public static List<Direction> readDirectionList(ItemStack item) {
 		List<Direction> dirs = new ArrayList<>();
-		CompoundTag tag = item.getTag();
+		CompoundNBT tag = item.getTag();
 		int size = tag.getInt(SIZE + DIRECTION);
 		for (int i = 0; i < size; i++) {
 			dirs.add(Direction.valueOf(tag.getString(DIRECTION + i).toUpperCase()));
@@ -44,7 +45,7 @@ public class NBTUtils {
 
 	public static void writeDirectionList(List<Direction> dirs, ItemStack item) {
 		int size = dirs.size();
-		CompoundTag tag = item.getTag();
+		CompoundNBT tag = item.getTag();
 		tag.putInt(SIZE + DIRECTION, size);
 		for (int i = 0; i < size; i++) {
 			tag.putString(DIRECTION + i, dirs.get(i).getName());
@@ -52,7 +53,7 @@ public class NBTUtils {
 	}
 
 	public static void clearDirectionList(ItemStack item) {
-		CompoundTag tag = item.getTag();
+		CompoundNBT tag = item.getTag();
 		int size = tag.getInt(SIZE + DIRECTION);
 		for (int i = 0; i < size; i++) {
 			tag.remove(DIRECTION + i);
@@ -60,14 +61,14 @@ public class NBTUtils {
 		tag.remove(SIZE + DIRECTION);
 	}
 
-	public static CompoundTag writeDimensionToTag(ResourceKey<Level> level) {
-		CompoundTag tag = new CompoundTag();
+	public static CompoundNBT writeDimensionToTag(RegistryKey<World> level) {
+		CompoundNBT tag = new CompoundNBT();
 		tag.putString(DIMENSION, level.location().toString());
 		return tag;
 	}
 
-	public static ResourceKey<Level> readDimensionFromTag(CompoundTag tag) {
-		return ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(tag.getString(DIMENSION)));
+	public static RegistryKey<World> readDimensionFromTag(CompoundNBT tag) {
+		return RegistryKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(tag.getString(DIMENSION)));
 	}
 
 }

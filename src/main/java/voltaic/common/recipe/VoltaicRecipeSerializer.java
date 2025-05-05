@@ -4,16 +4,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nullable;
 
 import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
 
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.GsonHelper;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.IRecipeSerializer;
+import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.JSONUtils;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -24,11 +24,11 @@ import voltaic.common.recipe.recipeutils.FluidIngredient;
 import voltaic.common.recipe.recipeutils.ProbableFluid;
 import voltaic.common.recipe.recipeutils.ProbableItem;
 
-public abstract class VoltaicRecipeSerializer<T extends VoltaicRecipe> extends ForgeRegistryEntry<RecipeSerializer<?>> implements RecipeSerializer<T> {
+public abstract class VoltaicRecipeSerializer<T extends VoltaicRecipe> extends ForgeRegistryEntry<IRecipeSerializer<?>> implements IRecipeSerializer<T> {
 	
-	private final StreamCodec<FriendlyByteBuf, T> streamCodec;
+	private final StreamCodec<PacketBuffer, T> streamCodec;
 	
-	public VoltaicRecipeSerializer(StreamCodec<FriendlyByteBuf, T> streamCodec) {
+	public VoltaicRecipeSerializer(StreamCodec<PacketBuffer, T> streamCodec) {
 		this.streamCodec = streamCodec;
 	}
 
@@ -46,12 +46,12 @@ public abstract class VoltaicRecipeSerializer<T extends VoltaicRecipe> extends F
     public static final String GROUP = "group";
     
     @Override
-    public @Nullable T fromNetwork(ResourceLocation pRecipeId, FriendlyByteBuf pBuffer) {
+    public @Nullable T fromNetwork(ResourceLocation pRecipeId, PacketBuffer pBuffer) {
     	return streamCodec.decode(pBuffer);
     }
     
     @Override
-    public void toNetwork(FriendlyByteBuf pBuffer, T pRecipe) {
+    public void toNetwork(PacketBuffer pBuffer, T pRecipe) {
     	streamCodec.encode(pBuffer, pRecipe);
     }
     
@@ -59,7 +59,7 @@ public abstract class VoltaicRecipeSerializer<T extends VoltaicRecipe> extends F
 		if (!json.has(ITEM_INPUTS)) {
 			throw new UnsupportedOperationException(recipeId.toString() + ": There are no Item Inputs!");
 		}
-		JsonObject itemInputs = GsonHelper.getAsJsonObject(json, ITEM_INPUTS);
+		JsonObject itemInputs = JSONUtils.getAsJsonObject(json, ITEM_INPUTS);
 		if (!itemInputs.has(COUNT)) {
 			throw new UnsupportedOperationException(recipeId.toString() + ": You must include a count field");
 		}
@@ -78,7 +78,7 @@ public abstract class VoltaicRecipeSerializer<T extends VoltaicRecipe> extends F
 		if (!json.has(FLUID_INPUTS)) {
 			throw new UnsupportedOperationException(recipeId.toString() + ": There are no Fluid Inputs!");
 		}
-		JsonObject fluidInputs = GsonHelper.getAsJsonObject(json, FLUID_INPUTS);
+		JsonObject fluidInputs = JSONUtils.getAsJsonObject(json, FLUID_INPUTS);
 		if (!fluidInputs.has(COUNT)) {
 			throw new UnsupportedOperationException(recipeId.toString() + ": You must include a count field");
 		}
@@ -98,7 +98,7 @@ public abstract class VoltaicRecipeSerializer<T extends VoltaicRecipe> extends F
 		if (!json.has(ITEM_BIPRODUCTS)) {
 			return Collections.emptyList();
 		}
-		JsonObject itemBiproducts = GsonHelper.getAsJsonObject(json, ITEM_BIPRODUCTS);
+		JsonObject itemBiproducts = JSONUtils.getAsJsonObject(json, ITEM_BIPRODUCTS);
 
 		if (!itemBiproducts.has(COUNT)) {
 			throw new UnsupportedOperationException(recipeId.toString() + ": You must include a count field");
@@ -119,7 +119,7 @@ public abstract class VoltaicRecipeSerializer<T extends VoltaicRecipe> extends F
 		if (!json.has(FLUID_BIPRODUCTS)) {
 			return Collections.emptyList();
 		}
-		JsonObject fluidBiproducts = GsonHelper.getAsJsonObject(json, FLUID_BIPRODUCTS);
+		JsonObject fluidBiproducts = JSONUtils.getAsJsonObject(json, FLUID_BIPRODUCTS);
 		if (!fluidBiproducts.has(COUNT)) {
 			throw new UnsupportedOperationException(recipeId.toString() + ": You must include a count field");
 		}
@@ -146,8 +146,8 @@ public abstract class VoltaicRecipeSerializer<T extends VoltaicRecipe> extends F
 			throw new UnsupportedOperationException(recipeId.toString() + ": You must include a Fluid output!");
 		}
 		JsonObject fluid = json.get(OUTPUT).getAsJsonObject();
-		ResourceLocation resourceLocation = new ResourceLocation(GsonHelper.getAsString(fluid, "fluid"));
-		int amount = GsonHelper.getAsInt(fluid, "amount");
+		ResourceLocation resourceLocation = new ResourceLocation(JSONUtils.getAsString(fluid, "fluid"));
+		int amount = JSONUtils.getAsInt(fluid, "amount");
 		return new FluidStack(ForgeRegistries.FLUIDS.getValue(resourceLocation), amount);
 	}
 

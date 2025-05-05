@@ -1,15 +1,15 @@
 package voltaic.api.electricity.formatting;
 
-import net.minecraft.network.chat.Component;
+import net.minecraft.util.text.IFormattableTextComponent;
 
 public interface IDisplayUnit {
 
-	public Component getSymbol();
+	public IFormattableTextComponent getSymbol();
 
-	public Component getName();
+	public IFormattableTextComponent getName();
 
-	public Component getNamePlural();
+	public IFormattableTextComponent getNamePlural();
 
-	public Component getDistanceFromValue();
+	public IFormattableTextComponent getDistanceFromValue();
 
 }

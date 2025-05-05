@@ -3,7 +3,7 @@ package voltaic.prefab.screen.component.types;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.matrix.MatrixStack;
 
 import voltaic.Voltaic;
 import voltaic.api.screen.ITexture;
@@ -14,12 +14,11 @@ import voltaic.prefab.inventory.container.slot.utils.IUpgradeSlot;
 import voltaic.prefab.screen.component.ScreenComponentGeneric;
 import voltaic.prefab.utilities.RenderingUtils;
 import voltaic.prefab.utilities.VoltaicTextUtils;
-import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.FormattedCharSequence;
-import net.minecraft.world.inventory.Slot;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.inventory.container.Slot;
+import net.minecraft.util.IReorderingProcessor;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -59,12 +58,12 @@ public class ScreenComponentSlot extends ScreenComponentGeneric {
 	}
 
 	public ScreenComponentSlot setHoverText(Slot slot) {
-		tooltip = () -> slot.getItem().isEmpty() ? TextComponent.EMPTY : slot.getItem().getHoverName();
+		tooltip = () -> slot.getItem().isEmpty() ? VoltaicTextUtils.empty() : slot.getItem().getHoverName().copy();
 		return this;
 	}
 
 	@Override
-	public void renderBackground(PoseStack poseStack, final int xAxis, final int yAxis, final int guiWidth, final int guiHeight) {
+	public void renderBackground(MatrixStack poseStack, final int xAxis, final int yAxis, final int guiWidth, final int guiHeight) {
 		super.renderBackground(poseStack, xAxis, yAxis, guiWidth, guiHeight);
 		if (iconType == IconType.NONE) {
 			return;
@@ -72,23 +71,25 @@ public class ScreenComponentSlot extends ScreenComponentGeneric {
 		int slotXOffset = (slotType.imageWidth() - iconType.imageWidth()) / 2;
 		int slotYOffset = (slotType.imageHeight() - iconType.imageHeight()) / 2;
 		RenderingUtils.bindTexture(iconType.getLocation());
-		blit(poseStack, guiWidth + xLocation + slotXOffset, guiHeight + yLocation + slotYOffset, iconType.textureU(), iconType.textureV(), iconType.textureWidth(), iconType.textureHeight(), iconType.imageWidth(), iconType.imageHeight());
+		blit(poseStack, guiWidth + x + slotXOffset, guiHeight + y + slotYOffset, iconType.textureU(), iconType.textureV(), iconType.textureWidth(), iconType.textureHeight(), iconType.imageWidth(), iconType.imageHeight());
 	}
 
 	@Override
-	public void renderForeground(PoseStack poseStack, int xAxis, int yAxis, int guiWidth, int guiHeight) {
+	public void renderForeground(MatrixStack poseStack, int xAxis, int yAxis, int guiWidth, int guiHeight) {
 		if (!slot.isActive()) {
 			return;
 		}
 		super.renderForeground(poseStack, xAxis, yAxis, guiWidth, guiHeight);
 		if (isHoveredOrFocused()) {
 
-			if (Screen.hasControlDown() && slot instanceof IUpgradeSlot upgrade) {
+			if (Screen.hasControlDown() && slot instanceof IUpgradeSlot) {
+				
+				IUpgradeSlot upgrade = (IUpgradeSlot) slot;
 
-				List<FormattedCharSequence> tooltips = new ArrayList<>();
+				List<IReorderingProcessor> tooltips = new ArrayList<>();
 				tooltips.add(VoltaicTextUtils.tooltip("validupgrades").getVisualOrderText());
 				for (SubtypeItemUpgrade item : upgrade.getUpgrades()) {
-					tooltips.add(item.name.withStyle(ChatFormatting.GRAY).getVisualOrderText());
+					tooltips.add(item.name.withStyle(TextFormatting.GRAY).getVisualOrderText());
 				}
 				gui.displayTooltips(poseStack, tooltips, xAxis, yAxis);
 			}

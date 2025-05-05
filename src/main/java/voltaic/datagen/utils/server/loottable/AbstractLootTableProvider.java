@@ -11,35 +11,34 @@ import java.util.Map;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import net.minecraft.advancements.critereon.EnchantmentPredicate;
-import net.minecraft.advancements.critereon.ItemPredicate;
-import net.minecraft.advancements.critereon.MinMaxBounds;
+import net.minecraft.advancements.criterion.EnchantmentPredicate;
+import net.minecraft.advancements.criterion.ItemPredicate;
+import net.minecraft.advancements.criterion.MinMaxBounds;
+import net.minecraft.block.Block;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.data.DataProvider;
-import net.minecraft.data.HashCache;
-import net.minecraft.data.loot.LootTableProvider;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.enchantment.Enchantments;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.storage.loot.LootPool;
-import net.minecraft.world.level.storage.loot.LootTable;
-import net.minecraft.world.level.storage.loot.LootTables;
-import net.minecraft.world.level.storage.loot.entries.AlternativesEntry;
-import net.minecraft.world.level.storage.loot.entries.DynamicLoot;
-import net.minecraft.world.level.storage.loot.entries.LootItem;
-import net.minecraft.world.level.storage.loot.functions.ApplyBonusCount;
-import net.minecraft.world.level.storage.loot.functions.ApplyExplosionDecay;
-import net.minecraft.world.level.storage.loot.functions.CopyNameFunction;
-import net.minecraft.world.level.storage.loot.functions.CopyNbtFunction;
-import net.minecraft.world.level.storage.loot.functions.SetContainerContents;
-import net.minecraft.world.level.storage.loot.functions.SetItemCountFunction;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
-import net.minecraft.world.level.storage.loot.predicates.MatchTool;
-import net.minecraft.world.level.storage.loot.providers.nbt.ContextNbtProvider;
-import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
-import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
+import net.minecraft.data.DirectoryCache;
+import net.minecraft.data.IDataProvider;
+import net.minecraft.data.LootTableProvider;
+import net.minecraft.enchantment.Enchantments;
+import net.minecraft.item.Item;
+import net.minecraft.loot.AlternativesLootEntry;
+import net.minecraft.loot.ConstantRange;
+import net.minecraft.loot.DynamicLootEntry;
+import net.minecraft.loot.ItemLootEntry;
+import net.minecraft.loot.LootParameterSets;
+import net.minecraft.loot.LootPool;
+import net.minecraft.loot.LootTable;
+import net.minecraft.loot.LootTableManager;
+import net.minecraft.loot.RandomValueRange;
+import net.minecraft.loot.conditions.MatchTool;
+import net.minecraft.loot.functions.ApplyBonus;
+import net.minecraft.loot.functions.CopyName;
+import net.minecraft.loot.functions.CopyNbt;
+import net.minecraft.loot.functions.ExplosionDecay;
+import net.minecraft.loot.functions.SetContents;
+import net.minecraft.loot.functions.SetCount;
+import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.ResourceLocation;
 
 public abstract class AbstractLootTableProvider extends LootTableProvider {
 	
@@ -55,16 +54,16 @@ public abstract class AbstractLootTableProvider extends LootTableProvider {
 		this.modID = modID;
 	}
 
-	public LootTable.Builder machineTable(String name, Block block, BlockEntityType<?> type, boolean items, boolean fluids, boolean gases, boolean energy, boolean additional) {
-		CopyNbtFunction.Builder function = CopyNbtFunction.copyData(ContextNbtProvider.BLOCK_ENTITY);
+	public LootTable.Builder machineTable(String name, Block block, TileEntityType<?> type, boolean items, boolean fluids, boolean gases, boolean energy, boolean additional) {
+		CopyNbt.Builder function = CopyNbt.copyData(CopyNbt.Source.BLOCK_ENTITY);
 
 		if (items) {
-			function = function.copy("Items", "BlockEntityTag", CopyNbtFunction.MergeStrategy.REPLACE);
-			function = function.copy(ComponentInventory.SAVE_KEY + "_size", "BlockEntityTag", CopyNbtFunction.MergeStrategy.REPLACE);
+			function = function.copy("Items", "BlockEntityTag", CopyNbt.Action.REPLACE);
+			function = function.copy(ComponentInventory.SAVE_KEY + "_size", "BlockEntityTag", CopyNbt.Action.REPLACE);
 		}
 
 		if (fluids) {
-			function = function.copy("fluid", "BlockEntityTag", CopyNbtFunction.MergeStrategy.REPLACE);
+			function = function.copy("fluid", "BlockEntityTag", CopyNbt.Action.REPLACE);
 		}
 
 		if (gases) {
@@ -72,16 +71,16 @@ public abstract class AbstractLootTableProvider extends LootTableProvider {
 		}
 
 		if (energy) {
-			function = function.copy("joules", "BlockEntityTag.joules", CopyNbtFunction.MergeStrategy.REPLACE);
+			function = function.copy("joules", "BlockEntityTag.joules", CopyNbt.Action.REPLACE);
 		}
 
 		if (additional) {
-			function = function.copy("additional", "BlockEntityTag.additional", CopyNbtFunction.MergeStrategy.REPLACE);
+			function = function.copy("additional", "BlockEntityTag.additional", CopyNbt.Action.REPLACE);
 		}
 
-		LootPool.Builder builder = LootPool.lootPool().name(name).setRolls(ConstantValue.exactly(1)).add(
+		LootPool.Builder builder = LootPool.lootPool().name(name).setRolls(ConstantRange.exactly(1)).add(
 				//
-				LootItem.lootTableItem(block).apply(CopyNameFunction.copyName(CopyNameFunction.NameSource.BLOCK_ENTITY)).apply(function).apply(SetContainerContents.setContents(type).withEntry(DynamicLoot.dynamicEntry(new ResourceLocation("minecraft", "contents"))))
+				ItemLootEntry.lootTableItem(block).apply(CopyName.copyName(CopyName.Source.BLOCK_ENTITY)).apply(function).apply(SetContents.setContents().withEntry(DynamicLootEntry.dynamicEntry(new ResourceLocation("minecraft", "contents"))))
 		//
 		);
 		return LootTable.lootTable().withPool(builder);
@@ -102,21 +101,21 @@ public abstract class AbstractLootTableProvider extends LootTableProvider {
 				//
 				.name(name)
 				//
-				.setRolls(ConstantValue.exactly(1))
+				.setRolls(ConstantRange.exactly(1))
 				//
 				.add(
 						//
-						AlternativesEntry.alternatives(
+						AlternativesLootEntry.alternatives(
 								//
-								LootItem.lootTableItem(block).when(MatchTool.toolMatches(ItemPredicate.Builder.item().hasEnchantment(new EnchantmentPredicate(Enchantments.SILK_TOUCH, MinMaxBounds.Ints.atLeast(1))))),
+								ItemLootEntry.lootTableItem(block).when(MatchTool.toolMatches(ItemPredicate.Builder.item().hasEnchantment(new EnchantmentPredicate(Enchantments.SILK_TOUCH, MinMaxBounds.IntBound.atLeast(1))))),
 								//
-								LootItem.lootTableItem(lootItem)
+								ItemLootEntry.lootTableItem(lootItem)
 										//
-										.apply(SetItemCountFunction.setCount(UniformGenerator.between(min, max)))
+										.apply(SetCount.setCount(RandomValueRange.between(min, max)))
 										//
-										.apply(ApplyBonusCount.addUniformBonusCount(Enchantments.BLOCK_FORTUNE, 1))
+										.apply(ApplyBonus.addUniformBonusCount(Enchantments.BLOCK_FORTUNE, 1))
 										//
-										.apply(ApplyExplosionDecay.explosionDecay())
+										.apply(ExplosionDecay.explosionDecay())
 						//
 						)
 				//
@@ -132,24 +131,24 @@ public abstract class AbstractLootTableProvider extends LootTableProvider {
 	 * @author SeaRobber69
 	 */
 	protected LootTable.Builder createSilkTouchOnlyTable(String name, Block block) {
-		LootPool.Builder builder = LootPool.lootPool().name(name).setRolls(ConstantValue.exactly(1)).add(LootItem.lootTableItem(block).when(MatchTool.toolMatches(ItemPredicate.Builder.item().hasEnchantment(new EnchantmentPredicate(Enchantments.SILK_TOUCH, MinMaxBounds.Ints.atLeast(1)))))
+		LootPool.Builder builder = LootPool.lootPool().name(name).setRolls(ConstantRange.exactly(1)).add(ItemLootEntry.lootTableItem(block).when(MatchTool.toolMatches(ItemPredicate.Builder.item().hasEnchantment(new EnchantmentPredicate(Enchantments.SILK_TOUCH, MinMaxBounds.IntBound.atLeast(1)))))
 
 		);
 		return LootTable.lootTable().withPool(builder);
 	}
 
 	protected LootTable.Builder createSimpleBlockTable(String name, Block block) {
-		LootPool.Builder builder = LootPool.lootPool().name(name).setRolls(ConstantValue.exactly(1)).add(LootItem.lootTableItem(block));
+		LootPool.Builder builder = LootPool.lootPool().name(name).setRolls(ConstantRange.exactly(1)).add(ItemLootEntry.lootTableItem(block));
 		return LootTable.lootTable().withPool(builder);
 	}
 
 	@Override
-	public void run(HashCache cache) {
+	public void run(DirectoryCache cache) {
 		addTables();
 
 		Map<ResourceLocation, LootTable> tables = new HashMap<>();
 		for (Map.Entry<Block, LootTable.Builder> entry : lootTables.entrySet()) {
-			tables.put(entry.getKey().getLootTable(), entry.getValue().setParamSet(LootContextParamSets.BLOCK).build());
+			tables.put(entry.getKey().getLootTable(), entry.getValue().setParamSet(LootParameterSets.BLOCK).build());
 		}
 
 		Path outputFolder = generator.getOutputFolder();
@@ -157,7 +156,7 @@ public abstract class AbstractLootTableProvider extends LootTableProvider {
 			Path path = outputFolder.resolve("data/" + key.getNamespace() + "/loot_tables/" + key.getPath() + ".json");
 			try {
 				
-				DataProvider.save(GSON, cache, LootTables.serialize(lootTable), path);
+				IDataProvider.save(GSON, cache, LootTableManager.serialize(lootTable), path);
 				
 			} catch (IOException e) {
 				Voltaic.LOGGER.error("Couldn't write loot table {}", path, e);

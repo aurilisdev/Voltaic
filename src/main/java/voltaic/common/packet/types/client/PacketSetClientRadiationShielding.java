@@ -2,18 +2,19 @@ package voltaic.common.packet.types.client;
 
 import voltaic.api.codec.StreamCodec;
 import voltaic.api.radiation.util.RadiationShielding;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.level.block.Block;
-import net.minecraftforge.network.NetworkEvent.Context;
 
 import java.util.HashMap;
 import java.util.function.Supplier;
 
+import net.minecraft.block.Block;
+import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.fml.network.NetworkEvent.Context;
+
 public class PacketSetClientRadiationShielding {
 
-	public static final StreamCodec<FriendlyByteBuf, PacketSetClientRadiationShielding> CODEC = new StreamCodec<FriendlyByteBuf, PacketSetClientRadiationShielding>() {
+	public static final StreamCodec<PacketBuffer, PacketSetClientRadiationShielding> CODEC = new StreamCodec<PacketBuffer, PacketSetClientRadiationShielding>() {
 		@Override
-		public PacketSetClientRadiationShielding decode(FriendlyByteBuf buf) {
+		public PacketSetClientRadiationShielding decode(PacketBuffer buf) {
 			int count = buf.readInt();
 			HashMap<Block, RadiationShielding> values = new HashMap<>();
 			for (int i = 0; i < count; i++) {
@@ -23,7 +24,7 @@ public class PacketSetClientRadiationShielding {
 		}
 
 		@Override
-		public void encode(FriendlyByteBuf buf, PacketSetClientRadiationShielding packet) {
+		public void encode(PacketBuffer buf, PacketSetClientRadiationShielding packet) {
 			buf.writeInt(packet.shielding.size());
 			packet.shielding.forEach((block, value) -> {
 				StreamCodec.BLOCK.encode(buf, block);
@@ -48,11 +49,11 @@ public class PacketSetClientRadiationShielding {
 		ctx.setPacketHandled(true);
 	}
 
-	public static void encode(PacketSetClientRadiationShielding message, FriendlyByteBuf buf) {
+	public static void encode(PacketSetClientRadiationShielding message, PacketBuffer buf) {
 		CODEC.encode(buf, message);
 	}
 
-	public static PacketSetClientRadiationShielding decode(FriendlyByteBuf buf) {
+	public static PacketSetClientRadiationShielding decode(PacketBuffer buf) {
 		return CODEC.decode(buf);
 	}
 

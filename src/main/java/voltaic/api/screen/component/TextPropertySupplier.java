@@ -2,9 +2,9 @@ package voltaic.api.screen.component;
 
 import java.util.List;
 
-import net.minecraft.util.FormattedCharSequence;
+import net.minecraft.util.IReorderingProcessor;
 
 @FunctionalInterface
 public interface TextPropertySupplier {
-	List<? extends FormattedCharSequence> getInfo();
+	List<? extends IReorderingProcessor> getInfo();
 }

@@ -31,9 +31,9 @@ import voltaic.prefab.tile.components.IComponentType;
 import voltaic.prefab.utilities.ItemUtils;
 import voltaic.prefab.utilities.NBTUtils;
 import voltaic.prefab.utilities.math.MathUtils;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.IRecipeType;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
@@ -98,12 +98,15 @@ public class ComponentProcessor implements IComponent {
         ComponentInventory inv = holder.getComponent(IComponentType.Inventory);
 
         for (ItemStack stack : inv.getUpgradeContents()) {
-            if (!stack.isEmpty() && stack.getItem() instanceof ItemUpgrade upgrade && !upgrade.subtype.isEmpty) {
-                for (int i = 0; i < stack.getCount(); i++) {
-                    for(int j = 0; j < numProcessors; j++) {
-                        upgrade.subtype.applyUpgrade.accept(getHolder(), stack, j);
+            if (!stack.isEmpty() && stack.getItem() instanceof ItemUpgrade) {
+            	ItemUpgrade upgrade = (ItemUpgrade) stack.getItem();
+            	if(!upgrade.subtype.isEmpty) {
+            		for (int i = 0; i < stack.getCount(); i++) {
+                        for(int j = 0; j < numProcessors; j++) {
+                            upgrade.subtype.applyUpgrade.accept(getHolder(), stack, j);
+                        }
                     }
-                }
+            	}
             }
         }
 
@@ -266,7 +269,7 @@ public class ComponentProcessor implements IComponent {
         shouldKeepProgress.setValue(should, index);
     }
 
-    public boolean canProcessItem2ItemRecipe(int procNumber, RecipeType<?> typeIn) {
+    public boolean canProcessItem2ItemRecipe(int procNumber, IRecipeType<?> typeIn) {
         Item2ItemRecipe locRecipe;
         if (!checkExistingRecipe(procNumber)) {
             setShouldKeepProgress(false, procNumber);
@@ -320,7 +323,7 @@ public class ComponentProcessor implements IComponent {
         return true;
     }
 
-    public boolean canProcessFluid2ItemRecipe(int procNumber, RecipeType<?> typeIn) {
+    public boolean canProcessFluid2ItemRecipe(int procNumber, IRecipeType<?> typeIn) {
         Fluid2ItemRecipe locRecipe;
         if (!checkExistingRecipe(procNumber)) {
             setShouldKeepProgress(false, procNumber);
@@ -373,7 +376,7 @@ public class ComponentProcessor implements IComponent {
         return true;
     }
 
-    public boolean canProcessFluid2FluidRecipe(int procNumber, RecipeType<?> typeIn) {
+    public boolean canProcessFluid2FluidRecipe(int procNumber, IRecipeType<?> typeIn) {
         Fluid2FluidRecipe locRecipe;
         if (!checkExistingRecipe(procNumber)) {
             setShouldKeepProgress(false, procNumber);
@@ -418,7 +421,7 @@ public class ComponentProcessor implements IComponent {
         return true;
     }
 
-    public boolean canProcessItem2FluidRecipe(int procNumber, RecipeType<?> typeIn) {
+    public boolean canProcessItem2FluidRecipe(int procNumber, IRecipeType<?> typeIn) {
         Item2FluidRecipe locRecipe;
         if (!checkExistingRecipe(procNumber)) {
             setShouldKeepProgress(false, procNumber);
@@ -463,7 +466,7 @@ public class ComponentProcessor implements IComponent {
         return true;
     }
 
-    public boolean canProcessFluidItem2FluidRecipe(int procNumber, RecipeType<?> typeIn) {
+    public boolean canProcessFluidItem2FluidRecipe(int procNumber, IRecipeType<?> typeIn) {
         FluidItem2FluidRecipe locRecipe;
         if (!checkExistingRecipe(procNumber)) {
             setShouldKeepProgress(false, procNumber);
@@ -508,7 +511,7 @@ public class ComponentProcessor implements IComponent {
         return true;
     }
 
-    public boolean canProcessFluidItem2ItemRecipe(int procNumber, RecipeType<?> typeIn) {
+    public boolean canProcessFluidItem2ItemRecipe(int procNumber, IRecipeType<?> typeIn) {
         FluidItem2ItemRecipe locRecipe;
         if (!checkExistingRecipe(procNumber)) {
             setShouldKeepProgress(false, procNumber);
@@ -850,7 +853,7 @@ public class ComponentProcessor implements IComponent {
             if (!stack.isEmpty()) {
                 ItemUpgrade upgrade = (ItemUpgrade) stack.getItem();
                 if (upgrade.subtype == SubtypeItemUpgrade.experience) {
-                	CompoundTag tag = stack.getOrCreateTag();
+                	CompoundNBT tag = stack.getOrCreateTag();
 					tag.putDouble(NBTUtils.XP, tag.getDouble(NBTUtils.XP) + getStoredXp());
 					setStoredXp(0);
                     break;
@@ -896,9 +899,9 @@ public class ComponentProcessor implements IComponent {
     }
 
     @Nullable
-    public VoltaicRecipe getRecipe(RecipeType<?> typeIn, int index) {
+    public VoltaicRecipe getRecipe(IRecipeType<?> typeIn, int index) {
         if (cachedRecipes.isEmpty()) {
-            cachedRecipes = VoltaicRecipe.findRecipesbyType((RecipeType<VoltaicRecipe>) typeIn, getHolder().getLevel());
+            cachedRecipes = VoltaicRecipe.findRecipesbyType((IRecipeType<VoltaicRecipe>) typeIn, getHolder().getLevel());
         }
         return VoltaicRecipe.getRecipe(this, cachedRecipes, index);
     }
@@ -912,15 +915,19 @@ public class ComponentProcessor implements IComponent {
         if (inv.getUpgradeContents().size() > 0 && (slot >= inv.getUpgradeSlotStartIndex() || slot == -1)) {
             operatingSpeed.setValue(1.0);
             for (ItemStack stack : inv.getUpgradeContents()) {
-                if (!stack.isEmpty() && stack.getItem() instanceof ItemUpgrade upgrade && upgrade.subtype.isEmpty) {
-                    for (int i = 0; i < stack.getCount(); i++) {
-                        if (upgrade.subtype == SubtypeItemUpgrade.basicspeed) {
-                            operatingSpeed.setValue(Math.min(operatingSpeed.getValue() * 1.5, Math.pow(1.5, 3)));
-                        } else if (upgrade.subtype == SubtypeItemUpgrade.advancedspeed) {
-                            operatingSpeed.setValue(Math.min(operatingSpeed.getValue() * 2.25, Math.pow(2.25, 3)));
-                        }
-                    }
-                }
+            	if (!stack.isEmpty() && stack.getItem() instanceof ItemUpgrade) {
+					ItemUpgrade upgrade = (ItemUpgrade) stack.getItem();
+					if (upgrade.subtype.isEmpty) {
+						for (int i = 0; i < stack.getCount(); i++) {
+							if (upgrade.subtype == SubtypeItemUpgrade.basicspeed) {
+								operatingSpeed.setValue(Math.min(operatingSpeed.getValue() * 1.5, Math.pow(1.5, 3)));
+							} else if (upgrade.subtype == SubtypeItemUpgrade.advancedspeed) {
+								operatingSpeed.setValue(Math.min(operatingSpeed.getValue() * 2.25, Math.pow(2.25, 3)));
+							}
+						}
+					}
+
+				}
             }
 
             if (holder.hasComponent(IComponentType.Electrodynamic)) {

@@ -7,9 +7,9 @@ import java.util.function.Predicate;
 import voltaic.api.screen.ITexture;
 import voltaic.api.screen.component.ISlotTexture;
 import voltaic.prefab.inventory.container.slot.item.SlotGeneric;
-import net.minecraft.world.Container;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.capabilities.Capability;
 
 public class SlotRestricted extends SlotGeneric {
@@ -20,11 +20,11 @@ public class SlotRestricted extends SlotGeneric {
 
     private Predicate<ItemStack> mayPlace = stack -> false;
 
-    public SlotRestricted(Container inventory, int index, int x, int y) {
+    public SlotRestricted(IInventory inventory, int index, int x, int y) {
         super(inventory, index, x, y);
     }
 
-    public SlotRestricted(ISlotTexture slot, ITexture icon, Container inv, int index, int x, int y) {
+    public SlotRestricted(ISlotTexture slot, ITexture icon, IInventory inv, int index, int x, int y) {
         super(slot, icon, inv, index, x, y);
     }
 

@@ -1,15 +1,13 @@
 package voltaic.prefab.screen.component.utils;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.matrix.MatrixStack;
 
+import net.minecraft.client.gui.widget.Widget;
+import net.minecraft.client.renderer.Rectangle2d;
+import net.minecraft.util.IReorderingProcessor;
+import net.minecraft.util.text.ITextComponent;
 import voltaic.api.screen.IScreenWrapper;
-import net.minecraft.client.gui.GuiComponent;
-import net.minecraft.client.gui.components.Widget;
-import net.minecraft.client.gui.components.events.GuiEventListener;
-import net.minecraft.client.gui.narration.NarratableEntry;
-import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.network.chat.Component;
+import voltaic.prefab.utilities.VoltaicTextUtils;
 
 /**
  * 
@@ -20,29 +18,14 @@ import net.minecraft.network.chat.Component;
  *         Original Author : AurilisDev
  *
  */
-public abstract class AbstractScreenComponent extends GuiComponent implements GuiEventListener, Widget, NarratableEntry {
+public abstract class AbstractScreenComponent extends Widget {
 
-	public int xLocation;
-	public int yLocation;
-
-	public int width;
-	public int height;
-
-	private boolean isVisible = true;
-	private boolean isActive = true;
-
-	private boolean isHovered = false;
-	private boolean isFocused = false;
-
+	private boolean isFocused;
 	public IScreenWrapper gui;
 
 	public AbstractScreenComponent(int x, int y, int width, int height) {
 
-		xLocation = x;
-		yLocation = y;
-
-		this.width = width;
-		this.height = height;
+		super(x, y, width, height, VoltaicTextUtils.empty());
 	}
 
 	/*
@@ -56,7 +39,7 @@ public abstract class AbstractScreenComponent extends GuiComponent implements Gu
 	}
 
 	@Override
-	public void render(PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
+	public void render(MatrixStack poseStack, int mouseX, int mouseY, float partialTick) {
 		if (isVisible()) {
 			setHovered(isMouseOver(mouseX, mouseY));
 			int guiWidth = (int) gui.getGuiWidth();
@@ -66,15 +49,15 @@ public abstract class AbstractScreenComponent extends GuiComponent implements Gu
 
 	}
 
-	public void renderBackground(PoseStack poseStack, int xAxis, int yAxis, int guiWidth, int guiHeight) {
+	public void renderBackground(MatrixStack poseStack, int xAxis, int yAxis, int guiWidth, int guiHeight) {
 
 	}
 
-	public void renderForeground(PoseStack poseStack, int xAxis, int yAxis, int guiWidth, int guiHeight) {
+	public void renderForeground(MatrixStack poseStack, int xAxis, int yAxis, int guiWidth, int guiHeight) {
 
 	}
 
-	public void renderBoundedText(PoseStack poseStack, Component text, int x, int y, int color, int maxLength) {
+	public void renderBoundedText(MatrixStack poseStack, IReorderingProcessor text, int x, int y, int color, int maxLength) {
 		int length = gui.getFontRenderer().width(text);
 
 		if (length <= maxLength) {
@@ -96,11 +79,11 @@ public abstract class AbstractScreenComponent extends GuiComponent implements Gu
 
 	@Override
 	public boolean isMouseOver(double mouseX, double mouseY) {
-		return isPointInRegion(xLocation, yLocation, mouseX - gui.getGuiWidth(), mouseY - gui.getGuiHeight(), width, height);
+		return isPointInRegion(x, y, mouseX - gui.getGuiWidth(), mouseY - gui.getGuiHeight(), width, height);
 	}
 
-	public Rect2i getClickArea() {
-		return new Rect2i(xLocation + (int) gui.getGuiWidth(), yLocation + (int) gui.getGuiHeight(), width, height);
+	public Rectangle2d getClickArea() {
+		return new Rectangle2d(x + (int) gui.getGuiWidth(), y + (int) gui.getGuiHeight(), width, height);
 	}
 
 	/*
@@ -162,20 +145,19 @@ public abstract class AbstractScreenComponent extends GuiComponent implements Gu
 	}
 
 	public void setVisible(boolean isVisible) {
-		this.isVisible = isVisible;
+		this.visible = isVisible;
 	}
 
 	public boolean isVisible() {
-		return isVisible;
+		return visible;
 	}
 
 	public void setActive(boolean isActive) {
-		this.isActive = isActive;
+		this.active = isActive;
 	}
 
-	@Override
 	public boolean isActive() {
-		return isActive;
+		return active;
 	}
 
 	public void setHovered(boolean isHovered) {
@@ -208,14 +190,6 @@ public abstract class AbstractScreenComponent extends GuiComponent implements Gu
 	}
 
 	@Override
-	public NarrationPriority narrationPriority() {
-		if (isFocused()) {
-			return NarratableEntry.NarrationPriority.FOCUSED;
-		}
-		return isHovered() ? NarratableEntry.NarrationPriority.HOVERED : NarratableEntry.NarrationPriority.NONE;
-	}
-
-	@Override
 	public boolean changeFocus(boolean pFocus) {
 		if (isActive() && isVisible()) {
 			setFocused(!isFocused());
@@ -225,14 +199,9 @@ public abstract class AbstractScreenComponent extends GuiComponent implements Gu
 		return false;
 	}
 
-	@Override
-	public void updateNarration(NarrationElementOutput pNarrationElementOutput) {
-
-	}
-
 	public static interface OnTooltip {
 
-		public void onTooltip(PoseStack poseStack, AbstractScreenComponent component, int xAxis, int yAxis);
+		public void onTooltip(MatrixStack poseStack, AbstractScreenComponent component, int xAxis, int yAxis);
 
 	}
 

@@ -2,13 +2,13 @@ package voltaic.common.item;
 
 import java.util.function.Supplier;
 
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.item.ItemEntity;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
 import voltaic.api.radiation.RadiationSystem;
 import voltaic.api.radiation.SimpleRadiationSource;
 import voltaic.api.radiation.util.IRadiationRecipient;
@@ -19,26 +19,27 @@ import voltaic.registers.VoltaicCapabilities;
 
 public class ItemRadioactive extends ItemVoltaic {
 
-    public ItemRadioactive(Item.Properties properties, Supplier<CreativeModeTab> creativeTab) {
+    public ItemRadioactive(Item.Properties properties, Supplier<ItemGroup> creativeTab) {
         super(properties, creativeTab);
     }
 
     @Override
     public boolean onEntityItemUpdate(ItemStack stack, ItemEntity entity) {
-        Level world = entity.level;
+        World world = entity.level;
         RadioactiveObject rad = RadioactiveItemRegister.getValue(stack.getItem());
         double amount = stack.getCount() * rad.amount();
         int range = (int) (Math.sqrt(amount) / (5 * Math.sqrt(2)) * 1.25);
-        RadiationSystem.addRadiationSource(world, new SimpleRadiationSource(amount, rad.strength(), range, true, 0, entity.getOnPos(), false));
+        RadiationSystem.addRadiationSource(world, new SimpleRadiationSource(amount, rad.strength(), range, true, 0, entity.blockPosition(), false));
         return super.onEntityItemUpdate(stack, entity);
     }
 
     @Override
-    public void inventoryTick(ItemStack stack, Level world, Entity entity, int itemSlot, boolean isSelected) {
+    public void inventoryTick(ItemStack stack, World world, Entity entity, int itemSlot, boolean isSelected) {
         super.inventoryTick(stack, world, entity, itemSlot, isSelected);
         RadioactiveObject rad = RadioactiveItemRegister.getValue(stack.getItem());
 
-        if (entity instanceof LivingEntity living) {
+        if (entity instanceof LivingEntity) {
+        	LivingEntity living = (LivingEntity) entity;
             IRadiationRecipient cap = living.getCapability(VoltaicCapabilities.CAPABILITY_RADIATIONRECIPIENT).orElse(CapabilityUtils.EMPTY_RADIATION_REPIPIENT);
             if (cap == CapabilityUtils.EMPTY_RADIATION_REPIPIENT) {
                 return;

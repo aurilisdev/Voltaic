@@ -2,7 +2,7 @@ package voltaic.datagen.utils.server.recipe;
 
 import com.google.gson.JsonObject;
 
-import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.registries.ForgeRegistries;
 import voltaic.common.recipe.VoltaicRecipeSerializer;
@@ -11,7 +11,7 @@ public class FinishedRecipeFluidOutput extends FinishedRecipeBase {
 
 	private FluidStack output;
 
-	private FinishedRecipeFluidOutput(RecipeSerializer<?> serializer, FluidStack stack, double experience, int processTime, double usage) {
+	private FinishedRecipeFluidOutput(IRecipeSerializer<?> serializer, FluidStack stack, double experience, int processTime, double usage) {
 		super(serializer, experience, processTime, usage);
 		output = stack;
 	}
@@ -29,7 +29,7 @@ public class FinishedRecipeFluidOutput extends FinishedRecipeBase {
 		return (FinishedRecipeFluidOutput) super.name(category, parent, name);
 	}
 
-	public static FinishedRecipeFluidOutput of(RecipeSerializer<?> serializer, FluidStack output, double experience, int processTime, double usage) {
+	public static FinishedRecipeFluidOutput of(IRecipeSerializer<?> serializer, FluidStack output, double experience, int processTime, double usage) {
 		return new FinishedRecipeFluidOutput(serializer, output, experience, processTime, usage);
 	}
 

@@ -1,14 +1,14 @@
 package voltaic.api.electricity;
 
+import net.minecraft.block.Blocks;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Direction;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.Explosion.Mode;
+import net.minecraft.world.World;
 import voltaic.prefab.tile.components.type.ComponentElectrodynamic;
 import voltaic.prefab.utilities.object.TransferPack;
 import voltaic.registers.VoltaicCapabilities;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.Explosion.BlockInteraction;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.entity.BlockEntity;
 
 /**
  * CONVENTION NOTE: A VOLTAGE OF -1 INDICATES THIS ENTITY SHOULD NOT HAVE VOLTAGE CONSIDERED WHEN INTERACTING WITH IT
@@ -155,18 +155,19 @@ public interface ICapabilityElectrodynamic {
 	 * @param transfer
 	 */
 	default void overVoltage(TransferPack transfer) {
-		if (this instanceof BlockEntity tile) {
-			Level world = tile.getLevel();
+		if (this instanceof TileEntity) {
+			TileEntity tile = (TileEntity) this;
+			World world = tile.getLevel();
 			BlockPos pos = tile.getBlockPos();
 			world.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
-			world.explode(null, pos.getX(), pos.getY(), pos.getZ(), (float) Math.log10(10 + transfer.getVoltage() / getVoltage()), BlockInteraction.BREAK);
-		} else if (this instanceof ComponentElectrodynamic electro) {
-			BlockEntity tile = electro.getHolder();
+			world.explode(null, pos.getX(), pos.getY(), pos.getZ(), (float) Math.log10(10 + transfer.getVoltage() / getVoltage()), Mode.BREAK);
+		} else if (this instanceof ComponentElectrodynamic) {
+			TileEntity tile = ((ComponentElectrodynamic) this).getHolder();
 			if (tile != null) {
-				Level world = tile.getLevel();
+				World world = tile.getLevel();
 				BlockPos pos = tile.getBlockPos();
 				world.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
-				world.explode(null, pos.getX(), pos.getY(), pos.getZ(), (float) Math.log10(10 + transfer.getVoltage() / getVoltage()), BlockInteraction.BREAK);
+				world.explode(null, pos.getX(), pos.getY(), pos.getZ(), (float) Math.log10(10 + transfer.getVoltage() / getVoltage()), Mode.BREAK);
 			}
 		}
 	}
@@ -193,7 +194,23 @@ public interface ICapabilityElectrodynamic {
 	 * @author skip999
 	 *
 	 */
-	public static final record LoadProfile(TransferPack lastUsage, TransferPack maximumAvailable) {
+	public static final class LoadProfile {
+		
+		private final TransferPack lastUsage;
+		private final TransferPack maximumAvilable;
+		
+		public LoadProfile(TransferPack lastUsage, TransferPack maximumAvailable) {
+			this.lastUsage = lastUsage;
+			this.maximumAvilable = maximumAvailable;
+		}
+		
+		public TransferPack lastUsage() {
+			return lastUsage;
+		}
+		
+		public TransferPack maximumAvailable() {
+			return maximumAvilable;
+		}
 
 	}
 

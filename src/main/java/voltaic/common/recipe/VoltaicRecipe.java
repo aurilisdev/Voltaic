@@ -14,18 +14,18 @@ import voltaic.common.recipe.recipeutils.FluidIngredient;
 import voltaic.common.recipe.recipeutils.ProbableFluid;
 import voltaic.common.recipe.recipeutils.ProbableItem;
 import voltaic.prefab.tile.components.type.ComponentProcessor;
-import net.minecraft.core.NonNullList;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.Recipe;
-import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraft.world.level.Level;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.item.crafting.IRecipeType;
+import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.util.NonNullList;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
 import net.minecraftforge.items.wrapper.RecipeWrapper;
 
-public abstract class VoltaicRecipe implements Recipe<RecipeWrapper> {
+public abstract class VoltaicRecipe implements IRecipe<RecipeWrapper> {
 
     private final ResourceLocation group;
 
@@ -55,7 +55,7 @@ public abstract class VoltaicRecipe implements Recipe<RecipeWrapper> {
      * NEVER USE THIS METHOD!
      */
     @Override
-    public boolean matches(RecipeWrapper pContainer, Level pLevel) {
+    public boolean matches(RecipeWrapper pContainer, World pLevel) {
     	// TODO Auto-generated method stub
     	return false;
     }
@@ -153,8 +153,8 @@ public abstract class VoltaicRecipe implements Recipe<RecipeWrapper> {
         return gasArrangement;
     }
 
-    public static List<VoltaicRecipe> findRecipesbyType(RecipeType<? extends VoltaicRecipe> typeIn, Level world) {
-        return world != null ? world.getRecipeManager().getAllRecipesFor((RecipeType<VoltaicRecipe>) typeIn) : Collections.emptyList();
+    public static List<VoltaicRecipe> findRecipesbyType(IRecipeType<? extends VoltaicRecipe> typeIn, World world) {
+        return world != null ? world.getRecipeManager().getAllRecipesFor((IRecipeType<VoltaicRecipe>) typeIn) : Collections.emptyList();
     }
 
     @Nullable

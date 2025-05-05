@@ -1,14 +1,14 @@
 package voltaic.api.electricity.formatting;
 
-import net.minecraft.network.chat.Component;
+import net.minecraft.util.text.IFormattableTextComponent;
 
 public class MeasurementUnit implements IMeasurementUnit {
 
     private final double value;
-    private final Component symbol;
-    private final Component name;
+    private final IFormattableTextComponent symbol;
+    private final IFormattableTextComponent name;
 
-    public MeasurementUnit(Component name, Component symbol, double value) {
+    public MeasurementUnit(IFormattableTextComponent name, IFormattableTextComponent symbol, double value) {
         this.name = name;
         this.symbol = symbol;
         this.value = value;
@@ -20,12 +20,12 @@ public class MeasurementUnit implements IMeasurementUnit {
     }
 
     @Override
-    public Component getSymbol() {
+    public IFormattableTextComponent getSymbol() {
         return symbol;
     }
 
     @Override
-    public Component getName() {
+    public IFormattableTextComponent getName() {
         return name;
     }
 }

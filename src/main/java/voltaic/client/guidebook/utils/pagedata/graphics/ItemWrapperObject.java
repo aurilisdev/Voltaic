@@ -1,11 +1,10 @@
 package voltaic.client.guidebook.utils.pagedata.graphics;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
+
+import net.minecraft.item.Item;
 import voltaic.client.guidebook.utils.components.Page;
 import voltaic.prefab.utilities.RenderingUtils;
-
-import com.mojang.blaze3d.vertex.PoseStack;
-
-import net.minecraft.world.item.Item;
 
 /**
  * A simple wrapper class that contains render data for an item or block on the Guidebook screen The class is capable of displaying items/blocks as well as text descriptors for said items/blocks
@@ -25,7 +24,7 @@ public class ItemWrapperObject extends AbstractGraphicWrapper<ItemWrapperObject>
 	}
 
 	@Override
-	public void render(PoseStack stack, int wrapperX, int wrapperY, int xShift, int guiWidth, int guiHeight, Page page) {
+	public void render(MatrixStack stack, int wrapperX, int wrapperY, int xShift, int guiWidth, int guiHeight, Page page) {
 		RenderingUtils.renderItemScaled(item, guiWidth + xOffset + wrapperX + xShift, guiHeight + yOffset + wrapperY, scale);
 	}
 

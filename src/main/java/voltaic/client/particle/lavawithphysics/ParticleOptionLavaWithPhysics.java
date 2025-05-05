@@ -7,12 +7,12 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import voltaic.api.codec.StreamCodec;
 import voltaic.registers.VoltaicParticles;
-import net.minecraft.core.particles.ParticleOptions;
-import net.minecraft.core.particles.ParticleType;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.PacketBuffer;
+import net.minecraft.particles.IParticleData;
+import net.minecraft.particles.ParticleType;
 import net.minecraftforge.registries.ForgeRegistries;
 
-public class ParticleOptionLavaWithPhysics extends ParticleType<ParticleOptionLavaWithPhysics> implements ParticleOptions {
+public class ParticleOptionLavaWithPhysics extends ParticleType<ParticleOptionLavaWithPhysics> implements IParticleData {
 
     public float scale;
     public double bounceFactor;
@@ -25,22 +25,22 @@ public class ParticleOptionLavaWithPhysics extends ParticleType<ParticleOptionLa
                     Codec.DOUBLE.fieldOf("bouncefactor").forGetter(instance0 -> instance0.bounceFactor)
             ).apply(instance, (scale, lifetime, bounceFactor) -> new ParticleOptionLavaWithPhysics().setParameters(scale, lifetime, bounceFactor)));
 
-    public static final StreamCodec<FriendlyByteBuf, ParticleOptionLavaWithPhysics> STREAM_CODEC = new StreamCodec<FriendlyByteBuf, ParticleOptionLavaWithPhysics>() {
+    public static final StreamCodec<PacketBuffer, ParticleOptionLavaWithPhysics> STREAM_CODEC = new StreamCodec<PacketBuffer, ParticleOptionLavaWithPhysics>() {
 		
 		@Override
-		public void encode(FriendlyByteBuf buffer, ParticleOptionLavaWithPhysics value) {
+		public void encode(PacketBuffer buffer, ParticleOptionLavaWithPhysics value) {
 			StreamCodec.FLOAT.encode(buffer, value.scale);
 			StreamCodec.INT.encode(buffer, value.lifetime);
 			StreamCodec.DOUBLE.encode(buffer, value.bounceFactor);
 		}
 		
 		@Override
-		public ParticleOptionLavaWithPhysics decode(FriendlyByteBuf buffer) {
+		public ParticleOptionLavaWithPhysics decode(PacketBuffer buffer) {
 			return new ParticleOptionLavaWithPhysics().setParameters(buffer.readFloat(), buffer.readInt(), buffer.readDouble());
 		}
 	};
 	
-	public static final ParticleOptions.Deserializer<ParticleOptionLavaWithPhysics> DESERIALIZER = new ParticleOptions.Deserializer<ParticleOptionLavaWithPhysics>() {
+	public static final IParticleData.IDeserializer<ParticleOptionLavaWithPhysics> DESERIALIZER = new IParticleData.IDeserializer<ParticleOptionLavaWithPhysics>() {
 
 		@Override
 		public ParticleOptionLavaWithPhysics fromCommand(ParticleType<ParticleOptionLavaWithPhysics> pParticleType, StringReader reader) throws CommandSyntaxException {
@@ -59,7 +59,7 @@ public class ParticleOptionLavaWithPhysics extends ParticleType<ParticleOptionLa
 		}
 
 		@Override
-		public ParticleOptionLavaWithPhysics fromNetwork(ParticleType<ParticleOptionLavaWithPhysics> pParticleType, FriendlyByteBuf pBuffer) {
+		public ParticleOptionLavaWithPhysics fromNetwork(ParticleType<ParticleOptionLavaWithPhysics> pParticleType, PacketBuffer pBuffer) {
 			return STREAM_CODEC.decode(pBuffer);
 		}
 	};
@@ -81,7 +81,7 @@ public class ParticleOptionLavaWithPhysics extends ParticleType<ParticleOptionLa
     }
 
 	@Override
-	public void writeToNetwork(FriendlyByteBuf pBuffer) {
+	public void writeToNetwork(PacketBuffer pBuffer) {
 		STREAM_CODEC.encode(pBuffer, this);
 	}
 

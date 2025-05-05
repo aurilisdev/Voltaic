@@ -3,7 +3,7 @@ package voltaic.prefab.screen;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.matrix.MatrixStack;
 
 import voltaic.Voltaic;
 import voltaic.api.screen.IScreenWrapper;
@@ -19,18 +19,19 @@ import voltaic.prefab.screen.component.utils.SlotTextureProvider;
 import voltaic.prefab.utilities.RenderingUtils;
 import voltaic.prefab.utilities.math.Color;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.FormattedCharSequence;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.inventory.Slot;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.fonts.Font;
+import net.minecraft.client.gui.screen.inventory.ContainerScreen;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.container.Slot;
+import net.minecraft.util.IReorderingProcessor;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
-public class GenericScreen<T extends GenericContainer> extends AbstractContainerScreen<T> implements IScreenWrapper {
+public class GenericScreen<T extends GenericContainer> extends ContainerScreen<T> implements IScreenWrapper {
 
 	protected ResourceLocation defaultResource = Voltaic.rl("textures/screen/component/base.png");
 	private List<AbstractScreenComponent> components = new ArrayList<>();
@@ -42,7 +43,7 @@ public class GenericScreen<T extends GenericContainer> extends AbstractContainer
 	public ScreenComponentSimpleLabel guiTitle;
 	public ScreenComponentSimpleLabel playerInvLabel;
 
-	public GenericScreen(T container, Inventory inv, Component title) {
+	public GenericScreen(T container, PlayerInventory inv, ITextComponent title) {
 		super(container, inv, title);
 		initializeComponents();
 	}
@@ -54,11 +55,12 @@ public class GenericScreen<T extends GenericContainer> extends AbstractContainer
 			slots.add(component);
 		}
 		addComponent(guiTitle = new ScreenComponentSimpleLabel(this.titleLabelX, this.titleLabelY, 10, Color.TEXT_GRAY, this.title));
-		addComponent(playerInvLabel = new ScreenComponentSimpleLabel(this.inventoryLabelX, this.inventoryLabelY, 10, Color.TEXT_GRAY, this.playerInventoryTitle));
+		addComponent(playerInvLabel = new ScreenComponentSimpleLabel(this.inventoryLabelX, this.inventoryLabelY, 10, Color.TEXT_GRAY, this.inventory.getDisplayName()));
 	}
 
 	protected ScreenComponentSlot createScreenSlot(Slot slot) {
-		if (slot instanceof SlotTextureProvider provider) {
+		if (slot instanceof SlotTextureProvider) {
+			SlotTextureProvider provider = (SlotTextureProvider) slot;
 			ISlotTexture texture = provider.getSlotType();
 			return new ScreenComponentSlot(slot, texture, provider.getIconType(), slot.x + texture.xOffset(), slot.y + texture.yOffset());
 		}
@@ -66,8 +68,8 @@ public class GenericScreen<T extends GenericContainer> extends AbstractContainer
 	}
 
 	@Override
-	protected void containerTick() {
-		super.containerTick();
+	public void tick() {
+		super.tick();
 		for (ScreenComponentEditBox box : editBoxes) {
 			box.tick();
 		}
@@ -76,24 +78,24 @@ public class GenericScreen<T extends GenericContainer> extends AbstractContainer
 	@Override
 	protected void init() {
 		super.init();
-		guiTitle.xLocation = titleLabelX;
-		guiTitle.yLocation = titleLabelY;
-		playerInvLabel.xLocation = inventoryLabelX;
-		playerInvLabel.yLocation = inventoryLabelY;
+		guiTitle.x = titleLabelX;
+		guiTitle.y = titleLabelY;
+		playerInvLabel.x = inventoryLabelX;
+		playerInvLabel.y = inventoryLabelY;
 		for (AbstractScreenComponent component : components) {
-			addRenderableWidget(component);
+			addButton(component);
 		}
 	}
 
 	@Override
-	public void render(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
+	public void render(MatrixStack poseStack, int mouseX, int mouseY, float partialTicks) {
 		this.renderBackground(poseStack);
 		super.render(poseStack, mouseX, mouseY, partialTicks);
 		renderTooltip(poseStack, mouseX, mouseY);
 	}
 
 	@Override
-	protected void renderLabels(PoseStack poseStack, int mouseX, int mouseY) {
+	protected void renderLabels(MatrixStack poseStack, int mouseX, int mouseY) {
 		// super.renderLabels(poseStack, mouseX, mouseY);
 		int guiWidth = (int) getGuiWidth();
 		int guiHeight = (int) getGuiHeight();
@@ -105,7 +107,7 @@ public class GenericScreen<T extends GenericContainer> extends AbstractContainer
 	}
 
 	@Override
-	protected void renderBg(PoseStack poseStack, float partialTick, int mouseX, int mouseY) {
+	protected void renderBg(MatrixStack poseStack, float partialTick, int mouseX, int mouseY) {
 		// RenderingUtils.bindTexture(defaultResource);
 		int guiWidth = (int) getGuiWidth();
 		int guiHeight = (int) getGuiHeight();
@@ -143,7 +145,7 @@ public class GenericScreen<T extends GenericContainer> extends AbstractContainer
 	}
 
 	@Override
-	public Font getFontRenderer() {
+	public FontRenderer getFontRenderer() {
 		return Minecraft.getInstance().font;
 	}
 
@@ -194,13 +196,13 @@ public class GenericScreen<T extends GenericContainer> extends AbstractContainer
 	}
 
 	@Override
-	public void displayTooltips(PoseStack stack, List<? extends FormattedCharSequence> tooltips, int mouseX, int mouseY) {
+	public void displayTooltips(MatrixStack stack, List<? extends IReorderingProcessor> tooltips, int mouseX, int mouseY) {
 		renderTooltip(stack, tooltips, mouseX, mouseY);
 	}
 
 	@Override
-	public void displayTooltips(PoseStack stack, List<? extends FormattedCharSequence> lines, int x, int y, Font font) {
-		renderTooltip(stack, lines, x, y, font);
+	public void displayTooltips(MatrixStack stack, List<? extends IReorderingProcessor> lines, int x, int y, Font font) {
+		renderTooltip(stack, lines, x, y);
 	}
 
 }

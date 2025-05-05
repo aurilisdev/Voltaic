@@ -4,8 +4,11 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.matrix.MatrixStack;
 
+import net.minecraft.util.Direction;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
 import voltaic.Voltaic;
 import voltaic.api.screen.ITexture;
 import voltaic.prefab.inventory.container.slot.item.SlotGeneric;
@@ -17,9 +20,6 @@ import voltaic.prefab.tile.components.IComponentType;
 import voltaic.prefab.tile.components.type.ComponentInventory;
 import voltaic.prefab.utilities.VoltaicTextUtils;
 import voltaic.prefab.utilities.math.Color;
-import net.minecraft.core.Direction;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
 
 public class ScreenComponentInventoryIO extends ScreenComponentGeneric {
 
@@ -40,7 +40,7 @@ public class ScreenComponentInventoryIO extends ScreenComponentGeneric {
 	}
 
 	@Override
-	public void renderBackground(PoseStack poseStack, int xAxis, int yAxis, int guiWidth, int guiHeight) {
+	public void renderBackground(MatrixStack poseStack, int xAxis, int yAxis, int guiWidth, int guiHeight) {
 		super.renderBackground(poseStack, xAxis, yAxis, guiWidth, guiHeight);
 
 		GenericScreen<?> screen = (GenericScreen<?>) gui;
@@ -82,7 +82,7 @@ public class ScreenComponentInventoryIO extends ScreenComponentGeneric {
 		}
 
 		if (uniqueColors.size() <= 16) {
-			fillSquare(poseStack, uniqueColors, xLocation + guiWidth, yLocation + guiHeight);
+			fillSquare(poseStack, uniqueColors, x + guiWidth, y + guiHeight);
 			return;
 		}
 
@@ -93,7 +93,7 @@ public class ScreenComponentInventoryIO extends ScreenComponentGeneric {
 
 	}
 
-	private void fillSquare(PoseStack poseStack, List<Color> colors, int x, int y) {
+	private void fillSquare(MatrixStack poseStack, List<Color> colors, int x, int y) {
 		int wholeRows = colors.size() / COLORS_PER_ROW;
 		int lastRowCount = colors.size() % COLORS_PER_ROW;
 
@@ -127,8 +127,8 @@ public class ScreenComponentInventoryIO extends ScreenComponentGeneric {
 
 	}
 
-	private MutableComponent getLabelFromDir() {
-		MutableComponent component = null;
+	private ITextComponent getLabelFromDir() {
+		ITextComponent component = null;
 		switch (side) {
 		default:
 		case DOWN:

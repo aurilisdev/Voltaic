@@ -1,23 +1,24 @@
 package voltaic.prefab.inventory.container;
 
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.Inventory;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.inventory.container.ContainerType;
+import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
 import voltaic.prefab.inventory.container.slot.item.SlotGeneric;
 import voltaic.prefab.utilities.ContainerUtils;
-import net.minecraft.world.SimpleContainer;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.MenuType;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
 
-public abstract class GenericContainer<CONTAINERTYPE> extends AbstractContainerMenu {
+public abstract class GenericContainer<CONTAINERTYPE> extends Container {
 
-	public static final SimpleContainer EMPTY = new SimpleContainer(0);
+	public static final IInventory EMPTY = new Inventory(0);
 
 	private final CONTAINERTYPE inventory;
-	private final Level world;
-	private final Inventory playerinv;
-	private final Player player;
+	private final World world;
+	private final PlayerInventory playerinv;
+	private final PlayerEntity player;
 	private final int slotCount;
 	private int playerInvOffset = 0;
 	private int nextIndex = 0;
@@ -31,7 +32,7 @@ public abstract class GenericContainer<CONTAINERTYPE> extends AbstractContainerM
 		return nextIndex ++;
 	}
 
-	public GenericContainer(MenuType<?> type, int id, Inventory playerinv, CONTAINERTYPE inventory) {
+	public GenericContainer(ContainerType<?> type, int id, PlayerInventory playerinv, CONTAINERTYPE inventory) {
 		super(type, id);
 		validateContainer(inventory);
 		this.inventory = inventory;
@@ -43,7 +44,7 @@ public abstract class GenericContainer<CONTAINERTYPE> extends AbstractContainerM
 		addPlayerInventory(playerinv);
 	}
 
-	public void addPlayerInventory(Inventory playerinv) {
+	public void addPlayerInventory(PlayerInventory playerinv) {
 		for (int i = 0; i < 3; ++i) {
 			for (int j = 0; j < 9; ++j) {
 				addSlot(new SlotGeneric(playerinv, j + i * 9 + 9, 8 + j * 18, 84 + i * 18 + getPlayerInvOffset()));
@@ -58,7 +59,7 @@ public abstract class GenericContainer<CONTAINERTYPE> extends AbstractContainerM
 
 	public abstract void validateContainer(CONTAINERTYPE inventory);
 
-	public abstract void addInventorySlots(CONTAINERTYPE inv, Inventory playerinv);
+	public abstract void addInventorySlots(CONTAINERTYPE inv, PlayerInventory playerinv);
 
 	public void setPlayerInvOffset(int offset) {
 		playerInvOffset = offset;
@@ -68,15 +69,15 @@ public abstract class GenericContainer<CONTAINERTYPE> extends AbstractContainerM
 		return inventory;
 	}
 
-	public Level getLevel() {
+	public World getLevel() {
 		return world;
 	}
 
-	public Inventory getPlayerInventory() {
+	public PlayerInventory getPlayerInventory() {
 		return playerinv;
 	}
 
-	public Player getPlayer() {
+	public PlayerEntity getPlayer() {
 		return player;
 	}
 
@@ -89,7 +90,7 @@ public abstract class GenericContainer<CONTAINERTYPE> extends AbstractContainerM
 	}
 
 	@Override
-	public ItemStack quickMoveStack(Player player, int index) {
+	public ItemStack quickMoveStack(PlayerEntity player, int index) {
 		return ContainerUtils.handleShiftClick(slots, player, index);
 	}
 

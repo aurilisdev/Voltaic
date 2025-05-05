@@ -1,10 +1,10 @@
 package voltaic.common.recipe;
 
-import net.minecraft.core.Registry;
-import net.minecraft.world.item.crafting.Recipe;
-import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.item.crafting.IRecipeType;
+import net.minecraft.util.registry.Registry;
 
-public class VoltaicRecipeType<T extends Recipe<?>> implements RecipeType<T> {
+public class VoltaicRecipeType<T extends IRecipe<?>> implements IRecipeType<T> {
 
     @Override
     public String toString() {

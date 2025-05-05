@@ -1,38 +1,39 @@
 package voltaic.common.item;
 
+import voltaic.prefab.utilities.ItemUtils;
 import voltaic.registers.VoltaicEffects;
 
 import java.util.function.Supplier;
 
 import net.minecraft.advancements.CriteriaTriggers;
-import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.UseAction;
 import net.minecraft.stats.Stats;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ItemUtils;
-import net.minecraft.world.item.UseAnim;
-import net.minecraft.world.level.Level;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
+import net.minecraft.world.World;
 
 public class ItemAntidote extends ItemVoltaic {
 
-    public ItemAntidote(Properties properties, Supplier<CreativeModeTab> creativeTab) {
+    public ItemAntidote(Properties properties, Supplier<ItemGroup> creativeTab) {
         super(properties, creativeTab);
     }
 
     @Override
-    public ItemStack finishUsingItem(ItemStack stack, Level worldIn, LivingEntity entityLiving) {
+    public ItemStack finishUsingItem(ItemStack stack, World worldIn, LivingEntity entityLiving) {
         if (!worldIn.isClientSide) {
-        	entityLiving.removeEffect(VoltaicEffects.RADIATION.get());
+        	entityLiving.removeEffect(VoltaicEffects.RADIATION);
         }
-        if (entityLiving instanceof ServerPlayer serverplayerentity) {
-            CriteriaTriggers.CONSUME_ITEM.trigger(serverplayerentity, stack);
-            serverplayerentity.awardStat(Stats.ITEM_USED.get(this));
+        if (entityLiving instanceof ServerPlayerEntity) {
+        	ServerPlayerEntity server = (ServerPlayerEntity) entityLiving;
+            CriteriaTriggers.CONSUME_ITEM.trigger(server, stack);
+            server.awardStat(Stats.ITEM_USED.get(this));
         }
-        if (entityLiving instanceof Player pl && !pl.getAbilities().instabuild) {
+        if (entityLiving instanceof PlayerEntity && !((PlayerEntity) entityLiving).abilities.instabuild) {
             stack.shrink(1);
         }
         return stack;
@@ -44,12 +45,12 @@ public class ItemAntidote extends ItemVoltaic {
     }
 
     @Override
-    public UseAnim getUseAnimation(ItemStack stack) {
-        return UseAnim.DRINK;
+    public UseAction getUseAnimation(ItemStack stack) {
+        return UseAction.DRINK;
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn) {
+    public ActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand handIn) {
         return ItemUtils.startUsingInstantly(worldIn, playerIn, handIn);
     }
 

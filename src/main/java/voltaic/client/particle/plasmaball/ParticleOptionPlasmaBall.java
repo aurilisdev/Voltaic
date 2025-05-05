@@ -8,12 +8,12 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import voltaic.api.codec.StreamCodec;
 import voltaic.prefab.utilities.CodecUtils;
 import voltaic.registers.VoltaicParticles;
-import net.minecraft.core.particles.ParticleOptions;
-import net.minecraft.core.particles.ParticleType;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.PacketBuffer;
+import net.minecraft.particles.IParticleData;
+import net.minecraft.particles.ParticleType;
 import net.minecraftforge.registries.ForgeRegistries;
 
-public class ParticleOptionPlasmaBall extends ParticleType<ParticleOptionPlasmaBall> implements ParticleOptions {
+public class ParticleOptionPlasmaBall extends ParticleType<ParticleOptionPlasmaBall> implements IParticleData {
 
 	public float scale;
 	public float gravity;
@@ -34,7 +34,7 @@ public class ParticleOptionPlasmaBall extends ParticleType<ParticleOptionPlasmaB
 				Codec.INT.fieldOf("a").forGetter(instance0 -> instance0.a)
 		).apply(instance, (scale, gravity, age, r, g, b, a) -> new ParticleOptionPlasmaBall().setParameters(scale, gravity, age, r, g, b, a)));
 
-	public static final StreamCodec<FriendlyByteBuf, ParticleOptionPlasmaBall> STREAM_CODEC = CodecUtils.composite(
+	public static final StreamCodec<PacketBuffer, ParticleOptionPlasmaBall> STREAM_CODEC = CodecUtils.composite(
 			StreamCodec.FLOAT, instance0 -> instance0.scale,
 			StreamCodec.FLOAT,instance0 -> instance0.gravity,
 			StreamCodec.INT, instance0 -> instance0.maxAge,
@@ -46,7 +46,7 @@ public class ParticleOptionPlasmaBall extends ParticleType<ParticleOptionPlasmaB
 	);
 
 
-	public static final ParticleOptions.Deserializer<ParticleOptionPlasmaBall> DESERIALIZER = new ParticleOptions.Deserializer<>() {
+	public static final IParticleData.IDeserializer<ParticleOptionPlasmaBall> DESERIALIZER = new IParticleData.IDeserializer<ParticleOptionPlasmaBall>() {
 
 		@Override
 		public ParticleOptionPlasmaBall fromCommand(ParticleType<ParticleOptionPlasmaBall> type, StringReader reader) throws CommandSyntaxException {
@@ -78,7 +78,7 @@ public class ParticleOptionPlasmaBall extends ParticleType<ParticleOptionPlasmaB
 		}
 
 		@Override
-		public ParticleOptionPlasmaBall fromNetwork(ParticleType<ParticleOptionPlasmaBall> type, FriendlyByteBuf buffer) {
+		public ParticleOptionPlasmaBall fromNetwork(ParticleType<ParticleOptionPlasmaBall> type, PacketBuffer buffer) {
 			return STREAM_CODEC.decode(buffer);
 		}
 	};
@@ -115,7 +115,7 @@ public class ParticleOptionPlasmaBall extends ParticleType<ParticleOptionPlasmaB
 	}
 
 	@Override
-	public void writeToNetwork(FriendlyByteBuf pBuffer) {
+	public void writeToNetwork(PacketBuffer pBuffer) {
 		STREAM_CODEC.encode(pBuffer, this);
 	}
 

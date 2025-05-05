@@ -1,6 +1,6 @@
 package voltaic.api.electricity.formatting;
 
-import net.minecraft.network.chat.Component;
+import net.minecraft.util.text.IFormattableTextComponent;
 
 public interface IMeasurementUnit {
 
@@ -8,7 +8,7 @@ public interface IMeasurementUnit {
 		return val / getValue();
 	}
 
-	default Component getName(boolean isSymbol) {
+	default IFormattableTextComponent getName(boolean isSymbol) {
 		if (isSymbol) {
 			return getSymbol();
 		}
@@ -18,8 +18,8 @@ public interface IMeasurementUnit {
 
 	public double getValue();
 
-	public Component getSymbol();
+	public IFormattableTextComponent getSymbol();
 
-	public Component getName();
+	public IFormattableTextComponent getName();
 
 }

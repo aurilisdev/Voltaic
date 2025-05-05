@@ -4,15 +4,14 @@ import voltaic.client.guidebook.utils.components.Page;
 import voltaic.prefab.utilities.RenderingUtils;
 import voltaic.prefab.utilities.math.Color;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.matrix.MatrixStack;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.AbstractGui;
+import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.inventory.InventoryMenu;
-import net.minecraft.world.level.material.Fluid;
+import net.minecraft.fluid.Fluid;
+import net.minecraft.util.ResourceLocation;
 
 public class FluidWrapperObject extends AbstractGraphicWrapper<FluidWrapperObject> {
 
@@ -24,17 +23,17 @@ public class FluidWrapperObject extends AbstractGraphicWrapper<FluidWrapperObjec
 	}
 
 	@Override
-	public void render(PoseStack poseStack, int wrapperX, int wrapperY, int xShift, int guiWidth, int guiHeight, Page page) {
+	public void render(MatrixStack poseStack, int wrapperX, int wrapperY, int xShift, int guiWidth, int guiHeight, Page page) {
 
 		ResourceLocation texture = fluid.getAttributes().getStillTexture();
 
-		TextureAtlasSprite sprite = Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(texture);
+		TextureAtlasSprite sprite = Minecraft.getInstance().getTextureAtlas(AtlasTexture.LOCATION_BLOCKS).apply(texture);
 
-		RenderSystem.setShaderTexture(0, sprite.atlas().getId());
+		RenderingUtils.bindTexture(sprite.atlas().location());
 
 		RenderingUtils.setShaderColor(new Color(fluid.getAttributes().getColor()));
 
-		GuiComponent.blit(poseStack, guiWidth + wrapperX + xShift, guiHeight + wrapperY, 0, width, height, sprite);
+		AbstractGui.blit(poseStack, guiWidth + wrapperX + xShift, guiHeight + wrapperY, 0, width, height, sprite);
 
 		RenderingUtils.resetShaderColor();
 

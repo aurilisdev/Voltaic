@@ -3,17 +3,17 @@ package voltaic.api.misc;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 
 import voltaic.prefab.utilities.object.Location;
 import voltaic.registers.VoltaicCapabilities;
-import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.Direction;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.util.LazyOptional;
 
-public class CapabilityLocationStorage implements ILocationStorage, ICapabilitySerializable<CompoundTag> {
+public class CapabilityLocationStorage implements ILocationStorage, ICapabilitySerializable<CompoundNBT> {
 	
 	public final LazyOptional<ILocationStorage> holder = LazyOptional.of(() -> this);
 
@@ -25,7 +25,7 @@ public class CapabilityLocationStorage implements ILocationStorage, ICapabilityS
 	}
 	
 	@Override
-	public <T> @NotNull LazyOptional<T> getCapability(@NotNull Capability<T> cap, Direction side) {
+	public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, Direction side) {
 		if (cap == VoltaicCapabilities.CAPABILITY_LOCATIONSTORAGE_ITEM) {
 			return holder.cast();
 		}
@@ -33,20 +33,20 @@ public class CapabilityLocationStorage implements ILocationStorage, ICapabilityS
 	}
 
 	@Override
-	public CompoundTag serializeNBT() {
+	public CompoundNBT serializeNBT() {
 		if (VoltaicCapabilities.CAPABILITY_LOCATIONSTORAGE_ITEM != null) {
-			CompoundTag nbt = new CompoundTag();
+			CompoundNBT nbt = new CompoundNBT();
 			nbt.putInt("size", locations.size());
 			for (int i = 0; i < locations.size(); i++) {
 				locations.get(i).writeToNBT(nbt, VoltaicCapabilities.LOCATION_KEY + i);
 			}
 			return nbt;
 		}
-		return new CompoundTag();
+		return new CompoundNBT();
 	}
 
 	@Override
-	public void deserializeNBT(CompoundTag nbt) {
+	public void deserializeNBT(CompoundNBT nbt) {
 		if (VoltaicCapabilities.CAPABILITY_LOCATIONSTORAGE_ITEM != null) {
 			locations.clear();
 			for (int i = 0; i < nbt.getInt("size"); i++) {
@@ -85,6 +85,12 @@ public class CapabilityLocationStorage implements ILocationStorage, ICapabilityS
 	@Override
 	public List<Location> getLocations() {
 		return locations;
+	}
+
+	@Override
+	public void setLocations(List<Location> locations) {
+		locations.clear();
+		locations.addAll(locations);
 	}
 
 }

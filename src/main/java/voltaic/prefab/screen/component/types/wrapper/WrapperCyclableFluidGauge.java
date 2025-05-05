@@ -13,7 +13,7 @@ import voltaic.prefab.tile.GenericTile;
 import voltaic.prefab.tile.components.IComponentType;
 import voltaic.prefab.tile.components.utils.IComponentFluidHandler;
 import voltaic.prefab.utilities.math.Color;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.util.text.StringTextComponent;
 
 public class WrapperCyclableFluidGauge {
 
@@ -24,7 +24,7 @@ public class WrapperCyclableFluidGauge {
 
         int yOffset = 0;
 
-        components.add(screen.addComponent(new ScreenComponentSimpleLabel(x + 4, y + yOffset, 7, Color.WHITE, () -> new TextComponent("" + (gauge + 1)))));
+        components.add(screen.addComponent(new ScreenComponentSimpleLabel(x + 4, y + yOffset, 7, Color.WHITE, () -> new StringTextComponent("" + (gauge + 1)))));
 
         yOffset += 8;
 

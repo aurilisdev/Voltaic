@@ -3,13 +3,14 @@ package voltaic.prefab.utilities;
 import java.util.Collections;
 import java.util.List;
 
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.Direction;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
@@ -33,7 +34,7 @@ public class CapabilityUtils {
 		}
 
 		@Override
-		public @NotNull FluidStack getFluidInTank(int tank) {
+		public @Nonnull FluidStack getFluidInTank(int tank) {
 			return FluidStack.EMPTY;
 		}
 
@@ -43,7 +44,7 @@ public class CapabilityUtils {
 		}
 
 		@Override
-		public boolean isFluidValid(int tank, @NotNull FluidStack stack) {
+		public boolean isFluidValid(int tank, @Nonnull FluidStack stack) {
 			return false;
 		}
 
@@ -53,12 +54,12 @@ public class CapabilityUtils {
 		}
 
 		@Override
-		public @NotNull FluidStack drain(FluidStack resource, FluidAction action) {
+		public @Nonnull FluidStack drain(FluidStack resource, FluidAction action) {
 			return FluidStack.EMPTY;
 		}
 
 		@Override
-		public @NotNull FluidStack drain(int maxDrain, FluidAction action) {
+		public @Nonnull FluidStack drain(int maxDrain, FluidAction action) {
 			return FluidStack.EMPTY;
 		}
 
@@ -184,7 +185,7 @@ public class CapabilityUtils {
 		}
 
 		@Override
-		public @NotNull FluidStack getFluidInTank(int tank) {
+		public @Nonnull FluidStack getFluidInTank(int tank) {
 			return FluidStack.EMPTY;
 		}
 
@@ -194,7 +195,7 @@ public class CapabilityUtils {
 		}
 
 		@Override
-		public boolean isFluidValid(int tank, @NotNull FluidStack stack) {
+		public boolean isFluidValid(int tank, @Nonnull FluidStack stack) {
 			return false;
 		}
 
@@ -204,17 +205,17 @@ public class CapabilityUtils {
 		}
 
 		@Override
-		public @NotNull FluidStack drain(FluidStack resource, FluidAction action) {
+		public @Nonnull FluidStack drain(FluidStack resource, FluidAction action) {
 			return FluidStack.EMPTY;
 		}
 
 		@Override
-		public @NotNull FluidStack drain(int maxDrain, FluidAction action) {
+		public @Nonnull FluidStack drain(int maxDrain, FluidAction action) {
 			return FluidStack.EMPTY;
 		}
 
 		@Override
-		public @NotNull ItemStack getContainer() {
+		public @Nonnull ItemStack getContainer() {
 			return ItemStack.EMPTY;
 		}
 	};
@@ -227,17 +228,17 @@ public class CapabilityUtils {
 		}
 
 		@Override
-		public @NotNull ItemStack getStackInSlot(int slot) {
+		public @Nonnull ItemStack getStackInSlot(int slot) {
 			return ItemStack.EMPTY;
 		}
 
 		@Override
-		public @NotNull ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
+		public @Nonnull ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
 			return ItemStack.EMPTY;
 		}
 
 		@Override
-		public @NotNull ItemStack extractItem(int slot, int amount, boolean simulate) {
+		public @Nonnull ItemStack extractItem(int slot, int amount, boolean simulate) {
 			return ItemStack.EMPTY;
 		}
 
@@ -247,7 +248,7 @@ public class CapabilityUtils {
 		}
 
 		@Override
-		public boolean isItemValid(int slot, @NotNull ItemStack stack) {
+		public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
 			return false;
 		}
 		
@@ -270,79 +271,103 @@ public class CapabilityUtils {
 		public void tick(LivingEntity entity) {
 			
 		}
+
+		@Override
+		public CompoundNBT toTag() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public void fromTag(CompoundNBT nbt) {
+			// TODO Auto-generated method stub
+			
+		}
 		
 	};
 	
 	public static final IRadiationManager EMPTY_MANAGER = new IRadiationManager() {
 
 		@Override
-		public List<SimpleRadiationSource> getPermanentSources(Level world) {
+		public List<SimpleRadiationSource> getPermanentSources(World world) {
 			return Collections.emptyList();
 		}
 
 		@Override
-		public List<TemporaryRadiationSource> getTemporarySources(Level world) {
+		public List<TemporaryRadiationSource> getTemporarySources(World world) {
 			return Collections.emptyList();
 		}
 
 		@Override
-		public List<FadingRadiationSource> getFadingSources(Level world) {
+		public List<FadingRadiationSource> getFadingSources(World world) {
 			return Collections.emptyList();
 		}
 
 		@Override
-		public List<BlockPos> getPermanentLocations(Level world) {
+		public List<BlockPos> getPermanentLocations(World world) {
 			return Collections.emptyList();
 		}
 
 		@Override
-		public List<BlockPos> getTemporaryLocations(Level world) {
+		public List<BlockPos> getTemporaryLocations(World world) {
 			return Collections.emptyList();
 		}
 
 		@Override
-		public List<BlockPos> getFadingLocations(Level world) {
+		public List<BlockPos> getFadingLocations(World world) {
 			return Collections.emptyList();
 		}
 
 		@Override
-		public void addRadiationSource(SimpleRadiationSource source, Level level) {
+		public void addRadiationSource(SimpleRadiationSource source, World level) {
 
 		}
 
 		@Override
-		public int getReachOfSource(Level world, BlockPos pos) {
+		public int getReachOfSource(World world, BlockPos pos) {
 			return 0;
 		}
 
 		@Override
-		public void setDisipation(double radiationDisipation, Level level) {
+		public void setDisipation(double radiationDisipation, World level) {
 
 		}
 
 		@Override
-		public void setLocalizedDisipation(double disipation, BlockPosVolume area, Level level) {
+		public void setLocalizedDisipation(double disipation, BlockPosVolume area, World level) {
 
 		}
 
 		@Override
-		public void removeLocalizedDisipation(BlockPosVolume area, Level level) {
+		public void removeLocalizedDisipation(BlockPosVolume area, World level) {
 
 		}
 
 		@Override
-		public boolean removeRadiationSource(BlockPos pos, boolean shouldLeaveFadingSource, Level level) {
+		public boolean removeRadiationSource(BlockPos pos, boolean shouldLeaveFadingSource, World level) {
 			return false;
 		}
 
 		@Override
-		public void wipeAllSources(Level level) {
+		public void wipeAllSources(World level) {
 
 		}
 
 		@Override
-		public void tick(Level world) {
+		public void tick(World world) {
 
+		}
+
+		@Override
+		public CompoundNBT toTag() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public void fromTag(CompoundNBT tag) {
+			// TODO Auto-generated method stub
+			
 		}
 		
 	};

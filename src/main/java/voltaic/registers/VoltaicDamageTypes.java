@@ -1,6 +1,6 @@
 package voltaic.registers;
 
-import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.util.DamageSource;
 
 public class VoltaicDamageTypes {
 

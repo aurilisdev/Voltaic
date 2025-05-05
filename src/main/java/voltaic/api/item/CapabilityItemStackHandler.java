@@ -2,13 +2,14 @@ package voltaic.api.item;
 
 import java.util.List;
 
-import org.apache.logging.log4j.util.TriConsumer;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
-import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.item.ItemStack;
+import org.apache.logging.log4j.util.TriConsumer;
+
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.Direction;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.util.LazyOptional;
@@ -16,7 +17,7 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 
-public class CapabilityItemStackHandler extends ItemStackHandler implements ICapabilitySerializable<CompoundTag> {
+public class CapabilityItemStackHandler extends ItemStackHandler implements ICapabilitySerializable<CompoundNBT> {
 
 	private final LazyOptional<IItemHandler> handler = LazyOptional.of(() -> this);
 	private final ItemStack owner;
@@ -35,7 +36,7 @@ public class CapabilityItemStackHandler extends ItemStackHandler implements ICap
 	}
 
 	@Override
-	public <T> @NotNull LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
+	public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
 		if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
 			return handler.cast();
 		}

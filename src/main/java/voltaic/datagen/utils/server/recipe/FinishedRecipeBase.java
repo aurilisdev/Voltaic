@@ -12,13 +12,13 @@ import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.JsonOps;
 
-import net.minecraft.data.recipes.FinishedRecipe;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.TagKey;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.minecraft.world.level.material.Fluid;
+import net.minecraft.data.IFinishedRecipe;
+import net.minecraft.fluid.Fluid;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.IRecipeSerializer;
+import net.minecraft.tags.ITag.INamedTag;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.FluidStack;
 import voltaic.common.recipe.VoltaicRecipeSerializer;
 import voltaic.common.recipe.recipeutils.CountableIngredient;
@@ -26,24 +26,24 @@ import voltaic.common.recipe.recipeutils.FluidIngredient;
 import voltaic.common.recipe.recipeutils.ProbableFluid;
 import voltaic.common.recipe.recipeutils.ProbableItem;
 
-public abstract class FinishedRecipeBase implements FinishedRecipe {
+public abstract class FinishedRecipeBase implements IFinishedRecipe {
 
-	private RecipeSerializer<?> serializer;
+	private IRecipeSerializer<?> serializer;
 	private ResourceLocation id;
 
 	private List<ProbableItem> itemBiproducts = new ArrayList<>();
 	private List<ProbableFluid> fluidBiproducts = new ArrayList<>();
 
 	private List<ItemStack> itemIngredients = new ArrayList<>();
-	private List<Pair<TagKey<Item>, Integer>> tagItemIngredients = new ArrayList<>();
+	private List<Pair<INamedTag<Item>, Integer>> tagItemIngredients = new ArrayList<>();
 	private List<FluidStack> fluidIngredients = new ArrayList<>();
-	private List<Pair<TagKey<Fluid>, Integer>> tagFluidIngredients = new ArrayList<>();
+	private List<Pair<INamedTag<Fluid>, Integer>> tagFluidIngredients = new ArrayList<>();
 
 	private double experience = 0.0;
 	private int processTime = 0;
 	private double usagePerTick = 0.0;
 
-	protected FinishedRecipeBase(RecipeSerializer<?> serializer, double experience, int processTime, double usagePerTick) {
+	protected FinishedRecipeBase(IRecipeSerializer<?> serializer, double experience, int processTime, double usagePerTick) {
 		this.serializer = serializer;
 		this.experience = experience;
 		this.processTime = processTime;
@@ -60,7 +60,7 @@ public abstract class FinishedRecipeBase implements FinishedRecipe {
 		return this;
 	}
 
-	public FinishedRecipeBase addItemTagInput(TagKey<Item> tag, int count) {
+	public FinishedRecipeBase addItemTagInput(INamedTag<Item> tag, int count) {
 		tagItemIngredients.add(Pair.of(tag, count));
 		return this;
 	}
@@ -70,7 +70,7 @@ public abstract class FinishedRecipeBase implements FinishedRecipe {
 		return this;
 	}
 
-	public FinishedRecipeBase addFluidTagInput(TagKey<Fluid> tag, int count) {
+	public FinishedRecipeBase addFluidTagInput(INamedTag<Fluid> tag, int count) {
 		tagFluidIngredients.add(Pair.of(tag, count));
 		return this;
 	}
@@ -85,7 +85,7 @@ public abstract class FinishedRecipeBase implements FinishedRecipe {
 		return this;
 	}
 	
-	public void complete(Consumer<FinishedRecipe> consumer) {
+	public void complete(Consumer<IFinishedRecipe> consumer) {
 		consumer.accept(this);
 	}
 
@@ -110,7 +110,7 @@ public abstract class FinishedRecipeBase implements FinishedRecipe {
 				itemInputs.add(index + "", itemJson);
 				index++;
 			}
-			for (Pair<TagKey<Item>, Integer> itemTags : tagItemIngredients) {
+			for (Pair<INamedTag<Item>, Integer> itemTags : tagItemIngredients) {
 				ing = new CountableIngredient(itemTags.getFirst(), itemTags.getSecond());
 				itemJson = CountableIngredient.CODEC.encodeStart(JsonOps.INSTANCE, ing).result().get();
 				itemInputs.add(index + "", itemJson);
@@ -133,7 +133,7 @@ public abstract class FinishedRecipeBase implements FinishedRecipe {
 				fluidInputs.add(index + "", fluidJson);
 				index++;
 			}
-			for (Pair<TagKey<Fluid>, Integer> fluidTags : tagFluidIngredients) {
+			for (Pair<INamedTag<Fluid>, Integer> fluidTags : tagFluidIngredients) {
 				ing = new FluidIngredient(fluidTags.getFirst(), fluidTags.getSecond());
 				fluidJson = FluidIngredient.CODEC.encodeStart(JsonOps.INSTANCE, ing).result().get();
 				fluidInputs.add(index + "", fluidJson);
@@ -184,7 +184,7 @@ public abstract class FinishedRecipeBase implements FinishedRecipe {
 	}
 
 	@Override
-	public RecipeSerializer<?> getType() {
+	public IRecipeSerializer<?> getType() {
 		return serializer;
 	}
 

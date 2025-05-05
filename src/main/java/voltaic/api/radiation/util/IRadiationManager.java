@@ -2,9 +2,11 @@ package voltaic.api.radiation.util;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import voltaic.api.radiation.SimpleRadiationSource;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.Level;
 
 import java.util.List;
 
@@ -25,37 +27,37 @@ public interface IRadiationManager {
      *
      * @return
      */
-    public List<SimpleRadiationSource> getPermanentSources(Level world);
+    public List<SimpleRadiationSource> getPermanentSources(World world);
 
-    public List<TemporaryRadiationSource> getTemporarySources(Level world);
+    public List<TemporaryRadiationSource> getTemporarySources(World world);
 
-    public List<FadingRadiationSource> getFadingSources(Level world);
+    public List<FadingRadiationSource> getFadingSources(World world);
 
-    public List<BlockPos> getPermanentLocations(Level world);
+    public List<BlockPos> getPermanentLocations(World world);
 
-    public List<BlockPos> getTemporaryLocations(Level world);
+    public List<BlockPos> getTemporaryLocations(World world);
 
-    public List<BlockPos> getFadingLocations(Level world);
+    public List<BlockPos> getFadingLocations(World world);
 
     /**
      * Adds a radiation source to this manager. The manager will then categorize it accordingly
      *
      * @param source
      */
-    public void addRadiationSource(SimpleRadiationSource source, Level level);
+    public void addRadiationSource(SimpleRadiationSource source, World level);
 
-    public int getReachOfSource(Level world, BlockPos pos);
+    public int getReachOfSource(World world, BlockPos pos);
 
     /**
      * The default rate at which this manager will disipate any FadingRadiationSources
      *
      * @param radiationDisipation
      */
-    public void setDisipation(double radiationDisipation, Level level);
+    public void setDisipation(double radiationDisipation, World level);
 
-    public void setLocalizedDisipation(double disipation, BlockPosVolume area, Level level);
+    public void setLocalizedDisipation(double disipation, BlockPosVolume area, World level);
 
-    public void removeLocalizedDisipation(BlockPosVolume area, Level level);
+    public void removeLocalizedDisipation(BlockPosVolume area, World level);
 
     /**
      * Removes a radiation source from this manager
@@ -64,9 +66,9 @@ public interface IRadiationManager {
      * @param shouldLeaveFadingSource Whether the removed source should leave behind a fading radiation source
      * @return
      */
-    public boolean removeRadiationSource(BlockPos pos, boolean shouldLeaveFadingSource, Level level);
+    public boolean removeRadiationSource(BlockPos pos, boolean shouldLeaveFadingSource, World level);
 
-    public void wipeAllSources(Level level);
+    public void wipeAllSources(World level);
 
 
     /**
@@ -75,7 +77,11 @@ public interface IRadiationManager {
      * @param world
      * @return
      */
-    public void tick(Level world);
+    public void tick(World world);
+    
+    CompoundNBT toTag();
+    
+    void fromTag(CompoundNBT tag);
 
 
     /**

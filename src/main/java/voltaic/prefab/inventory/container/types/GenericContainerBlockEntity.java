@@ -2,17 +2,17 @@ package voltaic.prefab.inventory.container.types;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.Container;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.ContainerData;
-import net.minecraft.world.inventory.MenuType;
-import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.container.ContainerType;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.IIntArray;
+import net.minecraft.util.math.BlockPos;
 
-public abstract class GenericContainerBlockEntity<T extends BlockEntity> extends GenericContainerSlotData<Container> {
+public abstract class GenericContainerBlockEntity<T extends TileEntity> extends GenericContainerSlotData<IInventory> {
 
-	public GenericContainerBlockEntity(MenuType<?> type, int id, Inventory playerinv, Container inventory, ContainerData inventorydata) {
+	public GenericContainerBlockEntity(ContainerType<?> type, int id, PlayerInventory playerinv, IInventory inventory, IIntArray inventorydata) {
 		super(type, id, playerinv, inventory, inventorydata);
 	}
 
@@ -31,17 +31,17 @@ public abstract class GenericContainerBlockEntity<T extends BlockEntity> extends
 	}
 
 	@Override
-	public void validateContainer(Container inventory) {
+	public void validateContainer(IInventory inventory) {
 		checkContainerSize(inventory, inventory.getContainerSize());
 	}
 
 	@Override
-	public boolean stillValid(Player player) {
+	public boolean stillValid(PlayerEntity player) {
 		return getContainer().stillValid(player);
 	}
 
 	@Override
-	public void removed(Player player) {
+	public void removed(PlayerEntity player) {
 		super.removed(player);
 		getContainer().stopOpen(player);
 	}

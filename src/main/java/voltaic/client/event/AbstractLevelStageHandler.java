@@ -1,13 +1,9 @@
 package voltaic.client.event;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Matrix4f;
+import com.mojang.blaze3d.matrix.MatrixStack;
 
-import net.minecraft.client.Camera;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.LevelRenderer;
-import net.minecraft.client.renderer.culling.Frustum;
-import net.minecraftforge.client.event.RenderLevelStageEvent.Stage;
+import net.minecraft.client.renderer.WorldRenderer;
+import net.minecraft.util.math.vector.Matrix4f;
 
 /**
  * A note about using this event: It is IMPERATIVE that the event be as efficient as possible. The more work the event must do in a single tick, the more tiny inefficient solutions start to add up. This really doens't play out much in the marker lines renderer for example, but it definitely has an impact in the quarry renderer
@@ -17,9 +13,7 @@ import net.minecraftforge.client.event.RenderLevelStageEvent.Stage;
  */
 public abstract class AbstractLevelStageHandler {
 
-	public abstract boolean shouldRender(Stage stage);
-
-	public abstract void render(Camera camera, Frustum frustum, LevelRenderer renderer, PoseStack stack, Matrix4f projectionMatrix, Minecraft minecraft, int renderTick, float partialTick);
+	public abstract void render(WorldRenderer context, MatrixStack mat, float partialTicks, Matrix4f projectionMatrix, long finishTimeNano);
 
 	public void clear() {
 

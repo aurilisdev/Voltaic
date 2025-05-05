@@ -2,8 +2,8 @@ package voltaic.datagen.utils.server.recipe;
 
 import com.google.gson.JsonObject;
 
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraftforge.registries.ForgeRegistries;
 import voltaic.common.recipe.VoltaicRecipeSerializer;
 
@@ -11,7 +11,7 @@ public class FinishedRecipeItemOutput extends FinishedRecipeBase {
 
 	private ItemStack output;
 
-	private FinishedRecipeItemOutput(RecipeSerializer<?> serializer, ItemStack stack, double experience, int processTime, double usage) {
+	private FinishedRecipeItemOutput(IRecipeSerializer<?> serializer, ItemStack stack, double experience, int processTime, double usage) {
 		super(serializer, experience, processTime, usage);
 		output = stack;
 	}
@@ -29,7 +29,7 @@ public class FinishedRecipeItemOutput extends FinishedRecipeBase {
 		return (FinishedRecipeItemOutput) super.name(category, parent, name);
 	}
 
-	public static FinishedRecipeItemOutput of(RecipeSerializer<?> serializer, ItemStack output, double experience, int processTime, double usage) {
+	public static FinishedRecipeItemOutput of(IRecipeSerializer<?> serializer, ItemStack output, double experience, int processTime, double usage) {
 		return new FinishedRecipeItemOutput(serializer, output, experience, processTime, usage);
 	}
 

@@ -2,16 +2,16 @@ package voltaic.common.block.connect;
 
 import javax.annotation.Nullable;
 
+import net.minecraft.block.BlockState;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Direction;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IWorld;
+import net.minecraft.world.IWorldReader;
+import net.minecraft.world.World;
 import voltaic.api.network.cable.IRefreshableCable;
 import voltaic.prefab.tile.types.GenericConnectTile;
 import voltaic.prefab.utilities.WorldUtils;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.LevelReader;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.state.BlockState;
 
 public abstract class AbstractRefreshingConnectBlock<CONDUCTOR extends GenericConnectTile & IRefreshableCable> extends AbstractConnectBlock {
 
@@ -20,12 +20,12 @@ public abstract class AbstractRefreshingConnectBlock<CONDUCTOR extends GenericCo
     }
 
     @Override
-    public void onPlace(BlockState state, Level worldIn, BlockPos pos, BlockState oldState, boolean isMoving) {
+    public void onPlace(BlockState state, World worldIn, BlockPos pos, BlockState oldState, boolean isMoving) {
         super.onPlace(state, worldIn, pos, oldState, isMoving);
         if (worldIn.isClientSide()) {
             return;
         }
-        BlockEntity tile = worldIn.getBlockEntity(pos);
+        TileEntity tile = worldIn.getBlockEntity(pos);
         CONDUCTOR conductor = getCableIfValid(tile);
         if (conductor == null || conductor.isRemoved()) {
             return;
@@ -45,14 +45,14 @@ public abstract class AbstractRefreshingConnectBlock<CONDUCTOR extends GenericCo
     }
 
     @Override
-    public void onNeighborChange(BlockState state, LevelReader world, BlockPos pos, BlockPos neighbor) {
+    public void onNeighborChange(BlockState state, IWorldReader world, BlockPos pos, BlockPos neighbor) {
 
         super.onNeighborChange(state, world, pos, neighbor);
 
         if (world.isClientSide()) {
             return;
         }
-        BlockEntity tile = world.getBlockEntity(pos);
+        TileEntity tile = world.getBlockEntity(pos);
         CONDUCTOR conductor = getCableIfValid(tile);
         if (conductor == null || conductor.isRemoved()) {
             return;
@@ -71,12 +71,12 @@ public abstract class AbstractRefreshingConnectBlock<CONDUCTOR extends GenericCo
     }
     
     @Override
-	public BlockState updateShape(BlockState stateIn, Direction facing, BlockState facingState, LevelAccessor world, BlockPos currentPos, BlockPos facingPos) {
+	public BlockState updateShape(BlockState stateIn, Direction facing, BlockState facingState, IWorld world, BlockPos currentPos, BlockPos facingPos) {
     	
     	if (world.isClientSide()) {
             return super.updateShape(stateIn, facing, facingState, world, currentPos, facingPos);
         }
-        BlockEntity tile = world.getBlockEntity(currentPos);
+        TileEntity tile = world.getBlockEntity(currentPos);
         CONDUCTOR conductor = getCableIfValid(tile);
         if (conductor == null || conductor.isRemoved()) {
             return super.updateShape(stateIn, facing, facingState, world, currentPos, facingPos);
@@ -93,9 +93,9 @@ public abstract class AbstractRefreshingConnectBlock<CONDUCTOR extends GenericCo
 		return super.updateShape(stateIn, facing, facingState, world, currentPos, facingPos);
 	}
 
-    public abstract EnumConnectType getConnection(BlockState otherState, BlockEntity otherTile, CONDUCTOR thisConductor, Direction dir);
+    public abstract EnumConnectType getConnection(BlockState otherState, TileEntity otherTile, CONDUCTOR thisConductor, Direction dir);
 
     @Nullable
-    public abstract CONDUCTOR getCableIfValid(BlockEntity tile);
+    public abstract CONDUCTOR getCableIfValid(TileEntity tile);
 
 }

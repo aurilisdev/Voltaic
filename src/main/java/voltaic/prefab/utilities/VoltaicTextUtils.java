@@ -1,15 +1,15 @@
 package voltaic.prefab.utilities;
 
+import net.minecraft.client.resources.I18n;
+import net.minecraft.util.RegistryKey;
+import net.minecraft.util.text.IFormattableTextComponent;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.World;
 import voltaic.Voltaic;
 import voltaic.api.electricity.formatting.ChatFormatter;
 import voltaic.api.electricity.formatting.DisplayUnits;
-import net.minecraft.ChatFormatting;
-import net.minecraft.client.resources.language.I18n;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TranslatableComponent;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.world.level.Level;
 
 public class VoltaicTextUtils {
 
@@ -25,61 +25,63 @@ public class VoltaicTextUtils {
 	public static final String ADVANCEMENT_BASE = "advancement";
 	public static final String DIMENSION = "dimension";
 	public static final String CREATIVE_TAB = "creativetab";
+	
+	private static final IFormattableTextComponent EMPTY = new StringTextComponent("");
 
-	public static MutableComponent tooltip(String key, Object... additional) {
+	public static IFormattableTextComponent tooltip(String key, Object... additional) {
 		return translated(TOOLTIP_BASE, key, additional);
 	}
 
-	public static MutableComponent guidebook(String key, Object... additional) {
+	public static IFormattableTextComponent guidebook(String key, Object... additional) {
 		return translated(GUIDEBOOK_BASE, key, additional);
 	}
 
-	public static MutableComponent gui(String key, Object... additional) {
+	public static IFormattableTextComponent gui(String key, Object... additional) {
 		return translated(GUI_BASE, key, additional);
 	}
 
-	public static MutableComponent chatMessage(String key, Object... additional) {
+	public static IFormattableTextComponent chatMessage(String key, Object... additional) {
 		return translated(MESSAGE_BASE, key, additional);
 	}
 
-	public static MutableComponent jeiTranslated(String key, Object... additional) {
-		return new TranslatableComponent(JEI_BASE + "." + key, additional);
+	public static IFormattableTextComponent jeiTranslated(String key, Object... additional) {
+		return new TranslationTextComponent(JEI_BASE + "." + key, additional);
 	}
 
-	public static MutableComponent jeiItemTranslated(String key, Object... additional) {
+	public static IFormattableTextComponent jeiItemTranslated(String key, Object... additional) {
 		return jeiTranslated(JEI_INFO_ITEM + "." + key, additional);
 	}
 
-	public static MutableComponent jeiFluidTranslated(String key, Object... additional) {
+	public static IFormattableTextComponent jeiFluidTranslated(String key, Object... additional) {
 		return jeiTranslated(JEI_INFO_FLUID + "." + key, additional);
 	}
 
-	public static MutableComponent block(String key, Object... additional) {
+	public static IFormattableTextComponent block(String key, Object... additional) {
 		return translated(BLOCK_BASE, key, additional);
 	}
 
-	public static MutableComponent gas(String key, Object... additional) {
+	public static IFormattableTextComponent gas(String key, Object... additional) {
 		return translated(GAS_BASE, key, additional);
 	}
 
-	public static MutableComponent advancement(String key, Object... additional) {
+	public static IFormattableTextComponent advancement(String key, Object... additional) {
 		return translated(ADVANCEMENT_BASE, key, additional);
 	}
 
-	public static MutableComponent dimension(String key, Object... additional) {
+	public static IFormattableTextComponent dimension(String key, Object... additional) {
 		return translated(DIMENSION, key, additional);
 	}
 
-	public static MutableComponent dimension(ResourceKey<Level> level, Object... additional) {
+	public static IFormattableTextComponent dimension(RegistryKey<World> level, Object... additional) {
 		return dimension(level.location().getPath(), additional);
 	}
 
-	public static MutableComponent creativeTab(String key, Object... additional) {
+	public static IFormattableTextComponent creativeTab(String key, Object... additional) {
 		return translated(CREATIVE_TAB, key, additional);
 	}
 
-	public static MutableComponent translated(String base, String key, Object... additional) {
-		return new TranslatableComponent(base + "." + Voltaic.ID + "." + key, additional);
+	public static IFormattableTextComponent translated(String base, String key, Object... additional) {
+		return new TranslationTextComponent(base + "." + Voltaic.ID + "." + key, additional);
 	}
 
 	public static boolean guiExists(String key) {
@@ -94,7 +96,7 @@ public class VoltaicTextUtils {
 		return translationExists(DIMENSION, key);
 	}
 
-	public static boolean dimensionExists(ResourceKey<Level> level) {
+	public static boolean dimensionExists(RegistryKey<World> level) {
 		return dimensionExistst(level.location().getPath());
 	}
 
@@ -102,12 +104,16 @@ public class VoltaicTextUtils {
 		return I18n.exists(base + "." + Voltaic.ID + "." + key);
 	}
 
-	public static MutableComponent voltageTooltip(int voltage) {
-		return tooltip("machine.voltage", ChatFormatter.getChatDisplayShort(voltage, DisplayUnits.VOLTAGE).withStyle(ChatFormatting.GRAY)).withStyle(ChatFormatting.DARK_GRAY);
+	public static IFormattableTextComponent voltageTooltip(int voltage) {
+		return tooltip("machine.voltage", ChatFormatter.getChatDisplayShort(voltage, DisplayUnits.VOLTAGE).withStyle(TextFormatting.GRAY)).withStyle(TextFormatting.DARK_GRAY);
 	}
 
-	public static MutableComponent ratio(Component numerator, Component denominator) {
+	public static IFormattableTextComponent ratio(IFormattableTextComponent numerator, IFormattableTextComponent denominator) {
 		return numerator.copy().append(" / ").append(denominator);
+	}
+	
+	public static IFormattableTextComponent empty() {
+		return EMPTY;
 	}
 
 }

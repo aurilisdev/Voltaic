@@ -6,26 +6,26 @@ import javax.annotation.Nullable;
 
 import com.google.gson.JsonObject;
 
-import net.minecraft.data.recipes.FinishedRecipe;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.TagKey;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.AbstractCookingRecipe;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.data.IFinishedRecipe;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.AbstractCookingRecipe;
+import net.minecraft.item.crafting.IRecipeSerializer;
+import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.tags.ITag.INamedTag;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.registries.ForgeRegistries;
 
-public class CustomCookingRecipe implements FinishedRecipe {
+public class CustomCookingRecipe implements IFinishedRecipe {
 
 	private final ResourceLocation id;
 	private final Ingredient ingredient;
 	private final Item result;
 	private final float experience;
 	private final int cookingTime;
-	private final RecipeSerializer<? extends AbstractCookingRecipe> serializer;
+	private final IRecipeSerializer<? extends AbstractCookingRecipe> serializer;
 
-	private CustomCookingRecipe(ResourceLocation id, Ingredient input, Item result, float experience, int cookingTime, RecipeSerializer<? extends AbstractCookingRecipe> serializer) {
+	private CustomCookingRecipe(ResourceLocation id, Ingredient input, Item result, float experience, int cookingTime, IRecipeSerializer<? extends AbstractCookingRecipe> serializer) {
 		this.id = id;
 		ingredient = input;
 		this.result = result;
@@ -54,7 +54,7 @@ public class CustomCookingRecipe implements FinishedRecipe {
 	}
 
 	@Override
-	public RecipeSerializer<?> getType() {
+	public IRecipeSerializer<?> getType() {
 		return serializer;
 	}
 
@@ -81,10 +81,10 @@ public class CustomCookingRecipe implements FinishedRecipe {
 		private final Item result;
 		private final float experience;
 		private final int smeltTime;
-		private final RecipeSerializer<? extends AbstractCookingRecipe> serializer;
+		private final IRecipeSerializer<? extends AbstractCookingRecipe> serializer;
 		private Ingredient input;
 
-		private Builder(Item result, float experience, int smeltTime, RecipeSerializer<? extends AbstractCookingRecipe> serializer) {
+		private Builder(Item result, float experience, int smeltTime, IRecipeSerializer<? extends AbstractCookingRecipe> serializer) {
 			this.result = result;
 			this.experience = experience;
 			this.smeltTime = smeltTime;
@@ -99,7 +99,7 @@ public class CustomCookingRecipe implements FinishedRecipe {
 			return input(Ingredient.of(item));
 		}
 
-		public Builder input(TagKey<Item> tag) {
+		public Builder input(INamedTag<Item> tag) {
 			return input(Ingredient.of(tag));
 		}
 
@@ -108,7 +108,7 @@ public class CustomCookingRecipe implements FinishedRecipe {
 			return this;
 		}
 
-		public void complete(String parent, String name, Consumer<FinishedRecipe> consumer) {
+		public void complete(String parent, String name, Consumer<IFinishedRecipe> consumer) {
 			consumer.accept(new CustomCookingRecipe(new ResourceLocation(parent, name), input, result, experience, smeltTime, serializer));
 		}
 
@@ -117,7 +117,7 @@ public class CustomCookingRecipe implements FinishedRecipe {
 	public static class SmeltingBuilder extends Builder {
 
 		private SmeltingBuilder(Item result, float experience, int smeltTime) {
-			super(result, experience, smeltTime, RecipeSerializer.SMELTING_RECIPE);
+			super(result, experience, smeltTime, IRecipeSerializer.SMELTING_RECIPE);
 		}
 
 	}
@@ -125,7 +125,7 @@ public class CustomCookingRecipe implements FinishedRecipe {
 	public static class SmokingBuilder extends Builder {
 
 		private SmokingBuilder(Item result, float experience, int smeltTime) {
-			super(result, experience, smeltTime, RecipeSerializer.SMOKING_RECIPE);
+			super(result, experience, smeltTime, IRecipeSerializer.SMOKING_RECIPE);
 		}
 
 	}
@@ -133,7 +133,7 @@ public class CustomCookingRecipe implements FinishedRecipe {
 	public static class BlastingBuilder extends Builder {
 
 		private BlastingBuilder(Item result, float experience, int smeltTime) {
-			super(result, experience, smeltTime, RecipeSerializer.BLASTING_RECIPE);
+			super(result, experience, smeltTime, IRecipeSerializer.BLASTING_RECIPE);
 		}
 
 	}

@@ -1,12 +1,12 @@
 package voltaic.datagen.utils.server.loottable;
 
 import voltaic.prefab.tile.GenericTile;
+import net.minecraft.block.Block;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.item.Item;
+import net.minecraft.tileentity.TileEntityType;
+import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
 
 public abstract class BaseLootTablesProvider extends AbstractLootTableProvider {
 
@@ -14,7 +14,7 @@ public abstract class BaseLootTablesProvider extends AbstractLootTableProvider {
         super(dataGeneratorIn, modID);
     }
 
-    public <T extends GenericTile> void addMachineTable(Block block, RegistryObject<BlockEntityType<T>> tilereg, boolean items, boolean fluids, boolean gases, boolean energy, boolean additional) {
+    public <T extends GenericTile> void addMachineTable(Block block, RegistryObject<TileEntityType<T>> tilereg, boolean items, boolean fluids, boolean gases, boolean energy, boolean additional) {
     	lootTables.put(block, machineTable(name(block), block, tilereg.get(), items, fluids, gases, energy, additional));
     }
 

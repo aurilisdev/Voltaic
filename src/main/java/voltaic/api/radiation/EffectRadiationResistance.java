@@ -1,19 +1,19 @@
 package voltaic.api.radiation;
 
+import net.minecraft.potion.Effect;
+import net.minecraft.potion.EffectType;
 import voltaic.prefab.utilities.math.Color;
-import net.minecraft.world.effect.MobEffect;
-import net.minecraft.world.effect.MobEffectCategory;
 
-public class EffectRadiationResistance extends MobEffect {
+public class EffectRadiationResistance extends Effect {
 
     public static final Color COLOR = new Color(255, 251, 245, 255);
 
-    public EffectRadiationResistance(MobEffectCategory typeIn, int liquidColorIn) {
+    public EffectRadiationResistance(EffectType typeIn, int liquidColorIn) {
         super(typeIn, liquidColorIn);
     }
 
     public EffectRadiationResistance() {
-        this(MobEffectCategory.HARMFUL, COLOR.color());
+        this(EffectType.HARMFUL, COLOR.color());
     }
     
     @Override

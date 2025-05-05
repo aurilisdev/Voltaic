@@ -7,7 +7,7 @@ import voltaic.client.guidebook.utils.pagedata.OnClick;
 import voltaic.client.guidebook.utils.pagedata.OnKeyPress;
 import voltaic.client.guidebook.utils.pagedata.OnTooltip;
 import voltaic.client.guidebook.utils.pagedata.graphics.AbstractGraphicWrapper;
-import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.util.text.IFormattableTextComponent;
 
 /**
  * A simple data-wrapping class that contains a name, a logo, and the various chapters associated with it
@@ -32,7 +32,7 @@ public abstract class Module {
 		return startingPageNumber;
 	}
 
-	public boolean isCat(MutableComponent cat) {
+	public boolean isCat(IFormattableTextComponent cat) {
 		return getTitle().getString().equals(cat.getString());
 	}
 
@@ -40,7 +40,7 @@ public abstract class Module {
 
 	public abstract AbstractGraphicWrapper<?> getLogo();
 
-	public abstract MutableComponent getTitle();
+	public abstract IFormattableTextComponent getTitle();
 
 	public OnTooltip onTooltip() {
 		return null;

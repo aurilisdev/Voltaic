@@ -2,7 +2,7 @@ package voltaic.api.tile;
 
 import java.util.UUID;
 
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.entity.LivingEntity;
 
 public interface IPlayerStorable {
 

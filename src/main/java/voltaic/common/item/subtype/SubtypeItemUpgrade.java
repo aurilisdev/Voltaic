@@ -4,7 +4,6 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.network.chat.MutableComponent;
 import org.apache.logging.log4j.util.TriConsumer;
 
 import voltaic.api.ISubtype;
@@ -15,12 +14,13 @@ import voltaic.prefab.utilities.CapabilityUtils;
 import voltaic.prefab.utilities.ItemUtils;
 import voltaic.prefab.utilities.NBTUtils;
 import voltaic.prefab.utilities.VoltaicTextUtils;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.block.BlockState;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Direction;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 
@@ -55,7 +55,7 @@ public enum SubtypeItemUpgrade implements ISubtype {
             return;
         }
 
-        CompoundTag tag = upgrade.getOrCreateTag();
+        CompoundNBT tag = upgrade.getOrCreateTag();
 		int tickNumber = tag.getInt(NBTUtils.TIMER);
 
 		if (tickNumber < 4) {
@@ -95,7 +95,7 @@ public enum SubtypeItemUpgrade implements ISubtype {
             return;
         }
 
-        CompoundTag tag = upgrade.getOrCreateTag();
+        CompoundNBT tag = upgrade.getOrCreateTag();
 		int tickNumber = tag.getInt(NBTUtils.TIMER);
 		if (tickNumber < 4) {
 			tag.putInt(NBTUtils.TIMER, tag.getInt(NBTUtils.TIMER) + 1);
@@ -160,16 +160,16 @@ public enum SubtypeItemUpgrade implements ISubtype {
     // does it have an appliable effect?
     public final boolean isEmpty;
 
-    public final MutableComponent name;
+    public final IFormattableTextComponent name;
 
-    SubtypeItemUpgrade(TriConsumer<GenericTile, ItemStack, Integer> applyUpgrade, int maxSize, MutableComponent name) {
+    SubtypeItemUpgrade(TriConsumer<GenericTile, ItemStack, Integer> applyUpgrade, int maxSize, IFormattableTextComponent name) {
         this.applyUpgrade = applyUpgrade;
         this.maxSize = maxSize;
         isEmpty = false;
         this.name = name;
     }
 
-    SubtypeItemUpgrade(int maxStackSize, MutableComponent name) {
+    SubtypeItemUpgrade(int maxStackSize, IFormattableTextComponent name) {
         applyUpgrade = (holder, upgrade, index) -> {
         };
         maxSize = maxStackSize;
@@ -192,7 +192,7 @@ public enum SubtypeItemUpgrade implements ISubtype {
         return true;
     }
 
-    private static void inputSmartMode(BlockEntity entity, ComponentInventory inv, int slot, int procNumber, Direction dir) {
+    private static void inputSmartMode(TileEntity entity, ComponentInventory inv, int slot, int procNumber, Direction dir) {
 
         if (entity == null) {
             return;
@@ -208,7 +208,7 @@ public enum SubtypeItemUpgrade implements ISubtype {
 
     }
 
-    private static void inputDefaultMode(BlockEntity entity, ComponentInventory inv, Direction dir, int procNumber) {
+    private static void inputDefaultMode(TileEntity entity, ComponentInventory inv, Direction dir, int procNumber) {
 
         if (entity == null) {
             return;
@@ -249,7 +249,7 @@ public enum SubtypeItemUpgrade implements ISubtype {
         }
     }
 
-    private static void outputSmartMode(BlockEntity entity, ComponentInventory inv, int index, Direction dir) {
+    private static void outputSmartMode(TileEntity entity, ComponentInventory inv, int index, Direction dir) {
         if (entity == null) {
             return;
         }
@@ -261,7 +261,7 @@ public enum SubtypeItemUpgrade implements ISubtype {
         addItemToHandler(item, inv, index);
     }
 
-    private static void outputDefaultMode(BlockEntity entity, ComponentInventory inv, Direction dir) {
+    private static void outputDefaultMode(TileEntity entity, ComponentInventory inv, Direction dir) {
         if (entity == null) {
             return;
         }
@@ -292,10 +292,10 @@ public enum SubtypeItemUpgrade implements ISubtype {
     }
 
     @Nullable
-    private static BlockEntity getBlockEntity(GenericTile holder, Direction dir) {
+    private static TileEntity getBlockEntity(GenericTile holder, Direction dir) {
         BlockPos pos = holder.getBlockPos().relative(dir);
         BlockState state = holder.getLevel().getBlockState(pos);
-        if (state.hasBlockEntity()) {
+        if (state.hasTileEntity()) {
             return holder.getLevel().getBlockEntity(holder.getBlockPos().relative(dir));
         }
         return null;

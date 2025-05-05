@@ -1,11 +1,12 @@
 package voltaic.prefab.tile.components.type;
 
-import net.minecraft.core.Direction;
+import javax.annotation.Nullable;
+
+import net.minecraft.util.Direction;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.IEnergyStorage;
 
-import org.jetbrains.annotations.Nullable;
 import voltaic.Voltaic;
 import voltaic.api.electricity.ICapabilityElectrodynamic;
 import voltaic.prefab.tile.GenericTile;

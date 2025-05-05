@@ -3,19 +3,19 @@ package voltaic.client.guidebook.utils.components;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.matrix.MatrixStack;
 
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.ITextProperties;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextFormatting;
 import voltaic.client.guidebook.utils.pagedata.OnClick;
 import voltaic.client.guidebook.utils.pagedata.OnKeyPress;
 import voltaic.client.guidebook.utils.pagedata.OnTooltip;
 import voltaic.client.guidebook.utils.pagedata.graphics.AbstractGraphicWrapper;
 import voltaic.prefab.utilities.VoltaicTextUtils;
 import voltaic.prefab.utilities.math.Color;
-import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.Font;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.FormattedText;
-import net.minecraft.network.chat.TextComponent;
 
 public class Page {
 
@@ -41,28 +41,64 @@ public class Page {
 		return pageNumber;
 	}
 
-	public void renderAdditionalText(PoseStack poseStack, int refX, int refY, int xPageShift, Font font, int textWidth, int textStartX) {
+	public void renderAdditionalText(MatrixStack stack, int refX, int refY, int xPageShift, FontRenderer font, int textWidth, int textStartX) {
 
 		Module currMod = associatedChapter.module;
-		Component moduleTitle = currMod.getTitle().withStyle(ChatFormatting.BOLD);
+		ITextComponent moduleTitle = currMod.getTitle().withStyle(TextFormatting.BOLD);
 		int xShift = (textWidth - font.width(moduleTitle)) / 2;
-		font.draw(poseStack, moduleTitle, refX + textStartX + xShift + xPageShift, refY + 16, Color.TEXT_GRAY.color());
+		font.draw(stack, moduleTitle, refX + textStartX + xShift + xPageShift, refY + 16, 4210752);
 
-		Component chapTitle = associatedChapter.getTitle().withStyle(ChatFormatting.UNDERLINE);
+		ITextComponent chapTitle = associatedChapter.getTitle().withStyle(TextFormatting.UNDERLINE);
 		xShift = (textWidth - font.width(chapTitle)) / 2;
-		font.draw(poseStack, chapTitle, refX + textStartX + xShift + xPageShift, refY + 26, Color.TEXT_GRAY.color());
+		font.draw(stack, chapTitle, refX + textStartX + xShift + xPageShift, refY + 26, 4210752);
 
-		Component pageNumber = new TextComponent(getPage() + 1 + "");
+		ITextComponent pageNumber = new StringTextComponent(getPage() + 1 + "");
 		xShift = (textWidth - font.width(pageNumber)) / 2;
-		font.draw(poseStack, pageNumber, refX + textStartX + xShift + xPageShift, refY + 200, Color.TEXT_GRAY.color());
+		font.draw(stack, pageNumber, refX + textStartX + xShift + xPageShift, refY + 200, 4210752);
 
 	}
 
-	public record TextWrapper(int x, int y, FormattedText characters, Color color, boolean centered, OnTooltip onTooltip, OnClick onClick, OnKeyPress onKeyPress) {
+	public static class TextWrapper {
+		
+		public final int x;
+		public final int y;
+		public final ITextProperties characters;
+		public final Color color;
+		public final boolean centered;
+		public final OnTooltip onTooltip;
+		public final OnClick onClick;
+		public final OnKeyPress onKeyPress;
+		
+		public TextWrapper(int x, int y, ITextProperties characters, Color color, boolean centered, OnTooltip onTooltip, OnClick onClick, OnKeyPress onKeyPress) {
+			this.x = x;
+			this.y = y;
+			this.characters = characters;
+			this.color = color;
+			this.centered = centered;
+			this.onTooltip = onTooltip;
+			this.onClick = onClick;
+			this.onKeyPress = onKeyPress;
+		}
 
 	}
 
-	public record GraphicWrapper(int x, int y, AbstractGraphicWrapper<?> graphic, OnTooltip onTooltip, OnClick onClick, OnKeyPress onKeyPress) {
+	public static class GraphicWrapper {
+		
+		public final int x;
+		public final int y;
+		public final AbstractGraphicWrapper<?> graphic;
+		public final OnTooltip onTooltip;
+		public final OnClick onClick;
+		public final OnKeyPress onKeyPress;
+		
+		public GraphicWrapper(int x, int y, AbstractGraphicWrapper<?> graphic, OnTooltip onTooltip, OnClick onClick, OnKeyPress onKeyPress) {
+			this.x = x;
+			this.y = y;
+			this.graphic = graphic;
+			this.onTooltip = onTooltip;
+			this.onClick = onClick;
+			this.onKeyPress = onKeyPress;
+		}
 
 	}
 
@@ -76,16 +112,16 @@ public class Page {
 		}
 
 		@Override
-		public void renderAdditionalText(PoseStack poseStack, int refX, int refY, int xPageShift, Font font, int textWidth, int textStartX) {
+		public void renderAdditionalText(MatrixStack stack, int refX, int refY, int xPageShift, FontRenderer font, int textWidth, int textStartX) {
 
 			Module currMod = associatedModule;
-			Component moduleTitle = currMod.getTitle().withStyle(ChatFormatting.BOLD);
+			ITextComponent moduleTitle = currMod.getTitle().withStyle(TextFormatting.BOLD);
 			int xShift = (textWidth - font.width(moduleTitle)) / 2;
-			font.draw(poseStack, moduleTitle, refX + xShift + textStartX + xPageShift, refY + 16, Color.TEXT_GRAY.color());
+			font.draw(stack, moduleTitle, refX + xShift + textStartX + xPageShift, refY + 16, 4210752);
 
-			Component chapTitle = VoltaicTextUtils.guidebook("chapters").withStyle(ChatFormatting.UNDERLINE);
+			ITextComponent chapTitle = VoltaicTextUtils.guidebook("chapters").withStyle(TextFormatting.UNDERLINE);
 			xShift = (textWidth - font.width(chapTitle)) / 2;
-			font.draw(poseStack, chapTitle, refX + textStartX + xShift + xPageShift, refY + 31, Color.TEXT_GRAY.color());
+			font.draw(stack, chapTitle, refX + textStartX + xShift + xPageShift, refY + 31, 4210752);
 		}
 
 	}
@@ -97,10 +133,10 @@ public class Page {
 		}
 
 		@Override
-		public void renderAdditionalText(PoseStack poseStack, int refX, int refY, int xPageShift, Font font, int textWidth, int textStartX) {
-			Component modTitle = VoltaicTextUtils.guidebook("availablemodules").withStyle(ChatFormatting.BOLD);
+		public void renderAdditionalText(MatrixStack stack, int refX, int refY, int xPageShift, FontRenderer font, int textWidth, int textStartX) {
+			ITextComponent modTitle = VoltaicTextUtils.guidebook("availablemodules").withStyle(TextFormatting.BOLD);
 			int xShift = (textWidth - font.width(modTitle)) / 2;
-			font.draw(poseStack, modTitle, refX + textStartX + xShift + xPageShift, refY + 16, Color.TEXT_GRAY.color());
+			font.draw(stack, modTitle, refX + textStartX + xShift + xPageShift, refY + 16, 4210752);
 		}
 
 	}
@@ -112,7 +148,7 @@ public class Page {
 		}
 
 		@Override
-		public void renderAdditionalText(PoseStack poseStack, int refX, int refY, int xPageShift, Font font, int textWidth, int textStartX) {
+		public void renderAdditionalText(MatrixStack stack, int refX, int refY, int xPageShift, FontRenderer font, int textWidth, int textStartX) {
 			// Not used as of now
 		}
 

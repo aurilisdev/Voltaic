@@ -1,8 +1,8 @@
 package voltaic.api.screen.component;
 
-import net.minecraft.network.chat.Component;
+import net.minecraft.util.text.IFormattableTextComponent;
 
 @FunctionalInterface
 public interface TextSupplier {
-	Component getText();
+	IFormattableTextComponent getText();
 }

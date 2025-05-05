@@ -2,21 +2,21 @@ package voltaic.prefab.screen.component.types;
 
 import java.util.function.Consumer;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.matrix.MatrixStack;
 
 import voltaic.prefab.screen.component.utils.AbstractScreenComponent;
 
 public class ScreenComponentCustomRender extends AbstractScreenComponent {
 
-    private final Consumer<PoseStack> poseStackConsumer;
+    private final Consumer<MatrixStack> poseStackConsumer;
 
-    public ScreenComponentCustomRender(int x, int y, Consumer<PoseStack> poseStackConsumer) {
+    public ScreenComponentCustomRender(int x, int y, Consumer<MatrixStack> poseStackConsumer) {
         super(x, y, 0, 0);
         this.poseStackConsumer = poseStackConsumer;
     }
 
     @Override
-    public void renderBackground(PoseStack poseStack, int xAxis, int yAxis, int guiWidth, int guiHeight) {
+    public void renderBackground(MatrixStack poseStack, int xAxis, int yAxis, int guiWidth, int guiHeight) {
         if(!isVisible()){
             return;
         }

@@ -1,15 +1,15 @@
 package voltaic.api.tile;
 
+import net.minecraft.block.BlockRenderType;
 import voltaic.api.multiblock.subnodebased.parent.IMultiblockParentBlock;
 import voltaic.common.block.voxelshapes.VoxelShapeProvider;
-import net.minecraft.world.level.block.RenderShape;
 
 public class MachineProperties {
 
     public boolean isMultiblock = false;
     public int litBrightness = 0;
     public boolean usesLit = false;
-    public RenderShape renderShape = RenderShape.MODEL;
+    public BlockRenderType renderShape = BlockRenderType.MODEL;
     public boolean propegatesLightDown = false;
     public boolean isPlayerStorable = false;
     public IMultiblockParentBlock.SubnodeWrapper wrapper = IMultiblockParentBlock.SubnodeWrapper.EMPTY;
@@ -30,7 +30,7 @@ public class MachineProperties {
         return this;
     }
 
-    public MachineProperties setRenderShape(RenderShape shape) {
+    public MachineProperties setRenderShape(BlockRenderType shape) {
         renderShape = shape;
         return this;
     }

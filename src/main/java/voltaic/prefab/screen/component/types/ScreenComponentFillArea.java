@@ -1,6 +1,6 @@
 package voltaic.prefab.screen.component.types;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.matrix.MatrixStack;
 
 import voltaic.prefab.screen.component.ScreenComponentGeneric;
 import voltaic.prefab.utilities.math.Color;
@@ -21,12 +21,12 @@ public class ScreenComponentFillArea extends ScreenComponentGeneric {
     }
 
     @Override
-    public void renderBackground(PoseStack poseStack, int xAxis, int yAxis, int guiWidth, int guiHeight) {
+    public void renderBackground(MatrixStack poseStack, int xAxis, int yAxis, int guiWidth, int guiHeight) {
         if(!isVisible()) {
             return;
         }
-        int x = xLocation + guiWidth;
-        int y = yLocation + guiHeight;
+        int x = this.x + guiWidth;
+        int y = this.y + guiHeight;
         fill(poseStack, x - 1, y - 1, x + width + 1, y + height + 1, outline.color());
         fill(poseStack, x, y, x + width, y + height, fill.color());
     }

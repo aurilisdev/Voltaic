@@ -18,9 +18,10 @@ import voltaic.common.settings.VoltaicConstants;
 import voltaic.common.tags.VoltaicTags;
 import voltaic.prefab.configuration.ConfigurationHandler;
 import voltaic.registers.UnifiedVoltaicRegister;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.item.crafting.RecipeSerializer;
+import voltaic.registers.VoltaicCapabilities;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.item.crafting.IRecipeSerializer;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.MinecraftForge;
@@ -35,8 +36,8 @@ import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.network.PacketDistributor;
-import net.minecraftforge.network.PacketDistributor.PacketTarget;
+import net.minecraftforge.fml.network.PacketDistributor;
+import net.minecraftforge.fml.network.PacketDistributor.PacketTarget;
 
 import javax.annotation.Nullable;
 
@@ -76,6 +77,9 @@ public class Voltaic {
         RadioactiveItemRegister.INSTANCE = new RadioactiveItemRegister().subscribeAsSyncable(NetworkHandler.CHANNEL);
         RadioactiveFluidRegister.INSTANCE = new RadioactiveFluidRegister().subscribeAsSyncable(NetworkHandler.CHANNEL);
         RadiationShieldingRegister.INSTANCE = new RadiationShieldingRegister().subscribeAsSyncable(NetworkHandler.CHANNEL);
+        event.enqueueWork(() -> {
+        	VoltaicCapabilities.register();
+        });
         // CraftingHelper.register(ConfigCondition.Serializer.INSTANCE); // Probably wrong location after update from 1.18.2 to
         // 1.19.2
 
@@ -86,7 +90,7 @@ public class Voltaic {
     }
     
     @SubscribeEvent
-	public static void registerRecipeSerialziers(RegistryEvent.Register<RecipeSerializer<?>> event) {
+	public static void registerRecipeSerialziers(RegistryEvent.Register<IRecipeSerializer<?>> event) {
 		CraftingHelper.register(ConfigCondition.Serializer.INSTANCE);
 	}
 
@@ -103,7 +107,7 @@ public class Voltaic {
     private static Consumer<OnDatapackSyncEvent> getGuidebookListener() {
 
     	return event -> {
-			ServerPlayer player = event.getPlayer();
+			ServerPlayerEntity player = event.getPlayer();
 			PacketTarget target = player == null ? PacketDistributor.ALL.noArg() : PacketDistributor.PLAYER.with(() -> player);
 			NetworkHandler.CHANNEL.send(target, new PacketResetGuidebookPages());
 		};

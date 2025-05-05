@@ -2,16 +2,17 @@ package voltaic.common.block.voxelshapes;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.core.Direction;
-import net.minecraft.world.phys.shapes.Shapes;
-import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraft.util.Direction;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.shapes.VoxelShapes;
 
 public class VoxelShapeProvider {
 
     private final VoxelShape omni;
     private final VoxelShape[] shapes;
 
-    public static final VoxelShapeProvider DEFAULT = new VoxelShapeProvider(Shapes.block(), null);
+    public static final VoxelShapeProvider DEFAULT = new VoxelShapeProvider(VoxelShapes.block(), null);
 
     private VoxelShapeProvider(VoxelShape omni, VoxelShape[] shapes) {
         this.omni = omni;
@@ -22,7 +23,7 @@ public class VoxelShapeProvider {
         if(omni != null) {
             return omni;
         } else if(dir == Direction.UP || dir == Direction.DOWN) {
-            return Shapes.block();
+            return VoxelShapes.block();
         } else {
             return shapes[dir.ordinal()];
         }
@@ -39,13 +40,13 @@ public class VoxelShapeProvider {
     public static final Direction[] HORIZONTAL_DIRECTIONS = {Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST};
 
     public static VoxelShape rotateShape(Direction from, Direction to, VoxelShape shape) {
-        VoxelShape[] buffer = new VoxelShape[] { shape, Shapes.empty() };
+        VoxelShape[] buffer = new VoxelShape[] { shape, VoxelShapes.empty() };
 
         int times = (to.get2DDataValue() - from.get2DDataValue() + 4) % 4;
         for (int i = 0; i < times; i++) {
-            buffer[0].forAllBoxes((minX, minY, minZ, maxX, maxY, maxZ) -> buffer[1] = Shapes.or(buffer[1], Shapes.create(1 - maxZ, minY, minX, 1 - minZ, maxY, maxX)));
+            buffer[0].forAllBoxes((minX, minY, minZ, maxX, maxY, maxZ) -> buffer[1] = VoxelShapes.or(buffer[1], VoxelShapes.create(new AxisAlignedBB(1 - maxZ, minY, minX, 1 - minZ, maxY, maxX))));
             buffer[0] = buffer[1];
-            buffer[1] = Shapes.empty();
+            buffer[1] = VoxelShapes.empty();
         }
 
         return buffer[0];

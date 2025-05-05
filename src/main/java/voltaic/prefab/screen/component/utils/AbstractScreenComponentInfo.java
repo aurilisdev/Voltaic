@@ -6,7 +6,7 @@ import java.util.List;
 import voltaic.api.screen.ITexture;
 import voltaic.api.screen.component.TextPropertySupplier;
 import voltaic.prefab.screen.component.ScreenComponentGeneric;
-import net.minecraft.util.FormattedCharSequence;
+import net.minecraft.util.IReorderingProcessor;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -26,6 +26,6 @@ public abstract class AbstractScreenComponentInfo extends ScreenComponentGeneric
 		});
 	}
 
-	protected abstract List<? extends FormattedCharSequence> getInfo(List<? extends FormattedCharSequence> list);
+	protected abstract List<? extends IReorderingProcessor> getInfo(List<? extends IReorderingProcessor> list);
 
 }

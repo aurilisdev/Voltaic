@@ -6,13 +6,13 @@ import voltaic.client.guidebook.ScreenGuidebook;
 import voltaic.common.reloadlistener.RadiationShieldingRegister;
 import voltaic.common.reloadlistener.RadioactiveFluidRegister;
 import voltaic.common.reloadlistener.RadioactiveItemRegister;
+import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.material.Fluid;
+import net.minecraft.client.world.ClientWorld;
+import net.minecraft.fluid.Fluid;
+import net.minecraft.item.Item;
+import net.minecraft.particles.ParticleTypes;
+import net.minecraft.util.math.BlockPos;
 
 import java.util.HashMap;
 
@@ -27,7 +27,7 @@ public class ClientBarrierMethods {
 
     public static void handlerSetGuidebookInitFlag() {
         Minecraft minecraft = Minecraft.getInstance();
-        ClientLevel world = minecraft.level;
+        ClientWorld world = minecraft.level;
         if (world == null || minecraft.player == null) {
             return;
         }
@@ -35,7 +35,7 @@ public class ClientBarrierMethods {
     }
 
     public static void handlerSpawnSmokeParicle(BlockPos pos) {
-        ClientLevel world = Minecraft.getInstance().level;
+        ClientWorld world = Minecraft.getInstance().level;
         if (world == null) {
             return;
         }

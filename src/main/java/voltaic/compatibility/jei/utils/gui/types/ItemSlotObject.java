@@ -3,24 +3,23 @@ package voltaic.compatibility.jei.utils.gui.types;
 import voltaic.api.screen.ITexture;
 import voltaic.api.screen.component.ISlotTexture;
 import voltaic.compatibility.jei.utils.gui.ScreenObject;
-import mezz.jei.api.recipe.RecipeIngredientRole;
 
 public class ItemSlotObject extends ScreenObject {
 
-	private RecipeIngredientRole role;
+	private boolean input;
 	private ScreenObject icon = null;
 
-	public ItemSlotObject(ISlotTexture slotTexture, int x, int y, RecipeIngredientRole role) {
+	public ItemSlotObject(ISlotTexture slotTexture, int x, int y, boolean input) {
 		super(slotTexture, x, y);
-		this.role = role;
+		this.input = input;
 	}
 
-	public ItemSlotObject(ISlotTexture slotTexture, ITexture iconTexture, int x, int y, RecipeIngredientRole role) {
+	public ItemSlotObject(ISlotTexture slotTexture, ITexture iconTexture, int x, int y, boolean input) {
 		super(slotTexture, x, y);
 		int slotXOffset = (slotTexture.imageWidth() - iconTexture.imageWidth()) / 2;
 		int slotYOffset = (slotTexture.imageHeight() - iconTexture.imageHeight()) / 2;
 		icon = new ScreenObject(iconTexture, x + slotXOffset, y + slotYOffset);
-		this.role = role;
+		this.input = input;
 	}
 
 	public ScreenObject getIcon() {
@@ -35,8 +34,8 @@ public class ItemSlotObject extends ScreenObject {
 		return y - ((ISlotTexture) texture).yOffset();
 	}
 
-	public RecipeIngredientRole getRole() {
-		return role;
+	public boolean isInput() {
+		return input;
 	}
 
 }

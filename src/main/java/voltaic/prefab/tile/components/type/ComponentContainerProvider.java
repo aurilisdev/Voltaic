@@ -2,19 +2,20 @@ package voltaic.prefab.tile.components.type;
 
 import java.util.function.BiFunction;
 
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.inventory.container.INamedContainerProvider;
+import net.minecraft.util.text.IFormattableTextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import voltaic.prefab.tile.GenericTile;
 import voltaic.prefab.tile.components.IComponent;
 import voltaic.prefab.tile.components.IComponentType;
-import net.minecraft.network.chat.TranslatableComponent;
-import net.minecraft.world.MenuProvider;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
 
-public class ComponentContainerProvider implements IComponent, MenuProvider {
+public class ComponentContainerProvider implements IComponent, INamedContainerProvider {
 
 	protected GenericTile holder = null;
-	protected BiFunction<Integer, Inventory, AbstractContainerMenu> createMenuFunction;
+	protected BiFunction<Integer, PlayerInventory, Container> createMenuFunction;
 	protected String name = "";
 
 	public ComponentContainerProvider(String name, GenericTile holder) {
@@ -32,13 +33,13 @@ public class ComponentContainerProvider implements IComponent, MenuProvider {
 		return holder;
 	}
 
-	public ComponentContainerProvider createMenu(BiFunction<Integer, Inventory, AbstractContainerMenu> createMenuFunction) {
+	public ComponentContainerProvider createMenu(BiFunction<Integer, PlayerInventory, Container> createMenuFunction) {
 		this.createMenuFunction = createMenuFunction;
 		return this;
 	}
 
 	@Override
-	public AbstractContainerMenu createMenu(int id, Inventory inv, Player pl) {
+	public Container createMenu(int id, PlayerInventory inv, PlayerEntity pl) {
 		if (createMenuFunction != null) {
 			if (holder.hasComponent(IComponentType.Inventory)) {
 				ComponentInventory componentinv = holder.getComponent(IComponentType.Inventory);
@@ -53,8 +54,8 @@ public class ComponentContainerProvider implements IComponent, MenuProvider {
 	}
 
 	@Override
-	public net.minecraft.network.chat.Component getDisplayName() {
-		return new TranslatableComponent(name);
+	public IFormattableTextComponent getDisplayName() {
+		return new TranslationTextComponent(name);
 	}
 
 	@Override

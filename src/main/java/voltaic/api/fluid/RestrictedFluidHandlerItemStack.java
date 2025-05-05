@@ -2,11 +2,12 @@ package voltaic.api.fluid;
 
 import java.util.function.Predicate;
 
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
-import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.Direction;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.LazyOptional;
@@ -28,7 +29,7 @@ public class RestrictedFluidHandlerItemStack implements IFluidHandlerItem, ICapa
     
     private final LazyOptional<IFluidHandlerItem> holder = LazyOptional.of(() -> this);
 
-    @NotNull
+    @Nonnull
     protected ItemStack container;
     protected int capacity;
 
@@ -48,7 +49,7 @@ public class RestrictedFluidHandlerItemStack implements IFluidHandlerItem, ICapa
     }
 
     @Override
-    public @NotNull FluidStack getFluidInTank(int tank) {
+    public @Nonnull FluidStack getFluidInTank(int tank) {
         return getFluid();
     }
 
@@ -58,7 +59,7 @@ public class RestrictedFluidHandlerItemStack implements IFluidHandlerItem, ICapa
     }
 
     @Override
-    public boolean isFluidValid(int tank, @NotNull FluidStack stack) {
+    public boolean isFluidValid(int tank, @Nonnull FluidStack stack) {
         return isFluidValid.test(stack);
     }
 
@@ -95,7 +96,7 @@ public class RestrictedFluidHandlerItemStack implements IFluidHandlerItem, ICapa
     }
 
     @Override
-    public @NotNull FluidStack drain(FluidStack resource, FluidAction action) {
+    public @Nonnull FluidStack drain(FluidStack resource, FluidAction action) {
         if (container.getCount() != 1 || resource.isEmpty() || !getFluid().isFluidEqual(resource)) {
             return FluidStack.EMPTY;
         }
@@ -103,7 +104,7 @@ public class RestrictedFluidHandlerItemStack implements IFluidHandlerItem, ICapa
     }
 
     @Override
-    public @NotNull FluidStack drain(int maxDrain, FluidAction action) {
+    public @Nonnull FluidStack drain(int maxDrain, FluidAction action) {
         if (container.getCount() != 1 || maxDrain <= 0) {
             return FluidStack.EMPTY;
         }
@@ -131,18 +132,18 @@ public class RestrictedFluidHandlerItemStack implements IFluidHandlerItem, ICapa
     }
 
     @Override
-    public @NotNull ItemStack getContainer() {
+    public @Nonnull ItemStack getContainer() {
         return container;
     }
     
     @Override
-	public <T> @NotNull LazyOptional<T> getCapability(@NotNull Capability<T> cap, @org.jetbrains.annotations.Nullable Direction side) {
+	public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
 		return CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY.orEmpty(cap, holder);
 	}
 
-    @NotNull
+    @Nonnull
 	public FluidStack getFluid() {
-		CompoundTag tagCompound = container.getTag();
+		CompoundNBT tagCompound = container.getTag();
 		if (tagCompound == null || !tagCompound.contains(FLUID_NBT_KEY)) {
 			return FluidStack.EMPTY;
 		}
@@ -151,10 +152,10 @@ public class RestrictedFluidHandlerItemStack implements IFluidHandlerItem, ICapa
 
 	public void setFluid(FluidStack fluid) {
 		if (!container.hasTag()) {
-			container.setTag(new CompoundTag());
+			container.setTag(new CompoundNBT());
 		}
 
-		CompoundTag fluidTag = new CompoundTag();
+		CompoundNBT fluidTag = new CompoundNBT();
 		fluid.writeToNBT(fluidTag);
 		container.getTag().put(FLUID_NBT_KEY, fluidTag);
 	}

@@ -1,8 +1,8 @@
 package voltaic.compatibility.jei.utils.gui;
 
+import net.minecraft.util.ResourceLocation;
 import voltaic.Voltaic;
 import voltaic.api.screen.ITexture;
-import net.minecraft.resources.ResourceLocation;
 
 public class ScreenObject {
 

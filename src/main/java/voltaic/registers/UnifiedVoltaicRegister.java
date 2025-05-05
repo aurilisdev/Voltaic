@@ -11,7 +11,6 @@ public class UnifiedVoltaicRegister {
 		VoltaicMenuTypes.MENU_TYPES.register(bus);
 		VoltaicParticles.PARTICLES.register(bus);
 		VoltaicSounds.SOUNDS.register(bus);
-		VoltaicEffects.EFFECTS.register(bus);
 	}
 
 }

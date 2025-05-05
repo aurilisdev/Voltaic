@@ -4,18 +4,18 @@ import voltaic.api.codec.StreamCodec;
 
 import java.util.function.Supplier;
 
-import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraftforge.network.NetworkEvent.Context;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.server.ServerWorld;
+import net.minecraftforge.fml.network.NetworkEvent.Context;
 
 public class PacketSendUpdatePropertiesServer {
 	
-    public static final StreamCodec<FriendlyByteBuf, PacketSendUpdatePropertiesServer> CODEC = new StreamCodec<>() {
+    public static final StreamCodec<PacketBuffer, PacketSendUpdatePropertiesServer> CODEC = new StreamCodec<PacketBuffer, PacketSendUpdatePropertiesServer>() {
 
         @Override
-        public void encode(FriendlyByteBuf buf, PacketSendUpdatePropertiesServer packet) {
+        public void encode(PacketBuffer buf, PacketSendUpdatePropertiesServer packet) {
             //buf.writeInt(packet.wrapper.index());
             //buf.writeResourceLocation(packet.wrapper.type().getId());
             //packet.wrapper.type().getPacketCodec().encode(buf, packet.wrapper.value());
@@ -27,7 +27,7 @@ public class PacketSendUpdatePropertiesServer {
         }
 
         @Override
-        public PacketSendUpdatePropertiesServer decode(FriendlyByteBuf buf) {
+        public PacketSendUpdatePropertiesServer decode(PacketBuffer buf) {
             return new PacketSendUpdatePropertiesServer(buf.readNbt(), buf.readInt(), buf.readBlockPos());
             //int index = buf.readInt();
             //IPropertyType type = PropertyManager.REGISTERED_PROPERTIES.get(buf.readResourceLocation());
@@ -40,10 +40,10 @@ public class PacketSendUpdatePropertiesServer {
 
     private int index;
 
-    private CompoundTag data;
+    private CompoundNBT data;
     //private final PropertyWrapper wrapper;
 
-    public PacketSendUpdatePropertiesServer(CompoundTag data, int index, BlockPos tilePos) {
+    public PacketSendUpdatePropertiesServer(CompoundNBT data, int index, BlockPos tilePos) {
         this.tilePos = tilePos;
         this.index = index;
         this.data = data;
@@ -61,7 +61,7 @@ public class PacketSendUpdatePropertiesServer {
     public static void handle(PacketSendUpdatePropertiesServer message, Supplier<Context> context) {
 		Context ctx = context.get();
 		ctx.enqueueWork(() -> {
-			ServerLevel world = context.get().getSender().getLevel();
+			ServerWorld world = context.get().getSender().getLevel();
 			if (world != null) {
 				ServerBarrierMethods.handleSendUpdatePropertiesServer(world, message.tilePos, message.data, message.index);
 			}
@@ -69,11 +69,11 @@ public class PacketSendUpdatePropertiesServer {
 		ctx.setPacketHandled(true);
 	}
 
-	public static void encode(PacketSendUpdatePropertiesServer message, FriendlyByteBuf buf) {
+	public static void encode(PacketSendUpdatePropertiesServer message, PacketBuffer buf) {
 		CODEC.encode(buf, message);
 	}
 
-	public static PacketSendUpdatePropertiesServer decode(FriendlyByteBuf buf) {
+	public static PacketSendUpdatePropertiesServer decode(PacketBuffer buf) {
 		return CODEC.decode(buf);
 	}
 }

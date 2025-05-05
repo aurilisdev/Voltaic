@@ -2,6 +2,9 @@ package voltaic.prefab.inventory.container.slot.item;
 
 import javax.annotation.Nullable;
 
+import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.container.Slot;
+import net.minecraft.item.ItemStack;
 import voltaic.api.screen.ITexture;
 import voltaic.api.screen.component.ISlotTexture;
 import voltaic.prefab.screen.component.types.ScreenComponentSlot.IconType;
@@ -9,9 +12,6 @@ import voltaic.prefab.screen.component.types.ScreenComponentSlot.SlotType;
 import voltaic.prefab.screen.component.utils.SlotTextureProvider;
 import voltaic.prefab.tile.components.type.ComponentInventory;
 import voltaic.prefab.utilities.math.Color;
-import net.minecraft.world.Container;
-import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.item.ItemStack;
 
 public class SlotGeneric extends Slot implements SlotTextureProvider {
 
@@ -23,13 +23,13 @@ public class SlotGeneric extends Slot implements SlotTextureProvider {
 	@Nullable
 	public Color ioColor = null; // null means there is no color for this slot in IO mode meaning it isn't mapped to a face!
 
-	public SlotGeneric(ISlotTexture slotType, ITexture iconType, Container inventory, int index, int x, int y) {
+	public SlotGeneric(ISlotTexture slotType, ITexture iconType, IInventory inventory, int index, int x, int y) {
 		super(inventory, index, x, y);
 		this.slotType = slotType;
 		this.iconType = iconType;
 	}
 
-	public SlotGeneric(Container inventory, int index, int x, int y) {
+	public SlotGeneric(IInventory inventory, int index, int x, int y) {
 		this(SlotType.NORMAL, IconType.NONE, inventory, index, x, y);
 	}
 
@@ -64,7 +64,8 @@ public class SlotGeneric extends Slot implements SlotTextureProvider {
 
 	@Override
 	public void setChanged() {
-		if (container instanceof ComponentInventory inv) {
+		if (container instanceof ComponentInventory) {
+			ComponentInventory inv = (ComponentInventory) container;
 			inv.setChanged(index);
 		} else {
 			super.setChanged();

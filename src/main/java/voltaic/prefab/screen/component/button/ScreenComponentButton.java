@@ -4,7 +4,7 @@ import java.util.function.Supplier;
 
 import javax.annotation.Nullable;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.matrix.MatrixStack;
 
 import voltaic.Voltaic;
 import voltaic.api.screen.ITexture;
@@ -12,13 +12,13 @@ import voltaic.prefab.screen.component.ScreenComponentGeneric;
 import voltaic.prefab.screen.component.editbox.ScreenComponentEditBox;
 import voltaic.prefab.utilities.RenderingUtils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
-import net.minecraft.client.resources.sounds.SimpleSoundInstance;
-import net.minecraft.client.sounds.SoundManager;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
+import net.minecraft.client.audio.SimpleSound;
+import net.minecraft.client.audio.SoundHandler;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundEvent;
+import net.minecraft.util.SoundEvents;
+import net.minecraft.util.text.IFormattableTextComponent;
 
 /**
  * A modification of the vanilla button to integrate it with the Electrodynamics system of doing GUI components as the
@@ -37,7 +37,7 @@ public class ScreenComponentButton<T extends ScreenComponentButton<?>> extends S
     public OnPress onPress = null;
 
     @Nullable
-    public Supplier<Component> label = null;
+    public Supplier<IFormattableTextComponent> label = null;
 
     public SoundEvent pressSound = SoundEvents.UI_BUTTON_CLICK;
 
@@ -53,11 +53,11 @@ public class ScreenComponentButton<T extends ScreenComponentButton<?>> extends S
         this.height = height;
     }
 
-    public T setLabel(Component label) {
+    public T setLabel(IFormattableTextComponent label) {
         return setLabel(() -> label);
     }
 
-    public T setLabel(Supplier<Component> label) {
+    public T setLabel(Supplier<IFormattableTextComponent> label) {
         this.label = label;
         return (T) this;
     }
@@ -79,7 +79,7 @@ public class ScreenComponentButton<T extends ScreenComponentButton<?>> extends S
     }
 
     @Override
-    public void renderBackground(PoseStack poseStack, int xAxis, int yAxis, int guiWidth, int guiHeight) {
+    public void renderBackground(MatrixStack poseStack, int xAxis, int yAxis, int guiWidth, int guiHeight) {
         if (isVanillaRender && isVisible()) {
             
         	Minecraft minecraft = Minecraft.getInstance();
@@ -90,17 +90,17 @@ public class ScreenComponentButton<T extends ScreenComponentButton<?>> extends S
         	
             RenderingUtils.bindTexture(buttonTexture.getLocation());
             
-            ScreenComponentEditBox.drawExpandedBox(poseStack, xLocation + guiWidth, yLocation + guiHeight, width, height);
+            ScreenComponentEditBox.drawExpandedBox(poseStack, x + guiWidth, y + guiHeight, width, height);
             
             if(icon != null) {
                 int xOffset = (width - icon.imageWidth()) / 2;
                 int yOffset = (height - icon.imageHeight()) / 2;
                 RenderingUtils.bindTexture(icon.getLocation());
-                blit(poseStack, guiWidth + xLocation + xOffset, guiHeight + yLocation + yOffset, icon.textureU(), icon.textureV(), icon.textureWidth(), icon.textureHeight(), icon.imageWidth(), icon.imageHeight());
+                blit(poseStack, guiWidth + x + xOffset, guiHeight + y + yOffset, icon.textureU(), icon.textureV(), icon.textureWidth(), icon.textureHeight(), icon.imageWidth(), icon.imageHeight());
             }
-            Font font = minecraft.font;
+            FontRenderer font = minecraft.font;
             if (label != null) {
-                drawCenteredString(poseStack, font, label.get(), this.xLocation + guiWidth + this.width / 2, this.yLocation + guiHeight + (this.height - 8) / 2, color.color());
+                drawCenteredString(poseStack, font, label.get(), this.x + guiWidth + this.width / 2, this.y + guiHeight + (this.height - 8) / 2, color.color());
             }
             RenderingUtils.resetShaderColor();
         } else {
@@ -168,9 +168,9 @@ public class ScreenComponentButton<T extends ScreenComponentButton<?>> extends S
         return button == 0;
     }
 
-    public void playDownSound(SoundManager soundManager) {
-        soundManager.play(SimpleSoundInstance.forUI(pressSound, 1.0F));
-    }
+    public void playDownSound(SoundHandler soundManager) {
+		soundManager.play(SimpleSound.forUI(pressSound, 1.0F));
+	}
 
     public static interface OnPress {
 

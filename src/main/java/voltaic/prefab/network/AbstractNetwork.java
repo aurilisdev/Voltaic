@@ -10,14 +10,14 @@ import java.util.UUID;
 
 import javax.annotation.Nonnull;
 
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Direction;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import voltaic.api.network.ITickableNetwork;
 import voltaic.api.network.util.AbstractNetworkFinder;
 import voltaic.common.network.NetworkRegistry;
 import voltaic.prefab.tile.types.GenericRefreshingConnectTile;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BlockEntity;
 
 /**
  *
@@ -36,8 +36,8 @@ public abstract class AbstractNetwork<C extends GenericRefreshingConnectTile<T, 
     private final UUID id = UUID.randomUUID();
 
     public final HashSet<C> conductorSet = new HashSet<>();
-    public final HashSet<BlockEntity> acceptorSet = new HashSet<>();
-    public final HashMap<BlockEntity, HashSet<Direction>> acceptorInputMap = new HashMap<>();
+    public final HashSet<TileEntity> acceptorSet = new HashSet<>();
+    public final HashMap<TileEntity, HashSet<Direction>> acceptorInputMap = new HashMap<>();
     public double networkMaxTransfer;
     public double transmittedLastTick;
     public double transmittedThisTick;
@@ -66,7 +66,7 @@ public abstract class AbstractNetwork<C extends GenericRefreshingConnectTile<T, 
 
             resetReceiverStatistics();
 
-            for(BlockEntity entity : acceptorSet) {
+            for(TileEntity entity : acceptorSet) {
 
                 for(Direction dir : acceptorInputMap.getOrDefault(entity, new HashSet<>())) {
                     updateRecieverStatistics(entity, dir);
@@ -86,7 +86,7 @@ public abstract class AbstractNetwork<C extends GenericRefreshingConnectTile<T, 
      * @param dir the direction this network is connected to the receiver on
      * @return whether the overall receiver statistics need to be updated
      */
-    private boolean updateReceiver(BlockEntity entity, boolean remove, Direction dir) {
+    private boolean updateReceiver(TileEntity entity, boolean remove, Direction dir) {
 
         HashSet<Direction> dirs;
 
@@ -183,7 +183,7 @@ public abstract class AbstractNetwork<C extends GenericRefreshingConnectTile<T, 
 
         List<GenericRefreshingConnectTile.UpdatedReceiver> receivers = new ArrayList<>();
 
-        for(BlockEntity entity : conductor.getConectedRecievers()) {
+        for(TileEntity entity : conductor.getConectedRecievers()) {
 
             if(entity == null) {
                 index++;
@@ -219,7 +219,7 @@ public abstract class AbstractNetwork<C extends GenericRefreshingConnectTile<T, 
                 int i = 0;
                 Direction dir;
 
-                for (BlockEntity acceptor : conductor.getConectedRecievers()) {
+                for (TileEntity acceptor : conductor.getConectedRecievers()) {
 
                     if (acceptor == null) {
                         i++;
@@ -256,7 +256,7 @@ public abstract class AbstractNetwork<C extends GenericRefreshingConnectTile<T, 
             networkMaxTransfer = networkMaxTransfer == 0 ? wire.getMaxTransfer() : Math.min(networkMaxTransfer, wire.getMaxTransfer());
             updateConductorStatistics(wire, false);
         }
-        for (BlockEntity reciever : acceptorSet) {
+        for (TileEntity reciever : acceptorSet) {
             for (Direction dir : acceptorInputMap.getOrDefault(reciever, new HashSet<>())) {
                 updateRecieverStatistics(reciever, dir);
             }
@@ -291,7 +291,7 @@ public abstract class AbstractNetwork<C extends GenericRefreshingConnectTile<T, 
      *
      * @param reciever
      */
-    public void updateRecieverStatistics(BlockEntity reciever, Direction dir) {
+    public void updateRecieverStatistics(TileEntity reciever, Direction dir) {
 
     }
 
@@ -304,13 +304,13 @@ public abstract class AbstractNetwork<C extends GenericRefreshingConnectTile<T, 
 
         removeFromNetwork(splitPoint);
 
-        BlockEntity[] connectedTiles = new BlockEntity[6];
+        TileEntity[] connectedTiles = new TileEntity[6];
 
         boolean[] dealtWith = {false, false, false, false, false, false};
 
         BlockPos relative;
-        BlockEntity sideTile;
-        Level world = splitPoint.getLevel();
+        TileEntity sideTile;
+        World world = splitPoint.getLevel();
         int ordinal;
 
         for (Direction direction : Direction.values()) {
@@ -334,7 +334,7 @@ public abstract class AbstractNetwork<C extends GenericRefreshingConnectTile<T, 
 
         for(int index = 0; index < 6; index++) {
 
-            BlockEntity tile = connectedTiles[index];
+            TileEntity tile = connectedTiles[index];
 
             if (tile == null || !isConductor(tile, splitPoint) || dealtWith[index]) {
                 continue;
@@ -344,7 +344,7 @@ public abstract class AbstractNetwork<C extends GenericRefreshingConnectTile<T, 
 
             for (int i = index + 1; i < 6; i++) {
 
-                BlockEntity connection = connectedTiles[i];
+                TileEntity connection = connectedTiles[i];
 
                 if (isConductor(connection, (C) tile) && !dealtWith[i] && explored.contains(connection)) {
 
@@ -433,7 +433,7 @@ public abstract class AbstractNetwork<C extends GenericRefreshingConnectTile<T, 
      *
      * @return the amount that was accepted
      */
-    public abstract P emit(P transfer, ArrayList<BlockEntity> ignored, boolean debug);
+    public abstract P emit(P transfer, ArrayList<TileEntity> ignored, boolean debug);
 
     /**
      * Checks if the tile is a cable or not
@@ -443,7 +443,7 @@ public abstract class AbstractNetwork<C extends GenericRefreshingConnectTile<T, 
      *
      * @return whether the tile is a cable or not
      */
-    public abstract boolean isConductor(BlockEntity tile, C requestingCable);
+    public abstract boolean isConductor(TileEntity tile, C requestingCable);
 
     /**
      * Creates a new instance of this network from the input set of cables
@@ -456,8 +456,8 @@ public abstract class AbstractNetwork<C extends GenericRefreshingConnectTile<T, 
 
     @Override
     public boolean equals(Object obj) {
-        if(obj instanceof AbstractNetwork<?,?,?,?> network) {
-            return network.id.equals(id);
+        if(obj instanceof AbstractNetwork<?,?,?,?>) {
+            return ((AbstractNetwork<?,?,?,?>) obj).id.equals(id);
         }
         return false;
     }

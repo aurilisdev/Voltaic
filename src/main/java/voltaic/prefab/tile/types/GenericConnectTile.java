@@ -1,18 +1,18 @@
 package voltaic.prefab.tile.types;
 
-import org.jetbrains.annotations.NotNull;
-
 import voltaic.client.model.block.modelproperties.ModelPropertyConnections;
 import voltaic.common.block.connect.EnumConnectType;
 import voltaic.prefab.properties.variant.SingleProperty;
 import voltaic.prefab.properties.types.PropertyTypes;
 import voltaic.prefab.tile.GenericTile;
 import voltaic.prefab.tile.components.type.ComponentPacketHandler;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.block.state.BlockState;
+
+import javax.annotation.Nonnull;
+
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.Direction;
 import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.client.model.data.ModelDataMap;
 
@@ -67,8 +67,8 @@ public abstract class GenericConnectTile extends GenericTile implements IConnect
         level.getChunkSource().getLightEngine().checkBlock(worldPosition);
     }).setShouldUpdateOnChange();
 
-    public GenericConnectTile(BlockEntityType<?> tile, BlockPos pos, BlockState state) {
-        super(tile, pos, state);
+    public GenericConnectTile(TileEntityType<?> tile) {
+        super(tile);
         addComponent(new ComponentPacketHandler(this));
     }
 
@@ -222,7 +222,7 @@ public abstract class GenericConnectTile extends GenericTile implements IConnect
     }
 
     @Override
-    public @NotNull IModelData getModelData() {
+    public @Nonnull IModelData getModelData() {
         return new ModelDataMap.Builder().withInitial(ModelPropertyConnections.INSTANCE, () -> readConnections()).build();
     }
 

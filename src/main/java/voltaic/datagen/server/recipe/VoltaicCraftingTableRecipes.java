@@ -1,6 +1,7 @@
 package voltaic.datagen.server.recipe;
 
 import voltaic.Voltaic;
+import voltaic.common.tags.VoltaicTags;
 import voltaic.datagen.utils.server.recipe.AbstractRecipeGenerator;
 import voltaic.datagen.utils.server.recipe.CustomShapedCraftingRecipe;
 import voltaic.datagen.utils.server.recipe.CustomShapelessCraftingRecipe;
@@ -8,8 +9,9 @@ import voltaic.registers.VoltaicItems;
 
 import java.util.function.Consumer;
 
-import net.minecraft.data.recipes.FinishedRecipe;
-import net.minecraft.world.item.Items;
+import net.minecraft.data.IFinishedRecipe;
+import net.minecraft.item.Items;
+import net.minecraft.tags.ItemTags;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.crafting.conditions.ModLoadedCondition;
 import net.minecraftforge.common.crafting.conditions.NotCondition;
@@ -19,7 +21,7 @@ public class VoltaicCraftingTableRecipes extends AbstractRecipeGenerator {
     public static final String ELECTRODYNAMICS_ID = "electrodynamics";
 
     @Override
-    public void addRecipes(Consumer<FinishedRecipe> output) {
+    public void addRecipes(Consumer<IFinishedRecipe> output) {
 
         addGear(output);
 
@@ -337,13 +339,13 @@ public class VoltaicCraftingTableRecipes extends AbstractRecipeGenerator {
 
     }
 
-    private void addGear(Consumer<FinishedRecipe> output) {
+    private void addGear(Consumer<IFinishedRecipe> output) {
 
         CustomShapelessCraftingRecipe.start(VoltaicItems.GUIDEBOOK.get(), 1)
                 //
                 .addIngredient(Items.BOOK)
                 //
-                .addIngredient(Tags.Items.INGOTS_COPPER)
+                .addIngredient(Tags.Items.DUSTS_REDSTONE)
                 //
                 .complete(Voltaic.ID, "guidebook", output);
 

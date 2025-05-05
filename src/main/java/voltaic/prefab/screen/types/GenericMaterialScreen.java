@@ -3,12 +3,12 @@ package voltaic.prefab.screen.types;
 import java.util.HashSet;
 import java.util.Set;
 
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.util.text.ITextComponent;
 import voltaic.prefab.inventory.container.GenericContainer;
 import voltaic.prefab.screen.GenericScreen;
 import voltaic.prefab.screen.component.types.gauges.ScreenComponentFluidGauge;
 import voltaic.prefab.screen.component.utils.AbstractScreenComponent;
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.entity.player.Inventory;
 
 /**
  * 
@@ -24,7 +24,7 @@ public class GenericMaterialScreen<T extends GenericContainer> extends GenericSc
 
 	private Set<ScreenComponentFluidGauge> fluidGauges = new HashSet<>();
 
-	public GenericMaterialScreen(T container, Inventory inv, Component titleIn) {
+	public GenericMaterialScreen(T container, PlayerInventory inv, ITextComponent titleIn) {
 		super(container, inv, titleIn);
 	}
 
@@ -32,8 +32,8 @@ public class GenericMaterialScreen<T extends GenericContainer> extends GenericSc
 	public AbstractScreenComponent addComponent(AbstractScreenComponent component) {
 		super.addComponent(component);
 
-		if (component instanceof ScreenComponentFluidGauge gauge) {
-			fluidGauges.add(gauge);
+		if (component instanceof ScreenComponentFluidGauge) {
+			fluidGauges.add((ScreenComponentFluidGauge) component);
 		} 
 		return component;
 	}

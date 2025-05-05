@@ -4,16 +4,16 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.matrix.MatrixStack;
 
+import net.minecraft.util.IReorderingProcessor;
+import net.minecraft.util.ResourceLocation;
 import voltaic.Voltaic;
 import voltaic.api.screen.ITexture;
 import voltaic.api.screen.component.TextPropertySupplier;
 import voltaic.prefab.screen.component.types.ScreenComponentSlot.IconType;
 import voltaic.prefab.screen.component.utils.AbstractScreenComponentInfo;
 import voltaic.prefab.utilities.RenderingUtils;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.FormattedCharSequence;
 
 public class ScreenComponentGuiTab extends AbstractScreenComponentInfo {
 
@@ -26,12 +26,12 @@ public class ScreenComponentGuiTab extends AbstractScreenComponentInfo {
 	}
 
 	@Override
-	protected List<? extends FormattedCharSequence> getInfo(List<? extends FormattedCharSequence> list) {
+	protected List<? extends IReorderingProcessor> getInfo(List<? extends IReorderingProcessor> list) {
 		return infoHandler.getInfo();
 	}
 
 	@Override
-	public void renderBackground(PoseStack poseStack, int xAxis, int yAxis, int guiWidth, int guiHeight) {
+	public void renderBackground(MatrixStack poseStack, int xAxis, int yAxis, int guiWidth, int guiHeight) {
 		super.renderBackground(poseStack, xAxis, yAxis, guiWidth, guiHeight);
 		if (iconType == IconType.NONE) {
 			return;
@@ -39,7 +39,7 @@ public class ScreenComponentGuiTab extends AbstractScreenComponentInfo {
 		int slotXOffset = (texture.imageWidth() - iconType.imageWidth()) / 2;
 		int slotYOffset = (texture.imageHeight() - iconType.imageHeight()) / 2;
 		RenderingUtils.bindTexture(iconType.getLocation());
-		blit(poseStack, guiWidth + xLocation + slotXOffset, guiHeight + yLocation + slotYOffset, iconType.textureU(), iconType.textureV(), iconType.textureWidth(), iconType.textureHeight(), iconType.imageWidth(), iconType.imageHeight());
+		blit(poseStack, guiWidth + x + slotXOffset, guiHeight + y + slotYOffset, iconType.textureU(), iconType.textureV(), iconType.textureWidth(), iconType.textureHeight(), iconType.imageWidth(), iconType.imageHeight());
 	}
 
 	public enum GuiInfoTabTextures implements ITexture {

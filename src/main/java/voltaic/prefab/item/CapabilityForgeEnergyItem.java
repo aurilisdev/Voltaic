@@ -1,6 +1,6 @@
 package voltaic.prefab.item;
 
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.energy.IEnergyStorage;
 import voltaic.api.item.IItemElectric;
 import voltaic.prefab.utilities.object.TransferPack;

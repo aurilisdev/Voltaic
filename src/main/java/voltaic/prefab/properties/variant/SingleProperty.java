@@ -3,7 +3,6 @@ package voltaic.prefab.properties.variant;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-import net.minecraft.world.level.block.Block;
 import voltaic.prefab.properties.PropertyManager;
 import voltaic.prefab.properties.types.SinglePropertyType;
 
@@ -60,7 +59,7 @@ public class SingleProperty<T> extends AbstractProperty<T, SinglePropertyType<T,
             if (!manager.getOwner().getLevel().isClientSide()) {
                 if (shouldUpdateOnChange()) {
                     alreadySynced = true;
-                    manager.getOwner().getLevel().sendBlockUpdated(manager.getOwner().getBlockPos(), manager.getOwner().getBlockState(), manager.getOwner().getBlockState(), Block.UPDATE_CLIENTS);
+                    manager.getOwner().getLevel().sendBlockUpdated(manager.getOwner().getBlockPos(), manager.getOwner().getBlockState(), manager.getOwner().getBlockState(), 2);
                     manager.getOwner().setChanged();
                     alreadySynced = false;
                 }

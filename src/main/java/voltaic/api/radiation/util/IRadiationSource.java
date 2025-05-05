@@ -1,6 +1,6 @@
 package voltaic.api.radiation.util;
 
-import net.minecraft.core.BlockPos;
+import net.minecraft.util.math.BlockPos;
 
 /**
  *  Based on IRadioactiveObject class initially developed by AurilisDev

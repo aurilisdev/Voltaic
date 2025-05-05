@@ -2,8 +2,8 @@ package voltaic.prefab.properties.types;
 
 import com.mojang.serialization.Codec;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.NBTDynamicOps;
 import voltaic.api.codec.StreamCodec;
 
 import javax.annotation.Nonnull;
@@ -82,7 +82,7 @@ public class ArrayPropertyType<TYPE, BUFFERTYPE extends ByteBuf> implements IPro
 
         writeToNbt = writer -> {
 
-            CompoundTag tag = new CompoundTag();
+            CompoundNBT tag = new CompoundNBT();
 
             TYPE[] arr = writer.prop().getValue();
 
@@ -92,7 +92,7 @@ public class ArrayPropertyType<TYPE, BUFFERTYPE extends ByteBuf> implements IPro
 
                 final int index = i;
 
-                singleNbtCodec.encode(arr[i], NbtOps.INSTANCE, NbtOps.INSTANCE.empty()).result().ifPresent(nbt -> tag.put("" + index, nbt));
+                singleNbtCodec.encode(arr[i], NBTDynamicOps.INSTANCE, NBTDynamicOps.INSTANCE.empty()).result().ifPresent(nbt -> tag.put("" + index, nbt));
 
             }
 
@@ -102,7 +102,7 @@ public class ArrayPropertyType<TYPE, BUFFERTYPE extends ByteBuf> implements IPro
 
         readFromNbt = reader -> {
 
-            CompoundTag data = reader.tag().getCompound(reader.prop().getName());
+            CompoundNBT data = reader.tag().getCompound(reader.prop().getName());
 
             if(!data.contains("size")) {
                 return reader.prop().getValue();
@@ -122,7 +122,7 @@ public class ArrayPropertyType<TYPE, BUFFERTYPE extends ByteBuf> implements IPro
 
                 final int index = i;
 
-                singleNbtCodec.decode(NbtOps.INSTANCE, data.get("" + i)).result().ifPresent(pair -> newArr[index] = pair.getFirst());
+                singleNbtCodec.decode(NBTDynamicOps.INSTANCE, data.get("" + i)).result().ifPresent(pair -> newArr[index] = pair.getFirst());
 
             }
 

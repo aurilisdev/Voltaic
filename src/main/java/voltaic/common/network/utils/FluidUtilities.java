@@ -5,9 +5,9 @@ import voltaic.prefab.tile.components.IComponentType;
 import voltaic.prefab.tile.components.type.ComponentInventory;
 import voltaic.prefab.utilities.BlockEntityUtils;
 import voltaic.prefab.utilities.CapabilityUtils;
-import net.minecraft.core.Direction;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Direction;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
@@ -17,11 +17,11 @@ import net.minecraftforge.fluids.capability.templates.FluidTank;
 
 public class FluidUtilities {
 
-	public static boolean isFluidReceiver(BlockEntity acceptor, Direction dir) {
+	public static boolean isFluidReceiver(TileEntity acceptor, Direction dir) {
 		return acceptor != null && acceptor.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, dir).orElse(CapabilityUtils.EMPTY_FLUID) != CapabilityUtils.EMPTY_FLUID;
 	}
 
-	public static int receiveFluid(BlockEntity acceptor, Direction direction, FluidStack perReceiver, boolean debug) {
+	public static int receiveFluid(TileEntity acceptor, Direction direction, FluidStack perReceiver, boolean debug) {
 
 	    if(acceptor == null) {
 	        return 0;
@@ -45,7 +45,7 @@ public class FluidUtilities {
 		return 0;
 	}
 
-	public static boolean canInputFluid(BlockEntity acceptor, Direction direction) {
+	public static boolean canInputFluid(TileEntity acceptor, Direction direction) {
 		return isFluidReceiver(acceptor, direction);
 	}
 
@@ -57,7 +57,7 @@ public class FluidUtilities {
 
 			Direction direction = BlockEntityUtils.getRelativeSide(facing, relative);
 
-			BlockEntity faceTile = tile.getLevel().getBlockEntity(tile.getBlockPos().relative(direction));
+			TileEntity faceTile = tile.getLevel().getBlockEntity(tile.getBlockPos().relative(direction));
 
 			if (faceTile == null) {
 				continue;

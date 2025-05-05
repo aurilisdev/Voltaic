@@ -4,20 +4,18 @@ import voltaic.api.multiblock.subnodebased.child.IMultiblockChildBlock;
 import voltaic.api.multiblock.subnodebased.TileMultiSubnode;
 import voltaic.prefab.block.GenericEntityBlock;
 import voltaic.prefab.tile.GenericTile;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.SoundType;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.HitResult;
-import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.phys.shapes.Shapes;
-import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.SoundType;
+import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Direction;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.shapes.ISelectionContext;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.shapes.VoxelShapes;
+import net.minecraft.world.IBlockReader;
+import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -28,13 +26,18 @@ public class BlockMultiSubnode extends GenericEntityBlock implements IMultiblock
     }
 
     @Override
-    public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
-        return worldIn.getBlockEntity(pos) instanceof TileMultiSubnode subnode ? subnode.getShape() : Shapes.block();
+    public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
+    	TileEntity blockentity = worldIn.getBlockEntity(pos);
+    	if(blockentity instanceof TileMultiSubnode) {
+    		TileMultiSubnode subnode = (TileMultiSubnode) blockentity;
+    		return subnode.getShape();
+    	}
+        return VoxelShapes.block();
     }
 
     @Override
-    public VoxelShape getVisualShape(BlockState state, BlockGetter reader, BlockPos pos, CollisionContext context) {
-        return Shapes.empty();
+    public VoxelShape getVisualShape(BlockState state, IBlockReader reader, BlockPos pos, ISelectionContext context) {
+        return VoxelShapes.empty();
     }
 
     @Override
@@ -45,21 +48,23 @@ public class BlockMultiSubnode extends GenericEntityBlock implements IMultiblock
 
     @OnlyIn(Dist.CLIENT)
     @Override
-    public float getShadeBrightness(BlockState state, BlockGetter worldIn, BlockPos pos) {
+    public float getShadeBrightness(BlockState state, IBlockReader worldIn, BlockPos pos) {
         return 1.0f;
     }
 
     @Override
-    public boolean propagatesSkylightDown(BlockState state, BlockGetter reader, BlockPos pos) {
+    public boolean propagatesSkylightDown(BlockState state, IBlockReader reader, BlockPos pos) {
         return true;
     }
     
     @Override
-    public ItemStack getCloneItemStack(BlockState state, HitResult target, BlockGetter level, BlockPos pos, Player player) {
-    	if (level.getBlockEntity(pos) instanceof TileMultiSubnode subnode) {
+    public ItemStack getCloneItemStack(IBlockReader level, BlockPos pos, BlockState state) {
+    	TileEntity tile = level.getBlockEntity(pos);
+    	if (tile instanceof TileMultiSubnode) {
+    		TileMultiSubnode subnode = (TileMultiSubnode) tile;
             return new ItemStack(level.getBlockState(subnode.parentPos.getValue()).getBlock());
         }
-    	return super.getCloneItemStack(state, target, level, pos, player);
+    	return super.getCloneItemStack(level, pos, state);
     }
 
     @Override
@@ -68,24 +73,28 @@ public class BlockMultiSubnode extends GenericEntityBlock implements IMultiblock
     }
 
     @Override
-    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return new TileMultiSubnode(pos, state);
-    }
+	public TileEntity createTileEntity(BlockState state, IBlockReader world) {
+		return new TileMultiSubnode();
+	}
 
     @Override
-    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
-        if (newState.isAir() && level.getBlockEntity(pos) instanceof GenericTile generic) {
-            generic.onBlockDestroyed();
-        }
-        super.onRemove(state, level, pos, newState, isMoving);
-    }
+	public void onRemove(BlockState state, World level, BlockPos pos, BlockState newState, boolean isMoving) {
+		TileEntity entity = level.getBlockEntity(pos);
+		if (newState.isAir(level, pos) && entity instanceof GenericTile) {
+			GenericTile generic = (GenericTile) entity;
+			generic.onBlockDestroyed();
+		}
+		super.onRemove(state, level, pos, newState, isMoving);
+	}
 
     @Override
-    public void onPlace(BlockState newState, Level level, BlockPos pos, BlockState oldState, boolean isMoving) {
-        super.onPlace(newState, level, pos, oldState, isMoving);
-        if (level.getBlockEntity(pos) instanceof GenericTile generic) {
-            generic.onPlace(oldState, isMoving);
-        }
-    }
+	public void onPlace(BlockState newState, World level, BlockPos pos, BlockState oldState, boolean isMoving) {
+		super.onPlace(newState, level, pos, oldState, isMoving);
+		TileEntity entity = level.getBlockEntity(pos);
+		if (entity instanceof GenericTile) {
+			GenericTile generic = (GenericTile) entity;
+			generic.onPlace(oldState, isMoving);
+		}
+	}
 
 }

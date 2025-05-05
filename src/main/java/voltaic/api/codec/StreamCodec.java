@@ -1,21 +1,13 @@
 package voltaic.api.codec;
 
-import java.io.IOException;
-
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufInputStream;
-import io.netty.buffer.ByteBufOutputStream;
-import io.netty.handler.codec.EncoderException;
-import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtAccounter;
-import net.minecraft.nbt.NbtIo;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraftforge.fluids.FluidStack;
 
 public interface StreamCodec<A, T> {
@@ -24,94 +16,94 @@ public interface StreamCodec<A, T> {
 
 	T decode(A buffer);
 
-	public static final StreamCodec<ByteBuf, Byte> BYTE = new StreamCodec<>() {
+	public static final StreamCodec<PacketBuffer, Byte> BYTE = new StreamCodec<PacketBuffer, Byte>() {
 
 		@Override
-		public void encode(ByteBuf buffer, Byte value) {
+		public void encode(PacketBuffer buffer, Byte value) {
 			buffer.writeByte(value);
 		}
 
 		@Override
-		public Byte decode(ByteBuf buffer) {
+		public Byte decode(PacketBuffer buffer) {
 			return buffer.readByte();
 		}
 
 	};
 
-	public static final StreamCodec<ByteBuf, Boolean> BOOL = new StreamCodec<>() {
+	public static final StreamCodec<PacketBuffer, Boolean> BOOL = new StreamCodec<PacketBuffer, Boolean>() {
 
 		@Override
-		public void encode(ByteBuf buffer, Boolean value) {
+		public void encode(PacketBuffer buffer, Boolean value) {
 			buffer.writeBoolean(value);
 		}
 
 		@Override
-		public Boolean decode(ByteBuf buffer) {
+		public Boolean decode(PacketBuffer buffer) {
 			return buffer.readBoolean();
 		}
 
 	};
 
-	public static final StreamCodec<ByteBuf, Integer> INT = new StreamCodec<>() {
+	public static final StreamCodec<PacketBuffer, Integer> INT = new StreamCodec<PacketBuffer, Integer>() {
 
 		@Override
-		public void encode(ByteBuf buffer, Integer value) {
+		public void encode(PacketBuffer buffer, Integer value) {
 			buffer.writeInt(value);
 		}
 
 		@Override
-		public Integer decode(ByteBuf buffer) {
+		public Integer decode(PacketBuffer buffer) {
 			return buffer.readInt();
 		}
 
 	};
 
-	public static final StreamCodec<ByteBuf, Long> LONG = new StreamCodec<>() {
+	public static final StreamCodec<PacketBuffer, Long> LONG = new StreamCodec<PacketBuffer, Long>() {
 
 		@Override
-		public void encode(ByteBuf buffer, Long value) {
+		public void encode(PacketBuffer buffer, Long value) {
 			buffer.writeLong(value);
 		}
 
 		@Override
-		public Long decode(ByteBuf buffer) {
+		public Long decode(PacketBuffer buffer) {
 			return buffer.readLong();
 		}
 
 	};
 
-	public static final StreamCodec<ByteBuf, Float> FLOAT = new StreamCodec<>() {
+	public static final StreamCodec<PacketBuffer, Float> FLOAT = new StreamCodec<PacketBuffer, Float>() {
 
 		@Override
-		public void encode(ByteBuf buffer, Float value) {
+		public void encode(PacketBuffer buffer, Float value) {
 			buffer.writeFloat(value);
 		}
 
 		@Override
-		public Float decode(ByteBuf buffer) {
+		public Float decode(PacketBuffer buffer) {
 			return buffer.readFloat();
 		}
 
 	};
 
-	public static final StreamCodec<ByteBuf, Double> DOUBLE = new StreamCodec<>() {
+	public static final StreamCodec<PacketBuffer, Double> DOUBLE = new StreamCodec<PacketBuffer, Double>() {
 
 		@Override
-		public void encode(ByteBuf buffer, Double value) {
+		public void encode(PacketBuffer buffer, Double value) {
 			buffer.writeDouble(value);
 		}
 
 		@Override
-		public Double decode(ByteBuf buffer) {
+		public Double decode(PacketBuffer buffer) {
 			return buffer.readDouble();
 		}
 
 	};
 
-	public static final StreamCodec<ByteBuf, String> STRING = new StreamCodec<>() {
+	public static final StreamCodec<PacketBuffer, String> STRING = new StreamCodec<PacketBuffer, String>() {
 
 		@Override
-		public void encode(ByteBuf buffer, String value) {
+		public void encode(PacketBuffer buffer, String value) {
 			buffer.writeInt(value.length());
 			for (char c : value.toCharArray()) {
 				buffer.writeChar(c);
@@ -119,7 +111,7 @@ public interface StreamCodec<A, T> {
 		}
 
 		@Override
-		public String decode(ByteBuf buffer) {
+		public String decode(PacketBuffer buffer) {
 			int length = buffer.readInt();
 			String str = "";
 			for (int i = 0; i < length; i++) {
@@ -130,129 +122,109 @@ public interface StreamCodec<A, T> {
 
 	};
 
-	public static final StreamCodec<ByteBuf, java.util.UUID> UUID = new StreamCodec<>() {
+	public static final StreamCodec<PacketBuffer, java.util.UUID> UUID = new StreamCodec<PacketBuffer, java.util.UUID>() {
 
 		@Override
-		public void encode(ByteBuf buffer, java.util.UUID value) {
+		public void encode(PacketBuffer buffer, java.util.UUID value) {
 			buffer.writeLong(value.getMostSignificantBits());
 			buffer.writeLong(value.getLeastSignificantBits());
 		}
 
 		@Override
-		public java.util.UUID decode(ByteBuf buffer) {
+		public java.util.UUID decode(PacketBuffer buffer) {
 			return new java.util.UUID(buffer.readLong(), buffer.readLong());
 		}
 
 	};
 
-	public static final StreamCodec<ByteBuf, CompoundTag> COMPOUND_TAG = new StreamCodec<>() {
+	public static final StreamCodec<PacketBuffer, CompoundNBT> COMPOUND_TAG = new StreamCodec<PacketBuffer, CompoundNBT>() {
 
 		@Override
-		public void encode(ByteBuf buffer, CompoundTag value) {
-			if (value == null) {
-				buffer.writeByte(0);
-			} else {
-				try {
-					NbtIo.write(value, new ByteBufOutputStream(buffer));
-				} catch (IOException ioexception) {
-					throw new EncoderException(ioexception);
-				}
-			}
+		public void encode(PacketBuffer buffer, CompoundNBT value) {
+			buffer.writeNbt(value);
 		}
 
 		@Override
-		public CompoundTag decode(ByteBuf buffer) {
-			int i = buffer.readerIndex();
-			byte b0 = buffer.readByte();
-			if (b0 == 0) {
-				return null;
-			} else {
-				buffer.readerIndex(i);
-
-				try {
-					return NbtIo.read(new ByteBufInputStream(buffer), new NbtAccounter(2097152L));
-				} catch (IOException ioexception) {
-					throw new EncoderException(ioexception);
-				}
-			}
+		public CompoundNBT decode(PacketBuffer buffer) {
+			return buffer.readNbt();
 		}
 
 	};
 	
-	public static final StreamCodec<ByteBuf, BlockPos> BLOCK_POS = new StreamCodec<>() {
+	public static final StreamCodec<PacketBuffer, BlockPos> BLOCK_POS = new StreamCodec<PacketBuffer, BlockPos>() {
 
 		@Override
-		public void encode(ByteBuf buffer, BlockPos value) {
+		public void encode(PacketBuffer buffer, BlockPos value) {
 			buffer.writeLong(value.asLong());
 		}
 
 		@Override
-		public BlockPos decode(ByteBuf buffer) {
+		public BlockPos decode(PacketBuffer buffer) {
 			return BlockPos.of(buffer.readLong());
 		}
 
 	};
 	
-	public static final StreamCodec<FriendlyByteBuf, FluidStack> FLUID_STACK = new StreamCodec<>() {
+	public static final StreamCodec<PacketBuffer, FluidStack> FLUID_STACK = new StreamCodec<PacketBuffer, FluidStack>() {
 
 		@Override
-		public void encode(FriendlyByteBuf buffer, FluidStack value) {
+		public void encode(PacketBuffer buffer, FluidStack value) {
 			buffer.writeFluidStack(value);
 		}
 
 		@Override
-		public FluidStack decode(FriendlyByteBuf buffer) {
+		public FluidStack decode(PacketBuffer buffer) {
 			return buffer.readFluidStack();
 		}
 
 	};
 	
-	public static final StreamCodec<FriendlyByteBuf, ItemStack> ITEM_STACK = new StreamCodec<>() {
+	public static final StreamCodec<PacketBuffer, ItemStack> ITEM_STACK = new StreamCodec<PacketBuffer, ItemStack>() {
 
 		@Override
-		public void encode(FriendlyByteBuf buffer, ItemStack value) {
+		public void encode(PacketBuffer buffer, ItemStack value) {
 			buffer.writeItemStack(value, false);
 		}
 
 		@Override
-		public ItemStack decode(FriendlyByteBuf buffer) {
+		public ItemStack decode(PacketBuffer buffer) {
 			return buffer.readItem();
 		}
 
 	};
 	
-	public static final StreamCodec<FriendlyByteBuf, Block> BLOCK = new StreamCodec<>() {
+	public static final StreamCodec<PacketBuffer, Block> BLOCK = new StreamCodec<PacketBuffer, Block>() {
 
 		@Override
-		public void encode(FriendlyByteBuf buffer, Block value) {
+		public void encode(PacketBuffer buffer, Block value) {
 			buffer.writeRegistryId(value);
 		}
 
 		@Override
-		public Block decode(FriendlyByteBuf buffer) {
+		public Block decode(PacketBuffer buffer) {
 			return buffer.readRegistryId();
 		}
 
 	};
 	
-	public static final StreamCodec<FriendlyByteBuf, BlockState> BLOCK_STATE = new StreamCodec<>() {
+	public static final StreamCodec<PacketBuffer, BlockState> BLOCK_STATE = new StreamCodec<PacketBuffer, BlockState>() {
 
 		@Override
-		public void encode(FriendlyByteBuf buffer, BlockState value) {
+		public void encode(PacketBuffer buffer, BlockState value) {
 			buffer.writeInt(Block.BLOCK_STATE_REGISTRY.getId(value));
 		}
 
 		@Override
-		public BlockState decode(FriendlyByteBuf buffer) {
+		public BlockState decode(PacketBuffer buffer) {
 			return Block.BLOCK_STATE_REGISTRY.byId(buffer.readInt());
 		}
 
 	};
 	
-	public static final StreamCodec<ByteBuf, ResourceLocation> RESOURCE_LOCATION = new StreamCodec<>() {
+	public static final StreamCodec<PacketBuffer, ResourceLocation> RESOURCE_LOCATION = new StreamCodec<PacketBuffer, ResourceLocation>() {
 
 		@Override
-		public void encode(ByteBuf buffer, ResourceLocation value) {
+		public void encode(PacketBuffer buffer, ResourceLocation value) {
 			String str = value.toString();
 			buffer.writeInt(str.length());
 			for (char c : str.toCharArray()) {
@@ -261,7 +233,7 @@ public interface StreamCodec<A, T> {
 		}
 
 		@Override
-		public ResourceLocation decode(ByteBuf buffer) {
+		public ResourceLocation decode(PacketBuffer buffer) {
 			int length = buffer.readInt();
 			String str = "";
 			for (int i = 0; i < length; i++) {
@@ -272,14 +244,14 @@ public interface StreamCodec<A, T> {
 
 	};
 	
-	public static final StreamCodec<ByteBuf, Vec3> VEC3 = new StreamCodec<>() {
+	public static final StreamCodec<PacketBuffer, Vector3d> VEC3 = new StreamCodec<PacketBuffer, Vector3d>() {
         @Override
-        public Vec3 decode(ByteBuf buffer) {
-            return new Vec3(buffer.readDouble(), buffer.readDouble(), buffer.readDouble());
+        public Vector3d decode(PacketBuffer buffer) {
+            return new Vector3d(buffer.readDouble(), buffer.readDouble(), buffer.readDouble());
         }
 
         @Override
-        public void encode(ByteBuf buffer, Vec3 value) {
+        public void encode(PacketBuffer buffer, Vector3d value) {
             buffer.writeDouble(value.x);
             buffer.writeDouble(value.y);
             buffer.writeDouble(value.z);

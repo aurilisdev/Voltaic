@@ -5,7 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.netty.buffer.ByteBuf;
 import voltaic.api.codec.StreamCodec;
 
-public record RadioactiveObject(double strength, double amount) {
+public class RadioactiveObject {
 
     public static final RadioactiveObject ZERO = new RadioactiveObject(0, 0);
 
@@ -27,5 +27,21 @@ public record RadioactiveObject(double strength, double amount) {
 			return new RadioactiveObject(buffer.readDouble(), buffer.readDouble());
 		}
 	};
+	
+	private final double amount;
+	private final double strength;
+	
+	public RadioactiveObject(double strength, double amount) {
+		this.strength = strength;
+		this.amount = amount;
+	}
+	
+	public double strength() {
+		return strength;
+	}
+	
+	public double amount() {
+		return amount;
+	}
 
 }

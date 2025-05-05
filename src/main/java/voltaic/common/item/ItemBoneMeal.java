@@ -2,27 +2,27 @@ package voltaic.common.item;
 
 import java.util.function.Supplier;
 
-import net.minecraft.core.NonNullList;
-import net.minecraft.world.item.BoneMealItem;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.item.BoneMealItem;
+import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
 
 public class ItemBoneMeal extends BoneMealItem {
 
-	private final Supplier<CreativeModeTab> creativeTab;
+	private final Supplier<ItemGroup> creativeTab;
 
-	public ItemBoneMeal(Properties properties, Supplier<CreativeModeTab> creativeTab) {
+	public ItemBoneMeal(Properties properties, Supplier<ItemGroup> creativeTab) {
 		super(properties);
 		this.creativeTab = creativeTab;
 	}
 
 	@Override
-	protected boolean allowdedIn(CreativeModeTab category) {
+	protected boolean allowdedIn(ItemGroup category) {
 		return creativeTab != null && creativeTab.get() == category;
 	}
 
 	@Override
-	public void fillItemCategory(CreativeModeTab category, NonNullList<ItemStack> items) {
+	public void fillItemCategory(ItemGroup category, NonNullList<ItemStack> items) {
 		if (this.allowdedIn(category)) {
 			items.add(new ItemStack(this));
 		}

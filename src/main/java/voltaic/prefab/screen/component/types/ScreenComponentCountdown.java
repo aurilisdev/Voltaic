@@ -4,8 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.DoubleSupplier;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.matrix.MatrixStack;
 
+import net.minecraft.util.IReorderingProcessor;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextFormatting;
 import voltaic.Voltaic;
 import voltaic.api.electricity.formatting.ChatFormatter;
 import voltaic.api.electricity.formatting.DisplayUnits;
@@ -13,9 +16,6 @@ import voltaic.api.screen.ITexture;
 import voltaic.api.screen.component.TextPropertySupplier;
 import voltaic.prefab.screen.component.utils.AbstractScreenComponentInfo;
 import voltaic.prefab.utilities.RenderingUtils;
-import net.minecraft.ChatFormatting;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.FormattedCharSequence;
 
 public class ScreenComponentCountdown extends AbstractScreenComponentInfo {
 
@@ -35,26 +35,26 @@ public class ScreenComponentCountdown extends AbstractScreenComponentInfo {
 	}
 
 	@Override
-	public void renderBackground(PoseStack poseStack, int xAxis, int yAxis, int guiWidth, int guiHeight) {
+	public void renderBackground(MatrixStack poseStack, int xAxis, int yAxis, int guiWidth, int guiHeight) {
 		super.renderBackground(poseStack, xAxis, yAxis, guiWidth, guiHeight);
 		int lengthBar = (int) (progressInfoHandler.getAsDouble() * CountdownTextures.COUNTDOWN_BAR_DEFAULT.textureWidth());
 		RenderingUtils.bindTexture(CountdownTextures.BACKGROUND_DEFAULT.getLocation());
-		blit(poseStack, guiWidth + xLocation + 1, guiHeight + yLocation + 1, CountdownTextures.COUNTDOWN_BAR_DEFAULT.textureU(), CountdownTextures.COUNTDOWN_BAR_DEFAULT.textureV(), lengthBar, CountdownTextures.COUNTDOWN_BAR_DEFAULT.textureHeight(), CountdownTextures.COUNTDOWN_BAR_DEFAULT.imageWidth(), CountdownTextures.COUNTDOWN_BAR_DEFAULT.imageHeight());
+		blit(poseStack, guiWidth + x + 1, guiHeight + y + 1, CountdownTextures.COUNTDOWN_BAR_DEFAULT.textureU(), CountdownTextures.COUNTDOWN_BAR_DEFAULT.textureV(), lengthBar, CountdownTextures.COUNTDOWN_BAR_DEFAULT.textureHeight(), CountdownTextures.COUNTDOWN_BAR_DEFAULT.imageWidth(), CountdownTextures.COUNTDOWN_BAR_DEFAULT.imageHeight());
 
 	}
 
 	@Override
-	protected List<? extends FormattedCharSequence> getInfo(List<? extends FormattedCharSequence> list) {
+	protected List<? extends IReorderingProcessor> getInfo(List<? extends IReorderingProcessor> list) {
 		if (tooltip != null) {
 			return tooltip.getInfo();
 		}
 		return getTooltips();
 	}
 
-	private List<? extends FormattedCharSequence> getTooltips() {
-		List<FormattedCharSequence> tips = new ArrayList<>();
+	private List<? extends IReorderingProcessor> getTooltips() {
+		List<IReorderingProcessor> tips = new ArrayList<>();
 		if (progressInfoHandler != null) {
-			tips.add(ChatFormatter.getChatDisplayShort(100 * progressInfoHandler.getAsDouble(), DisplayUnits.PERCENTAGE).withStyle(ChatFormatting.GRAY).getVisualOrderText());
+			tips.add(ChatFormatter.getChatDisplayShort(100 * progressInfoHandler.getAsDouble(), DisplayUnits.PERCENTAGE).withStyle(TextFormatting.GRAY).getVisualOrderText());
 		}
 		return tips;
 	}

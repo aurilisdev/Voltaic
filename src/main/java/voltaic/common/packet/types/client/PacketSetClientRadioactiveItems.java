@@ -2,19 +2,20 @@ package voltaic.common.packet.types.client;
 
 import voltaic.api.codec.StreamCodec;
 import voltaic.api.radiation.util.RadioactiveObject;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.network.NetworkEvent.Context;
 
 import java.util.HashMap;
 import java.util.function.Supplier;
 
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.fml.network.NetworkEvent.Context;
+
 public class PacketSetClientRadioactiveItems {
 	
-	public static final StreamCodec<FriendlyByteBuf, PacketSetClientRadioactiveItems> CODEC = new StreamCodec<FriendlyByteBuf, PacketSetClientRadioactiveItems>() {
+	public static final StreamCodec<PacketBuffer, PacketSetClientRadioactiveItems> CODEC = new StreamCodec<PacketBuffer, PacketSetClientRadioactiveItems>() {
 		@Override
-		public PacketSetClientRadioactiveItems decode(FriendlyByteBuf buf) {
+		public PacketSetClientRadioactiveItems decode(PacketBuffer buf) {
 			int count = buf.readInt();
 			HashMap<Item, RadioactiveObject> values = new HashMap<>();
 			for (int i = 0; i < count; i++) {
@@ -24,7 +25,7 @@ public class PacketSetClientRadioactiveItems {
 		}
 
 		@Override
-		public void encode(FriendlyByteBuf buf, PacketSetClientRadioactiveItems packet) {
+		public void encode(PacketBuffer buf, PacketSetClientRadioactiveItems packet) {
 			buf.writeInt(packet.items.size());
 			packet.items.forEach((item, value) -> {
 				StreamCodec.ITEM_STACK.encode(buf, new ItemStack(item));
@@ -49,11 +50,11 @@ public class PacketSetClientRadioactiveItems {
 		ctx.setPacketHandled(true);
 	}
 
-	public static void encode(PacketSetClientRadioactiveItems message, FriendlyByteBuf buf) {
+	public static void encode(PacketSetClientRadioactiveItems message, PacketBuffer buf) {
 		CODEC.encode(buf, message);
 	}
 
-	public static PacketSetClientRadioactiveItems decode(FriendlyByteBuf buf) {
+	public static PacketSetClientRadioactiveItems decode(PacketBuffer buf) {
 		return CODEC.decode(buf);
 	}
 }

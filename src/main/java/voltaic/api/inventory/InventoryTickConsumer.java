@@ -1,12 +1,12 @@
 package voltaic.api.inventory;
 
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
+import net.minecraft.entity.Entity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
 
 @FunctionalInterface
 public interface InventoryTickConsumer {
 
-	void apply(ItemStack stack, Level world, Entity entity, Integer slot, Boolean isSelected);
+	void apply(ItemStack stack, World world, Entity entity, Integer slot, Boolean isSelected);
 
 }

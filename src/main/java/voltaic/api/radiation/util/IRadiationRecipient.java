@@ -1,6 +1,7 @@
 package voltaic.api.radiation.util;
 
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.nbt.CompoundNBT;
 
 /**
  * Instead of the radiation manager directly apply affects like radiation and hunger to radiation recipients,
@@ -16,5 +17,8 @@ public interface IRadiationRecipient {
 
     void tick(LivingEntity entity);
 
+    CompoundNBT toTag();
+    
+    void fromTag(CompoundNBT nbt);
 
 }

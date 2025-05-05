@@ -2,25 +2,13 @@ package voltaic.prefab.screen.component.types;
 
 import java.util.function.Supplier;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.matrix.MatrixStack;
 
-import voltaic.common.packet.NetworkHandler;
-import voltaic.common.packet.types.server.PacketUpdateCarriedItemServer;
-import voltaic.prefab.inventory.container.types.GenericContainerBlockEntity;
 import voltaic.prefab.properties.variant.SingleProperty;
-import voltaic.prefab.screen.GenericScreen;
 import voltaic.prefab.screen.component.ScreenComponentGeneric;
 import voltaic.prefab.screen.component.types.ScreenComponentSlot.IconType;
-import voltaic.prefab.tile.GenericTile;
 import voltaic.prefab.utilities.RenderingUtils;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.sounds.SimpleSoundInstance;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
-import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 
 public class ScreenComponentCondensedFluid extends ScreenComponentGeneric {
 
@@ -32,7 +20,7 @@ public class ScreenComponentCondensedFluid extends ScreenComponentGeneric {
     }
 
     @Override
-    public void renderBackground(PoseStack poseStack, int xAxis, int yAxis, int guiWidth, int guiHeight) {
+    public void renderBackground(MatrixStack poseStack, int xAxis, int yAxis, int guiWidth, int guiHeight) {
 
         super.renderBackground(poseStack, xAxis, yAxis, guiWidth, guiHeight);
 
@@ -46,7 +34,7 @@ public class ScreenComponentCondensedFluid extends ScreenComponentGeneric {
         
         RenderingUtils.bindTexture(fluidFull.getLocation());
 
-        blit(poseStack, guiWidth + xLocation + 1, guiHeight + yLocation + 1, fluidFull.textureU(), fluidFull.textureV(), fluidFull.textureWidth(), fluidFull.textureHeight(), fluidFull.imageWidth(), fluidFull.imageHeight());
+        blit(poseStack, guiWidth + x + 1, guiHeight + y + 1, fluidFull.textureU(), fluidFull.textureV(), fluidFull.textureWidth(), fluidFull.textureHeight(), fluidFull.imageWidth(), fluidFull.imageHeight());
     }
 
     @Override
@@ -67,49 +55,6 @@ public class ScreenComponentCondensedFluid extends ScreenComponentGeneric {
             return true;
         }
         return false;
-    }
-
-    @Override
-    public void onMouseClick(double mouseX, double mouseY) {
-
-        SingleProperty<FluidStack> fluidProperty = fluidPropertySupplier.get();
-
-        if (fluidProperty == null || fluidProperty.getValue().isEmpty()) {
-            return;
-        }
-
-        FluidStack fluidStack = fluidProperty.getValue();
-
-        GenericScreen<?> screen = (GenericScreen<?>) gui;
-
-        GenericTile owner = (GenericTile) ((GenericContainerBlockEntity<?>) screen.getMenu()).getSafeHost();
-
-        if (owner == null) {
-            return;
-        }
-
-        ItemStack stack = screen.getMenu().getCarried();
-
-        IFluidHandlerItem handler = stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).orElse(null);
-
-        if (handler == null) {
-            return;
-        }
-
-        int taken = handler.fill(fluidStack, FluidAction.EXECUTE);
-
-        if (taken <= 0) {
-            return;
-        }
-
-        fluidStack.shrink(taken);
-
-        Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.BUCKET_FILL, 1.0F));
-
-        stack = handler.getContainer();
-        
-        NetworkHandler.CHANNEL.sendToServer(new PacketUpdateCarriedItemServer(stack.copy(), owner.getBlockPos(), Minecraft.getInstance().player.getUUID()));
-
     }
 
 }

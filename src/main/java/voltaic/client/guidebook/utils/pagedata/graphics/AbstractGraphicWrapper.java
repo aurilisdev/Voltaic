@@ -2,15 +2,15 @@ package voltaic.client.guidebook.utils.pagedata.graphics;
 
 import javax.annotation.Nullable;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.matrix.MatrixStack;
 
+import net.minecraft.util.text.ITextComponent;
 import voltaic.client.guidebook.ScreenGuidebook;
 import voltaic.client.guidebook.utils.components.Page;
 import voltaic.client.guidebook.utils.pagedata.AbstractWrapperObject;
 import voltaic.client.guidebook.utils.pagedata.OnClick;
 import voltaic.client.guidebook.utils.pagedata.OnKeyPress;
 import voltaic.client.guidebook.utils.pagedata.OnTooltip;
-import net.minecraft.network.chat.Component;
 
 /**
  * A specialized version of AbstractWrapperObject for drawing images amongst other graphics to the guidebook screen. The image can also have text associated with it.
@@ -81,13 +81,13 @@ public abstract class AbstractGraphicWrapper<T extends AbstractGraphicWrapper<?>
 		return (T) this;
 	}
 
-	public abstract void render(PoseStack stack, int wrapperX, int wrapperY, int xShift, int guiWidth, int guiHeight, Page page);
+	public abstract void render(MatrixStack stack, int wrapperX, int wrapperY, int xShift, int guiWidth, int guiHeight, Page page);
 
 	public static class GraphicTextDescriptor {
 
 		public int xOffsetFromImage;
 		public int yOffsetFromImage;
-		public Component text;
+		public ITextComponent text;
 		public int color;
 
 		@Nullable
@@ -97,11 +97,11 @@ public abstract class AbstractGraphicWrapper<T extends AbstractGraphicWrapper<?>
 		@Nullable
 		public OnKeyPress onKeyPress = null;
 
-		public GraphicTextDescriptor(int xOffsetFromImage, int yOffsetFromImage, Component text) {
+		public GraphicTextDescriptor(int xOffsetFromImage, int yOffsetFromImage, ITextComponent text) {
 			this(xOffsetFromImage, yOffsetFromImage, 4210752, text);
 		}
 
-		public GraphicTextDescriptor(int xOffsetFromImage, int yOffsetFromImage, int color, Component text) {
+		public GraphicTextDescriptor(int xOffsetFromImage, int yOffsetFromImage, int color, ITextComponent text) {
 			this.xOffsetFromImage = xOffsetFromImage;
 			this.yOffsetFromImage = yOffsetFromImage;
 			this.text = text;

@@ -2,8 +2,8 @@ package voltaic.prefab.properties.types;
 
 import com.mojang.serialization.Codec;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.NBTDynamicOps;
 import voltaic.api.codec.StreamCodec;
 
 import javax.annotation.Nonnull;
@@ -70,7 +70,7 @@ public class SetPropertyType<TYPE, BUFFERTYPE extends ByteBuf> implements IPrope
 
         writeToNbt = writer -> {
 
-            CompoundTag tag = new CompoundTag();
+            CompoundNBT tag = new CompoundNBT();
 
             HashSet<TYPE> set = writer.prop().getValue();
 
@@ -82,7 +82,7 @@ public class SetPropertyType<TYPE, BUFFERTYPE extends ByteBuf> implements IPrope
 
                 final int indx = index;
 
-                singleNbtCodec.encode(val, NbtOps.INSTANCE, NbtOps.INSTANCE.empty()).result().ifPresent(nbt -> tag.put("" + indx, nbt));
+                singleNbtCodec.encode(val, NBTDynamicOps.INSTANCE, NBTDynamicOps.INSTANCE.empty()).result().ifPresent(nbt -> tag.put("" + indx, nbt));
 
                 index++;
 
@@ -94,7 +94,7 @@ public class SetPropertyType<TYPE, BUFFERTYPE extends ByteBuf> implements IPrope
 
         readFromNbt = reader -> {
 
-            CompoundTag data = reader.tag().getCompound(reader.prop().getName());
+            CompoundNBT data = reader.tag().getCompound(reader.prop().getName());
 
             if (!data.contains("size")) {
                 return reader.prop().getValue();
@@ -110,7 +110,7 @@ public class SetPropertyType<TYPE, BUFFERTYPE extends ByteBuf> implements IPrope
 
             for (int i = 0; i < size; i++) {
 
-                singleNbtCodec.decode(NbtOps.INSTANCE, data.get("" + i)).result().ifPresent(pair -> set.add(pair.getFirst()));
+                singleNbtCodec.decode(NBTDynamicOps.INSTANCE, data.get("" + i)).result().ifPresent(pair -> set.add(pair.getFirst()));
 
             }
 

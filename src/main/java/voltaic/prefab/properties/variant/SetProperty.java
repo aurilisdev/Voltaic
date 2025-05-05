@@ -1,7 +1,5 @@
 package voltaic.prefab.properties.variant;
 
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.level.block.Block;
 import voltaic.Voltaic;
 import voltaic.prefab.properties.PropertyManager;
 import voltaic.prefab.properties.types.IPropertyType;
@@ -11,6 +9,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+
+import net.minecraft.nbt.CompoundNBT;
 
 public class SetProperty<T> extends AbstractProperty<HashSet<T>, SetPropertyType<T, ?>> {
 
@@ -56,7 +56,7 @@ public class SetProperty<T> extends AbstractProperty<HashSet<T>, SetPropertyType
             if (!manager.getOwner().getLevel().isClientSide()) {
                 if (shouldUpdateOnChange()) {
                     alreadySynced = true;
-                    manager.getOwner().getLevel().sendBlockUpdated(manager.getOwner().getBlockPos(), manager.getOwner().getBlockState(), manager.getOwner().getBlockState(), Block.UPDATE_CLIENTS);
+                    manager.getOwner().getLevel().sendBlockUpdated(manager.getOwner().getBlockPos(), manager.getOwner().getBlockState(), manager.getOwner().getBlockState(), 2);
                     manager.getOwner().setChanged();
                     alreadySynced = false;
                 }
@@ -89,7 +89,7 @@ public class SetProperty<T> extends AbstractProperty<HashSet<T>, SetPropertyType
             if (!manager.getOwner().getLevel().isClientSide()) {
                 if (shouldUpdateOnChange()) {
                     alreadySynced = true;
-                    manager.getOwner().getLevel().sendBlockUpdated(manager.getOwner().getBlockPos(), manager.getOwner().getBlockState(), manager.getOwner().getBlockState(), Block.UPDATE_CLIENTS);
+                    manager.getOwner().getLevel().sendBlockUpdated(manager.getOwner().getBlockPos(), manager.getOwner().getBlockState(), manager.getOwner().getBlockState(), 2);
                     manager.getOwner().setChanged();
                     alreadySynced = false;
                 }
@@ -120,7 +120,7 @@ public class SetProperty<T> extends AbstractProperty<HashSet<T>, SetPropertyType
             if (!manager.getOwner().getLevel().isClientSide()) {
                 if (shouldUpdateOnChange()) {
                     alreadySynced = true;
-                    manager.getOwner().getLevel().sendBlockUpdated(manager.getOwner().getBlockPos(), manager.getOwner().getBlockState(), manager.getOwner().getBlockState(), Block.UPDATE_CLIENTS);
+                    manager.getOwner().getLevel().sendBlockUpdated(manager.getOwner().getBlockPos(), manager.getOwner().getBlockState(), manager.getOwner().getBlockState(), 2);
                     manager.getOwner().setChanged();
                     alreadySynced = false;
                 }
@@ -147,7 +147,7 @@ public class SetProperty<T> extends AbstractProperty<HashSet<T>, SetPropertyType
             if (!manager.getOwner().getLevel().isClientSide()) {
                 if (shouldUpdateOnChange()) {
                     alreadySynced = true;
-                    manager.getOwner().getLevel().sendBlockUpdated(manager.getOwner().getBlockPos(), manager.getOwner().getBlockState(), manager.getOwner().getBlockState(), Block.UPDATE_CLIENTS);
+                    manager.getOwner().getLevel().sendBlockUpdated(manager.getOwner().getBlockPos(), manager.getOwner().getBlockState(), manager.getOwner().getBlockState(), 2);
                     manager.getOwner().setChanged();
                     alreadySynced = false;
                 }
@@ -168,7 +168,7 @@ public class SetProperty<T> extends AbstractProperty<HashSet<T>, SetPropertyType
         overwriteValue(otherVal);
     }
 
-    public void loadFromTag(CompoundTag tag) {
+    public void loadFromTag(CompoundNBT tag) {
         try {
             HashSet<T> data = (HashSet<T>) getType().readFromTag(new IPropertyType.TagReader(this, tag));
             if (data != null) {

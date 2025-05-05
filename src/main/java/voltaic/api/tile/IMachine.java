@@ -1,18 +1,17 @@
 package voltaic.api.tile;
 
+import net.minecraft.block.BlockRenderType;
+import net.minecraft.tileentity.TileEntity;
 import voltaic.api.multiblock.subnodebased.parent.IMultiblockParentBlock;
 import voltaic.common.block.voxelshapes.VoxelShapeProvider;
-import net.minecraft.world.level.block.RenderShape;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 
 public interface IMachine {
 
-    public BlockEntityType.BlockEntitySupplier<BlockEntity> getBlockEntitySupplier();
+    public TileEntitySupplier<TileEntity> getBlockEntitySupplier();
 
     public int getLitBrightness();
 
-    public RenderShape getRenderShape();
+    public BlockRenderType getRenderShape();
 
     public boolean isMultiblock();
 

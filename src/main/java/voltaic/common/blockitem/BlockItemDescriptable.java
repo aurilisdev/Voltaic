@@ -5,30 +5,30 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.function.Supplier;
 
+import net.minecraft.block.Block;
+import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.text.IFormattableTextComponent;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.world.World;
 import voltaic.api.electricity.formatting.ChatFormatter;
 import voltaic.api.electricity.formatting.DisplayUnits;
 import voltaic.prefab.utilities.VoltaicTextUtils;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
 
 public class BlockItemDescriptable extends BlockItemVoltaic {
 
-    private static final HashMap<Supplier<Block>, ArrayList<MutableComponent>> DESCRIPTION_MAPPINGS = new HashMap<>();
-    private final static HashMap<Block, ArrayList<MutableComponent>> PROCESSED_DESCRIPTION_MAPPINGS = new HashMap<>();
+    private static final HashMap<Supplier<Block>, ArrayList<IFormattableTextComponent>> DESCRIPTION_MAPPINGS = new HashMap<>();
+    private final static HashMap<Block, ArrayList<IFormattableTextComponent>> PROCESSED_DESCRIPTION_MAPPINGS = new HashMap<>();
 
     private static boolean initialized = false;
 
-    public BlockItemDescriptable(Block block, Properties properties, Supplier<CreativeModeTab> creativeTab) {
+    public BlockItemDescriptable(Block block, Properties properties, Supplier<ItemGroup> creativeTab) {
         super(block, properties, creativeTab);
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, Level context, List<Component> tooltip, TooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, World context, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
         super.appendHoverText(stack, context, tooltip, flagIn);
         if (!initialized) {
             BlockItemDescriptable.initialized = true;
@@ -40,7 +40,7 @@ public class BlockItemDescriptable extends BlockItemVoltaic {
             });
 
         }
-        ArrayList<MutableComponent> gotten = PROCESSED_DESCRIPTION_MAPPINGS.get(getBlock());
+        ArrayList<IFormattableTextComponent> gotten = PROCESSED_DESCRIPTION_MAPPINGS.get(getBlock());
         if (gotten != null) {
             tooltip.addAll(gotten);
         }
@@ -58,9 +58,9 @@ public class BlockItemDescriptable extends BlockItemVoltaic {
     	return stack.hasTag() && stack.getTag().getDouble("joules") > 0 ? 1 : super.getItemStackLimit(stack);
     }
 
-    public static void addDescription(Supplier<Block> block, MutableComponent description) {
+    public static void addDescription(Supplier<Block> block, IFormattableTextComponent description) {
 
-        ArrayList<MutableComponent> set = DESCRIPTION_MAPPINGS.getOrDefault(block, new ArrayList<>());
+        ArrayList<IFormattableTextComponent> set = DESCRIPTION_MAPPINGS.getOrDefault(block, new ArrayList<>());
 
         set.add(description);
 

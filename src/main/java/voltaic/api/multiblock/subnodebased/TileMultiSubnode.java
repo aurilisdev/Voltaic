@@ -1,8 +1,5 @@
 package voltaic.api.multiblock.subnodebased;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
 import voltaic.api.multiblock.subnodebased.parent.IMultiblockParentTile;
 import voltaic.prefab.properties.variant.SingleProperty;
 import voltaic.prefab.properties.types.PropertyTypes;
@@ -10,15 +7,19 @@ import voltaic.prefab.tile.GenericTile;
 import voltaic.prefab.tile.components.type.ComponentPacketHandler;
 import voltaic.prefab.utilities.BlockEntityUtils;
 import voltaic.registers.VoltaicTiles;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.shapes.Shapes;
-import net.minecraft.world.phys.shapes.VoxelShape;
+
+import javax.annotation.Nullable;
+
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ActionResultType;
+import net.minecraft.util.Direction;
+import net.minecraft.util.Hand;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 
@@ -29,14 +30,16 @@ public class TileMultiSubnode extends GenericTile {
 
 	public VoxelShape shapeCache;
 
-	public TileMultiSubnode(BlockPos worldPosition, BlockState blockState) {
-		super(VoltaicTiles.TILE_MULTI.get(), worldPosition, blockState);
+	public TileMultiSubnode() {
+		super(VoltaicTiles.TILE_MULTI.get());
 		addComponent(new ComponentPacketHandler(this));
 	}
 
 	@Override
-	public <T> @NotNull LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-		if (level.getBlockEntity(parentPos.getValue()) instanceof IMultiblockParentTile node) {
+	public <T> LazyOptional<T> getCapability(Capability<T> cap, @Nullable Direction side) {
+		TileEntity tile = level.getBlockEntity(parentPos.getValue());
+		if (tile instanceof IMultiblockParentTile) {
+			IMultiblockParentTile node = (IMultiblockParentTile) tile;
 			return node.getSubnodeCapability(cap, side);
 		}
 		return LazyOptional.empty();
@@ -57,25 +60,31 @@ public class TileMultiSubnode extends GenericTile {
 			return shapeCache;
 		}
 
-		if (level.getBlockEntity(parentPos.getValue()) instanceof IMultiblockParentTile node) {
+		TileEntity tile = level.getBlockEntity(parentPos.getValue());
+		if (tile instanceof IMultiblockParentTile) {
+			IMultiblockParentTile node = (IMultiblockParentTile) tile;
 
 			return shapeCache = node.getSubNodes().getSubnodes(node.getFacingDirection())[nodeIndex.getValue()].getShape(node.getFacingDirection());
 
 		}
 
-		return Shapes.block();
+		return VoxelShapes.block();
 	}
 
 	@Override
 	public void onNeightborChanged(BlockPos neighbor, boolean blockStateTrigger) {
-		if (level.getBlockEntity(parentPos.getValue()) instanceof IMultiblockParentTile node) {
+		TileEntity tile = level.getBlockEntity(parentPos.getValue());
+		if (tile instanceof IMultiblockParentTile) {
+			IMultiblockParentTile node = (IMultiblockParentTile) tile;
 			node.onSubnodeNeighborChange(this, neighbor, blockStateTrigger);
 		}
 	}
 
 	@Override
-	public InteractionResult use(Player player, InteractionHand handIn, BlockHitResult hit) {
-		if (level.getBlockEntity(parentPos.getValue()) instanceof IMultiblockParentTile node) {
+	public ActionResultType use(PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
+		TileEntity tile = level.getBlockEntity(parentPos.getValue());
+		if (tile instanceof IMultiblockParentTile) {
+			IMultiblockParentTile node = (IMultiblockParentTile) tile;
 			return node.onSubnodeUse(player, handIn, hit, this);
 		}
 		return super.use(player, handIn, hit);
@@ -84,14 +93,18 @@ public class TileMultiSubnode extends GenericTile {
 	@Override
 	public void onPlace(BlockState oldState, boolean isMoving) {
 		super.onPlace(oldState, isMoving);
-		if (level.getBlockEntity(parentPos.getValue()) instanceof IMultiblockParentTile node) {
+		TileEntity tile = level.getBlockEntity(parentPos.getValue());
+		if (tile instanceof IMultiblockParentTile) {
+			IMultiblockParentTile node = (IMultiblockParentTile) tile;
 			node.onSubnodePlace(this, oldState, isMoving);
 		}
 	}
 
 	@Override
 	public int getComparatorSignal() {
-		if (level.getBlockEntity(parentPos.getValue()) instanceof IMultiblockParentTile node) {
+		TileEntity tile = level.getBlockEntity(parentPos.getValue());
+		if (tile instanceof IMultiblockParentTile) {
+			IMultiblockParentTile node = (IMultiblockParentTile) tile;
 			return node.getSubdnodeComparatorSignal(this);
 		}
 		return 0;
@@ -99,7 +112,9 @@ public class TileMultiSubnode extends GenericTile {
 
 	@Override
 	public void onBlockDestroyed() {
-		if (level.getBlockEntity(parentPos.getValue()) instanceof IMultiblockParentTile node) {
+		TileEntity tile = level.getBlockEntity(parentPos.getValue());
+		if (tile instanceof IMultiblockParentTile) {
+			IMultiblockParentTile node = (IMultiblockParentTile) tile;
 			node.onSubnodeDestroyed(this);
 		}
 		super.onBlockDestroyed();
@@ -107,16 +122,20 @@ public class TileMultiSubnode extends GenericTile {
 
 	@Override
 	public int getDirectSignal(Direction dir) {
-		if (level.getBlockEntity(parentPos.getValue()) instanceof IMultiblockParentTile parent) {
-			return parent.getDirectSignal(this, dir);
+		TileEntity tile = level.getBlockEntity(parentPos.getValue());
+		if (tile instanceof IMultiblockParentTile) {
+			IMultiblockParentTile node = (IMultiblockParentTile) tile;
+			return node.getDirectSignal(this, dir);
 		}
 		return 0;
 	}
 
 	@Override
 	public int getSignal(Direction dir) {
-		if (level.getBlockEntity(parentPos.getValue()) instanceof IMultiblockParentTile parent) {
-			return parent.getSignal(this, dir);
+		TileEntity tile = level.getBlockEntity(parentPos.getValue());
+		if (tile instanceof IMultiblockParentTile) {
+			IMultiblockParentTile node = (IMultiblockParentTile) tile;
+			return node.getSignal(this, dir);
 		}
 		return 0;
 	}
