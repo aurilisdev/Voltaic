@@ -18,7 +18,7 @@ public class ItemVoltaic extends Item {
 
 	@Override
 	protected boolean allowdedIn(CreativeModeTab category) {
-		return creativeTab != null && category == creativeTab.get();
+		return creativeTab != null && (category == creativeTab.get() || category == CreativeModeTab.TAB_SEARCH);
 	}
 
 	@Override
