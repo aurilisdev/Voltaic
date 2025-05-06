@@ -19,7 +19,7 @@ public class BlockItemVoltaic extends BlockItem {
 	
 	@Override
 	protected boolean allowedIn(CreativeModeTab category) {
-		return creativeTab != null && category == creativeTab.get();
+		return creativeTab != null && (category == creativeTab.get() || category == CreativeModeTab.TAB_SEARCH);
 	}
 	
 	@Override
