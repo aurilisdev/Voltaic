@@ -36,7 +36,7 @@ public class ItemVoltaicArmor extends ArmorItem {
 
 	@Override
 	protected boolean allowdedIn(CreativeModeTab category) {
-		return creativeTab != null && creativeTab.get() == category;
+		return creativeTab != null && (category == creativeTab.get() || category == CreativeModeTab.TAB_SEARCH);
 	}
 
 	@Override
