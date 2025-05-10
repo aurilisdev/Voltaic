@@ -18,7 +18,7 @@ public class ItemBoneMeal extends BoneMealItem {
 
 	@Override
 	protected boolean allowdedIn(ItemGroup category) {
-		return creativeTab != null && creativeTab.get() == category;
+		return creativeTab != null && (category == creativeTab.get() || category == ItemGroup.TAB_SEARCH);
 	}
 
 	@Override

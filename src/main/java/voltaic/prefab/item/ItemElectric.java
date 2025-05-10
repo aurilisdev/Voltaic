@@ -39,7 +39,7 @@ public class ItemElectric extends ItemVoltaic implements IItemElectric {
 
 	@Override
 	public double getDurabilityForDisplay(ItemStack stack) {
-		return Math.round(13.0f * getJoulesStored(stack) / getMaximumCapacity(stack));
+		return 1.0F - (getJoulesStored(stack) / getMaximumCapacity(stack));
 	}
 
 	@Override

@@ -89,7 +89,7 @@
 //    @OnlyIn(Dist.CLIENT)
 //    @SubscribeEvent
 //    public static void onPlayerRender(RenderPlayerEvent.Pre event) {
-//        Player player = event.getEntity();
+//        PlayerEntity player = event.getEntity();
 //        float delta = event.getPartialTick();
 //        if (!player.isInvisible() && !player.isFallFlying() && !player.isSleeping()) {
 //            RenderCape cape = getCape(player);
@@ -100,7 +100,7 @@
 //        }
 //    }
 //
-//    private static RenderCape getCape(Player player) {
+//    private static RenderCape getCape(PlayerEntity player) {
 //        return capes.getUnchecked(player);
 //    }
 //
@@ -108,9 +108,9 @@
 //    @SubscribeEvent
 //    public static void onClientTick(TickEvent.ClientTickEvent event) {
 //        if (event.side == LogicalSide.CLIENT && event.phase == TickEvent.Phase.END) {
-//            Level world = Minecraft.getInstance().level;
+//            World world = Minecraft.getInstance().level;
 //            if (world != null) {
-//                for (Player player : world.players()) {
+//                for (PlayerEntity player : world.players()) {
 //                    getCape(player).update(player);
 //                }
 //            }
@@ -209,11 +209,11 @@
 //            return new RenderCape(ImmutableList.copyOf(points), quads.build());
 //        }
 //
-//        private static boolean isPresent(Player player) {
+//        private static boolean isPresent(PlayerEntity player) {
 //            return Holder.INSTANCE.mapList.containsKey(player.getName().getString().toLowerCase());
 //        }
 //
-//        private void update(Player player) {
+//        private void update(PlayerEntity player) {
 //            if (isPresent(player)) {
 //                updatePlayerPos(player);
 //                updatePoints(player);
@@ -221,7 +221,7 @@
 //            }
 //        }
 //
-//        private void updatePlayerPos(Player player) {
+//        private void updatePlayerPos(PlayerEntity player) {
 //            double dx = player.getX() - posX;
 //            double dy = player.getY() - posY;
 //            double dz = player.getZ() - posZ;
@@ -241,7 +241,7 @@
 //            posZ = player.getZ();
 //        }
 //
-//        private void updatePoints(Player player) {
+//        private void updatePoints(PlayerEntity player) {
 //            for (Point point : points) {
 //                point.update(player.level, DELTA_TIME);
 //            }
@@ -252,14 +252,14 @@
 //            }
 //        }
 //
-//        private static void updateFluidCache(Player player) {
+//        private static void updateFluidCache(PlayerEntity player) {
 //            if (player.tickCount % FLUID_CACHE_CLEAR_RATE == 0 && fluidCache.size() > FLUID_CACHE_CLEAR_SIZE) {
 //                fluidCache.clear();
 //            }
 //        }
 //
 //        @SuppressWarnings("java:S1874")
-//        private void render(Player player, double x, double y, double z, float delta, PoseStack stack) {
+//        private void render(PlayerEntity player, double x, double y, double z, float delta, PoseStack stack) {
 //            stack.pushPose();
 //            stack.scale(10.5f, 10.5f, 10.5f);
 //            stack.translate(-player.getEyePosition(delta).x,
@@ -403,7 +403,7 @@
 //        }
 //
 //        private interface ConstraintResolver {
-//            void resolve(Player player, Point point);
+//            void resolve(PlayerEntity player, Point point);
 //        }
 //
 //        private static final class Quad {
@@ -504,7 +504,7 @@
 //                motionZ += z;
 //            }
 //
-//            private void update(Level world, float delta) {
+//            private void update(World world, float delta) {
 //                applyForce(0, isFluid(world, posX, posY, posZ) ? FLUID_FORCE : GRAVITY, 0);
 //                float x = posX + (posX - prevPosX) * delta + motionX * 0.5F * (delta * delta);
 //                float y = posY + (posY - prevPosY) * delta + motionY * 0.5F * (delta * delta);
@@ -518,7 +518,7 @@
 //                motionX = motionY = motionZ = 0;
 //            }
 //
-//            private static boolean isFluid(Level world, float x, float y, float z) {
+//            private static boolean isFluid(World world, float x, float y, float z) {
 //                BlockPos scratchPos = new BlockPos(x, y, z);
 //                long key = scratchPos.asLong();
 //                if (fluidCache.containsKey(key)) {
@@ -533,7 +533,7 @@
 //                return state.getBlock() instanceof IFluidBlock || state.getBlock() instanceof LiquidBlock;
 //            }
 //
-//            private void resolveConstraints(Player player) {
+//            private void resolveConstraints(PlayerEntity player) {
 //                for (ConstraintResolver r : constraintResolvers) {
 //                    r.resolve(player, this);
 //                }
@@ -541,7 +541,7 @@
 //        }
 //
 //        interface PlayerResolver extends ConstraintResolver {
-//            default float getBack(Player player, float offset) {
+//            default float getBack(PlayerEntity player, float offset) {
 //                if (player.getItemBySlot(EquipmentSlot.CHEST).isEmpty()) {
 //                    return offset;
 //                }
@@ -560,7 +560,7 @@
 //            }
 //
 //            @Override
-//            public void resolve(Player player, Point point) {
+//            public void resolve(PlayerEntity player, Point point) {
 //                float yaw = (float) Math.toRadians(player.yBodyRot);
 //                float height;
 //                float back;
@@ -588,7 +588,7 @@
 //            }
 //
 //            @Override
-//            public void resolve(Player player, Point point) {
+//            public void resolve(PlayerEntity player, Point point) {
 //                for (int i = constraints.size(); i-- > 0; ) {
 //                    constraints.get(i).resolve(point);
 //                }
@@ -631,7 +631,7 @@
 //
 //        private static final class PlayerCollisionResolver implements PlayerResolver {
 //            @Override
-//            public void resolve(Player player, Point point) {
+//            public void resolve(PlayerEntity player, Point point) {
 //                float yaw = (float) (Math.toRadians(player.yBodyRot) - Math.PI / 2);
 //                float dx = Mth.cos(yaw);
 //                float dz = Mth.sin(yaw);

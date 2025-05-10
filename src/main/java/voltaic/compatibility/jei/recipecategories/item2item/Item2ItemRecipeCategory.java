@@ -33,7 +33,7 @@ public abstract class Item2ItemRecipeCategory<T extends Item2ItemRecipe> extends
     @Override
     public List<List<ItemStack>> getItemInputs(Item2ItemRecipe recipe) {
         List<List<ItemStack>> inputs = new ArrayList<>();
-        recipe.getCountedIngredients().forEach(h -> inputs.add(Arrays.asList(h.getItemsArray())));
+        recipe.getCountedIngredients().forEach(h -> inputs.add(Arrays.asList(h.getItems())));
         return inputs;
     }
 

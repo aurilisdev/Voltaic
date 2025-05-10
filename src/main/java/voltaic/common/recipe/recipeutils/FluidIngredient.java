@@ -16,8 +16,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tags.FluidTags;
-import net.minecraft.tags.ITag;
 import net.minecraft.tags.ITag.INamedTag;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.FluidStack;
 import voltaic.api.codec.StreamCodec;
 
@@ -49,13 +49,13 @@ public class FluidIngredient extends Ingredient {
 	//
 	instance.group(
 			//
-			ITag.codec(() -> FluidTags.getAllTags()).fieldOf("tag").forGetter(instance0 -> instance0.tag),
+			ResourceLocation.CODEC.fieldOf("tag").forGetter(instance0 -> instance0.tag.getName()),
 			//
 			Codec.INT.fieldOf("amount").forGetter(instance0 -> instance0.amount)
 
 	)
 			//
-			.apply(instance, (tag, amount) -> new FluidIngredient((INamedTag<Fluid>) tag, amount))
+			.apply(instance, (tag, amount) -> new FluidIngredient(FluidTags.createOptional(tag), amount))
 	//
 
 	);

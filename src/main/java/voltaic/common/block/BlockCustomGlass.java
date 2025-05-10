@@ -11,11 +11,12 @@ import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.common.ToolType;
 
 public class BlockCustomGlass extends Block {
 
     public BlockCustomGlass(float hardness, float resistance) {
-        super(Properties.copy(Blocks.GLASS).requiresCorrectToolForDrops().strength(hardness, resistance).isRedstoneConductor((x, y, z) -> false).noOcclusion());
+        super(Properties.copy(Blocks.GLASS).requiresCorrectToolForDrops().strength(hardness, resistance).isRedstoneConductor((x, y, z) -> false).noOcclusion().harvestLevel(1).harvestTool(ToolType.PICKAXE));
     }
 
     @Override

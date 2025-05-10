@@ -19,10 +19,10 @@ public class SingleProperty<T> extends AbstractProperty<T, SinglePropertyType<T,
     private boolean alreadySynced = false;
 
     //This fires when the property has had a value set and that value is different from the value the property currently has
-    //The property contains the new value and val represents the old value. Level may or may not be present.
+    //The property contains the new value and val represents the old value. World may or may not be present.
     private BiConsumer<SingleProperty<T>, T> onChange = (prop, val) -> {
     };
-    //this fires when the owning tile has been loaded. This fires on both the client and server-side, and Level is present
+    //this fires when the owning tile has been loaded. This fires on both the client and server-side, and World is present
     private Consumer<SingleProperty<T>> onTileLoaded = prop -> {
     };
 
@@ -93,7 +93,7 @@ public class SingleProperty<T> extends AbstractProperty<T, SinglePropertyType<T,
     }
 
     /**
-     * This method is called by the tile on the server once Level is present
+     * This method is called by the tile on the server once World is present
      */
     public void onTileLoaded() {
         onTileLoaded.accept(this);

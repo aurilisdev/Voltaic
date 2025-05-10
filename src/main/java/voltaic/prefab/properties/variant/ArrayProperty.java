@@ -18,10 +18,10 @@ public class ArrayProperty<T> extends AbstractProperty<T[], ArrayPropertyType<T,
     private boolean alreadySynced = false;
 
     //This fires when the property has had a value set and that value is different from the value the property currently has
-    //The property contains the new value and val represents the old value. Level may or may not be present.
+    //The property contains the new value and val represents the old value. World may or may not be present.
     private TriConsumer<ArrayProperty<T>, T[], Integer> onChange = (prop, val, index) -> {
     };
-    //this fires when the owning tile has been loaded. This fires on both the client and server-side, and Level is present
+    //this fires when the owning tile has been loaded. This fires on both the client and server-side, and World is present
     private Consumer<ArrayProperty<T>> onTileLoaded = (prop) -> {
     };
 

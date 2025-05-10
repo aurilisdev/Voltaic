@@ -15,6 +15,7 @@ import voltaic.prefab.properties.variant.AbstractProperty;
 import voltaic.prefab.tile.components.IComponent;
 import voltaic.prefab.tile.components.IComponentType;
 import voltaic.prefab.tile.components.type.*;
+import voltaic.prefab.utilities.BlockEntityUtils;
 import voltaic.prefab.utilities.ItemUtils;
 import voltaic.registers.VoltaicCapabilities;
 import net.minecraft.block.BlockState;
@@ -58,8 +59,9 @@ public abstract class GenericTile extends TileEntity implements INameable, IProp
 
 	public GenericTile(TileEntityType<?> tileEntityTypeIn) {
 		super(tileEntityTypeIn);
+		//worldPosition = BlockEntityUtils.OUT_OF_REACH;
 	}
-	
+
 	@Override
 	public void tick() {
 		if (hasComponent(IComponentType.Tickable)) {
@@ -100,14 +102,14 @@ public abstract class GenericTile extends TileEntity implements INameable, IProp
 		return this;
 	}
 
-	//Try not using this method
+	// Try not using this method
 	@Deprecated
 	public GenericTile forceComponent(IComponent component) {
 		component.holder(this);
 		components[component.getType().ordinal()] = component;
 		return this;
 	}
-	
+
 	@Override
 	public void load(BlockState state, CompoundNBT compound) {
 		super.load(state, compound);
@@ -123,7 +125,7 @@ public abstract class GenericTile extends TileEntity implements INameable, IProp
 			}
 		}
 	}
-	
+
 	@Override
 	public CompoundNBT save(CompoundNBT compound) {
 		if (propertyManager != null) {
@@ -140,6 +142,8 @@ public abstract class GenericTile extends TileEntity implements INameable, IProp
 		return super.save(compound);
 	}
 	
+	
+
 	// called either from initial client sync
 	@Override
 	public CompoundNBT getUpdateTag() {
@@ -158,20 +162,28 @@ public abstract class GenericTile extends TileEntity implements INameable, IProp
 	@Nullable
 	@Override
 	public SUpdateTileEntityPacket getUpdatePacket() {
+		//if(level == null || worldPosition == null || worldPosition.equals(BlockEntityUtils.OUT_OF_REACH)) {
+		//	return null;
+		//}
 		CompoundNBT tag = new CompoundNBT();
 		CompoundNBT data = new CompoundNBT();
 		propertyManager.saveDirtyPropsToTag(data);
 		tag.put(PropertyManager.NBT_KEY, data);
 		return new SUpdateTileEntityPacket(getBlockPos(), 0, tag);
 	}
-	
+
 	@Override
 	public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
-		CompoundNBT compoundtag = pkt.getTag();
-        if (compoundtag != null) {
-            load(getBlockState(), compoundtag);
-        }
+		CompoundNBT compound = pkt.getTag();
+		if (compound != null && propertyManager != null && compound.contains(PropertyManager.NBT_KEY)) {
+			CompoundNBT propertyData = compound.getCompound(PropertyManager.NBT_KEY);
+			propertyManager.loadFromTag(propertyData);
+			compound.remove(PropertyManager.NBT_KEY);
+
+		}
 	}
+	
+	
 
 	// Only fires on server side
 	@Override
@@ -350,6 +362,11 @@ public abstract class GenericTile extends TileEntity implements INameable, IProp
 
 	public void onEntityInside(BlockState state, World level, BlockPos pos, Entity entity) {
 
+	}
+
+	public void updateCarriedItemInContainer(ItemStack stack, UUID playerId) {
+		PlayerEntity player = getLevel().getPlayerByUUID(playerId);
+		player.inventory.setCarried(stack);
 	}
 
 	protected static TriPredicate<Integer, ItemStack, ComponentInventory> machineValidator() {

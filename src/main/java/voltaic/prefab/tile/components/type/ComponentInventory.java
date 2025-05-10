@@ -94,10 +94,6 @@ public class ComponentInventory implements IComponent, ISidedInventory {
     public ComponentInventory(GenericTile holder, InventoryBuilder builder) {
         holder(holder);
 
-        if (!holder.getBlockState().hasProperty(VoltaicBlockStates.FACING)) {
-            throw new UnsupportedOperationException("The tile " + holder + " must have the FACING direction property!");
-        }
-
         if (builder.builderSize > 0) {
             inventorySize = builder.builderSize;
         } else {

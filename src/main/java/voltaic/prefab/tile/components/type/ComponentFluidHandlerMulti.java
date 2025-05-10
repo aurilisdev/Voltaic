@@ -78,11 +78,6 @@ public class ComponentFluidHandlerMulti implements IComponentFluidHandler {
 
     public ComponentFluidHandlerMulti(GenericTile holder) {
         this.holder = holder;
-
-        if (!holder.getBlockState().hasProperty(VoltaicBlockStates.FACING)) {
-            throw new UnsupportedOperationException("The tile " + holder + " must have the FACING direction property!");
-        }
-
     }
 
     public ComponentFluidHandlerMulti setInputTanks(int count, int... capacity) {

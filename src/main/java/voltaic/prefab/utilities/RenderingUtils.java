@@ -197,7 +197,7 @@ public class RenderingUtils {
 
 	}
 
-	public static void renderFilledBoxNoOverlay(MatrixStack stack, IVertexBuilder builder, AxisAlignedBB box, float r, float g, float b, float a, float uMin, float vMin, float uMax, float vMax, int light, int overlay, @Nonnull boolean[] renderedFaces) {
+	public static void renderFilledBoxNoOverlay(MatrixStack stack, IVertexBuilder builder, AxisAlignedBB box, float r, float g, float b, float a, float uMin, float vMin, float uMax, float vMax, int light, @Nonnull boolean[] renderedFaces) {
 		Matrix4f matrix4f = stack.last().pose();
 		Matrix3f matrix3f = stack.last().normal();
 

@@ -96,7 +96,7 @@ public class VoltaicTags {
 
 		public static final INamedTag<Item> ORE_ALUMINUM = forgeTag("ores/aluminum");
 		public static final INamedTag<Item> ORE_CHROMIUM = forgeTag("ores/chromium");
-		public static final INamedTag<Item> ORE_COPPER = forgeTag("orges/copper");
+		public static final INamedTag<Item> ORE_COPPER = forgeTag("ores/copper");
 		public static final INamedTag<Item> ORE_FLUORITE = forgeTag("ores/fluorite");
 		public static final INamedTag<Item> ORE_LEAD = forgeTag("ores/lead");
 		public static final INamedTag<Item> ORE_LITHIUM = forgeTag("ores/lithium");
@@ -156,6 +156,7 @@ public class VoltaicTags {
 		public static final INamedTag<Item> STORAGE_BLOCK_ALUMINUM = forgeTag("storage_blocks/aluminum");
 		public static final INamedTag<Item> STORAGE_BLOCK_BRONZE = forgeTag("storage_blocks/bronze");
 		public static final INamedTag<Item> STORAGE_BLOCK_CHROMIUM = forgeTag("storage_blocks/chromium");
+		public static final INamedTag<Item> STORAGE_BLOCK_COPPER = forgeTag("storage_blocks/copper");
 		public static final INamedTag<Item> STORAGE_BLOCK_HSLASTEEL = forgeTag("storage_blocks/hslasteel");
 		public static final INamedTag<Item> STORAGE_BLOCK_LEAD = forgeTag("storage_blocks/lead");
 		public static final INamedTag<Item> STORAGE_BLOCK_SILVER = forgeTag("storage_blocks/silver");

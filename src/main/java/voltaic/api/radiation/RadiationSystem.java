@@ -163,7 +163,7 @@ public class RadiationSystem {
 		int protection = 1;
 		boolean isPlayer = entity instanceof Player;
 		if (isPlayer) {
-			Player player = (Player) entity;
+			PlayerEntity player = (Player) entity;
 			if (!player.isCreative()) {
 				for (int i = 0; i < player.getInventory().armor.size(); i++) {
 					ItemStack next = player.getInventory().armor.get(i);
@@ -182,12 +182,12 @@ public class RadiationSystem {
 		}
 		Location end = new Location(entity.position().add(0, entity.getEyeHeight() / 2.0, 0));
 		double radiation = 0;
-		if (entity instanceof Player pl && (pl.getItemBySlot(EquipmentSlot.MAINHAND).getItem() instanceof ItemGeigerCounter || pl.getItemBySlot(EquipmentSlot.OFFHAND).getItem() instanceof ItemGeigerCounter)) {
+		if (entity instanceof PlayerEntity pl && (pl.getItemBySlot(EquipmentSlot.MAINHAND).getItem() instanceof ItemGeigerCounter || pl.getItemBySlot(EquipmentSlot.OFFHAND).getItem() instanceof ItemGeigerCounter)) {
 			double already = radiationMap.get().containsKey(entity) ? radiationMap.get().get(entity) : 0;
 			radiation = getRadiation(entity.level(), source, end, strength);
 			radiationMap.get().put((Player) entity, already + radiation);
 		}
-		if (!(entity instanceof Player pl && pl.isCreative()) && protection < 5 && radiationMap.get().getOrDefault(entity, 11.0) > 4) {
+		if (!(entity instanceof PlayerEntity pl && pl.isCreative()) && protection < 5 && radiationMap.get().getOrDefault(entity, 11.0) > 4) {
 			if (radiation == 0) {
 				radiation = getRadiation(entity.level(), source, end, strength);
 			}

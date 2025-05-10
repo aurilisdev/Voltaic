@@ -56,7 +56,7 @@ public abstract class FluidItem2ItemRecipeCategory<T extends FluidItem2ItemRecip
         List<List<ItemStack>> ingredients = new ArrayList<>();
 
         for (CountableIngredient ing : recipe.getCountedIngredients()) {
-            ingredients.add(Arrays.asList(ing.getItemsArray()));
+            ingredients.add(Arrays.asList(ing.getItems()));
         }
 
         for (FluidIngredient ing : recipe.getFluidIngredients()) {

@@ -6,7 +6,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ArmorItem;
-import net.minecraft.item.ArmorMaterial;
+import net.minecraft.item.IArmorMaterial;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
@@ -16,7 +16,7 @@ public class ItemVoltaicArmor extends ArmorItem {
 
 	private final Supplier<ItemGroup> creativeTab;
 
-	public ItemVoltaicArmor(ArmorMaterial material, EquipmentSlotType type, Properties properties, Supplier<ItemGroup> creativeTab) {
+	public ItemVoltaicArmor(IArmorMaterial material, EquipmentSlotType type, Properties properties, Supplier<ItemGroup> creativeTab) {
 		super(material, type, properties);
 		this.creativeTab = creativeTab;
 	}
@@ -36,7 +36,7 @@ public class ItemVoltaicArmor extends ArmorItem {
 
 	@Override
 	protected boolean allowdedIn(ItemGroup category) {
-		return creativeTab != null && creativeTab.get() == category;
+		return creativeTab != null && (category == creativeTab.get() || category == ItemGroup.TAB_SEARCH);
 	}
 
 	@Override

@@ -9,6 +9,7 @@ import net.minecraftforge.fml.network.simple.SimpleChannel;
 import voltaic.Voltaic;
 import voltaic.common.packet.types.client.*;
 import voltaic.common.packet.types.server.PacketSendUpdatePropertiesServer;
+import voltaic.common.packet.types.server.PacketUpdateCarriedItemServer;
 
 public class NetworkHandler {
 
@@ -28,6 +29,7 @@ public class NetworkHandler {
         // SERVER
 
         CHANNEL.registerMessage(disc++, PacketSendUpdatePropertiesServer.class, PacketSendUpdatePropertiesServer::encode, PacketSendUpdatePropertiesServer::decode, PacketSendUpdatePropertiesServer::handle, Optional.of(NetworkDirection.PLAY_TO_SERVER));
+        CHANNEL.registerMessage(disc++, PacketUpdateCarriedItemServer.class, PacketUpdateCarriedItemServer::encode, PacketUpdateCarriedItemServer::decode, PacketUpdateCarriedItemServer::handle, Optional.of(NetworkDirection.PLAY_TO_SERVER));
 
     }
 

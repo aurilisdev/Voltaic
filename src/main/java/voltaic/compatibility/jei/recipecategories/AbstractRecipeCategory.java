@@ -243,7 +243,7 @@ public abstract class AbstractRecipeCategory<T> implements IRecipeCategory<T> {
 		for (int i = 0; i < inputSlotWrappers.length; i++) {
 			wrapper = inputSlotWrappers[i];
 
-			group.init(index, wrapper.input, wrapper.x, wrapper.y);
+			group.init(index, wrapper.input, wrapper.x - 1, wrapper.y - 1);
 			index++;
 		}
 		
@@ -259,7 +259,7 @@ public abstract class AbstractRecipeCategory<T> implements IRecipeCategory<T> {
 			wrapper = outputSlotWrappers[i];
 			if (i < outputSize) {
 
-				group.init(index, wrapper.input, wrapper.x, wrapper.y);
+				group.init(index, wrapper.input, wrapper.x - 1, wrapper.y - 1);
 				index++;
 			}
 		}

@@ -19,6 +19,7 @@ import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
+import net.minecraftforge.common.ToolType;
 import voltaic.api.tile.TileEntitySupplier;
 import voltaic.common.block.states.VoltaicBlockStates;
 import voltaic.common.block.voxelshapes.VoxelShapeProvider;
@@ -31,7 +32,7 @@ public class GenericMachineBlock extends GenericEntityBlockWaterloggable {
     public static HashMap<BlockPos, LivingEntity> IPLAYERSTORABLE_MAP = new HashMap<>();
 
     public GenericMachineBlock(TileEntitySupplier<TileEntity> blockEntitySupplier, VoxelShapeProvider provider) {
-        super(Properties.copy(Blocks.IRON_BLOCK).strength(3.5F).sound(SoundType.METAL).noOcclusion().requiresCorrectToolForDrops());
+        super(Properties.copy(Blocks.IRON_BLOCK).strength(3.5F).sound(SoundType.METAL).noOcclusion().requiresCorrectToolForDrops().harvestLevel(1).harvestTool(ToolType.PICKAXE));
         registerDefaultState(stateDefinition.any().setValue(VoltaicBlockStates.FACING, Direction.NORTH));
         this.blockEntitySupplier = blockEntitySupplier;
         this.shapeProvider = provider;
@@ -62,7 +63,7 @@ public class GenericMachineBlock extends GenericEntityBlockWaterloggable {
 
     @Override
 	public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-		return blockEntitySupplier.create(world);
+		return blockEntitySupplier.create();
 	}
 
     @Override
