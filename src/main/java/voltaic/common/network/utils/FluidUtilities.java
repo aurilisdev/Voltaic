@@ -63,7 +63,7 @@ public class FluidUtilities {
 				continue;
 			}
 
-			IFluidHandler handler = tile.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, direction.getOpposite()).orElse(CapabilityUtils.EMPTY_FLUID);
+			IFluidHandler handler = faceTile.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, direction.getOpposite()).orElse(CapabilityUtils.EMPTY_FLUID);
 
 			if(handler == null) {
 			    continue;
