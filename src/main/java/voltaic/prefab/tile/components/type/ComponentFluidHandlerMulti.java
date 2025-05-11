@@ -21,6 +21,7 @@ import net.minecraft.fluid.Fluid;
 import net.minecraft.item.crafting.IRecipeType;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.tags.ITag.INamedTag;
+import net.minecraft.tags.TagCollectionManager;
 import net.minecraft.util.Direction;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
@@ -372,7 +373,7 @@ public class ComponentFluidHandlerMulti implements IComponentFluidHandler {
             }
             if (validInputFluidTags != null) {
                 for (INamedTag<Fluid> tag : validInputFluidTags) {
-                    FluidTags.getAllTags().getTag(tag.getName()).getValues().forEach(holder -> {
+                    TagCollectionManager.getInstance().getFluids().getTag(tag.getName()).getValues().forEach(holder -> {
                         inputValidatorFluids.add(holder);
                     });
                 }
@@ -384,7 +385,7 @@ public class ComponentFluidHandlerMulti implements IComponentFluidHandler {
             }
             if (validOutputFluidTags != null) {
                 for (INamedTag<Fluid> tag : validOutputFluidTags) {
-                	FluidTags.getAllTags().getTag(tag.getName()).getValues().forEach(holder -> {
+                	TagCollectionManager.getInstance().getFluids().getTag(tag.getName()).getValues().forEach(holder -> {
                         outputValidatorFluids.add(holder);
                     });
                 }

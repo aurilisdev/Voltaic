@@ -118,7 +118,7 @@ public abstract class GenericEntityBlock extends Block implements IWrenchable {
 		TileEntity entity = level.getBlockEntity(pos);
 		if (entity instanceof GenericTile) {
 			GenericTile generic = (GenericTile) entity;
-			if (newState.isAir() || !newState.is(state.getBlock())) {
+			if (newState.isAir(level, pos) || !newState.is(state.getBlock())) {
 				generic.onBlockDestroyed();
 			} else {
 				generic.onBlockStateUpdate(state, newState);

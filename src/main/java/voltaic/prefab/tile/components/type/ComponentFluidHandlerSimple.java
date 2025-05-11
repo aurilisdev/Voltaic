@@ -15,6 +15,7 @@ import voltaic.prefab.utilities.BlockEntityUtils;
 import net.minecraft.block.BlockState;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.tags.FluidTags;
+import net.minecraft.tags.TagCollectionManager;
 import net.minecraft.tags.ITag.INamedTag;
 import net.minecraft.util.Direction;
 import net.minecraftforge.common.capabilities.Capability;
@@ -194,7 +195,7 @@ public class ComponentFluidHandlerSimple extends PropertyFluidTank implements IC
         }
         if (validFluidTags != null) {
             for (INamedTag<Fluid> tag : validFluidTags) {
-            	FluidTags.getAllTags().getTag(tag.getName()).getValues().forEach(holder -> {
+            	TagCollectionManager.getInstance().getFluids().getTag(tag.getName()).getValues().forEach(holder -> {
                     validatorFluids.add(holder);
                 });
             }

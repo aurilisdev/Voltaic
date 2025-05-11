@@ -14,6 +14,7 @@ import net.minecraft.profiler.IProfiler;
 import net.minecraft.resources.IResource;
 import net.minecraft.resources.IResourceManager;
 import net.minecraft.tags.FluidTags;
+import net.minecraft.tags.TagCollectionManager;
 import net.minecraft.tags.ITag.INamedTag;
 import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
@@ -125,7 +126,7 @@ public class RadioactiveFluidRegister extends AbstractReloadListener<JsonObject>
     public void generateTagValues() {
 
         tags.forEach((tag, value) -> {
-        	FluidTags.getAllTags().getTag(tag.getName()).getValues().forEach(gas -> {
+        	TagCollectionManager.getInstance().getFluids().getTag(tag.getName()).getValues().forEach(gas -> {
 
                 radioactiveFluidMap.put(gas, value);
 

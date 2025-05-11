@@ -17,6 +17,7 @@ import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.tags.ITag.INamedTag;
+import net.minecraft.tags.TagCollectionManager;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.FluidStack;
 import voltaic.api.codec.StreamCodec;
@@ -79,21 +80,23 @@ public class FluidIngredient extends Ingredient {
 
 		@Override
 		public void encode(PacketBuffer buf, FluidIngredient ing) {
-			List<FluidStack> fluidStacks = ing.getMatchingFluids();
-			buf.writeInt(fluidStacks.size());
-			for (FluidStack stack : fluidStacks) {
-				StreamCodec.FLUID_STACK.encode(buf, stack);
+			buf.writeBoolean(ing.tag == null);
+			if(ing.tag == null) {
+				StreamCodec.FLUID_STACK.encode(buf, new FluidStack(ing.fluid, ing.amount));
+			} else {
+				StreamCodec.RESOURCE_LOCATION.encode(buf, ing.tag.getName());
+				StreamCodec.INT.encode(buf, ing.amount);
 			}
 		}
 
 		@Override
 		public FluidIngredient decode(PacketBuffer buf) {
-			List<FluidStack> stacks = new ArrayList<>();
-			int count = buf.readInt();
-			for (int i = 0; i < count; i++) {
-				stacks.add(StreamCodec.FLUID_STACK.decode(buf));
+			if(buf.readBoolean()) {
+				FluidStack stack = StreamCodec.FLUID_STACK.decode(buf);
+				return new FluidIngredient(stack);
+			} else {
+				return new FluidIngredient(FluidTags.createOptional(StreamCodec.RESOURCE_LOCATION.decode(buf)), StreamCodec.INT.decode(buf));
 			}
-			return new FluidIngredient(stacks);
 		}
 	};
 
@@ -190,7 +193,7 @@ public class FluidIngredient extends Ingredient {
 
 			if (tag != null) {
 
-				FluidTags.getAllTags().getTag(tag.getName()).getValues().forEach(h -> {
+				TagCollectionManager.getInstance().getFluids().getTag(tag.getName()).getValues().forEach(h -> {
 					fluidStacks.add(new FluidStack(h, amount));
 				});
 
@@ -219,8 +222,22 @@ public class FluidIngredient extends Ingredient {
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof FluidIngredient) {
-			FluidIngredient ing = (FluidIngredient) obj;
-			return ing.getMatchingFluids().equals(getMatchingFluids()) && ing.amount == amount;
+			FluidIngredient otherIng = (FluidIngredient) obj;
+			
+			if(otherIng.amount != amount) {
+				return false;
+			}
+			
+			if((tag != null && otherIng.tag == null) || (tag == null && otherIng.tag != null)) {
+				return false;
+			}
+			
+			if((fluid != null && otherIng.fluid == null) || (fluid == null && otherIng.fluid != null)) {
+				return false;
+			}
+
+			return true;
+
 		}
 		return false;
 	}

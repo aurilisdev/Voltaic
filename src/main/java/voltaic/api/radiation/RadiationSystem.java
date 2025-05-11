@@ -165,15 +165,15 @@ public class RadiationSystem {
 		if (isPlayer) {
 			PlayerEntity player = (Player) entity;
 			if (!player.isCreative()) {
-				for (int i = 0; i < player.getInventory().armor.size(); i++) {
-					ItemStack next = player.getInventory().armor.get(i);
+				for (int i = 0; i < player.inventory.armor.size(); i++) {
+					ItemStack next = player.inventory.armor.get(i);
 					if (next.getItem() instanceof ItemHazmatArmor) {
 						protection++;
 						float damage = (float) (strength * 2.15f) / 2169.9975f;
 						if (Math.random() < damage) {
 							int integerDamage = Math.round(damage);
 							if (next.getDamageValue() > next.getMaxDamage() || next.hurthurt(integerDamage, entity.level().random, player instanceof ServerPlayer s ? s : null)) {
-								player.getInventory().armor.set(i, ItemStack.EMPTY);
+								player.inventory.armor.set(i, ItemStack.EMPTY);
 							}
 						}
 					}
@@ -203,7 +203,7 @@ public class RadiationSystem {
 	}
 
 	public static void emitRadiationFromLocation(World level, Location source, double radius, double strength) {
-		AABB bb = AABB.ofSize(new Vec3(source.x(), source.y(), source.z()), radius * 2, radius * 2, radius * 2);
+		AxisAlignedBB bb = AxisAlignedBB.ofSize(new Vector3d(source.x(), source.y(), source.z()), radius * 2, radius * 2, radius * 2);
 		List<LivingEntity> list = level.getEntitiesOfClass(LivingEntity.class, bb);
 		for (LivingEntity living : list) {
 			RadiationSystem.applyRadiation(living, source, strength);

@@ -46,7 +46,7 @@ public class Fluid2FluidRecipeSerializer<T extends Fluid2FluidRecipe> extends Vo
 
     /*
     @Override
-    public T fromNetwork(FriendlyByteBuf buffer) {
+    public T fromNetwork(PacketBuffer buffer) {
         String group = buffer.readUtf();
         boolean hasItemBi = buffer.readBoolean();
         boolean hasFluidBi = buffer.readBoolean();
@@ -73,7 +73,7 @@ public class Fluid2FluidRecipeSerializer<T extends Fluid2FluidRecipe> extends Vo
     }
 
     @Override
-    public void toNetwork(FriendlyByteBuf buffer, T recipe) {
+    public void toNetwork(PacketBuffer buffer, T recipe) {
         buffer.writeUtf(recipe.getGroup());
         buffer.writeBoolean(recipe.hasItemBiproducts());
         buffer.writeBoolean(recipe.hasFluidBiproducts());

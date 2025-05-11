@@ -4,6 +4,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
@@ -15,11 +16,15 @@ import voltaic.common.reloadlistener.RadiationShieldingRegister;
 import voltaic.common.reloadlistener.RadioactiveItemRegister;
 import voltaic.prefab.utilities.VoltaicTextUtils;
 
-@EventBusSubscriber(modid = Voltaic.ID, bus = EventBusSubscriber.Bus.FORGE)
+@EventBusSubscriber(modid = Voltaic.ID, bus = EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class RadiationTooltipHandler {
 
     @SubscribeEvent
     public static void renderTooltip(ItemTooltipEvent event) {
+    	
+    	if(event.getEntity() == null) {
+    		return;
+    	}
 
         if(Screen.hasShiftDown()) {
             ItemStack stack = event.getItemStack();

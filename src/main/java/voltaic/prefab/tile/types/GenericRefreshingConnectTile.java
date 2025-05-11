@@ -28,6 +28,8 @@ public abstract class GenericRefreshingConnectTile<CABLETYPE, CONDUCTOR extends 
     private NETWORK network;
 
     public boolean isQueued = false;
+    
+    private boolean loaded = false;
 
     public GenericRefreshingConnectTile(TileEntityType<?> tile) {
         super(tile);
@@ -48,11 +50,11 @@ public abstract class GenericRefreshingConnectTile<CABLETYPE, CONDUCTOR extends 
             connection = connectionsArr[ordinal];
             prevConnection = previousConnections[ordinal];
 
-            TileEntity entity = level.getBlockEntity(worldPosition.relative(dir));
-
             if (prevConnection == connection) {
                 continue;
             }
+            
+            TileEntity entity = level.getBlockEntity(worldPosition.relative(dir));
 
             if (connection == EnumConnectType.NONE && prevConnection == EnumConnectType.WIRE) {
                 updatedConductors.add(new UpdatedConductor<>((CONDUCTOR) prevCableConnections[ordinal], true));
@@ -121,7 +123,9 @@ public abstract class GenericRefreshingConnectTile<CABLETYPE, CONDUCTOR extends 
         if (level == null) {
             if (!isQueued) {
                 isQueued = true;
-                Scheduler.schedule(1, () -> updateNetwork(dirs));
+                Scheduler.schedule(20, () -> updateNetwork(dirs));
+            } else {
+            	return;
             }
         }
 
@@ -130,8 +134,11 @@ public abstract class GenericRefreshingConnectTile<CABLETYPE, CONDUCTOR extends 
         if(level.isClientSide) {
             return;
         }
-
+        //locked = true;
+        
         Pair<List<UpdatedReceiver>, List<UpdatedConductor<CONDUCTOR>>> changed = updateAdjacent(dirs);
+        
+        //locked = false;
 
         if (changed.getSecond().isEmpty()) {
 
@@ -257,7 +264,9 @@ public abstract class GenericRefreshingConnectTile<CABLETYPE, CONDUCTOR extends 
     @Override
     public void onLoad() {
         super.onLoad();
-        updateNetwork(Direction.values());
+        Scheduler.schedule(1, () -> {
+        	updateNetwork(Direction.values());
+        });   
     }
 
     public static class UpdatedReceiver {

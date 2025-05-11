@@ -10,9 +10,7 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.Capability.IStorage;
 import net.minecraftforge.common.capabilities.CapabilityManager;
-import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 
-import voltaic.Voltaic;
 import voltaic.api.electricity.CapabilityElectrodynamicStorage;
 import voltaic.api.electricity.ICapabilityElectrodynamic;
 import voltaic.api.misc.CapabilityLocationStorage;
@@ -23,7 +21,6 @@ import voltaic.api.radiation.util.IRadiationManager;
 import voltaic.api.radiation.util.IRadiationRecipient;
 import voltaic.prefab.utilities.object.Location;
 
-@EventBusSubscriber(modid = Voltaic.ID, bus = EventBusSubscriber.Bus.MOD)
 public class VoltaicCapabilities {
 
     public static final double DEFAULT_VOLTAGE = 120.0;

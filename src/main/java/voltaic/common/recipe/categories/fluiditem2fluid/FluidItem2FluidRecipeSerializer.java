@@ -49,7 +49,7 @@ public class FluidItem2FluidRecipeSerializer<T extends FluidItem2FluidRecipe> ex
 
     /*
     @Override
-    public T fromNetwork(FriendlyByteBuf buffer) {
+    public T fromNetwork(PacketBuffer buffer) {
         String group = buffer.readUtf();
         boolean hasItemBi = buffer.readBoolean();
         boolean hasFluidBi = buffer.readBoolean();
@@ -77,7 +77,7 @@ public class FluidItem2FluidRecipeSerializer<T extends FluidItem2FluidRecipe> ex
     }
 
     @Override
-    public void toNetwork(FriendlyByteBuf buffer, T recipe) {
+    public void toNetwork(PacketBuffer buffer, T recipe) {
         buffer.writeUtf(recipe.getGroup());
         buffer.writeBoolean(recipe.hasItemBiproducts());
         buffer.writeBoolean(recipe.hasFluidBiproducts());

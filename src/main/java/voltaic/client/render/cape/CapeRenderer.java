@@ -17,13 +17,13 @@
 //import net.minecraft.client.Minecraft;
 //import net.minecraft.core.BlockPos;
 //import net.minecraft.resources.ResourceLocation;
-//import net.minecraft.util.Mth;
+//import net.minecraft.util.MathHelper;
 //import net.minecraft.world.entity.EquipmentSlot;
 //import net.minecraft.world.entity.player.Player;
 //import net.minecraft.world.level.Level;
 //import net.minecraft.world.level.block.LiquidBlock;
 //import net.minecraft.world.level.block.state.BlockState;
-//import net.minecraft.world.phys.Vec3;
+//import net.minecraft.world.phys.Vector3d;
 //import net.neoforged.api.distmarker.Dist;
 //import net.neoforged.api.distmarker.OnlyIn;
 //import net.neoforged.client.event.RenderPlayerEvent;
@@ -93,7 +93,7 @@
 //        float delta = event.getPartialTick();
 //        if (!player.isInvisible() && !player.isFallFlying() && !player.isSleeping()) {
 //            RenderCape cape = getCape(player);
-//            Vec3 cameraPos = Minecraft.getInstance().cameraEntity.getPosition(delta);
+//            Vector3d cameraPos = Minecraft.getInstance().cameraEntity.getPosition(delta);
 //            cape.render(player, player.getX() - cameraPos.x,
 //                    player.getY() - cameraPos.y,
 //                    player.getZ() - cameraPos.z, delta, event.getPoseStack());
@@ -205,7 +205,7 @@
 //                    }
 //                }
 //            }
-//            points.sort((a, b) -> Double.compare(Mth.sqrt(b.posX * b.posX + b.posY + b.posY), Mth.sqrt(a.posX * a.posX + a.posY + a.posY)));
+//            points.sort((a, b) -> Double.compare(MathHelper.sqrt(b.posX * b.posX + b.posY + b.posY), MathHelper.sqrt(a.posX * a.posX + a.posY + a.posY)));
 //            return new RenderCape(ImmutableList.copyOf(points), quads.build());
 //        }
 //
@@ -259,7 +259,7 @@
 //        }
 //
 //        @SuppressWarnings("java:S1874")
-//        private void render(PlayerEntity player, double x, double y, double z, float delta, PoseStack stack) {
+//        private void render(PlayerEntity player, double x, double y, double z, float delta, MatrixStack stack) {
 //            stack.pushPose();
 //            stack.scale(10.5f, 10.5f, 10.5f);
 //            stack.translate(-player.getEyePosition(delta).x,
@@ -303,7 +303,7 @@
 //                float nx = (v11y - v00y) * (v10z - v01z) - (v11z - v00z) * (v10y - v01y);
 //                float ny = (v10x - v01x) * (v11z - v00z) - (v10z - v01z) * (v11x - v00x);
 //                float nz = (v11x - v00x) * (v10y - v01y) - (v11y - v00y) * (v10x - v01x);
-//                float len = Mth.sqrt(nx * nx + ny * ny + nz * nz);
+//                float len = MathHelper.sqrt(nx * nx + ny * ny + nz * nz);
 //                nx /= len;
 //                ny /= len;
 //                nz /= len;
@@ -571,8 +571,8 @@
 //                    height = 1.38F;
 //                    back = getBack(player, 0.14F);
 //                }
-//                float vx = Mth.cos(yaw) * x + Mth.cos(yaw - (float) Math.PI / 2) * back * 2;
-//                float vz = Mth.sin(yaw) * x + Mth.sin(yaw - (float) Math.PI / 2) * back * 2;
+//                float vx = MathHelper.cos(yaw) * x + MathHelper.cos(yaw - (float) Math.PI / 2) * back * 2;
+//                float vz = MathHelper.sin(yaw) * x + MathHelper.sin(yaw - (float) Math.PI / 2) * back * 2;
 //                point.posX = (float) player.getX() + vx;
 //                point.posY = (float) player.getY() + height + y;
 //                point.posZ = (float) player.getZ() + vz;
@@ -613,7 +613,7 @@
 //                    float dx = point.posX - dest.posX;
 //                    float dy = point.posY - dest.posY;
 //                    float dz = point.posZ - dest.posZ;
-//                    float dist = Mth.sqrt(dx * dx + dy * dy + dz * dz);
+//                    float dist = MathHelper.sqrt(dx * dx + dy * dy + dz * dz);
 //                    float d = dist * (point.invMass + dest.invMass);
 //                    float diff = d < EPSILON ? length / 2 : (dist - length) / d;
 //                    float px = dx * diff * strength;
@@ -633,8 +633,8 @@
 //            @Override
 //            public void resolve(PlayerEntity player, Point point) {
 //                float yaw = (float) (Math.toRadians(player.yBodyRot) - Math.PI / 2);
-//                float dx = Mth.cos(yaw);
-//                float dz = Mth.sin(yaw);
+//                float dx = MathHelper.cos(yaw);
+//                float dz = MathHelper.sin(yaw);
 //                float px = (float) player.getX();
 //                float py = (float) player.getY() + 0.56F;
 //                float pz = (float) player.getZ();
@@ -643,17 +643,17 @@
 //                    float backX = px + dx * dist;
 //                    float backZ = pz + dz * dist;
 //                    float dy = 1.4F;
-//                    float len = Mth.sqrt(1 + dy * dy);
+//                    float len = MathHelper.sqrt(1 + dy * dy);
 //                    dx /= len;
 //                    dy /= len;
 //                    dz /= len;
 //                    float rz = (point.posX - (float) player.getX()) * dx + (point.posZ - (float) player.getZ()) * dz;
-//                    float a = (Mth.clamp(-rz, -0.5F, -0.4F) + 0.5F) / 0.1F;
+//                    float a = (MathHelper.clamp(-rz, -0.5F, -0.4F) + 0.5F) / 0.1F;
 //                    collideWithPlane(point, backX, py, backZ, dx, dy, dz, a);
 //                } else {
-//                    float rx = (point.posX - (float) player.getX()) * Mth.cos(yaw + (float) Math.PI / 2)
-//                            + (point.posZ - (float) player.getZ()) * Mth.sin(yaw + (float) Math.PI / 2);
-//                    float a = 1 - (Mth.clamp(Math.abs(rx), 0.24F, 0.36F) - 0.24F) / (0.36F - 0.24F);
+//                    float rx = (point.posX - (float) player.getX()) * MathHelper.cos(yaw + (float) Math.PI / 2)
+//                            + (point.posZ - (float) player.getZ()) * MathHelper.sin(yaw + (float) Math.PI / 2);
+//                    float a = 1 - (MathHelper.clamp(Math.abs(rx), 0.24F, 0.36F) - 0.24F) / (0.36F - 0.24F);
 //                    float dist = getBack(player, 0.14F);
 //                    collideWithPlane(point, px + dx * dist, py, pz + dz * dist, dx, 0, dz, a);
 //                }

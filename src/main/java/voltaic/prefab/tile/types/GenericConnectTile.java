@@ -3,6 +3,7 @@ package voltaic.prefab.tile.types;
 import voltaic.client.model.block.modelproperties.ModelPropertyConnections;
 import voltaic.common.block.connect.EnumConnectType;
 import voltaic.prefab.properties.variant.SingleProperty;
+import voltaic.prefab.properties.PropertyManager;
 import voltaic.prefab.properties.types.PropertyTypes;
 import voltaic.prefab.tile.GenericTile;
 import voltaic.prefab.tile.components.type.ComponentPacketHandler;
@@ -11,12 +12,15 @@ import javax.annotation.Nonnull;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction;
 import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.client.model.data.ModelDataMap;
 
 public abstract class GenericConnectTile extends GenericTile implements IConnectTile {
+	
+	protected boolean loadedWithoutData = false;
 
     // DUNSWE
 
@@ -206,6 +210,14 @@ public abstract class GenericConnectTile extends GenericTile implements IConnect
         this.connections.setValue(connectionData);
 
         return this.connections.isDirty();
+    }
+    
+    @Override
+    public void load(BlockState state, CompoundNBT compound) {
+    	if(!compound.contains(PropertyManager.NBT_KEY) || !compound.getCompound(PropertyManager.NBT_KEY).contains("connections")) {
+    		loadedWithoutData = true;
+    	}
+    	super.load(state, compound);
     }
 
     @Override

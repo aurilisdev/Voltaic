@@ -1,9 +1,9 @@
 package voltaic.prefab.properties.types;
 
 import com.mojang.serialization.Codec;
-import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.NBTDynamicOps;
+import net.minecraft.network.PacketBuffer;
 import voltaic.api.codec.StreamCodec;
 
 import javax.annotation.Nonnull;
@@ -12,7 +12,7 @@ import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-public class SetPropertyType<TYPE, BUFFERTYPE extends ByteBuf> implements IPropertyType<HashSet<TYPE>, BUFFERTYPE> {
+public class SetPropertyType<TYPE, BUFFERTYPE extends PacketBuffer> implements IPropertyType<HashSet<TYPE>, BUFFERTYPE> {
 
     private final BiPredicate<TYPE, TYPE> singleComparison;
     private final BiPredicate<HashSet<TYPE>, HashSet<TYPE>> comparison;
