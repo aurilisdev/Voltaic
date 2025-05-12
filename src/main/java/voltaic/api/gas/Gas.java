@@ -2,6 +2,7 @@ package voltaic.api.gas;
 
 import javax.annotation.Nullable;
 
+import voltaic.prefab.utilities.math.Color;
 import voltaic.registers.VoltaicGases;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
@@ -29,20 +30,23 @@ public class Gas {
 	private final int condensationTemp; // Degrees Kelvin; set to 0 if this gas does not condense
 	@Nullable
 	private final Holder<Fluid> condensedFluid; // set to empty if gas does not condense
+	private final Color color;
 
-	public Gas(Holder<Item> container, Component description) {
+	public Gas(Holder<Item> container, Component description, Color color) {
 		this.container = container;
 		this.description = description;
 		this.condensationTemp = 0;
 		this.condensedFluid = new Holder.Direct<>(Fluids.EMPTY);
+		this.color = color;
 	}
 
-	public Gas(Holder<Item> container, Component description, int condensationTemp, Holder<Fluid> condensedFluid) {
+	public Gas(Holder<Item> container, Component description, int condensationTemp, Color color, Holder<Fluid> condensedFluid) {
 		this.container = container;
 		this.description = description;
 		this.condensationTemp = condensationTemp;
 		this.condensedFluid = condensedFluid;
 		VoltaicGases.MAPPED_GASSES.put(condensedFluid, this);
+		this.color = color;
 	}
 
 	public Component getDescription() {
@@ -71,6 +75,10 @@ public class Gas {
 
 	public Fluid getCondensedFluid() {
 		return condensedFluid.value();
+	}
+
+	public Color getColor() {
+		return color;
 	}
 
 	@Override
