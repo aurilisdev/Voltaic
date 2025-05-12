@@ -16,6 +16,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.TooltipFlag;
+import voltaic.prefab.utilities.RenderingUtils;
 
 public class IngredientRendererGasStack implements IIngredientRenderer<GasStack> {
 
@@ -23,7 +24,9 @@ public class IngredientRendererGasStack implements IIngredientRenderer<GasStack>
 
 		@Override
 		public void render(GuiGraphics graphics, GasStack ingredient) {
+			RenderingUtils.setShaderColor(ingredient.getGas().getColor());
 			graphics.blit(0, 0, 0, 16, 16, VoltaicClientRegister.getSprite(VoltaicClientRegister.TEXTURE_GAS));
+			RenderingUtils.resetShaderColor();
 		}
 
 		@Override

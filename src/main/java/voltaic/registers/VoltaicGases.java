@@ -13,6 +13,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import voltaic.prefab.utilities.math.Color;
 
 public class VoltaicGases {
 
@@ -23,6 +24,6 @@ public class VoltaicGases {
     public static final DeferredRegister<Gas> GASES = DeferredRegister.create(GAS_REGISTRY_KEY, Voltaic.ID);
     public static final Registry<Gas> GAS_REGISTRY = VoltaicGases.GASES.makeRegistry(builder -> builder.sync(true));
 
-    public static final DeferredHolder<Gas, Gas> EMPTY = GASES.register("empty", () -> new Gas(new Holder.Direct<>(Items.AIR), VoltaicTextUtils.gas("empty")));
+    public static final DeferredHolder<Gas, Gas> EMPTY = GASES.register("empty", () -> new Gas(new Holder.Direct<>(Items.AIR), VoltaicTextUtils.gas("empty"), Color.WHITE));
 
 }
