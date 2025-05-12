@@ -3,25 +3,25 @@ package voltaic.common.packet.types.server;
 import java.util.UUID;
 import java.util.function.Supplier;
 
+import net.minecraft.item.ItemStack;
+import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.fml.network.NetworkEvent.Context;
 import voltaic.api.codec.StreamCodec;
-import net.minecraft.core.BlockPos;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.network.NetworkEvent.Context;
 
 public class PacketUpdateCarriedItemServer {
 
-    public static final StreamCodec<FriendlyByteBuf, PacketUpdateCarriedItemServer> CODEC = new StreamCodec<FriendlyByteBuf, PacketUpdateCarriedItemServer>() {
+    public static final StreamCodec<PacketBuffer, PacketUpdateCarriedItemServer> CODEC = new StreamCodec<PacketBuffer, PacketUpdateCarriedItemServer>() {
 		
 		@Override
-		public void encode(FriendlyByteBuf buffer, PacketUpdateCarriedItemServer value) {
+		public void encode(PacketBuffer buffer, PacketUpdateCarriedItemServer value) {
 			StreamCodec.ITEM_STACK.encode(buffer, value.carriedItem);
 			StreamCodec.BLOCK_POS.encode(buffer, value.tilePos);
 			StreamCodec.UUID.encode(buffer, value.playerId);
 		}
 		
 		@Override
-		public PacketUpdateCarriedItemServer decode(FriendlyByteBuf buffer) {
+		public PacketUpdateCarriedItemServer decode(PacketBuffer buffer) {
 			return new PacketUpdateCarriedItemServer(StreamCodec.ITEM_STACK.decode(buffer), StreamCodec.BLOCK_POS.decode(buffer), StreamCodec.UUID.decode(buffer));
 		}
 	};
@@ -44,11 +44,11 @@ public class PacketUpdateCarriedItemServer {
 		ctx.setPacketHandled(true);
 	}
 
-	public static void encode(PacketUpdateCarriedItemServer message, FriendlyByteBuf buf) {
+	public static void encode(PacketUpdateCarriedItemServer message, PacketBuffer buf) {
 		CODEC.encode(buf, message);
 	}
 
-	public static PacketUpdateCarriedItemServer decode(FriendlyByteBuf buf) {
+	public static PacketUpdateCarriedItemServer decode(PacketBuffer buf) {
 		return CODEC.decode(buf);
 	}
 }

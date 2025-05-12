@@ -1,5 +1,6 @@
 package voltaic.client;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -9,7 +10,6 @@ import voltaic.client.model.block.bakerytypes.CableModelLoader;
 import voltaic.client.particle.fluiddrop.ParticleFluidDrop;
 import voltaic.client.particle.lavawithphysics.ParticleLavaWithPhysics;
 import voltaic.client.particle.plasmaball.ParticlePlasmaBall;
-import voltaic.client.guidebook.ReloadListenerResetGuidebook;
 
 import voltaic.client.screen.ScreenDO2OProcessor;
 import voltaic.client.screen.ScreenO2OProcessor;
@@ -19,20 +19,19 @@ import voltaic.registers.VoltaicBlocks;
 import voltaic.registers.VoltaicMenuTypes;
 import voltaic.registers.VoltaicParticles;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.MenuScreens;
-import net.minecraft.client.particle.ParticleEngine;
-import net.minecraft.client.renderer.ItemBlockRenderTypes;
+import net.minecraft.client.gui.ScreenManager;
+import net.minecraft.client.particle.ParticleManager;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.client.renderer.RenderTypeLookup;
+import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.event.ParticleFactoryRegisterEvent;
-import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 
@@ -51,48 +50,43 @@ public class VoltaicClientRegister {
 
     private static final HashMap<ResourceLocation, TextureAtlasSprite> CACHED_TEXTUREATLASSPRITES = new HashMap<>();
     // for registration purposes only!
-    private static final List<ResourceLocation> CUSTOM_TEXTURES = List.of(VoltaicClientRegister.TEXTURE_WHITE, VoltaicClientRegister.TEXTURE_MERCURY, VoltaicClientRegister.TEXTURE_GAS, VoltaicClientRegister.TEXTURE_MULTISUBNODE);
+    private static final List<ResourceLocation> CUSTOM_TEXTURES = Arrays.asList(VoltaicClientRegister.TEXTURE_WHITE, VoltaicClientRegister.TEXTURE_MERCURY, VoltaicClientRegister.TEXTURE_GAS, VoltaicClientRegister.TEXTURE_MULTISUBNODE);
 
     public static void setup() {
-    	MenuScreens.register(VoltaicMenuTypes.CONTAINER_GUIDEBOOK.get(), ScreenGuidebook::new);
-        MenuScreens.register(VoltaicMenuTypes.CONTAINER_O2OPROCESSOR.get(), ScreenO2OProcessor::new);
-        MenuScreens.register(VoltaicMenuTypes.CONTAINER_O2OPROCESSORDOUBLE.get(), ScreenO2OProcessorDouble::new);
-        MenuScreens.register(VoltaicMenuTypes.CONTAINER_O2OPROCESSORTRIPLE.get(), ScreenO2OProcessorTriple::new);
-        MenuScreens.register(VoltaicMenuTypes.CONTAINER_DO2OPROCESSOR.get(), ScreenDO2OProcessor::new);
+    	ScreenManager.register(VoltaicMenuTypes.CONTAINER_GUIDEBOOK.get(), ScreenGuidebook::new);
+        ScreenManager.register(VoltaicMenuTypes.CONTAINER_O2OPROCESSOR.get(), ScreenO2OProcessor::new);
+        ScreenManager.register(VoltaicMenuTypes.CONTAINER_O2OPROCESSORDOUBLE.get(), ScreenO2OProcessorDouble::new);
+        ScreenManager.register(VoltaicMenuTypes.CONTAINER_O2OPROCESSORTRIPLE.get(), ScreenO2OProcessorTriple::new);
+        ScreenManager.register(VoltaicMenuTypes.CONTAINER_DO2OPROCESSOR.get(), ScreenDO2OProcessor::new);
         
-        ItemBlockRenderTypes.setRenderLayer(VoltaicBlocks.BLOCK_MULTISUBNODE.get(), RenderType.cutout());
+        RenderTypeLookup.setRenderLayer(VoltaicBlocks.BLOCK_MULTISUBNODE.get(), RenderType.cutout());
     }
     
     @SubscribeEvent
 	public static void addCustomTextureAtlases(TextureStitchEvent.Pre event) {
-		if (event.getAtlas().location().equals(TextureAtlas.LOCATION_BLOCKS)) {
+		if (event.getMap().location().equals(AtlasTexture.LOCATION_BLOCKS)) {
 			CUSTOM_TEXTURES.forEach(event::addSprite);
 		}
 	}
 
     @SubscribeEvent
-    public static void cacheCustomTextureAtlases(TextureStitchEvent.Post event) {
-        if (event.getAtlas().location().equals(TextureAtlas.LOCATION_BLOCKS)) {
+	public static void cacheCustomTextureAtlases(TextureStitchEvent.Post event) {
+		if (event.getMap().location().equals(AtlasTexture.LOCATION_BLOCKS)) {
             CACHED_TEXTUREATLASSPRITES.clear();
             for (ResourceLocation loc : CUSTOM_TEXTURES) {
-                VoltaicClientRegister.CACHED_TEXTUREATLASSPRITES.put(loc, event.getAtlas().getSprite(loc));
+                VoltaicClientRegister.CACHED_TEXTUREATLASSPRITES.put(loc, event.getMap().getSprite(loc));
             }
         }
     }
 
     @SubscribeEvent
     public static void registerParticles(ParticleFactoryRegisterEvent event) {
-    	ParticleEngine engine = Minecraft.getInstance().particleEngine;
+    	ParticleManager engine = Minecraft.getInstance().particleEngine;
         engine.register(VoltaicParticles.PARTICLE_PLASMA_BALL.get(), ParticlePlasmaBall.Factory::new);
         engine.register(VoltaicParticles.PARTICLE_LAVAWITHPHYSICS.get(), ParticleLavaWithPhysics.Factory::new);
         engine.register(VoltaicParticles.PARTICLE_FLUIDDROP.get(), ParticleFluidDrop.Factory::new);
     }
-
-    @SubscribeEvent
-    public static void registerClientReloadListeners(RegisterClientReloadListenersEvent event) {
-        event.registerReloadListener(new ReloadListenerResetGuidebook());
-    }
-
+    
     @SubscribeEvent
     public static void registerGeometryLoaders(final ModelRegistryEvent event) {
         ModelLoaderRegistry.registerLoader(Voltaic.rl(CableModelLoader.ID), CableModelLoader.INSTANCE);

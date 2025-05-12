@@ -2,13 +2,13 @@ package voltaic.prefab.screen.component.types;
 
 import java.util.function.DoubleSupplier;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.matrix.MatrixStack;
 
 import voltaic.Voltaic;
 import voltaic.api.screen.ITexture;
 import voltaic.prefab.screen.component.ScreenComponentGeneric;
 import voltaic.prefab.utilities.RenderingUtils;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -27,7 +27,7 @@ public class ScreenComponentProgress extends ScreenComponentGeneric {
 	}
 
 	@Override
-	public void renderBackground(PoseStack poseStack, final int xAxis, final int yAxis, final int guiWidth, final int guiHeight) {
+	public void renderBackground(MatrixStack poseStack, final int xAxis, final int yAxis, final int guiWidth, final int guiHeight) {
 		super.renderBackground(poseStack, xAxis, yAxis, guiWidth, guiHeight);
 		ProgressTextures on = bar.on;
 		RenderingUtils.bindTexture(on.getLocation());
@@ -36,14 +36,17 @@ public class ScreenComponentProgress extends ScreenComponentGeneric {
 		case PROGRESS_ARROW_LEFT:
 			progress = (int) (progressInfoHandler.getAsDouble() * on.textureWidth());
 			int xStart = on.textureU() + on.textureWidth() - progress;
-			blit(poseStack, guiWidth + xLocation + on.textureWidth() - progress, guiHeight + yLocation, xStart, on.textureV(), progress, on.textureHeight(), on.imageWidth(), on.imageHeight());
+			blit(poseStack, guiWidth + x + on.textureWidth() - progress, guiHeight + y, xStart, on.textureV(), progress, on.textureHeight(), on.imageWidth(), on.imageHeight());
 			break;
-		case COUNTDOWN_FLAME, FAN:
+		case FAN:	
+		case COUNTDOWN_FLAME:
 			progress = (int) (progressInfoHandler.getAsDouble() * on.textureHeight());
-			blit(poseStack, guiWidth + xLocation, guiHeight + yLocation + on.textureHeight() - progress, on.textureU(), on.textureV() + on.textureHeight() - progress, on.textureWidth(), progress, on.imageWidth(), on.imageHeight());
+			blit(poseStack, guiWidth + x, guiHeight + y + on.textureHeight() - progress, on.textureU(), on.textureV() + on.textureHeight() - progress, on.textureWidth(), progress, on.imageWidth(), on.imageHeight());
 			break;
-		case PROGRESS_ARROW_RIGHT, BATTERY_CHARGE_RIGHT, PROGRESS_ARROW_RIGHT_BIG:
-			blit(poseStack, guiWidth + xLocation, guiHeight + yLocation, on.textureU(), on.textureV(), (int) (progressInfoHandler.getAsDouble() * on.textureWidth()), on.textureHeight(), on.imageWidth(), on.imageHeight());
+		case BATTERY_CHARGE_RIGHT:
+		case PROGRESS_ARROW_RIGHT_BIG:
+		case PROGRESS_ARROW_RIGHT:
+			blit(poseStack, guiWidth + x, guiHeight + y, on.textureU(), on.textureV(), (int) (progressInfoHandler.getAsDouble() * on.textureWidth()), on.textureHeight(), on.imageWidth(), on.imageHeight());
 			break;
 		default:
 			break;

@@ -5,23 +5,22 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import net.minecraft.util.text.IFormattableTextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import voltaic.prefab.utilities.VoltaicTextUtils;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TextComponent;
 
 public class ChatFormatter {
 
 	private static final ArrayList<IMeasurementUnit> MEASUREMENT_UNITS = new ArrayList<>(Arrays.asList(MeasurementUnits.PICO, MeasurementUnits.NANO, MeasurementUnits.MICRO, MeasurementUnits.MILLI, MeasurementUnits.NONE, MeasurementUnits.KILO, MeasurementUnits.MEGA, MeasurementUnits.GIGA));
 
-	public static MutableComponent getChatDisplay(double value, IDisplayUnit unit, int decimalPlaces, boolean isShort) {
+	public static IFormattableTextComponent getChatDisplay(double value, IDisplayUnit unit, int decimalPlaces, boolean isShort) {
 		if (value < Long.MIN_VALUE + 10000) {
-			return new TextComponent("-").append(VoltaicTextUtils.gui("displayunit.infinity.name")).append(" ").append((isShort ? unit.getSymbol() : unit.getNamePlural()));
+			return new StringTextComponent("-").append(VoltaicTextUtils.gui("displayunit.infinity.name")).append(" ").append((isShort ? unit.getSymbol() : unit.getNamePlural()));
 		}
 		if (value > Long.MAX_VALUE - 10000) {
 			return VoltaicTextUtils.gui("displayunit.infinity.name").append(" ").append((isShort ? unit.getSymbol() : unit.getNamePlural()));
 		}
-		Component unitName;
+		IFormattableTextComponent unitName;
 		if (isShort) {
 			unitName = unit.getSymbol();
 		} else if (value > 1.0D) {
@@ -31,7 +30,7 @@ public class ChatFormatter {
 		}
 
 		if (value == 0.0D) {
-			return new TextComponent(value + "").append(unit.getDistanceFromValue()).append(unitName);
+			return new StringTextComponent(value + "").append(unit.getDistanceFromValue()).append(unitName);
 		}
 
 		for(int i = 0; i < MEASUREMENT_UNITS.size(); i++) {
@@ -52,30 +51,30 @@ public class ChatFormatter {
 		return formatDecimals(measurement.process(value), decimalPlaces).append(unit.getDistanceFromValue()).append(measurement.getName(isShort)).append(unitName);
 	}
 
-	public static MutableComponent getChatDisplay(double value, IDisplayUnit unit) {
+	public static IFormattableTextComponent getChatDisplay(double value, IDisplayUnit unit) {
 		return getChatDisplay(value, unit, 2, false);
 	}
 
-	public static MutableComponent getChatDisplayShort(double value, IDisplayUnit unit) {
+	public static IFormattableTextComponent getChatDisplayShort(double value, IDisplayUnit unit) {
 		return getChatDisplay(value, unit, 2, true);
 	}
 
-	public static MutableComponent getDisplayShort(double value, IDisplayUnit unit, int decimalPlaces) {
+	public static IFormattableTextComponent getDisplayShort(double value, IDisplayUnit unit, int decimalPlaces) {
 		return getChatDisplay(value, unit, decimalPlaces, true);
 	}
 
-	public static MutableComponent getChatDisplaySimple(double value, IDisplayUnit unit, int decimalPlaces) {
+	public static IFormattableTextComponent getChatDisplaySimple(double value, IDisplayUnit unit, int decimalPlaces) {
 		if (value > 1.0D) {
 
 			if (decimalPlaces < 1) {
-				return new TextComponent((int) value + "").append(unit.getDistanceFromValue()).append(unit.getNamePlural());
+				return new StringTextComponent((int) value + "").append(unit.getDistanceFromValue()).append(unit.getNamePlural());
 			}
 
 			return formatDecimals(value, decimalPlaces).append(unit.getDistanceFromValue()).append(unit.getNamePlural());
 		}
 
 		if (decimalPlaces < 1) {
-			return new TextComponent((int) value + "").append(unit.getDistanceFromValue()).append(unit.getName());
+			return new StringTextComponent((int) value + "").append(unit.getDistanceFromValue()).append(unit.getName());
 		}
 
 		return formatDecimals(value, decimalPlaces).append(unit.getDistanceFromValue()).append(unit.getName());
@@ -86,13 +85,13 @@ public class ChatFormatter {
 		return j / Math.pow(10.0D, decimalPlaces);
 	}
 
-	public static MutableComponent formatDecimals(double d, int decimalPlaces) {
+	public static IFormattableTextComponent formatDecimals(double d, int decimalPlaces) {
 		DecimalFormat format = new DecimalFormat("0" + getDecimals(decimalPlaces));
 		format.setRoundingMode(RoundingMode.HALF_EVEN);
-		return new TextComponent(format.format(roundDecimals(d, decimalPlaces)));
+		return new StringTextComponent(format.format(roundDecimals(d, decimalPlaces)));
 	}
 
-	public static MutableComponent formatFluidMilibuckets(double amount) {
+	public static IFormattableTextComponent formatFluidMilibuckets(double amount) {
 
 		return getChatDisplayShort(amount / 1000.0, DisplayUnits.BUCKETS);
 

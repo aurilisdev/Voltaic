@@ -5,8 +5,6 @@ import java.util.function.Predicate;
 
 import javax.annotation.Nullable;
 
-import org.jetbrains.annotations.NotNull;
-
 import voltaic.api.fluid.PropertyFluidTank;
 import voltaic.common.block.states.VoltaicBlockStates;
 import voltaic.prefab.tile.GenericTile;
@@ -14,15 +12,16 @@ import voltaic.prefab.tile.components.CapabilityInputType;
 import voltaic.prefab.tile.components.IComponentType;
 import voltaic.prefab.tile.components.utils.IComponentFluidHandler;
 import voltaic.prefab.utilities.BlockEntityUtils;
-import net.minecraft.core.Direction;
-import net.minecraft.tags.TagKey;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Fluid;
+import net.minecraft.block.BlockState;
+import net.minecraft.fluid.Fluid;
+import net.minecraft.tags.FluidTags;
+import net.minecraft.tags.TagCollectionManager;
+import net.minecraft.tags.ITag.INamedTag;
+import net.minecraft.util.Direction;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.registries.ForgeRegistries;
 
 /**
  * Extension of PropertyFluidTank implementing directional I/O and the Component system
@@ -42,7 +41,7 @@ public class ComponentFluidHandlerSimple extends PropertyFluidTank implements IC
     @Nullable
     public Direction[] outputDirections;
     @Nullable
-    private TagKey<Fluid>[] validFluidTags;
+    private INamedTag<Fluid>[] validFluidTags;
     @Nullable
     private Fluid[] validFluids;
 
@@ -96,14 +95,15 @@ public class ComponentFluidHandlerSimple extends PropertyFluidTank implements IC
         return this;
     }
 
-    public ComponentFluidHandlerSimple setValidFluidTags(TagKey<Fluid>... fluids) {
+    public ComponentFluidHandlerSimple setValidFluidTags(INamedTag<Fluid>... fluids) {
         validFluidTags = fluids;
         return this;
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof ComponentFluidHandlerSimple tank) {
+        if (obj instanceof ComponentFluidHandlerSimple) {
+        	ComponentFluidHandlerSimple tank = (ComponentFluidHandlerSimple) obj;
             return tank.getFluid().equals(getFluid()) && tank.getCapacity() == getCapacity();
         }
         return false;
@@ -155,8 +155,6 @@ public class ComponentFluidHandlerSimple extends PropertyFluidTank implements IC
 
     private void defineOptionals(Direction facing) {
 
-        holder.invalidateCaps();
-
         sidedOptionals = new IFluidHandler[6];
 
         inputOptional = null;
@@ -196,8 +194,8 @@ public class ComponentFluidHandlerSimple extends PropertyFluidTank implements IC
             }
         }
         if (validFluidTags != null) {
-            for (TagKey<Fluid> tag : validFluidTags) {
-                ForgeRegistries.FLUIDS.tags().getTag(tag).stream().forEach(holder -> {
+            for (INamedTag<Fluid> tag : validFluidTags) {
+            	TagCollectionManager.getInstance().getFluids().getTag(tag.getName()).getValues().forEach(holder -> {
                     validatorFluids.add(holder);
                 });
             }
@@ -228,12 +226,12 @@ public class ComponentFluidHandlerSimple extends PropertyFluidTank implements IC
         }
 
         @Override
-        public @NotNull FluidStack drain(FluidStack resource, FluidAction action) {
+        public FluidStack drain(FluidStack resource, FluidAction action) {
             return FluidStack.EMPTY;
         }
 
         @Override
-        public @NotNull FluidStack drain(int maxDrain, FluidAction action) {
+        public FluidStack drain(int maxDrain, FluidAction action) {
             return FluidStack.EMPTY;
         }
 

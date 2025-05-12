@@ -7,16 +7,16 @@ import com.mojang.serialization.JsonOps;
 import voltaic.Voltaic;
 import voltaic.api.radiation.util.RadiationShielding;
 import voltaic.common.reloadlistener.RadiationShieldingRegister;
+import net.minecraft.block.Block;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.data.DataProvider;
-import net.minecraft.data.HashCache;
-import net.minecraft.world.level.block.Block;
+import net.minecraft.data.DirectoryCache;
+import net.minecraft.data.IDataProvider;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.io.IOException;
 import java.nio.file.Path;
 
-public abstract class BaseRadiationShieldingProvider implements DataProvider {
+public abstract class BaseRadiationShieldingProvider implements IDataProvider {
 	
 	private static final Gson GSON = (new GsonBuilder()).setPrettyPrinting().disableHtmlEscaping().create();
 
@@ -31,14 +31,14 @@ public abstract class BaseRadiationShieldingProvider implements DataProvider {
     }
 
     @Override
-    public void run(HashCache cache) {
+    public void run(DirectoryCache cache) {
         JsonObject json = new JsonObject();
         getRadiationShielding(json);
 
         Path parent = dataGenerator.getOutputFolder().resolve(LOC + ".json");
 		try {
 
-			DataProvider.save(GSON, cache, json, parent);
+			IDataProvider.save(GSON, cache, json, parent);
 
 		} catch (IOException e) {
 			e.printStackTrace();

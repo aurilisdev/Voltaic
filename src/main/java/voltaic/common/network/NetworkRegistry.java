@@ -7,9 +7,9 @@ import java.util.UUID;
 
 import net.minecraftforge.event.TickEvent.Phase;
 import net.minecraftforge.event.TickEvent.ServerTickEvent;
-import net.minecraftforge.event.server.ServerStoppedEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
+import net.minecraftforge.fml.event.server.FMLServerStoppedEvent;
 import voltaic.Voltaic;
 import voltaic.api.network.ITickableNetwork;
 
@@ -51,7 +51,7 @@ public class NetworkRegistry {
 	}
 
 	@SubscribeEvent
-	public static void unloadServer(ServerStoppedEvent event) {
+	public static void unloadServer(FMLServerStoppedEvent event) {
 		try {
 			NETWORKS.clear();
 			TO_REMOVE.clear();

@@ -7,7 +7,7 @@ import java.util.function.Consumer;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nullable;
 
 import voltaic.api.electricity.ICapabilityElectrodynamic;
 import voltaic.api.item.IItemElectric;
@@ -21,13 +21,13 @@ import voltaic.prefab.tile.components.IComponentType;
 import voltaic.prefab.utilities.BlockEntityUtils;
 import voltaic.prefab.utilities.object.TransferPack;
 import voltaic.registers.VoltaicCapabilities;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.Explosion.BlockInteraction;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.Direction;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+import net.minecraft.world.Explosion.Mode;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 
@@ -111,8 +111,9 @@ public class ComponentElectrodynamic implements IComponent, ICapabilityElectrody
         return acceptsEnergy;
     }
 
+    // This is only if you need to force the internal joules count and is overriden in classes where you can do this
     @Override
-    @Deprecated(forRemoval = false, since = "This is only if you need to force the internal joules count and is overriden in classes where you can do this.")
+    @Deprecated
     public void setJoulesStored(double joules) {
         joules(joules);
     }
@@ -146,8 +147,6 @@ public class ComponentElectrodynamic implements IComponent, ICapabilityElectrody
     }
 
     private void defineOptionals(Direction facing) {
-
-    	holder.invalidateCaps();
 
         sidedOptionals = new ICapabilityElectrodynamic[6];
         
@@ -287,7 +286,8 @@ public class ComponentElectrodynamic implements IComponent, ICapabilityElectrody
         if (holder.hasComponent(IComponentType.Inventory)) {
             ComponentInventory inventory = holder.getComponent(IComponentType.Inventory);
             ItemStack stack = inventory.getItem(slot);
-            if (stack.getItem() instanceof IItemElectric electric) {
+            if (stack.getItem() instanceof IItemElectric) {
+            	IItemElectric electric = (IItemElectric) stack.getItem();
                 TransferPack pack = functionReceivePower.apply(electric.extractPower(stack, maxJoules.getValue() - joules.getValue(), false), false);
                 if (pack != TransferPack.EMPTY) {
                     onChange();
@@ -301,7 +301,8 @@ public class ComponentElectrodynamic implements IComponent, ICapabilityElectrody
         if (holder.hasComponent(IComponentType.Inventory)) {
             ComponentInventory inventory = holder.getComponent(IComponentType.Inventory);
             ItemStack stack = inventory.getItem(slot);
-            if (stack.getItem() instanceof IItemElectric electric) {
+            if (stack.getItem() instanceof IItemElectric) {
+            	IItemElectric electric = (IItemElectric) stack.getItem();
                 functionExtractPower.apply(electric.receivePower(stack, TransferPack.joulesVoltage(joules.getValue(), voltage.getValue()), false), false);
             }
         }
@@ -325,10 +326,10 @@ public class ComponentElectrodynamic implements IComponent, ICapabilityElectrody
 
     @Override
     public void overVoltage(TransferPack transfer) {
-        Level world = holder.getLevel();
+        World world = holder.getLevel();
         BlockPos pos = holder.getBlockPos();
         world.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
-        world.explode(null, pos.getX(), pos.getY(), pos.getZ(), (float) Math.log10(10 + transfer.getVoltage() / getVoltage()), BlockInteraction.BREAK);
+        world.explode(null, pos.getX(), pos.getY(), pos.getZ(), (float) Math.log10(10 + transfer.getVoltage() / getVoltage()), Mode.BREAK);
     }
 
     @Override

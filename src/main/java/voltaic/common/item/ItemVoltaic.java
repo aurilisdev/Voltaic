@@ -2,27 +2,27 @@ package voltaic.common.item;
 
 import java.util.function.Supplier;
 
-import net.minecraft.core.NonNullList;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
 
 public class ItemVoltaic extends Item {
 
-	private final Supplier<CreativeModeTab> creativeTab;
+	private final Supplier<ItemGroup> creativeTab;
 
-	public ItemVoltaic(Properties properties, Supplier<CreativeModeTab> creativeTab) {
+	public ItemVoltaic(Properties properties, Supplier<ItemGroup> creativeTab) {
 		super(properties);
 		this.creativeTab = creativeTab;
 	}
 
 	@Override
-	protected boolean allowdedIn(CreativeModeTab category) {
-		return creativeTab != null && category == creativeTab.get();
+	protected boolean allowdedIn(ItemGroup category) {
+		return creativeTab != null && (category == creativeTab.get() || category == ItemGroup.TAB_SEARCH);
 	}
 
 	@Override
-	public void fillItemCategory(CreativeModeTab category, NonNullList<ItemStack> items) {
+	public void fillItemCategory(ItemGroup category, NonNullList<ItemStack> items) {
 		if (this.allowdedIn(category)) {
 			items.add(new ItemStack(this));
 		}

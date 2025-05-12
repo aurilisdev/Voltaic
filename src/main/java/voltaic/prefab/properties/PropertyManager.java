@@ -3,11 +3,11 @@ package voltaic.prefab.properties;
 import java.util.ArrayList;
 import java.util.HashSet;
 
+import net.minecraft.nbt.CompoundNBT;
 import voltaic.Voltaic;
 import voltaic.prefab.properties.types.IPropertyType;
 import voltaic.prefab.properties.variant.AbstractProperty;
 import voltaic.prefab.tile.GenericTile;
-import net.minecraft.nbt.CompoundTag;
 
 /**
  * A wrapper class designed to manage data properties on a tile
@@ -44,13 +44,13 @@ public class PropertyManager {
 		return properties;
 	}
 
-	public void saveDirtyPropsToTag(CompoundTag tag) {
+	public void saveDirtyPropsToTag(CompoundNBT tag) {
 		for(AbstractProperty prop : dirtyPropertiesDirect){
 			prop.saveToTag(tag);
 		}
 	}
 
-	public void saveAllPropsForClientSync(CompoundTag tag) {
+	public void saveAllPropsForClientSync(CompoundNBT tag) {
 		for(AbstractProperty prop : properties){
 			if(prop.shouldUpdateClient()) {
 				prop.saveToTag(tag);
@@ -96,7 +96,7 @@ public class PropertyManager {
 		return owner;
 	}
 
-	public void saveToTag(CompoundTag tag) {
+	public void saveToTag(CompoundNBT tag) {
 		for (AbstractProperty prop : getProperties()) {
 			if (prop.shouldSave()) {
 				prop.saveToTag(tag);
@@ -104,7 +104,7 @@ public class PropertyManager {
 		}
 	}
 
-	public void loadFromTag(CompoundTag tag) {
+	public void loadFromTag(CompoundNBT tag) {
 		for (AbstractProperty prop : getProperties()) {
 			if (prop.shouldSave() && tag.contains(prop.getName())) {
 				prop.loadFromTag(tag);
@@ -114,7 +114,7 @@ public class PropertyManager {
 		}
 	}
 
-	public void loadDataFromClient(int index, CompoundTag data) {
+	public void loadDataFromClient(int index, CompoundNBT data) {
 		if(index >= properties.size()) {
 			Voltaic.LOGGER.error("The tile at " + owner.getBlockPos() + " has a differently sized property list than what was declared by the packet");
 			return;

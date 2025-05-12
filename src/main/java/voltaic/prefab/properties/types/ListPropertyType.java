@@ -1,9 +1,9 @@
 package voltaic.prefab.properties.types;
 
 import com.mojang.serialization.Codec;
-import io.netty.buffer.ByteBuf;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.NBTDynamicOps;
+import net.minecraft.network.PacketBuffer;
 import voltaic.api.codec.StreamCodec;
 
 import javax.annotation.Nonnull;
@@ -14,7 +14,7 @@ import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-public class ListPropertyType <TYPE, BUFFERTYPE extends ByteBuf> implements IPropertyType<List<TYPE>, BUFFERTYPE> {
+public class ListPropertyType <TYPE, BUFFERTYPE extends PacketBuffer> implements IPropertyType<List<TYPE>, BUFFERTYPE> {
 
     private final BiPredicate<TYPE, TYPE> singleComparison;
     private final BiPredicate<List<TYPE>, List<TYPE>> comparison;
@@ -48,7 +48,7 @@ public class ListPropertyType <TYPE, BUFFERTYPE extends ByteBuf> implements IPro
 
         };
 
-        packetCodec = new StreamCodec<>() {
+        packetCodec = new StreamCodec<BUFFERTYPE, List<TYPE>>() {
 
             @Override
             public List<TYPE> decode(BUFFERTYPE buffer) {
@@ -84,7 +84,7 @@ public class ListPropertyType <TYPE, BUFFERTYPE extends ByteBuf> implements IPro
 
         writeToNbt = writer -> {
 
-            CompoundTag tag = new CompoundTag();
+            CompoundNBT tag = new CompoundNBT();
 
             List<TYPE> list = writer.prop().getValue();
 
@@ -94,7 +94,7 @@ public class ListPropertyType <TYPE, BUFFERTYPE extends ByteBuf> implements IPro
 
                 final int index = i;
 
-                singleNbtCodec.encode(list.get(i), NbtOps.INSTANCE, NbtOps.INSTANCE.empty()).result().ifPresent(nbt -> tag.put("" + index, nbt));
+                singleNbtCodec.encode(list.get(i), NBTDynamicOps.INSTANCE, NBTDynamicOps.INSTANCE.empty()).result().ifPresent(nbt -> tag.put("" + index, nbt));
 
             }
 
@@ -104,7 +104,7 @@ public class ListPropertyType <TYPE, BUFFERTYPE extends ByteBuf> implements IPro
 
         readFromNbt = reader -> {
 
-            CompoundTag data = reader.tag().getCompound(reader.prop().getName());
+            CompoundNBT data = reader.tag().getCompound(reader.prop().getName());
 
             if(!data.contains("size")) {
                return reader.prop().getValue();
@@ -126,7 +126,7 @@ public class ListPropertyType <TYPE, BUFFERTYPE extends ByteBuf> implements IPro
 
                 final int index = i;
 
-                singleNbtCodec.decode(NbtOps.INSTANCE, data.get("" + i)).result().ifPresent(pair -> list.set(index, pair.getFirst()));
+                singleNbtCodec.decode(NBTDynamicOps.INSTANCE, data.get("" + i)).result().ifPresent(pair -> list.set(index, pair.getFirst()));
 
             }
 

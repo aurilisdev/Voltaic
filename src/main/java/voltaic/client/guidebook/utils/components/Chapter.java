@@ -9,7 +9,7 @@ import voltaic.client.guidebook.utils.pagedata.OnKeyPress;
 import voltaic.client.guidebook.utils.pagedata.OnTooltip;
 import voltaic.client.guidebook.utils.pagedata.graphics.AbstractGraphicWrapper;
 import voltaic.client.guidebook.utils.pagedata.text.TextWrapperObject;
-import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.util.text.IFormattableTextComponent;
 
 /**
  * A simple data-wrapping class that contains a logo, a name, and the content associated with it
@@ -40,7 +40,7 @@ public abstract class Chapter {
 
 	public abstract AbstractGraphicWrapper<?> getLogo();
 
-	public abstract MutableComponent getTitle();
+	public abstract IFormattableTextComponent getTitle();
 
 	protected void blankLine() {
 		pageData.add(TextWrapperObject.BLANK_LINE);

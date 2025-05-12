@@ -1,30 +1,29 @@
 package voltaic.prefab.screen;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.matrix.MatrixStack;
 
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.client.gui.screen.inventory.ContainerScreen;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
 import voltaic.prefab.utilities.RenderingUtils;
 
-public abstract class GenericCustomScreen<T extends AbstractContainerMenu> extends AbstractContainerScreen<T> {
-	protected GenericCustomScreen(T screenContainer, Inventory inv, Component titleIn) {
+public abstract class GenericCustomScreen<T extends Container> extends ContainerScreen<T> {
+	protected GenericCustomScreen(T screenContainer, PlayerInventory inv, ITextComponent titleIn) {
 		super(screenContainer, inv, titleIn);
 	}
 
 	@Override
-	public void render(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
+	public void render(MatrixStack poseStack, int mouseX, int mouseY, float partialTicks) {
 		this.renderBackground(poseStack);
 		super.render(poseStack, mouseX, mouseY, partialTicks);
 		renderTooltip(poseStack, mouseX, mouseY);
 	}
 
 	@Override
-	protected void renderBg(PoseStack poseStack, float partialTicks, int mouseX, int mouseY) {
-		RenderSystem.setShaderColor(1, 1, 1, 1);
+	protected void renderBg(MatrixStack poseStack, float partialTicks, int mouseX, int mouseY) {
+		RenderingUtils.resetShaderColor();;
 		RenderingUtils.bindTexture(getScreenBackground());
 		blit(poseStack, leftPos, topPos, 0, 0, imageWidth, imageHeight);
 	}

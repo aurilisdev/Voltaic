@@ -4,6 +4,8 @@ import java.util.List;
 
 import com.google.gson.JsonObject;
 
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 import voltaic.api.codec.StreamCodec;
 import voltaic.common.recipe.VoltaicRecipeSerializer;
 import voltaic.common.recipe.recipeutils.CountableIngredient;
@@ -11,8 +13,6 @@ import voltaic.common.recipe.recipeutils.FluidIngredient;
 import voltaic.common.recipe.recipeutils.ProbableFluid;
 import voltaic.common.recipe.recipeutils.ProbableItem;
 import voltaic.prefab.utilities.CodecUtils;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.ItemStack;
 
 public class FluidItem2ItemRecipeSerializer<T extends FluidItem2ItemRecipe> extends VoltaicRecipeSerializer<T> {
 	
@@ -49,7 +49,7 @@ public class FluidItem2ItemRecipeSerializer<T extends FluidItem2ItemRecipe> exte
 
     /*
     @Override
-    public T fromNetwork(FriendlyByteBuf buffer) {
+    public T fromNetwork(PacketBuffer buffer) {
         String group = buffer.readUtf();
         boolean hasItemBi = buffer.readBoolean();
         boolean hasFluidBi = buffer.readBoolean();
@@ -77,7 +77,7 @@ public class FluidItem2ItemRecipeSerializer<T extends FluidItem2ItemRecipe> exte
     }
 
     @Override
-    public void toNetwork(FriendlyByteBuf buffer, T recipe) {
+    public void toNetwork(PacketBuffer buffer, T recipe) {
         buffer.writeUtf(recipe.getGroup());
         buffer.writeBoolean(recipe.hasItemBiproducts());
         buffer.writeBoolean(recipe.hasFluidBiproducts());

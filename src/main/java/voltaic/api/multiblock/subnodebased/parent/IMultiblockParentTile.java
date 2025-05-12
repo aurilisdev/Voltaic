@@ -1,22 +1,20 @@
 package voltaic.api.multiblock.subnodebased.parent;
 
-import org.jetbrains.annotations.NotNull;
-
-import voltaic.api.multiblock.subnodebased.Subnode;
 import voltaic.api.multiblock.subnodebased.child.IMultiblockChildBlock;
+import voltaic.api.multiblock.subnodebased.Subnode;
 import voltaic.api.multiblock.subnodebased.TileMultiSubnode;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.ActionResultType;
+import net.minecraft.util.Direction;
+import net.minecraft.util.Hand;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import voltaic.registers.VoltaicBlocks;
@@ -33,7 +31,7 @@ public interface IMultiblockParentTile {
      *
      */
 
-    default void onNodeReplaced(Level world, BlockPos pos, boolean update) {
+    default void onNodeReplaced(World world, BlockPos pos, boolean update) {
 
         Subnode[] subnodes = getSubNodes().getSubnodes(getFacingDirection());
 
@@ -73,7 +71,7 @@ public interface IMultiblockParentTile {
 
     }
 
-    default void onNodePlaced(Level world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
+    default void onNodePlaced(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
         onNodeReplaced(world, pos, true);
     }
 
@@ -83,8 +81,8 @@ public interface IMultiblockParentTile {
 
     }
 
-    default InteractionResult onSubnodeUse(Player player, InteractionHand hand, BlockHitResult hit, TileMultiSubnode subnode) {
-		return InteractionResult.FAIL;
+    default ActionResultType onSubnodeUse(PlayerEntity player, Hand hand, BlockRayTraceResult hit, TileMultiSubnode subnode) {
+		return ActionResultType.FAIL;
 	}
 
     default void onSubnodePlace(TileMultiSubnode subnode, BlockState oldSubnodeState, boolean isSubnodeMoving) {
@@ -107,7 +105,7 @@ public interface IMultiblockParentTile {
         return 0;
     }
 
-    default public <T> @NotNull LazyOptional<T> getSubnodeCapability(@NotNull Capability<T> cap, Direction side) {
+    default public <T> LazyOptional<T> getSubnodeCapability(Capability<T> cap, Direction side) {
 		return LazyOptional.empty();
 	}
 

@@ -2,8 +2,8 @@ package voltaic.datagen.server;
 
 import com.google.gson.JsonObject;
 
+import net.minecraft.block.Blocks;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.world.level.block.Blocks;
 import voltaic.Voltaic;
 import voltaic.datagen.utils.server.radiation.BaseRadiationShieldingProvider;
 

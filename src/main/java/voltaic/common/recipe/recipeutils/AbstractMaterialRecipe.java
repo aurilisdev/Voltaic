@@ -4,8 +4,8 @@ import java.util.Collections;
 import java.util.List;
 
 import voltaic.common.recipe.VoltaicRecipe;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.items.wrapper.RecipeWrapper;
 

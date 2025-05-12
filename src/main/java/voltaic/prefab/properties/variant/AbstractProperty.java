@@ -1,6 +1,6 @@
 package voltaic.prefab.properties.variant;
 
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.CompoundNBT;
 import voltaic.Voltaic;
 import voltaic.common.packet.NetworkHandler;
 import voltaic.common.packet.types.server.PacketSendUpdatePropertiesServer;
@@ -94,7 +94,7 @@ public abstract class AbstractProperty<T, PROPERTYTYPE extends IPropertyType> {
         this.manager = manager;
     }
 
-    public void saveToTag(CompoundTag tag) {
+    public void saveToTag(CompoundNBT tag) {
         try {
             getType().writeToTag(new IPropertyType.TagWriter<>(this, tag));
         } catch (Exception e) {
@@ -102,7 +102,7 @@ public abstract class AbstractProperty<T, PROPERTYTYPE extends IPropertyType> {
         }
     }
 
-    public void loadFromTag(CompoundTag tag) {
+    public void loadFromTag(CompoundNBT tag) {
         try {
             T data = (T) getType().readFromTag(new IPropertyType.TagReader(this, tag));
             if (data != null) {
@@ -123,10 +123,12 @@ public abstract class AbstractProperty<T, PROPERTYTYPE extends IPropertyType> {
 
     /**
      * Documentation note: This merely forces the value of the property and does not indicate that it is dirty!
+     * 
+     * Be careful when you use this!
      *
      * @param newVal
      */
-    @Deprecated(since = "Be careful when you use this!")
+    @Deprecated
     public void overwriteValue(T newVal) {
         value = newVal;
     }
@@ -143,13 +145,15 @@ public abstract class AbstractProperty<T, PROPERTYTYPE extends IPropertyType> {
      * This method should be used only as a last resort
      * <p>
      * If it is a single object (FluidStack for example), then do NOT used this method
+     * 
+     * This should be used when working with arrays
      */
-    @Deprecated(since = "This should be used when working with arrays")
+    @Deprecated
     public void forceDirtyForManager() {
         if (!manager.getOwner().getLevel().isClientSide()) {
             manager.setDirty(this);
         } else {
-            CompoundTag data = new CompoundTag();
+            CompoundNBT data = new CompoundNBT();
             saveToTag(data);
             NetworkHandler.CHANNEL.sendToServer(new PacketSendUpdatePropertiesServer(data, index(), manager.getOwner().getBlockPos()));
         }
@@ -160,7 +164,7 @@ public abstract class AbstractProperty<T, PROPERTYTYPE extends IPropertyType> {
     }
 
     public void updateServer() {
-        CompoundTag data = new CompoundTag();
+        CompoundNBT data = new CompoundNBT();
         saveToTag(data);
         NetworkHandler.CHANNEL.sendToServer(new PacketSendUpdatePropertiesServer(data, index(), manager.getOwner().getBlockPos()));
     }

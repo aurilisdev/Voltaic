@@ -1,14 +1,14 @@
 package voltaic.common.event;
 
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.level.Level;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.world.World;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
-import net.minecraftforge.event.server.ServerStartedEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
+import net.minecraftforge.fml.event.server.FMLServerStartedEvent;
 import voltaic.Voltaic;
 import voltaic.api.radiation.CapabilityRadiationRecipient;
 import voltaic.api.radiation.RadiationManager;
@@ -30,7 +30,7 @@ public class ServerEventHandler {
 	}
 
 	@SubscribeEvent
-	public static void serverStartedHandler(ServerStartedEvent event) {
+	public static void serverStartedHandler(FMLServerStartedEvent event) {
 		RadioactiveItemRegister.INSTANCE.generateTagValues();
 		RadioactiveFluidRegister.INSTANCE.generateTagValues();
 		RadiationShieldingRegister.INSTANCE.generateTagValues();
@@ -44,14 +44,14 @@ public class ServerEventHandler {
 	@SubscribeEvent
 	public static void registerEntityCaps(AttachCapabilitiesEvent<Entity> event) {
 		Entity entity = event.getObject();
-		if(entity instanceof LivingEntity living && entity.getCapability(VoltaicCapabilities.CAPABILITY_RADIATIONRECIPIENT).orElse(CapabilityUtils.EMPTY_RADIATION_REPIPIENT) == CapabilityUtils.EMPTY_RADIATION_REPIPIENT) {
+		if(entity instanceof LivingEntity && entity.getCapability(VoltaicCapabilities.CAPABILITY_RADIATIONRECIPIENT).orElse(CapabilityUtils.EMPTY_RADIATION_REPIPIENT) == CapabilityUtils.EMPTY_RADIATION_REPIPIENT) {
 			event.addCapability(Voltaic.rl("radiationrecipient"), new CapabilityRadiationRecipient());
 		}
 	}
 	
 	@SubscribeEvent
-	public static void registerLevelCaps(AttachCapabilitiesEvent<Level> event) {
-		Level world = event.getObject();
+	public static void registerLevelCaps(AttachCapabilitiesEvent<World> event) {
+		World world = event.getObject();
 		if(world != null && world.getCapability(VoltaicCapabilities.CAPABILITY_RADIATIONMANAGER).orElse(CapabilityUtils.EMPTY_MANAGER) == CapabilityUtils.EMPTY_MANAGER) {
 			event.addCapability(Voltaic.rl("radiationmanager"), new RadiationManager());
 		}

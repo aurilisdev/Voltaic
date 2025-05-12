@@ -3,46 +3,47 @@ package voltaic.common.item.gear;
 import java.util.List;
 import java.util.function.Supplier;
 
+import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.container.INamedContainerProvider;
+import net.minecraft.inventory.container.SimpleNamedContainerProvider;
+import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
+import net.minecraft.util.Util;
+import net.minecraft.util.text.IFormattableTextComponent;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.util.text.event.ClickEvent;
+import net.minecraft.world.World;
 import voltaic.common.inventory.container.ContainerGuidebook;
 import voltaic.common.item.ItemVoltaic;
 import voltaic.prefab.utilities.VoltaicTextUtils;
-import net.minecraft.ChatFormatting;
-import net.minecraft.Util;
-import net.minecraft.network.chat.ClickEvent;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.MenuProvider;
-import net.minecraft.world.SimpleMenuProvider;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.Level;
 
 public class ItemGuidebook extends ItemVoltaic {
 
 	private static final String LINK = "https://wiki.aurilis.dev";
-	private static final Component CONTAINER_TITLE = new TranslatableComponent("container.guidebook");
+	private static final IFormattableTextComponent CONTAINER_TITLE = new TranslationTextComponent("container.guidebook");
 
-	public ItemGuidebook(Properties properties, Supplier<CreativeModeTab> creativeTab) {
+	public ItemGuidebook(Properties properties, Supplier<ItemGroup> creativeTab) {
 		super(properties, creativeTab);
 	}
 
 	@Override
-	public void appendHoverText(ItemStack stack, Level context, List<Component> tooltips, TooltipFlag flag) {
-		tooltips.add(VoltaicTextUtils.tooltip("info.guidebookuse").withStyle(ChatFormatting.LIGHT_PURPLE));
-		tooltips.add(VoltaicTextUtils.tooltip("guidebookname").withStyle(ChatFormatting.LIGHT_PURPLE));
+	public void appendHoverText(ItemStack stack, World context, List<ITextComponent> tooltips, ITooltipFlag flag) {
+		tooltips.add(VoltaicTextUtils.tooltip("info.guidebookuse").withStyle(TextFormatting.LIGHT_PURPLE));
+		tooltips.add(VoltaicTextUtils.tooltip("guidebookname").withStyle(TextFormatting.LIGHT_PURPLE));
 		super.appendHoverText(stack, context, tooltips, flag);
 	}
 
 	@Override
-	public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand handIn) {
+	public ActionResult<ItemStack> use(World world, PlayerEntity player, Hand handIn) {
 		if (world.isClientSide) {
 			if (player.isShiftKeyDown()) {
-				player.sendMessage(VoltaicTextUtils.chatMessage("guidebookclick").withStyle(ChatFormatting.BOLD, ChatFormatting.RED).withStyle(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, LINK))), Util.NIL_UUID);
-				return InteractionResultHolder.pass(player.getItemInHand(handIn));
+				player.sendMessage(VoltaicTextUtils.chatMessage("guidebookclick").withStyle(TextFormatting.BOLD, TextFormatting.RED).withStyle(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, LINK))), Util.NIL_UUID);
+				return ActionResult.pass(player.getItemInHand(handIn));
 			}
 		} else if(!player.isShiftKeyDown()) {
 			player.openMenu(getMenuProvider(world, player));
@@ -50,8 +51,8 @@ public class ItemGuidebook extends ItemVoltaic {
 		return super.use(world, player, handIn);
 	}
 
-	public MenuProvider getMenuProvider(Level world, Player player) {
-		return new SimpleMenuProvider((id, inv, play) -> new ContainerGuidebook(id, player.getInventory()), CONTAINER_TITLE);
+	public INamedContainerProvider getMenuProvider(World world, PlayerEntity player) {
+		return new SimpleNamedContainerProvider((id, inv, play) -> new ContainerGuidebook(id, player.inventory), CONTAINER_TITLE);
 	}
 
 }

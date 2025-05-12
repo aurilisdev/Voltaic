@@ -9,8 +9,8 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonDeserializationContext;
@@ -22,23 +22,23 @@ import voltaic.client.model.block.ModelStateRotation;
 import voltaic.client.model.block.modelproperties.ModelPropertyConnections;
 import voltaic.common.block.connect.EnumConnectType;
 import voltaic.prefab.tile.types.IConnectTile;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.renderer.block.model.BlockModel;
-import net.minecraft.client.renderer.block.model.ItemOverrides;
+import net.minecraft.block.BlockState;
+import net.minecraft.client.renderer.model.BakedQuad;
+import net.minecraft.client.renderer.model.BlockModel;
+import net.minecraft.client.renderer.model.IBakedModel;
+import net.minecraft.client.renderer.model.IModelTransform;
+import net.minecraft.client.renderer.model.IUnbakedModel;
+import net.minecraft.client.renderer.model.ItemOverrideList;
+import net.minecraft.client.renderer.model.ModelBakery;
+import net.minecraft.client.renderer.model.RenderMaterial;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.client.resources.model.Material;
-import net.minecraft.client.resources.model.ModelBakery;
-import net.minecraft.client.resources.model.ModelState;
-import net.minecraft.client.resources.model.UnbakedModel;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.util.GsonHelper;
-import net.minecraft.world.level.BlockAndTintGetter;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.resources.IResourceManager;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Direction;
+import net.minecraft.util.JSONUtils;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockDisplayReader;
 import net.minecraftforge.client.model.IModelConfiguration;
 import net.minecraftforge.client.model.IModelLoader;
 import net.minecraftforge.client.model.data.IDynamicBakedModel;
@@ -53,16 +53,16 @@ public class CableModelLoader implements IModelLoader<CableModelLoader.WirePartG
     public static final CableModelLoader INSTANCE = new CableModelLoader();
 
     @Override
-    public WirePartGeometry read(JsonDeserializationContext context, JsonObject json) throws JsonParseException {
+    public WirePartGeometry read(JsonDeserializationContext owner, JsonObject json) throws JsonParseException {
 
-        BlockModel none = context.deserialize(GsonHelper.getAsJsonObject(json, EnumConnectType.NONE.toString()), BlockModel.class);
-        BlockModel wire = context.deserialize(GsonHelper.getAsJsonObject(json, EnumConnectType.WIRE.toString()), BlockModel.class);
-        BlockModel inventory = context.deserialize(GsonHelper.getAsJsonObject(json, EnumConnectType.INVENTORY.toString()), BlockModel.class);
+        BlockModel none = owner.deserialize(JSONUtils.getAsJsonObject(json, EnumConnectType.NONE.toString()), BlockModel.class);
+        BlockModel wire = owner.deserialize(JSONUtils.getAsJsonObject(json, EnumConnectType.WIRE.toString()), BlockModel.class);
+        BlockModel inventory = owner.deserialize(JSONUtils.getAsJsonObject(json, EnumConnectType.INVENTORY.toString()), BlockModel.class);
         return new WirePartGeometry(none, wire, inventory);
     }
     
     @Override
-    public void onResourceManagerReload(ResourceManager pResourceManager) {
+    public void onResourceManagerReload(IResourceManager pResourceManager) {
 
     }
 
@@ -80,29 +80,29 @@ public class CableModelLoader implements IModelLoader<CableModelLoader.WirePartG
         }
 
         @Override
-        public BakedModel bake(IModelConfiguration context, ModelBakery bakery, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, ItemOverrides overrides, ResourceLocation modelLocation) {
-            boolean useBlockLight = context.useSmoothLighting();
+        public IBakedModel bake(IModelConfiguration owner, ModelBakery bakery, Function<RenderMaterial, TextureAtlasSprite> spriteGetter, IModelTransform modelTransform, ItemOverrideList overrides, ResourceLocation modelLocation) {
+            boolean useBlockLight = owner.useSmoothLighting();
 
-            BakedModel none = this.none.bake(bakery, this.none, spriteGetter, modelState, modelLocation, useBlockLight);
+            IBakedModel none = this.none.bake(bakery, this.none, spriteGetter, modelTransform, modelLocation, useBlockLight);
 
-            BakedModel[] wires = new BakedModel[6];
-            BakedModel[] inventories = new BakedModel[6];
+            IBakedModel[] wires = new IBakedModel[6];
+            IBakedModel[] inventories = new IBakedModel[6];
 
             for (Direction dir : Direction.values()) {
 
-                ModelState transform = ModelStateRotation.ROTATIONS.get(dir);
+                IModelTransform transform = ModelStateRotation.ROTATIONS.get(dir);
 
                 wires[dir.ordinal()] = this.wire.bake(bakery, this.wire, spriteGetter, transform, modelLocation, useBlockLight);
                 inventories[dir.ordinal()] = this.inventory.bake(bakery, this.inventory, spriteGetter, transform, modelLocation, useBlockLight);
 
             }
 
-            return new CableModel(context.useSmoothLighting(), context.isShadedInGui(), useBlockLight, spriteGetter.apply(this.none.getMaterial("particle")), none, wires, inventories);
+            return new CableModel(owner.useSmoothLighting(), owner.isShadedInGui(), useBlockLight, spriteGetter.apply(this.none.getMaterial("particle")), none, wires, inventories);
         }
         
         @Override
-        public Collection<Material> getTextures(IModelConfiguration owner, Function<ResourceLocation, UnbakedModel> modelGetter, Set<Pair<String, String>> missingTextureErrors) {
-        	Set<Material> set = new HashSet<>();
+        public Collection<RenderMaterial> getTextures(IModelConfiguration owner, Function<ResourceLocation, IUnbakedModel> modelGetter, Set<Pair<String, String>> missingTextureErrors) {
+        	Set<RenderMaterial> set = new HashSet<>();
         	set.addAll(none.getMaterials(modelGetter, missingTextureErrors));
         	set.addAll(wire.getMaterials(modelGetter, missingTextureErrors));
         	set.addAll(inventory.getMaterials(modelGetter, missingTextureErrors));
@@ -120,11 +120,11 @@ public class CableModelLoader implements IModelLoader<CableModelLoader.WirePartG
         private final boolean isSideLit;
         private final TextureAtlasSprite particle;
         // render type for general model defined by this one
-        private final BakedModel none;
-        private final BakedModel[] wires;
-        private final BakedModel[] inventories;
+        private final IBakedModel none;
+        private final IBakedModel[] wires;
+        private final IBakedModel[] inventories;
 
-        public CableModel(boolean isAmbientOcclusion, boolean isGui3d, boolean isSideLit, TextureAtlasSprite particle, BakedModel none, BakedModel[] wires, BakedModel[] inventories) {
+        public CableModel(boolean isAmbientOcclusion, boolean isGui3d, boolean isSideLit, TextureAtlasSprite particle, IBakedModel none, IBakedModel[] wires, IBakedModel[] inventories) {
             this.isAmbientOcclusion = isAmbientOcclusion;
             this.isGui3d = isGui3d;
             this.isSideLit = isSideLit;
@@ -160,12 +160,12 @@ public class CableModelLoader implements IModelLoader<CableModelLoader.WirePartG
         }
 
         @Override
-        public ItemOverrides getOverrides() {
-            return ItemOverrides.EMPTY;
+        public ItemOverrideList getOverrides() {
+        	return ItemOverrideList.EMPTY;
         }
 
         @Override
-        public @NotNull List<BakedQuad> getQuads(BlockState state, Direction side, Random rand, IModelData extraData) {
+        public @Nonnull List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @Nonnull Random rand, @Nonnull IModelData extraData) {
             @Nullable Supplier<EnumConnectType[]> m = extraData.getData(ModelPropertyConnections.INSTANCE);
             if (m == null) {
                 return NO_QUADS;
@@ -204,11 +204,12 @@ public class CableModelLoader implements IModelLoader<CableModelLoader.WirePartG
         }
 
         @Override
-        public @NotNull IModelData getModelData(@NotNull BlockAndTintGetter level, @NotNull BlockPos pos, @NotNull BlockState state, @NotNull IModelData modelData) {
-            if (level.getBlockEntity(pos) instanceof IConnectTile tile) {
-                return new ModelDataMap.Builder().withInitial(ModelPropertyConnections.INSTANCE, () -> tile.readConnections()).build();
+        public @Nonnull IModelData getModelData(@Nonnull IBlockDisplayReader world, @Nonnull BlockPos pos, @Nonnull BlockState state, @Nonnull IModelData tileData) {
+        	TileEntity blockentity = world.getBlockEntity(pos);
+            if (blockentity instanceof IConnectTile) {
+                return new ModelDataMap.Builder().withInitial(ModelPropertyConnections.INSTANCE, () -> ((IConnectTile) blockentity).readConnections()).build();
             }
-            return modelData;
+            return tileData;
         }
 
     }

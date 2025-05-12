@@ -12,7 +12,7 @@ import voltaic.client.guidebook.utils.components.Page.TextWrapper;
 import voltaic.client.guidebook.utils.pagedata.graphics.AbstractGraphicWrapper;
 import voltaic.client.guidebook.utils.pagedata.graphics.AbstractGraphicWrapper.GraphicTextDescriptor;
 import mezz.jei.api.gui.handlers.IGuiContainerHandler;
-import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.client.renderer.Rectangle2d;
 
 public class ScreenHandlerGuidebook implements IGuiContainerHandler<ScreenGuidebook> {
 
@@ -45,37 +45,37 @@ public class ScreenHandlerGuidebook implements IGuiContainerHandler<ScreenGuideb
 
 		for (TextWrapper text : page.keyPressText) {
 
-			textWidth = screen.getFontRenderer().width(text.characters());
+			textWidth = screen.getFontRenderer().width(text.characters);
 
-			if (text.centered()) {
+			if (text.centered) {
 				xShift = (ScreenGuidebook.TEXT_WIDTH - textWidth) / 2;
 
 			}
 
-			x = refX + xShift + xPageShift + text.x();
-			y = refY + text.y();
+			x = refX + xShift + xPageShift + text.x;
+			y = refY + text.y;
 
 			if (screen.isPointInRegionText(x, y, xAxis, yAxis, textWidth, ScreenGuidebook.LINE_HEIGHT)) {
-				return text.onKeyPress().getJeiLookup();
+				return text.onKeyPress.getJeiLookup();
 			}
 
 		}
 
 		for (GraphicWrapper wrapper : page.keyPressGraphics) {
 
-			AbstractGraphicWrapper<?> image = wrapper.graphic();
+			AbstractGraphicWrapper<?> image = wrapper.graphic;
 
-			x = guiWidth + wrapper.x() + image.lookupXOffset + xPageShift;
-			y = guiHeight + wrapper.y() + image.lookupYOffset - image.descriptorTopOffset;
+			x = guiWidth + wrapper.x + image.lookupXOffset + xPageShift;
+			y = guiHeight + wrapper.y + image.lookupYOffset - image.descriptorTopOffset;
 
 			if (screen.isPointInRegionGraphic(mouseX, mouseY, x, y, image.width, image.height)) {
-				return wrapper.onKeyPress().getJeiLookup();
+				return wrapper.onKeyPress.getJeiLookup();
 			}
 
 			for (GraphicTextDescriptor descriptor : image.descriptors) {
 
-				x = refX + wrapper.x() + descriptor.xOffsetFromImage + xPageShift;
-				y = refY + wrapper.y() + descriptor.yOffsetFromImage;
+				x = refX + wrapper.x + descriptor.xOffsetFromImage + xPageShift;
+				y = refY + wrapper.y + descriptor.yOffsetFromImage;
 
 				if (descriptor.onKeyPress != null && screen.isPointInRegionText(x, y, xAxis, yAxis, screen.getFontRenderer().width(descriptor.text), ScreenGuidebook.LINE_HEIGHT)) {
 					return descriptor.onKeyPress.getJeiLookup();
@@ -88,9 +88,9 @@ public class ScreenHandlerGuidebook implements IGuiContainerHandler<ScreenGuideb
 	}
 
 	@Override
-	public List<Rect2i> getGuiExtraAreas(ScreenGuidebook screen) {
+	public List<Rectangle2d> getGuiExtraAreas(ScreenGuidebook screen) {
 
-		Rect2i area = new Rect2i(screen.getGuiLeft() + ScreenGuidebook.LEFT_X_SHIFT, screen.getGuiTop(), ScreenGuidebook.OLD_TEXTURE_WIDTH + ScreenGuidebook.RIGHT_TEXTURE_WIDTH, ScreenGuidebook.LEFT_TEXTURE_HEIGHT);
+		Rectangle2d area = new Rectangle2d(screen.getGuiLeft() + ScreenGuidebook.LEFT_X_SHIFT, screen.getGuiTop(), ScreenGuidebook.OLD_TEXTURE_WIDTH + ScreenGuidebook.RIGHT_TEXTURE_WIDTH, ScreenGuidebook.LEFT_TEXTURE_HEIGHT);
 
 		return Arrays.asList(area);
 	}

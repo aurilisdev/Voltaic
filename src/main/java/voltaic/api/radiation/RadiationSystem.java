@@ -6,9 +6,9 @@ import voltaic.api.radiation.util.IRadiationManager;
 import voltaic.api.radiation.util.IRadiationRecipient;
 import voltaic.prefab.utilities.CapabilityUtils;
 import voltaic.registers.VoltaicCapabilities;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.level.Level;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import net.minecraftforge.event.TickEvent.Phase;
 import net.minecraftforge.event.TickEvent.PlayerTickEvent;
 import net.minecraftforge.event.TickEvent.WorldTickEvent;
@@ -30,7 +30,7 @@ public class RadiationSystem {
 			return;
 		}
 
-		Level level = event.world;
+		World level = event.world;
 
 		if(level.isClientSide()) {
 			return;
@@ -61,7 +61,7 @@ public class RadiationSystem {
 
 	}
 
-	public static void addRadiationSource(Level world, SimpleRadiationSource source) {
+	public static void addRadiationSource(World world, SimpleRadiationSource source) {
 		if(source == null) {
 			throw new UnsupportedOperationException("source cannot be null");
 		}
@@ -74,7 +74,7 @@ public class RadiationSystem {
 
 	}
 
-	public static void removeRadiationSource(Level world, BlockPos pos, boolean shouldLinger) {
+	public static void removeRadiationSource(World world, BlockPos pos, boolean shouldLinger) {
 		if(pos == null) {
 			throw new UnsupportedOperationException("position cannot be null");
 		}
@@ -86,7 +86,7 @@ public class RadiationSystem {
 		manager.removeRadiationSource(pos, shouldLinger, world);
 	}
 
-	public static List<BlockPos> getRadiationSources(Level world) {
+	public static List<BlockPos> getRadiationSources(World world) {
 		IRadiationManager manager = world.getCapability(VoltaicCapabilities.CAPABILITY_RADIATIONMANAGER).orElse(CapabilityUtils.EMPTY_MANAGER);
 		
 		if(manager == CapabilityUtils.EMPTY_MANAGER) {
@@ -99,7 +99,7 @@ public class RadiationSystem {
 		return new ArrayList<>(sources);
 	}
 
-	public static void addDisipation(Level world, double amount, BlockPosVolume volume) {
+	public static void addDisipation(World world, double amount, BlockPosVolume volume) {
 		IRadiationManager manager = world.getCapability(VoltaicCapabilities.CAPABILITY_RADIATIONMANAGER).orElse(CapabilityUtils.EMPTY_MANAGER);
 		
 		if(manager == CapabilityUtils.EMPTY_MANAGER) {
@@ -108,7 +108,7 @@ public class RadiationSystem {
 		manager.setLocalizedDisipation(amount, volume, world);
 	}
 
-	public static void removeDisipation(Level world, BlockPosVolume volume) {
+	public static void removeDisipation(World world, BlockPosVolume volume) {
 		IRadiationManager manager = world.getCapability(VoltaicCapabilities.CAPABILITY_RADIATIONMANAGER).orElse(CapabilityUtils.EMPTY_MANAGER);
 		
 		if(manager == CapabilityUtils.EMPTY_MANAGER) {
@@ -117,7 +117,7 @@ public class RadiationSystem {
 		manager.removeLocalizedDisipation(volume, world);
 	}
 
-	public static void wipeAllSources(Level world) {
+	public static void wipeAllSources(World world) {
 		IRadiationManager manager = world.getCapability(VoltaicCapabilities.CAPABILITY_RADIATIONMANAGER).orElse(CapabilityUtils.EMPTY_MANAGER);
 		
 		if(manager == CapabilityUtils.EMPTY_MANAGER) {
@@ -130,7 +130,7 @@ public class RadiationSystem {
 	/*
 	public static ThreadLocal<HashMap<Player, Double>> radiationMap = ThreadLocal.withInitial(HashMap::new);
 
-	private static double getRadiationModifier(Level world, Location source, Location end) {
+	private static double getRadiationModifier(World world, Location source, Location end) {
 		double distance = 1 + source.distance(end);
 		Location clone = new Location(end);
 		double modifier = 1;
@@ -154,7 +154,7 @@ public class RadiationSystem {
 		return modifier;
 	}
 
-	public static double getRadiation(Level world, Location source, Location end, double strength) {
+	public static double getRadiation(World world, Location source, Location end, double strength) {
 		double distance = 1 + source.distance(end);
 		return strength / (getRadiationModifier(world, source, end) * distance * distance);
 	}
@@ -163,17 +163,17 @@ public class RadiationSystem {
 		int protection = 1;
 		boolean isPlayer = entity instanceof Player;
 		if (isPlayer) {
-			Player player = (Player) entity;
+			PlayerEntity player = (Player) entity;
 			if (!player.isCreative()) {
-				for (int i = 0; i < player.getInventory().armor.size(); i++) {
-					ItemStack next = player.getInventory().armor.get(i);
+				for (int i = 0; i < player.inventory.armor.size(); i++) {
+					ItemStack next = player.inventory.armor.get(i);
 					if (next.getItem() instanceof ItemHazmatArmor) {
 						protection++;
 						float damage = (float) (strength * 2.15f) / 2169.9975f;
 						if (Math.random() < damage) {
 							int integerDamage = Math.round(damage);
 							if (next.getDamageValue() > next.getMaxDamage() || next.hurthurt(integerDamage, entity.level().random, player instanceof ServerPlayer s ? s : null)) {
-								player.getInventory().armor.set(i, ItemStack.EMPTY);
+								player.inventory.armor.set(i, ItemStack.EMPTY);
 							}
 						}
 					}
@@ -182,12 +182,12 @@ public class RadiationSystem {
 		}
 		Location end = new Location(entity.position().add(0, entity.getEyeHeight() / 2.0, 0));
 		double radiation = 0;
-		if (entity instanceof Player pl && (pl.getItemBySlot(EquipmentSlot.MAINHAND).getItem() instanceof ItemGeigerCounter || pl.getItemBySlot(EquipmentSlot.OFFHAND).getItem() instanceof ItemGeigerCounter)) {
+		if (entity instanceof PlayerEntity pl && (pl.getItemBySlot(EquipmentSlot.MAINHAND).getItem() instanceof ItemGeigerCounter || pl.getItemBySlot(EquipmentSlot.OFFHAND).getItem() instanceof ItemGeigerCounter)) {
 			double already = radiationMap.get().containsKey(entity) ? radiationMap.get().get(entity) : 0;
 			radiation = getRadiation(entity.level(), source, end, strength);
 			radiationMap.get().put((Player) entity, already + radiation);
 		}
-		if (!(entity instanceof Player pl && pl.isCreative()) && protection < 5 && radiationMap.get().getOrDefault(entity, 11.0) > 4) {
+		if (!(entity instanceof PlayerEntity pl && pl.isCreative()) && protection < 5 && radiationMap.get().getOrDefault(entity, 11.0) > 4) {
 			if (radiation == 0) {
 				radiation = getRadiation(entity.level(), source, end, strength);
 			}
@@ -202,8 +202,8 @@ public class RadiationSystem {
 		}
 	}
 
-	public static void emitRadiationFromLocation(Level level, Location source, double radius, double strength) {
-		AABB bb = AABB.ofSize(new Vec3(source.x(), source.y(), source.z()), radius * 2, radius * 2, radius * 2);
+	public static void emitRadiationFromLocation(World level, Location source, double radius, double strength) {
+		AxisAlignedBB bb = AxisAlignedBB.ofSize(new Vector3d(source.x(), source.y(), source.z()), radius * 2, radius * 2, radius * 2);
 		List<LivingEntity> list = level.getEntitiesOfClass(LivingEntity.class, bb);
 		for (LivingEntity living : list) {
 			RadiationSystem.applyRadiation(living, source, strength);

@@ -25,7 +25,7 @@ public class ComponentPacketHandler implements IComponent {
 
     /*
     public void sendProperties() {
-        Level world = holder.getLevel();
+        World world = holder.getLevel();
 
         if (world == null || world.isClientSide || !holder.getPropertyManager().isDirty() || holder.getPropertyManager().getClientUpdateProperties().isEmpty()) {
             return;
@@ -33,7 +33,7 @@ public class ComponentPacketHandler implements IComponent {
 
         BlockPos pos = holder.getBlockPos();
 
-        if (world instanceof ServerLevel level) {
+        if (world instanceof ServerWorld level) {
             List<ServerPlayer> players = level.getChunkSource().chunkMap.getPlayers(new ChunkPos(pos), false);
 
             if (players.isEmpty()) {

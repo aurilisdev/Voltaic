@@ -1,8 +1,8 @@
 package voltaic.api.item;
 
+import net.minecraft.item.ItemStack;
 import voltaic.prefab.item.TemperateItemProperties;
 import voltaic.prefab.utilities.NBTUtils;
-import net.minecraft.world.item.ItemStack;
 
 public interface IItemTemperate {
 

@@ -1,8 +1,8 @@
 package voltaic.api.network.cable;
 
+import net.minecraft.tileentity.TileEntity;
 import voltaic.prefab.network.AbstractNetwork;
 import voltaic.prefab.tile.types.GenericRefreshingConnectTile;
-import net.minecraft.world.level.block.entity.BlockEntity;
 
 public interface IAbstractCable<CONDUCTORTYPE, T extends AbstractNetwork<? extends GenericRefreshingConnectTile<?, ?, ?>, ?, ?, ?>> {
 
@@ -14,9 +14,9 @@ public interface IAbstractCable<CONDUCTORTYPE, T extends AbstractNetwork<? exten
 
 	void setNetwork(T aValueNetwork);
 
-	BlockEntity[] getConectedRecievers();
+	TileEntity[] getConectedRecievers();
 
-	BlockEntity[] getConnectedCables();
+	TileEntity[] getConnectedCables();
 
 	CONDUCTORTYPE getCableType();
 

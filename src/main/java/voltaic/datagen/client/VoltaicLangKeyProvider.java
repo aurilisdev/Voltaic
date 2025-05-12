@@ -4,7 +4,7 @@ import voltaic.Voltaic;
 import voltaic.datagen.utils.client.BaseLangKeyProvider;
 import voltaic.registers.*;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.world.level.Level;
+import net.minecraft.world.World;
 
 public class VoltaicLangKeyProvider extends BaseLangKeyProvider {
 
@@ -203,9 +203,9 @@ public class VoltaicLangKeyProvider extends BaseLangKeyProvider {
                 addSubtitle(VoltaicSounds.SOUND_BATTERY_SWAP, "Battery is swapped");
                 addSubtitle(VoltaicSounds.SOUND_PRESSURERELEASE, "Gas hisses");
 
-                addDimension(Level.OVERWORLD, "The Overworld");
-                addDimension(Level.NETHER, "The Nether");
-                addDimension(Level.END, "The End");
+                addDimension(World.OVERWORLD, "The Overworld");
+                addDimension(World.NETHER, "The Nether");
+                addDimension(World.END, "The End");
 
                 addAdvancement("multimeter.title", "Multimetering");
                 addAdvancement("multimeter.desc", "Make a Multimeter!");

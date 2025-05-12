@@ -1,20 +1,23 @@
 package voltaic.prefab.utilities;
 
-import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.block.Block;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.minecraft.world.level.block.Block;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.World;
 
 public class ItemUtils {
 
@@ -37,7 +40,7 @@ public class ItemUtils {
 	 */
 	@Nullable
 	public static Ingredient getIngredientFromTag(String location, String tag) {
-		return Ingredient.of(ItemTags.create(new ResourceLocation(location, tag)));
+		return Ingredient.of(ItemTags.createOptional(new ResourceLocation(location, tag)));
 	}
 
 	public static Item fromBlock(Block block) {
@@ -52,17 +55,20 @@ public class ItemUtils {
 		}
 		return false;
 	}
-	
+
 	public static void removeEnchantment(ItemStack item, Enchantment enchantment) {
-		ListTag listtag = item.getOrCreateTag().getList("Enchantments", 10);
-		Iterator<Tag> iterator = listtag.iterator();
-		CompoundTag itTag;
-		while(iterator.hasNext()) {
-			itTag = (CompoundTag) iterator.next();
-			if(itTag.contains("id") && new ResourceLocation(itTag.getString("id")).equals(EnchantmentHelper.getEnchantmentId(enchantment))) {
-				iterator.remove();
-			}
-		}
+		item.removeTagKey("Enchantments");
+		item.removeTagKey("StoredEnchantments");
+
+		Map<Enchantment, Integer> map = EnchantmentHelper.getEnchantments(item).entrySet().stream().filter((p_217012_0_) -> {
+			return p_217012_0_.getKey().isCurse();
+		}).collect(Collectors.toMap(Entry::getKey, Entry::getValue));
+		EnchantmentHelper.setEnchantments(map, item);
+	}
+
+	public static ActionResult<ItemStack> startUsingInstantly(World pLevel, PlayerEntity pPlayer, Hand pHand) {
+		pPlayer.startUsingItem(pHand);
+		return ActionResult.consume(pPlayer.getItemInHand(pHand));
 	}
 
 }

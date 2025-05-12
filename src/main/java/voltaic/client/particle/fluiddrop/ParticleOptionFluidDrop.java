@@ -7,12 +7,12 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import voltaic.api.codec.StreamCodec;
 import voltaic.registers.VoltaicParticles;
-import net.minecraft.core.particles.ParticleOptions;
-import net.minecraft.core.particles.ParticleType;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.PacketBuffer;
+import net.minecraft.particles.IParticleData;
+import net.minecraft.particles.ParticleType;
 import net.minecraftforge.registries.ForgeRegistries;
 
-public class ParticleOptionFluidDrop extends ParticleType<ParticleOptionFluidDrop> implements ParticleOptions {
+public class ParticleOptionFluidDrop extends ParticleType<ParticleOptionFluidDrop> implements IParticleData {
 
     public static final Codec<ParticleOptionFluidDrop> CODEC = RecordCodecBuilder.create(instance ->
             instance.group(
@@ -22,10 +22,10 @@ public class ParticleOptionFluidDrop extends ParticleType<ParticleOptionFluidDro
                     Codec.FLOAT.fieldOf("scale").forGetter(instance0 -> instance0.scale)
             ).apply(instance, (r, g, b, scale) -> new ParticleOptionFluidDrop().setParameters(r, g, b, scale)));
 
-    public static final StreamCodec<FriendlyByteBuf, ParticleOptionFluidDrop> STREAM_CODEC = new StreamCodec<FriendlyByteBuf, ParticleOptionFluidDrop>() {
+    public static final StreamCodec<PacketBuffer, ParticleOptionFluidDrop> STREAM_CODEC = new StreamCodec<PacketBuffer, ParticleOptionFluidDrop>() {
 		
 		@Override
-		public void encode(FriendlyByteBuf buffer, ParticleOptionFluidDrop value) {
+		public void encode(PacketBuffer buffer, ParticleOptionFluidDrop value) {
 			buffer.writeFloat(value.r);
 			buffer.writeFloat(value.g);
 			buffer.writeFloat(value.b);
@@ -33,12 +33,12 @@ public class ParticleOptionFluidDrop extends ParticleType<ParticleOptionFluidDro
 		}
 		
 		@Override
-		public ParticleOptionFluidDrop decode(FriendlyByteBuf buffer) {
+		public ParticleOptionFluidDrop decode(PacketBuffer buffer) {
 			return new ParticleOptionFluidDrop().setParameters(buffer.readFloat(), buffer.readFloat(), buffer.readFloat(), buffer.readFloat());
 		}
 	};
 	
-	public static final ParticleOptions.Deserializer<ParticleOptionFluidDrop> DESERIALIZER = new ParticleOptions.Deserializer<ParticleOptionFluidDrop>() {
+	public static final IParticleData.IDeserializer<ParticleOptionFluidDrop> DESERIALIZER = new IParticleData.IDeserializer<ParticleOptionFluidDrop>() {
 
 		@Override
 		public ParticleOptionFluidDrop fromCommand(ParticleType<ParticleOptionFluidDrop> pParticleType, StringReader reader) throws CommandSyntaxException {
@@ -60,7 +60,7 @@ public class ParticleOptionFluidDrop extends ParticleType<ParticleOptionFluidDro
 		}
 
 		@Override
-		public ParticleOptionFluidDrop fromNetwork(ParticleType<ParticleOptionFluidDrop> pParticleType, FriendlyByteBuf pBuffer) {
+		public ParticleOptionFluidDrop fromNetwork(ParticleType<ParticleOptionFluidDrop> pParticleType, PacketBuffer pBuffer) {
 			return STREAM_CODEC.decode(pBuffer);
 		}
 	};
@@ -90,7 +90,7 @@ public class ParticleOptionFluidDrop extends ParticleType<ParticleOptionFluidDro
     }
 
 	@Override
-	public void writeToNetwork(FriendlyByteBuf pBuffer) {
+	public void writeToNetwork(PacketBuffer pBuffer) {
 		STREAM_CODEC.encode(pBuffer, this);
 	}
 

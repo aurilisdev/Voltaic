@@ -5,7 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.function.Function;
 
-import net.minecraftforge.registries.RegistryObject;
+import net.minecraftforge.fml.RegistryObject;
+import net.minecraftforge.registries.IForgeRegistryEntry;
 
 /**
  * A wrapper class intended to house much of the functionality of the Subtype HashMaps
@@ -15,7 +16,7 @@ import net.minecraftforge.registries.RegistryObject;
  *
  * @Author skip999
  */
-public class BulkRegistryObject<A, SUBTYPE> {
+public class BulkRegistryObject<A extends IForgeRegistryEntry<? super A>, SUBTYPE> {
 
     private final HashMap<SUBTYPE, RegistryObject<A>> subtypeMap = new HashMap<>();
     private final List<A> extractedValues = new ArrayList<>();
@@ -68,7 +69,7 @@ public class BulkRegistryObject<A, SUBTYPE> {
     }
 
     public List<RegistryObject<A>> getAllHolders() {
-        return subtypeMap.values().stream().toList();
+        return new ArrayList<>(subtypeMap.values());
     }
 
     public boolean containsValue(SUBTYPE key){

@@ -4,47 +4,49 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.core.Vec3i;
-import net.minecraft.network.protocol.game.ClientboundLevelChunkWithLightPacket;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.Mth;
-import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelReader;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.EntityBlock;
-import net.minecraft.world.level.block.Fallable;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.chunk.LevelChunk;
-import net.minecraft.world.level.chunk.LevelChunkSection;
-import net.minecraft.world.level.lighting.LevelLightEngine;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.FallingBlock;
+import net.minecraft.entity.item.ExperienceOrbEntity;
+import net.minecraft.network.play.server.SUpdateLightPacket;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Direction;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.math.vector.Vector3i;
+import net.minecraft.world.World;
+import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.chunk.ChunkSection;
+import net.minecraft.world.lighting.WorldLightManager;
+import net.minecraft.world.server.ServerWorld;
+import net.minecraftforge.fluids.IFluidBlock;
+import voltaic.prefab.utilities.math.MathUtils;
 
 public class WorldUtils {
 
 	public static final double CHUNK_WIDTH = 16;
 
-	public static List<LevelChunk> getChunksForRadius(LevelReader world, BlockPos pos, int xRadius, int zRadius) {
+	public static List<Chunk> getChunksForRadius(World world, BlockPos pos, int xRadius, int zRadius) {
 
 		// sanity check
 		xRadius = Math.abs(xRadius);
 		zRadius = Math.abs(zRadius);
 
-		List<LevelChunk> chunks = new ArrayList<>(getChunksForQuadrant(world, pos, xRadius, zRadius, 1, 1));
-		for (LevelChunk chunk : getChunksForQuadrant(world, pos, xRadius, zRadius, -1, 1)) {
+		List<Chunk> chunks = new ArrayList<>(getChunksForQuadrant(world, pos, xRadius, zRadius, 1, 1));
+		for (Chunk chunk : getChunksForQuadrant(world, pos, xRadius, zRadius, -1, 1)) {
 			if (!chunks.contains(chunk)) {
 				chunks.add(chunk);
 			}
 		}
-		for (LevelChunk chunk : getChunksForQuadrant(world, pos, xRadius, zRadius, -1, -1)) {
+		for (Chunk chunk : getChunksForQuadrant(world, pos, xRadius, zRadius, -1, -1)) {
 			if (!chunks.contains(chunk)) {
 				chunks.add(chunk);
 			}
 		}
-		for (LevelChunk chunk : getChunksForQuadrant(world, pos, xRadius, zRadius, 1, -1)) {
+		for (Chunk chunk : getChunksForQuadrant(world, pos, xRadius, zRadius, 1, -1)) {
 			if (!chunks.contains(chunk)) {
 				chunks.add(chunk);
 			}
@@ -52,9 +54,9 @@ public class WorldUtils {
 		return chunks;
 	}
 
-	private static List<LevelChunk> getChunksForQuadrant(LevelReader world, BlockPos pos, int xRadius, int zRadius, int xSign, int zSign) {
+	private static List<Chunk> getChunksForQuadrant(World world, BlockPos pos, int xRadius, int zRadius, int xSign, int zSign) {
 
-		List<LevelChunk> quadrant = new ArrayList<>();
+		List<Chunk> quadrant = new ArrayList<>();
 
 		int posX = pos.getX();
 		int posZ = pos.getZ();
@@ -65,7 +67,7 @@ public class WorldUtils {
 
 		for (int i = 0; i <= chunkRadiusX; i++) {
 			for (int j = 0; j <= chunkRadiusZ; j++) {
-				quadrant.add((LevelChunk) world.getChunk(new BlockPos(posX, posY, posZ)));
+				quadrant.add((Chunk) world.getChunk(new BlockPos(posX, posY, posZ)));
 				posZ += zSign * CHUNK_WIDTH;
 			}
 			posZ = pos.getZ();
@@ -75,14 +77,14 @@ public class WorldUtils {
 		return quadrant;
 	}
 
-	public static BlockPos getClosestBlockToCenter(LevelReader world, BlockPos startPos, int maxRadius, Block... caseBlocks) {
+	public static BlockPos getClosestBlockToCenter(World world, BlockPos startPos, int maxRadius, Block... caseBlocks) {
 		for (int radius = 1; radius <= maxRadius; radius++) {
 			int iMin = -radius;
 			int iMax = radius;
 			int jMax = radius;
 			int jMin = -radius;
 			for (Direction dir : Direction.values()) {
-				Vec3i orientation = dir.getNormal();
+				Vector3i orientation = dir.getNormal();
 				for (int i = iMin; i < iMax; i++) {
 					for (int j = jMin; j < jMax; j++) {
 						int x = 0, y = 0, z = 0;
@@ -119,13 +121,13 @@ public class WorldUtils {
 		return false;
 	}
 
-	public static ArrayList<BlockEntity> getNearbyTiles(LevelReader level, BlockPos pos, int radius) {
-		ArrayList<BlockEntity> list = new ArrayList<>();
+	public static ArrayList<TileEntity> getNearbyTiles(World level, BlockPos pos, int radius) {
+		ArrayList<TileEntity> list = new ArrayList<>();
 		for (int i = -radius; i <= radius; i++) {
 			for (int j = -radius; j <= radius; j++) {
 				for (int k = -radius; k <= radius; k++) {
 					BlockPos offset = pos.offset(i, j, k);
-					BlockEntity entity = level.getBlockEntity(offset);
+					TileEntity entity = level.getBlockEntity(offset);
 					if (entity != null) {
 						list.add(entity);
 					}
@@ -135,30 +137,30 @@ public class WorldUtils {
 		return list;
 	}
 
-	private static HashMap<ChunkPos, LevelChunk> chunkCache = new HashMap<>();
+	private static HashMap<ChunkPos, Chunk> chunkCache = new HashMap<>();
 
 	public static void clearChunkCache() {
-		for (LevelChunk chunk : chunkCache.values()) {
-			ServerLevel level = (ServerLevel) chunk.getLevel();
+		for (Chunk chunk : chunkCache.values()) {
+			ServerWorld level = (ServerWorld) chunk.getLevel();
 			chunk.setUnsaved(true);
-			LevelLightEngine lightManager = level.getLightEngine();
+			WorldLightManager lightManager = level.getLightEngine();
 			lightManager.enableLightSources(chunk.getPos(), false);
 
-			ClientboundLevelChunkWithLightPacket packet = new ClientboundLevelChunkWithLightPacket(chunk, lightManager, null, null, false);
+			SUpdateLightPacket packet = new SUpdateLightPacket(chunk.getPos(), lightManager, false);
 			level.getChunkSource().chunkMap.getPlayers(chunk.getPos(), false).forEach(e -> e.connection.send(packet));
 			level.getChunkSource().updateChunkForced(chunk.getPos(), true);
 		}
 		chunkCache.clear();
 	}
 
-	public static void fastRemoveBlockExplosion(ServerLevel level, BlockPos pos) {
+	public static void fastRemoveBlockExplosion(ServerWorld level, BlockPos pos) {
 		if (!level.isOutsideBuildHeight(pos)) {
-			LevelChunk chunk = getChunk(level, pos);
-			LevelChunkSection storage = getBlockStorage(pos);
+			Chunk chunk = getChunk(level, pos);
+			ChunkSection storage = getBlockStorage(pos);
 			BlockState oldState = chunk.getBlockState(pos);
 			Block block = oldState.getBlock();
 			if (oldState != Blocks.AIR.defaultBlockState() && oldState != Blocks.VOID_AIR.defaultBlockState() && oldState.getDestroySpeed(level, pos) >= 0) {
-				if (block instanceof EntityBlock || block instanceof Fallable) {
+				if (oldState.hasTileEntity() || block instanceof FallingBlock || block instanceof IFluidBlock) {
 					level.removeBlock(pos, false);
 					level.getLightEngine().checkBlock(pos);
 					return;
@@ -171,12 +173,18 @@ public class WorldUtils {
 		}
 	}
 
-	private static LevelChunkSection getBlockStorage(BlockPos pos) {
-		LevelChunk chunk = getChunk(null, pos);
-		return chunk.getSection(chunk.getSectionIndex(pos.getY()));
+	private static ChunkSection getBlockStorage(BlockPos pos) {
+		Chunk chunk = getChunk(null, pos);
+		for (ChunkSection section : chunk.getSections()) {
+			if (section == null || section.bottomBlockY() > pos.getY()) {
+				continue;
+			}
+			return section;
+		}
+		return chunk.getSections()[0]; // Should work TM ?
 	}
 
-	private static LevelChunk getChunk(ServerLevel level, BlockPos pos) {
+	private static Chunk getChunk(ServerWorld level, BlockPos pos) {
 		ChunkPos cp = new ChunkPos(pos);
 		if (!chunkCache.containsKey(cp)) {
 			chunkCache.put(cp, level.getChunk(pos.getX() >> 4, pos.getZ() >> 4));
@@ -185,7 +193,7 @@ public class WorldUtils {
 	}
 
 	public static double distanceBetweenPositions(BlockPos a, BlockPos b) {
-		return Mth.sqrt(Mth.square(a.getX() - b.getX()) + Mth.square(a.getY() - b.getY()) + Mth.square(a.getZ() - b.getZ()));
+		return Math.sqrt(Math.pow(a.getX() - b.getX(), 2) + Math.pow(a.getY() - b.getY(), 2) + Math.pow(a.getZ() - b.getZ(), 2));
 	}
 
 	public static Direction getDirectionFromPosDelta(BlockPos from, BlockPos to) {
@@ -193,10 +201,65 @@ public class WorldUtils {
 		return BlockEntityUtils.fromDelta(delta.getX(), delta.getY(), delta.getZ());
 	}
 
-	public static boolean shouldUpdateFromRedstoneChange(Level world, BlockPos ourPos, BlockPos neighborPos) {
+	public static boolean shouldUpdateFromRedstoneChange(World world, BlockPos ourPos, BlockPos neighborPos) {
 		int bestSignal = world.getBestNeighborSignal(ourPos);
 		int neighborSignal = world.getSignal(neighborPos, getDirectionFromPosDelta(ourPos, neighborPos));
 
 		return bestSignal == neighborSignal;
 	}
+	
+	public static void award(ServerWorld world, Vector3d pos, int amt) {
+		while (amt > 0) {
+			int i = getExperienceValue(amt);
+			amt -= i;
+			if (!tryMergeToExisting(world, pos, i)) {
+				world.addFreshEntity(new ExperienceOrbEntity(world, pos.x(), pos.y(), pos.z(), i));
+			}
+		}
+
+	}
+
+	private static boolean tryMergeToExisting(ServerWorld world, Vector3d pos, int amt) {
+		AxisAlignedBB aabb = MathUtils.ofSize(pos, 1.0D, 1.0D, 1.0D);
+		int i = world.getRandom().nextInt(40);
+
+		List<ExperienceOrbEntity> list = world.getEntitiesOfClass(ExperienceOrbEntity.class, aabb, entity -> canMerge(entity, i, amt));
+		if (!list.isEmpty()) {
+			ExperienceOrbEntity experienceorb = list.get(0);
+			++experienceorb.value;
+			experienceorb.age = 0;
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	private static boolean canMerge(ExperienceOrbEntity orb, int random, int amt) {
+		return !orb.removed && (orb.getId() - random) % 40 == 0 && orb.value == amt;
+	}
+
+	public static int getExperienceValue(int pExpValue) {
+		if (pExpValue >= 2477) {
+			return 2477;
+		} else if (pExpValue >= 1237) {
+			return 1237;
+		} else if (pExpValue >= 617) {
+			return 617;
+		} else if (pExpValue >= 307) {
+			return 307;
+		} else if (pExpValue >= 149) {
+			return 149;
+		} else if (pExpValue >= 73) {
+			return 73;
+		} else if (pExpValue >= 37) {
+			return 37;
+		} else if (pExpValue >= 17) {
+			return 17;
+		} else if (pExpValue >= 7) {
+			return 7;
+		} else {
+			return pExpValue >= 3 ? 3 : 1;
+		}
+	}
+	
 }

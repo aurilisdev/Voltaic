@@ -4,97 +4,115 @@ import java.util.Random;
 
 import javax.annotation.Nonnull;
 
+import org.lwjgl.opengl.GL11;
+
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Matrix4f;
-import com.mojang.math.Quaternion;
-import com.mojang.math.Vector3f;
+import com.mojang.blaze3d.vertex.IVertexBuilder;
 
 import voltaic.Voltaic;
 import voltaic.common.block.states.VoltaicBlockStates;
 import voltaic.prefab.utilities.math.Color;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.MultiBufferSource.BufferSource;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
-import net.minecraft.client.renderer.block.model.ItemTransforms.TransformType;
+import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.ItemRenderer;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.model.IBakedModel;
+import net.minecraft.client.renderer.model.ItemCameraTransforms;
+import net.minecraft.client.renderer.model.ItemCameraTransforms.TransformType;
+import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureManager;
-import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.inventory.InventoryMenu;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.AABB;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Direction;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.vector.Matrix3f;
+import net.minecraft.util.math.vector.Matrix4f;
+import net.minecraft.util.math.vector.Quaternion;
+import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.FluidStack;
 
 public class RenderingUtils {
 
-    public static final boolean[] ALL_FACES = {true, true, true, true, true, true}; //DUNSWE
+	public static final boolean[] ALL_FACES = { true, true, true, true, true, true }; // DUNSWE
 
-    public static void renderStar(PoseStack stack, MultiBufferSource bufferIn, float time, int starFrags, float r, float g, float b, float a, boolean star) {
-    	stack.pushPose();
+	public static void renderStar(float time, int starFrags, float r, float g, float b, float a, boolean star) {
+		GlStateManager._pushMatrix();
+		Tessellator tessellator = Tessellator.getInstance();
+		BufferBuilder bufferBuilder = tessellator.getBuilder();
+		GlStateManager._disableTexture();
+		GlStateManager._shadeModel(GL11.GL_SMOOTH);
+		GlStateManager._enableBlend();
+		if (star) {
+			GlStateManager._blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
+		} else {
+			GlStateManager._blendFunc(GL11.GL_DST_COLOR, GL11.GL_ONE_MINUS_DST_COLOR);
+		}
+		GlStateManager._disableAlphaTest();
+		GlStateManager._enableCull();
+		GlStateManager._enableDepthTest();
+		GlStateManager._pushMatrix();
 		try {
-			float f5 = time / 200.0F;
-			Random random = new Random(432L);
-			VertexConsumer vertexconsumer2 = bufferIn.getBuffer(RenderType.lightning());
-			stack.pushPose();
-			stack.translate(0.0D, -1.0D, 0.0D);
-
-			for (int i = 0; i < starFrags; ++i) {
-				stack.mulPose(Vector3f.XP.rotationDegrees(random.nextFloat() * 360.0F));
-				stack.mulPose(Vector3f.YP.rotationDegrees(random.nextFloat() * 360.0F));
-				stack.mulPose(Vector3f.ZP.rotationDegrees(random.nextFloat() * 360.0F));
-				stack.mulPose(Vector3f.XP.rotationDegrees(random.nextFloat() * 360.0F));
-				stack.mulPose(Vector3f.YP.rotationDegrees(random.nextFloat() * 360.0F));
-				stack.mulPose(Vector3f.ZP.rotationDegrees(random.nextFloat() * 360.0F + f5 * 90.0F));
-				float f3 = random.nextFloat() * 20.0F + 1.0F;
-				float f4 = random.nextFloat() * 2.0F + 1.0F + (star ? 0 : 100);
-				Matrix4f matrix4f = stack.last().pose();
-				vertexconsumer2.vertex(matrix4f, 0.0F, 0.0F, 0.0F).color((int) (255 * r), (int) (255 * g), (int) (255 * b), (int) (255 * a)).endVertex();
-				vertexconsumer2.vertex(matrix4f, -0.866f * f4, f3, -0.5F * f4).color((int) (255 * r), (int) (255 * g), (int) (255 * b), (int) (255 * a)).endVertex();
-				vertexconsumer2.vertex(matrix4f, -0.866f * f4, f3, -0.5F * f4).color((int) (255 * r), (int) (255 * g), (int) (255 * b), (int) (255 * a)).endVertex();
-				vertexconsumer2.vertex(matrix4f, 0.0F, 0.0F, 0.0F).color((int) (255 * r), (int) (255 * g), (int) (255 * b), (int) (255 * a)).endVertex();
-				vertexconsumer2.vertex(matrix4f, -0.866f * f4, f3, -0.5F * f4).color((int) (255 * r), (int) (255 * g), (int) (255 * b), (int) (255 * a)).endVertex();
-				vertexconsumer2.vertex(matrix4f, 0.0F, f3, 1.0F * f4).color((int) (255 * r), (int) (255 * g), (int) (255 * b), (int) (255 * a)).endVertex();
-				vertexconsumer2.vertex(matrix4f, 0.0F, 0.0F, 0.0F).color((int) (255 * r), (int) (255 * g), (int) (255 * b), (int) (255 * a)).endVertex();
-				vertexconsumer2.vertex(matrix4f, -0.866f * f4, f3, -0.5F * f4).color((int) (255 * r), (int) (255 * g), (int) (255 * b), (int) (255 * a)).endVertex();
+			float par2 = time * 3 % 180;
+			float var41 = (5.0F + par2) / 200.0F;
+			float var51 = 0.0F;
+			if (var41 > 0.8F) {
+				var51 = (var41 - 0.8F) / 0.2F;
 			}
-
-			stack.popPose();
-			if (bufferIn instanceof BufferSource source) {
-				source.endBatch(RenderType.lightning());
+			Random rand = new Random(432L);
+			for (int i1 = 0; i1 < starFrags; i1++) {
+				GL11.glRotatef(rand.nextFloat() * 360.0F, 1.0F, 0.0F, 0.0F);
+				GL11.glRotatef(rand.nextFloat() * 360.0F, 0.0F, 1.0F, 0.0F);
+				GL11.glRotatef(rand.nextFloat() * 360.0F, 0.0F, 0.0F, 1.0F);
+				GL11.glRotatef(rand.nextFloat() * 360.0F, 1.0F, 0.0F, 0.0F);
+				GL11.glRotatef(rand.nextFloat() * 360.0F, 0.0F, 1.0F, 0.0F);
+				GL11.glRotatef(rand.nextFloat() * 360.0F + var41 * 90.0F, 0.0F, 0.0F, 1.0F);
+				final float f2 = rand.nextFloat() * 20 + 5 + var51 * 10;
+				final float f3 = rand.nextFloat() * 2 + 1 + var51 * 2 + (star ? 0 : 10);
+				bufferBuilder.begin(6, DefaultVertexFormats.POSITION_COLOR);
+				bufferBuilder.vertex(0, 0, 0).color((int) (r * 255), (int) (g * 255), (int) (b * 255), (int) (a * 255)).endVertex();
+				bufferBuilder.vertex(-0.866 * f3, f2, -0.5 * f3).color((int) (r * 255), (int) (g * 255), (int) (b * 255), (int) (a * 255)).endVertex();
+				bufferBuilder.vertex(0.866 * f3, f2, -0.5 * f3).color((int) (r * 255), (int) (g * 255), (int) (b * 255), (int) (a * 255)).endVertex();
+				bufferBuilder.vertex(0, f2, 1 * f3).color((int) (r * 255), (int) (g * 255), (int) (b * 255), (int) (a * 255)).endVertex();
+				bufferBuilder.vertex(-0.866 * f3, f2, -0.5 * f3).color((int) (r * 255), (int) (g * 255), (int) (b * 255), (int) (a * 255)).endVertex();
+				tessellator.end();
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		stack.popPose();
-    }
+		GlStateManager._popMatrix();
+		GlStateManager._disableDepthTest();
+		GlStateManager._disableBlend();
+		GlStateManager._shadeModel(GL11.GL_FLAT);
+		GlStateManager._color4f(1, 1, 1, 1);
+		GlStateManager._enableTexture();
+		GlStateManager._enableAlphaTest();
+		GlStateManager._popMatrix();
+	}
 
-    public static void renderModel(BakedModel model, BlockEntity tile, RenderType type, PoseStack stack, MultiBufferSource buffer, int combinedLightIn, int combinedOverlayIn) {
-        Minecraft.getInstance().getItemRenderer().render(new ItemStack(type == RenderType.translucent() ? Items.BLACK_STAINED_GLASS : Blocks.STONE), TransformType.NONE, false, stack, buffer, combinedLightIn, combinedOverlayIn, model);
-    }
+	public static void renderModel(IBakedModel model, TileEntity tile, RenderType type, MatrixStack stack, IRenderTypeBuffer buffer, int combinedLightIn, int combinedOverlayIn) {
+		Minecraft.getInstance().getItemRenderer().render(new ItemStack(type == RenderType.translucent() ? Items.BLACK_STAINED_GLASS : Blocks.STONE), TransformType.NONE, false, stack, buffer, combinedLightIn, combinedOverlayIn, model);
+	}
 
-    public static void prepareRotationalTileModel(BlockEntity tile, PoseStack stack) {
-        BlockState state = tile.getBlockState();
-        stack.translate(0.5, 7.0 / 16.0, 0.5);
-        if (state.hasProperty(VoltaicBlockStates.FACING)) {
-        	Direction facing = state.getValue(VoltaicBlockStates.FACING);
+	public static void prepareRotationalTileModel(TileEntity tile, MatrixStack stack) {
+		BlockState state = tile.getBlockState();
+		stack.translate(0.5, 7.0 / 16.0, 0.5);
+		if (state.hasProperty(VoltaicBlockStates.FACING)) {
+			Direction facing = state.getValue(VoltaicBlockStates.FACING);
 			if (facing == Direction.NORTH) {
 				stack.mulPose(new Quaternion(0, 90, 0, true));
 			} else if (facing == Direction.SOUTH) {
@@ -102,209 +120,198 @@ public class RenderingUtils {
 			} else if (facing == Direction.WEST) {
 				stack.mulPose(new Quaternion(0, 180, 0, true));
 			}
-        }
-    }
+		}
+	}
 
-    public static void renderSolidColorBox(PoseStack stack, Minecraft minecraft, VertexConsumer builder, AABB box, float r, float g, float b, float a, int light, int overlay, @Nonnull boolean[] renderedFaces) {
-        TextureAtlasSprite sp = minecraft.getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(Voltaic.vanillarl("block/white_wool"));
-        renderFilledBox(stack, builder, box, r, g, b, a, sp.getU0(), sp.getV0(), sp.getU1(), sp.getV1(), light, overlay, renderedFaces);
-    }
+	public static void renderSolidColorBox(MatrixStack stack, Minecraft minecraft, IVertexBuilder builder, AxisAlignedBB box, float r, float g, float b, float a, int light, int overlay, @Nonnull boolean[] renderedFaces) {
+		TextureAtlasSprite sp = minecraft.getTextureAtlas(AtlasTexture.LOCATION_BLOCKS).apply(Voltaic.vanillarl("block/white_wool"));
+		renderFilledBox(stack, builder, box, r, g, b, a, sp.getU0(), sp.getV0(), sp.getU1(), sp.getV1(), light, overlay, renderedFaces);
+	}
 
-    public static void renderFluidBox(PoseStack stack, Minecraft minecraft, VertexConsumer builder, AABB box, FluidStack fluidStack, int light, int overlay, @Nonnull boolean[] renderedFaces) {
-    	FluidAttributes attributes = fluidStack.getFluid().getAttributes();
+	public static void renderFluidBox(MatrixStack stack, Minecraft minecraft, IVertexBuilder builder, AxisAlignedBB box, FluidStack fluidStack, int light, int overlay, @Nonnull boolean[] renderedFaces) {
+		FluidAttributes attributes = fluidStack.getFluid().getAttributes();
 
-		TextureAtlasSprite sp = minecraft.getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(attributes.getStillTexture());
+		TextureAtlasSprite sp = minecraft.getTextureAtlas(AtlasTexture.LOCATION_BLOCKS).apply(attributes.getStillTexture());
 		Color color = new Color(attributes.getColor(fluidStack));
-        renderFilledBox(stack, builder, box, color.rFloat(), color.gFloat(), color.bFloat(), color.aFloat(), sp.getU0(), sp.getV0(), sp.getU1(), sp.getV1(), light, overlay, renderedFaces);
-    }
+		renderFilledBox(stack, builder, box, color.rFloat(), color.gFloat(), color.bFloat(), color.aFloat(), sp.getU0(), sp.getV0(), sp.getU1(), sp.getV1(), light, overlay, renderedFaces);
+	}
 
-    public static void renderFilledBox(PoseStack stack, VertexConsumer builder, AABB box, float r, float g, float b, float a, float uMin, float vMin, float uMax, float vMax, int light, int overlay, @Nonnull boolean[] renderedFaces) {
-        Matrix4f matrix4f = stack.last().pose();
-        PoseStack.Pose pose = stack.last();
+	public static void renderFilledBox(MatrixStack stack, IVertexBuilder builder, AxisAlignedBB box, float r, float g, float b, float a, float uMin, float vMin, float uMax, float vMax, int light, int overlay, @Nonnull boolean[] renderedFaces) {
+		Matrix4f matrix4f = stack.last().pose();
+		Matrix3f matrix3f = stack.last().normal();
 
-        float minX = (float) box.minX;
-        float minY = (float) box.minY;
-        float minZ = (float) box.minZ;
-        float maxX = (float) box.maxX;
-        float maxY = (float) box.maxY;
-        float maxZ = (float) box.maxZ;
+		float minX = (float) box.minX;
+		float minY = (float) box.minY;
+		float minZ = (float) box.minZ;
+		float maxX = (float) box.maxX;
+		float maxY = (float) box.maxY;
+		float maxZ = (float) box.maxZ;
 
-        //Down
-        if (renderedFaces[0]) {
-            builder.vertex(matrix4f, minX, minY, minZ).color(r, g, b, a).uv(uMin, vMin).overlayCoords(overlay).uv2(light).normal(pose.normal(), 0, -1, 0).endVertex();
-            builder.vertex(matrix4f, maxX, minY, minZ).color(r, g, b, a).uv(uMax, vMin).overlayCoords(overlay).uv2(light).normal(pose.normal(), 0, -1, 0).endVertex();
-            builder.vertex(matrix4f, maxX, minY, maxZ).color(r, g, b, a).uv(uMax, vMax).overlayCoords(overlay).uv2(light).normal(pose.normal(), 0, -1, 0).endVertex();
-            builder.vertex(matrix4f, minX, minY, maxZ).color(r, g, b, a).uv(uMin, vMax).overlayCoords(overlay).uv2(light).normal(pose.normal(), 0, -1, 0).endVertex();
-        }
+		// Down
+		if (renderedFaces[0]) {
+			builder.vertex(matrix4f, minX, minY, minZ).color(r, g, b, a).uv(uMin, vMin).overlayCoords(overlay).uv2(light).normal(matrix3f, 0, -1, 0).endVertex();
+			builder.vertex(matrix4f, maxX, minY, minZ).color(r, g, b, a).uv(uMax, vMin).overlayCoords(overlay).uv2(light).normal(matrix3f, 0, -1, 0).endVertex();
+			builder.vertex(matrix4f, maxX, minY, maxZ).color(r, g, b, a).uv(uMax, vMax).overlayCoords(overlay).uv2(light).normal(matrix3f, 0, -1, 0).endVertex();
+			builder.vertex(matrix4f, minX, minY, maxZ).color(r, g, b, a).uv(uMin, vMax).overlayCoords(overlay).uv2(light).normal(matrix3f, 0, -1, 0).endVertex();
+		}
 
+		// Up
+		if (renderedFaces[1]) {
+			builder.vertex(matrix4f, maxX, maxY, minZ).color(r, g, b, a).uv(uMin, vMin).overlayCoords(overlay).uv2(light).normal(matrix3f, 0, 1, 0).endVertex();
+			builder.vertex(matrix4f, minX, maxY, minZ).color(r, g, b, a).uv(uMax, vMin).overlayCoords(overlay).uv2(light).normal(matrix3f, 0, 1, 0).endVertex();
+			builder.vertex(matrix4f, minX, maxY, maxZ).color(r, g, b, a).uv(uMax, vMax).overlayCoords(overlay).uv2(light).normal(matrix3f, 0, 1, 0).endVertex();
+			builder.vertex(matrix4f, maxX, maxY, maxZ).color(r, g, b, a).uv(uMin, vMax).overlayCoords(overlay).uv2(light).normal(matrix3f, 0, 1, 0).endVertex();
+		}
 
-        // Up
-        if (renderedFaces[1]) {
-            builder.vertex(matrix4f, maxX, maxY, minZ).color(r, g, b, a).uv(uMin, vMin).overlayCoords(overlay).uv2(light).normal(pose.normal(), 0, 1, 0).endVertex();
-            builder.vertex(matrix4f, minX, maxY, minZ).color(r, g, b, a).uv(uMax, vMin).overlayCoords(overlay).uv2(light).normal(pose.normal(), 0, 1, 0).endVertex();
-            builder.vertex(matrix4f, minX, maxY, maxZ).color(r, g, b, a).uv(uMax, vMax).overlayCoords(overlay).uv2(light).normal(pose.normal(), 0, 1, 0).endVertex();
-            builder.vertex(matrix4f, maxX, maxY, maxZ).color(r, g, b, a).uv(uMin, vMax).overlayCoords(overlay).uv2(light).normal(pose.normal(), 0, 1, 0).endVertex();
-        }
+		// North
+		if (renderedFaces[2]) {
+			builder.vertex(matrix4f, minX, maxY, minZ).color(r, g, b, a).uv(uMin, vMin).overlayCoords(overlay).uv2(light).normal(matrix3f, 0, 0, -1).endVertex();
+			builder.vertex(matrix4f, maxX, maxY, minZ).color(r, g, b, a).uv(uMax, vMin).overlayCoords(overlay).uv2(light).normal(matrix3f, 0, 0, -1).endVertex();
+			builder.vertex(matrix4f, maxX, minY, minZ).color(r, g, b, a).uv(uMax, vMax).overlayCoords(overlay).uv2(light).normal(matrix3f, 0, 0, -1).endVertex();
+			builder.vertex(matrix4f, minX, minY, minZ).color(r, g, b, a).uv(uMin, vMax).overlayCoords(overlay).uv2(light).normal(matrix3f, 0, 0, -1).endVertex();
+		}
 
+		// South
+		if (renderedFaces[3]) {
+			builder.vertex(matrix4f, maxX, maxY, maxZ).color(r, g, b, a).uv(uMin, vMin).overlayCoords(overlay).uv2(light).normal(matrix3f, 0, 0, 1).endVertex();
+			builder.vertex(matrix4f, minX, maxY, maxZ).color(r, g, b, a).uv(uMax, vMin).overlayCoords(overlay).uv2(light).normal(matrix3f, 0, 0, 1).endVertex();
+			builder.vertex(matrix4f, minX, minY, maxZ).color(r, g, b, a).uv(uMax, vMax).overlayCoords(overlay).uv2(light).normal(matrix3f, 0, 0, 1).endVertex();
+			builder.vertex(matrix4f, maxX, minY, maxZ).color(r, g, b, a).uv(uMin, vMax).overlayCoords(overlay).uv2(light).normal(matrix3f, 0, 0, 1).endVertex();
+		}
 
-        // North
-        if (renderedFaces[2]) {
-            builder.vertex(matrix4f, minX, maxY, minZ).color(r, g, b, a).uv(uMin, vMin).overlayCoords(overlay).uv2(light).normal(pose.normal(), 0, 0, -1).endVertex();
-            builder.vertex(matrix4f, maxX, maxY, minZ).color(r, g, b, a).uv(uMax, vMin).overlayCoords(overlay).uv2(light).normal(pose.normal(), 0, 0, -1).endVertex();
-            builder.vertex(matrix4f, maxX, minY, minZ).color(r, g, b, a).uv(uMax, vMax).overlayCoords(overlay).uv2(light).normal(pose.normal(), 0, 0, -1).endVertex();
-            builder.vertex(matrix4f, minX, minY, minZ).color(r, g, b, a).uv(uMin, vMax).overlayCoords(overlay).uv2(light).normal(pose.normal(), 0, 0, -1).endVertex();
-        }
+		// West
+		if (renderedFaces[4]) {
+			builder.vertex(matrix4f, minX, maxY, maxZ).color(r, g, b, a).uv(uMin, vMin).overlayCoords(overlay).uv2(light).normal(matrix3f, -1, 0, 0).endVertex();
+			builder.vertex(matrix4f, minX, maxY, minZ).color(r, g, b, a).uv(uMax, vMin).overlayCoords(overlay).uv2(light).normal(matrix3f, -1, 0, 0).endVertex();
+			builder.vertex(matrix4f, minX, minY, minZ).color(r, g, b, a).uv(uMax, vMax).overlayCoords(overlay).uv2(light).normal(matrix3f, -1, 0, 0).endVertex();
+			builder.vertex(matrix4f, minX, minY, maxZ).color(r, g, b, a).uv(uMin, vMax).overlayCoords(overlay).uv2(light).normal(matrix3f, -1, 0, 0).endVertex();
+		}
 
+		// East
+		if (renderedFaces[5]) {
+			builder.vertex(matrix4f, maxX, maxY, minZ).color(r, g, b, a).uv(uMin, vMin).overlayCoords(overlay).uv2(light).normal(matrix3f, 1, 0, 0).endVertex();
+			builder.vertex(matrix4f, maxX, maxY, maxZ).color(r, g, b, a).uv(uMax, vMin).overlayCoords(overlay).uv2(light).normal(matrix3f, 1, 0, 0).endVertex();
+			builder.vertex(matrix4f, maxX, minY, maxZ).color(r, g, b, a).uv(uMax, vMax).overlayCoords(overlay).uv2(light).normal(matrix3f, 1, 0, 0).endVertex();
+			builder.vertex(matrix4f, maxX, minY, minZ).color(r, g, b, a).uv(uMin, vMax).overlayCoords(overlay).uv2(light).normal(matrix3f, 1, 0, 0).endVertex();
+		}
 
-        // South
-        if (renderedFaces[3]) {
-            builder.vertex(matrix4f, maxX, maxY, maxZ).color(r, g, b, a).uv(uMin, vMin).overlayCoords(overlay).uv2(light).normal(pose.normal(), 0, 0, 1).endVertex();
-            builder.vertex(matrix4f, minX, maxY, maxZ).color(r, g, b, a).uv(uMax, vMin).overlayCoords(overlay).uv2(light).normal(pose.normal(), 0, 0, 1).endVertex();
-            builder.vertex(matrix4f, minX, minY, maxZ).color(r, g, b, a).uv(uMax, vMax).overlayCoords(overlay).uv2(light).normal(pose.normal(), 0, 0, 1).endVertex();
-            builder.vertex(matrix4f, maxX, minY, maxZ).color(r, g, b, a).uv(uMin, vMax).overlayCoords(overlay).uv2(light).normal(pose.normal(), 0, 0, 1).endVertex();
-        }
+	}
 
+	public static void renderFilledBoxNoOverlay(MatrixStack stack, IVertexBuilder builder, AxisAlignedBB box, float r, float g, float b, float a, float uMin, float vMin, float uMax, float vMax, int light, @Nonnull boolean[] renderedFaces) {
+		Matrix4f matrix4f = stack.last().pose();
+		Matrix3f matrix3f = stack.last().normal();
 
-        // West
-        if (renderedFaces[4]) {
-            builder.vertex(matrix4f, minX, maxY, maxZ).color(r, g, b, a).uv(uMin, vMin).overlayCoords(overlay).uv2(light).normal(pose.normal(), -1, 0, 0).endVertex();
-            builder.vertex(matrix4f, minX, maxY, minZ).color(r, g, b, a).uv(uMax, vMin).overlayCoords(overlay).uv2(light).normal(pose.normal(), -1, 0, 0).endVertex();
-            builder.vertex(matrix4f, minX, minY, minZ).color(r, g, b, a).uv(uMax, vMax).overlayCoords(overlay).uv2(light).normal(pose.normal(), -1, 0, 0).endVertex();
-            builder.vertex(matrix4f, minX, minY, maxZ).color(r, g, b, a).uv(uMin, vMax).overlayCoords(overlay).uv2(light).normal(pose.normal(), -1, 0, 0).endVertex();
-        }
+		float minX = (float) box.minX;
+		float minY = (float) box.minY;
+		float minZ = (float) box.minZ;
+		float maxX = (float) box.maxX;
+		float maxY = (float) box.maxY;
+		float maxZ = (float) box.maxZ;
 
+		// Down
+		if (renderedFaces[0]) {
+			builder.vertex(matrix4f, minX, minY, minZ).color(r, g, b, a).uv(uMin, vMin).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(matrix3f, 0, -1, 0).endVertex();
+			builder.vertex(matrix4f, maxX, minY, minZ).color(r, g, b, a).uv(uMax, vMin).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(matrix3f, 0, -1, 0).endVertex();
+			builder.vertex(matrix4f, maxX, minY, maxZ).color(r, g, b, a).uv(uMax, vMax).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(matrix3f, 0, -1, 0).endVertex();
+			builder.vertex(matrix4f, minX, minY, maxZ).color(r, g, b, a).uv(uMin, vMax).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(matrix3f, 0, -1, 0).endVertex();
+		}
 
-        // East
-        if (renderedFaces[5]) {
-            builder.vertex(matrix4f, maxX, maxY, minZ).color(r, g, b, a).uv(uMin, vMin).overlayCoords(overlay).uv2(light).normal(pose.normal(), 1, 0, 0).endVertex();
-            builder.vertex(matrix4f, maxX, maxY, maxZ).color(r, g, b, a).uv(uMax, vMin).overlayCoords(overlay).uv2(light).normal(pose.normal(), 1, 0, 0).endVertex();
-            builder.vertex(matrix4f, maxX, minY, maxZ).color(r, g, b, a).uv(uMax, vMax).overlayCoords(overlay).uv2(light).normal(pose.normal(), 1, 0, 0).endVertex();
-            builder.vertex(matrix4f, maxX, minY, minZ).color(r, g, b, a).uv(uMin, vMax).overlayCoords(overlay).uv2(light).normal(pose.normal(), 1, 0, 0).endVertex();
-        }
+		// Up
+		if (renderedFaces[1]) {
+			builder.vertex(matrix4f, maxX, maxY, minZ).color(r, g, b, a).uv(uMin, vMin).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(matrix3f, 0, 1, 0).endVertex();
+			builder.vertex(matrix4f, minX, maxY, minZ).color(r, g, b, a).uv(uMax, vMin).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(matrix3f, 0, 1, 0).endVertex();
+			builder.vertex(matrix4f, minX, maxY, maxZ).color(r, g, b, a).uv(uMax, vMax).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(matrix3f, 0, 1, 0).endVertex();
+			builder.vertex(matrix4f, maxX, maxY, maxZ).color(r, g, b, a).uv(uMin, vMax).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(matrix3f, 0, 1, 0).endVertex();
+		}
 
+		// North
+		if (renderedFaces[2]) {
+			builder.vertex(matrix4f, minX, maxY, minZ).color(r, g, b, a).uv(uMin, vMin).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(matrix3f, 0, 0, -1).endVertex();
+			builder.vertex(matrix4f, maxX, maxY, minZ).color(r, g, b, a).uv(uMax, vMin).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(matrix3f, 0, 0, -1).endVertex();
+			builder.vertex(matrix4f, maxX, minY, minZ).color(r, g, b, a).uv(uMax, vMax).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(matrix3f, 0, 0, -1).endVertex();
+			builder.vertex(matrix4f, minX, minY, minZ).color(r, g, b, a).uv(uMin, vMax).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(matrix3f, 0, 0, -1).endVertex();
+		}
 
-    }
+		// South
+		if (renderedFaces[3]) {
+			builder.vertex(matrix4f, maxX, maxY, maxZ).color(r, g, b, a).uv(uMin, vMin).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(matrix3f, 0, 0, 1).endVertex();
+			builder.vertex(matrix4f, minX, maxY, maxZ).color(r, g, b, a).uv(uMax, vMin).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(matrix3f, 0, 0, 1).endVertex();
+			builder.vertex(matrix4f, minX, minY, maxZ).color(r, g, b, a).uv(uMax, vMax).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(matrix3f, 0, 0, 1).endVertex();
+			builder.vertex(matrix4f, maxX, minY, maxZ).color(r, g, b, a).uv(uMin, vMax).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(matrix3f, 0, 0, 1).endVertex();
+		}
 
-    public static void renderFilledBoxNoOverlay(PoseStack stack, VertexConsumer builder, AABB box, float r, float g, float b, float a, float uMin, float vMin, float uMax, float vMax, int light, @Nonnull boolean[] renderedFaces) {
-        Matrix4f matrix4f = stack.last().pose();
-        PoseStack.Pose pose = stack.last();
+		// West
+		if (renderedFaces[4]) {
+			builder.vertex(matrix4f, minX, maxY, maxZ).color(r, g, b, a).uv(uMin, vMin).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(matrix3f, -1, 0, 0).endVertex();
+			builder.vertex(matrix4f, minX, maxY, minZ).color(r, g, b, a).uv(uMax, vMin).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(matrix3f, -1, 0, 0).endVertex();
+			builder.vertex(matrix4f, minX, minY, minZ).color(r, g, b, a).uv(uMax, vMax).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(matrix3f, -1, 0, 0).endVertex();
+			builder.vertex(matrix4f, minX, minY, maxZ).color(r, g, b, a).uv(uMin, vMax).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(matrix3f, -1, 0, 0).endVertex();
+		}
 
-        float minX = (float) box.minX;
-        float minY = (float) box.minY;
-        float minZ = (float) box.minZ;
-        float maxX = (float) box.maxX;
-        float maxY = (float) box.maxY;
-        float maxZ = (float) box.maxZ;
+		// East
+		if (renderedFaces[5]) {
+			builder.vertex(matrix4f, maxX, maxY, minZ).color(r, g, b, a).uv(uMin, vMin).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(matrix3f, 1, 0, 0).endVertex();
+			builder.vertex(matrix4f, maxX, maxY, maxZ).color(r, g, b, a).uv(uMax, vMin).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(matrix3f, 1, 0, 0).endVertex();
+			builder.vertex(matrix4f, maxX, minY, maxZ).color(r, g, b, a).uv(uMax, vMax).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(matrix3f, 1, 0, 0).endVertex();
+			builder.vertex(matrix4f, maxX, minY, minZ).color(r, g, b, a).uv(uMin, vMax).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(matrix3f, 1, 0, 0).endVertex();
+		}
 
-        // Down
-        if (renderedFaces[0]) {
-            builder.vertex(matrix4f, minX, minY, minZ).color(r, g, b, a).uv(uMin, vMin).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(pose.normal(), 0, -1, 0).endVertex();
-            builder.vertex(matrix4f, maxX, minY, minZ).color(r, g, b, a).uv(uMax, vMin).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(pose.normal(), 0, -1, 0).endVertex();
-            builder.vertex(matrix4f, maxX, minY, maxZ).color(r, g, b, a).uv(uMax, vMax).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(pose.normal(), 0, -1, 0).endVertex();
-            builder.vertex(matrix4f, minX, minY, maxZ).color(r, g, b, a).uv(uMin, vMax).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(pose.normal(), 0, -1, 0).endVertex();
-        }
+	}
 
-
-        // Up
-        if (renderedFaces[1]) {
-            builder.vertex(matrix4f, maxX, maxY, minZ).color(r, g, b, a).uv(uMin, vMin).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(pose.normal(), 0, 1, 0).endVertex();
-            builder.vertex(matrix4f, minX, maxY, minZ).color(r, g, b, a).uv(uMax, vMin).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(pose.normal(), 0, 1, 0).endVertex();
-            builder.vertex(matrix4f, minX, maxY, maxZ).color(r, g, b, a).uv(uMax, vMax).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(pose.normal(), 0, 1, 0).endVertex();
-            builder.vertex(matrix4f, maxX, maxY, maxZ).color(r, g, b, a).uv(uMin, vMax).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(pose.normal(), 0, 1, 0).endVertex();
-        }
-
-
-        // North
-        if (renderedFaces[2]) {
-            builder.vertex(matrix4f, minX, maxY, minZ).color(r, g, b, a).uv(uMin, vMin).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(pose.normal(), 0, 0, -1).endVertex();
-            builder.vertex(matrix4f, maxX, maxY, minZ).color(r, g, b, a).uv(uMax, vMin).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(pose.normal(), 0, 0, -1).endVertex();
-            builder.vertex(matrix4f, maxX, minY, minZ).color(r, g, b, a).uv(uMax, vMax).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(pose.normal(), 0, 0, -1).endVertex();
-            builder.vertex(matrix4f, minX, minY, minZ).color(r, g, b, a).uv(uMin, vMax).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(pose.normal(), 0, 0, -1).endVertex();
-        }
-
-
-        // South
-        if (renderedFaces[3]) {
-            builder.vertex(matrix4f, maxX, maxY, maxZ).color(r, g, b, a).uv(uMin, vMin).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(pose.normal(), 0, 0, 1).endVertex();
-            builder.vertex(matrix4f, minX, maxY, maxZ).color(r, g, b, a).uv(uMax, vMin).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(pose.normal(), 0, 0, 1).endVertex();
-            builder.vertex(matrix4f, minX, minY, maxZ).color(r, g, b, a).uv(uMax, vMax).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(pose.normal(), 0, 0, 1).endVertex();
-            builder.vertex(matrix4f, maxX, minY, maxZ).color(r, g, b, a).uv(uMin, vMax).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(pose.normal(), 0, 0, 1).endVertex();
-        }
-
-
-        // West
-        if (renderedFaces[4]) {
-            builder.vertex(matrix4f, minX, maxY, maxZ).color(r, g, b, a).uv(uMin, vMin).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(pose.normal(), -1, 0, 0).endVertex();
-            builder.vertex(matrix4f, minX, maxY, minZ).color(r, g, b, a).uv(uMax, vMin).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(pose.normal(), -1, 0, 0).endVertex();
-            builder.vertex(matrix4f, minX, minY, minZ).color(r, g, b, a).uv(uMax, vMax).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(pose.normal(), -1, 0, 0).endVertex();
-            builder.vertex(matrix4f, minX, minY, maxZ).color(r, g, b, a).uv(uMin, vMax).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(pose.normal(), -1, 0, 0).endVertex();
-        }
-
-
-        // East
-        if (renderedFaces[5]) {
-            builder.vertex(matrix4f, maxX, maxY, minZ).color(r, g, b, a).uv(uMin, vMin).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(pose.normal(), 1, 0, 0).endVertex();
-            builder.vertex(matrix4f, maxX, maxY, maxZ).color(r, g, b, a).uv(uMax, vMin).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(pose.normal(), 1, 0, 0).endVertex();
-            builder.vertex(matrix4f, maxX, minY, maxZ).color(r, g, b, a).uv(uMax, vMax).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(pose.normal(), 1, 0, 0).endVertex();
-            builder.vertex(matrix4f, maxX, minY, minZ).color(r, g, b, a).uv(uMin, vMax).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(pose.normal(), 1, 0, 0).endVertex();
-        }
-
-
-    }
-
-    public static void renderItemScaled(Item item, int x, int y, float scale) {
-    	ItemStack stack = new ItemStack(item);
+	public static void renderItemScaled(Item item, int x, int y, float scale) {
+		ItemStack stack = new ItemStack(item);
 		Minecraft minecraft = Minecraft.getInstance();
 		ItemRenderer itemRenderer = minecraft.getItemRenderer();
-		BakedModel model = itemRenderer.getModel(stack, (Level) null, (LivingEntity) null, 0);
+		IBakedModel model = itemRenderer.getModel(stack, (World) null, (LivingEntity) null);
 		TextureManager manager = minecraft.getTextureManager();
 
-		manager.getTexture(TextureAtlas.LOCATION_BLOCKS).setFilter(false, false);
-		RenderSystem.setShaderTexture(0, TextureAtlas.LOCATION_BLOCKS);
+		RenderSystem.pushMatrix();
+		manager.bind(AtlasTexture.LOCATION_BLOCKS);
+		manager.getTexture(AtlasTexture.LOCATION_BLOCKS).setFilter(false, false);
+		RenderSystem.enableRescaleNormal();
+		RenderSystem.enableAlphaTest();
+		RenderSystem.defaultAlphaFunc();
 		RenderSystem.enableBlend();
 		RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-		PoseStack posestack = RenderSystem.getModelViewStack();
-		posestack.pushPose();
-		posestack.translate(x, y, 100.0F + itemRenderer.blitOffset);
-		posestack.translate(8.0D, 8.0D, 0.0D);
-		posestack.scale(1.0F, -1.0F, 1.0F);
-		posestack.scale(16.0F, 16.0F, 16.0F);
-		posestack.scale(scale, scale, scale);
-		RenderSystem.applyModelViewMatrix();
-		PoseStack posestack1 = new PoseStack();
-		MultiBufferSource.BufferSource buffersource = Minecraft.getInstance().renderBuffers().bufferSource();
+		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+		RenderSystem.translatef((float) x, (float) y, 100.0F);
+		RenderSystem.translatef(8.0F, 8.0F, 0.0F);
+		RenderSystem.scalef(1.0F, -1.0F, 1.0F);
+		RenderSystem.scalef(scale, scale, scale);
+		RenderSystem.scalef(16.0F, 16.0F, 16.0F);
+		MatrixStack matrixstack = new MatrixStack();
+		IRenderTypeBuffer.Impl irendertypebuffer$impl = Minecraft.getInstance().renderBuffers().bufferSource();
 		boolean flag = !model.usesBlockLight();
 		if (flag) {
-			Lighting.setupForFlatItems();
+			RenderHelper.setupForFlatItems();
 		}
 
-		itemRenderer.render(stack, ItemTransforms.TransformType.GUI, false, posestack1, buffersource, 15728880, OverlayTexture.NO_OVERLAY, model);
-		buffersource.endBatch();
+		itemRenderer.render(stack, ItemCameraTransforms.TransformType.GUI, false, matrixstack, irendertypebuffer$impl, 15728880, OverlayTexture.NO_OVERLAY, model);
+		irendertypebuffer$impl.endBatch();
 		RenderSystem.enableDepthTest();
 		if (flag) {
-			Lighting.setupFor3DItems();
+			RenderHelper.setupFor3DItems();
 		}
 
-		posestack.popPose();
-		RenderSystem.applyModelViewMatrix();
+		RenderSystem.disableAlphaTest();
+		RenderSystem.disableRescaleNormal();
+		RenderSystem.popMatrix();
 
-    }
+	}
 
+	public static void bindTexture(ResourceLocation resource) {
+		Minecraft.getInstance().textureManager.bind(resource);
+	}
 
-    public static void bindTexture(ResourceLocation resource) {
-        RenderSystem.setShaderTexture(0, resource);
-    }
+	public static void setShaderColor(Color color) {
+		RenderSystem.color4f(color.rFloat(), color.gFloat(), color.bFloat(), color.aFloat());
+	}
 
-    public static void setShaderColor(Color color) {
-        RenderSystem.setShaderColor(color.rFloat(), color.gFloat(), color.bFloat(), color.aFloat());
-    }
+	public static RenderType beaconType() {
+		return RenderType.beaconBeam(Voltaic.vanillarl("textures/entity/beacon_beam.png"), true);
+	}
 
-    public static RenderType beaconType() {
-        return RenderType.beaconBeam(Voltaic.vanillarl("textures/entity/beacon_beam.png"), true);
-    }
-
-    public static void resetShaderColor() {
-        RenderingUtils.setShaderColor(Color.WHITE);
-    }
+	public static void resetShaderColor() {
+		RenderingUtils.setShaderColor(Color.WHITE);
+	}
 }

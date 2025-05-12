@@ -2,7 +2,7 @@ package voltaic.prefab.screen.component;
 
 import javax.annotation.Nullable;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.matrix.MatrixStack;
 
 import voltaic.api.screen.ITexture;
 import voltaic.api.screen.ITexture.Textures;
@@ -54,24 +54,24 @@ public class ScreenComponentGeneric extends AbstractScreenComponent {
 	}
 
 	@Override
-	public void renderBackground(PoseStack poseStack, int xAxis, int yAxis, int guiWidth, int guiHeight) {
+	public void renderBackground(MatrixStack poseStack, int xAxis, int yAxis, int guiWidth, int guiHeight) {
 		if (!isVisible()) {
 			return;
 		}
 		RenderingUtils.setShaderColor(color);
 		RenderingUtils.bindTexture(texture.getLocation());
-		blit(poseStack, guiWidth + xLocation, guiHeight + yLocation, texture.textureU(), texture.textureV(), texture.textureWidth(), texture.textureHeight(), texture.imageWidth(), texture.imageHeight());
+		blit(poseStack, guiWidth + x, guiHeight + y, texture.textureU(), texture.textureV(), texture.textureWidth(), texture.textureHeight(), texture.imageWidth(), texture.imageHeight());
 		if(icon != null) {
 			int xOffset = (texture.imageWidth() - icon.imageWidth()) / 2;
 			int yOffset = (texture.imageHeight() - icon.imageHeight()) / 2;
 			RenderingUtils.bindTexture(icon.getLocation());
-			blit(poseStack, guiWidth + xLocation + xOffset, guiHeight + yLocation + yOffset, icon.textureU(), icon.textureV(), icon.textureWidth(), icon.textureHeight(), icon.imageWidth(), icon.imageHeight());
+			blit(poseStack, guiWidth + x + xOffset, guiHeight + y + yOffset, icon.textureU(), icon.textureV(), icon.textureWidth(), icon.textureHeight(), icon.imageWidth(), icon.imageHeight());
 		}
 		RenderingUtils.resetShaderColor();
 	}
 
 	@Override
-	public void renderForeground(PoseStack poseStack, int xAxis, int yAxis, int guiWidth, int guiHeight) {
+	public void renderForeground(MatrixStack poseStack, int xAxis, int yAxis, int guiWidth, int guiHeight) {
 		super.renderForeground(poseStack, xAxis, yAxis, guiWidth, guiHeight);
 		if (isVisible() && isHovered() && onTooltip != null) {
 			onTooltip.onTooltip(poseStack, this, xAxis, yAxis);

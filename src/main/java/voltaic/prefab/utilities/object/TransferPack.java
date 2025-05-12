@@ -3,9 +3,8 @@ package voltaic.prefab.utilities.object;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import io.netty.buffer.ByteBuf;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.PacketBuffer;
 import voltaic.api.codec.StreamCodec;
 
 public class TransferPack {
@@ -17,16 +16,16 @@ public class TransferPack {
             ).apply(instance, (joules, voltage) -> TransferPack.joulesVoltage(joules, voltage))
     );
 
-    public static final StreamCodec<ByteBuf, TransferPack> STREAM_CODEC = new StreamCodec<>() {
+    public static final StreamCodec<PacketBuffer, TransferPack> STREAM_CODEC = new StreamCodec<PacketBuffer, TransferPack>() {
 
 		@Override
-		public void encode(ByteBuf buffer, TransferPack value) {
+		public void encode(PacketBuffer buffer, TransferPack value) {
 			buffer.writeDouble(value.joules);
 			buffer.writeDouble(value.voltage);
 		}
 
 		@Override
-		public TransferPack decode(ByteBuf buffer) {
+		public TransferPack decode(PacketBuffer buffer) {
 			return new TransferPack(buffer.readDouble(), buffer.readDouble());
 		}
     	
@@ -73,23 +72,23 @@ public class TransferPack {
         return (int) voltage != 0;
     }
 
-    public CompoundTag writeToTag() {
-        CompoundTag tag = new CompoundTag();
+    public CompoundNBT writeToTag() {
+        CompoundNBT tag = new CompoundNBT();
         tag.putDouble("joules", joules);
         tag.putDouble("voltage", voltage);
         return tag;
     }
 
-    public static TransferPack readFromTag(CompoundTag tag) {
+    public static TransferPack readFromTag(CompoundNBT tag) {
         return joulesVoltage(tag.getDouble("joules"), tag.getDouble("voltage"));
     }
 
-    public void writeToBuffer(FriendlyByteBuf buf) {
+    public void writeToBuffer(PacketBuffer buf) {
         buf.writeDouble(joules);
         buf.writeDouble(voltage);
     }
 
-    public static TransferPack readFromBuffer(FriendlyByteBuf buf) {
+    public static TransferPack readFromBuffer(PacketBuffer buf) {
         return joulesVoltage(buf.readDouble(), buf.readDouble());
     }
 
@@ -100,7 +99,8 @@ public class TransferPack {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof TransferPack other) {
+        if (obj instanceof TransferPack) {
+        	TransferPack other = (TransferPack) obj;
             return other.joules == joules && other.voltage == voltage;
         }
         return false;

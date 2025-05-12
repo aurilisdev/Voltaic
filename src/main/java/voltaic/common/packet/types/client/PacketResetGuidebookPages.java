@@ -3,9 +3,9 @@ package voltaic.common.packet.types.client;
 import java.util.function.Supplier;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent.Context;
+import net.minecraft.client.world.ClientWorld;
+import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.fml.network.NetworkEvent.Context;
 
 public class PacketResetGuidebookPages {
 
@@ -13,7 +13,7 @@ public class PacketResetGuidebookPages {
 		Context ctx = context.get();
 		ctx.enqueueWork(() -> {
 			Minecraft minecraft = Minecraft.getInstance();
-			ClientLevel world = minecraft.level;
+			ClientWorld world = minecraft.level;
 			if (world != null && minecraft.player != null) {
 				ClientBarrierMethods.handlerSetGuidebookInitFlag();
 			}
@@ -21,10 +21,10 @@ public class PacketResetGuidebookPages {
 		ctx.setPacketHandled(true);
 	}
 
-	public static void encode(PacketResetGuidebookPages message, FriendlyByteBuf buf) {
+	public static void encode(PacketResetGuidebookPages message, PacketBuffer buf) {
 	}
 
-	public static PacketResetGuidebookPages decode(FriendlyByteBuf buf) {
+	public static PacketResetGuidebookPages decode(PacketBuffer buf) {
 		return new PacketResetGuidebookPages();
 	}
 }

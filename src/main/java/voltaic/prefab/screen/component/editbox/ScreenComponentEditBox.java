@@ -7,30 +7,28 @@ import java.util.function.Predicate;
 
 import javax.annotation.Nullable;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.blaze3d.vertex.VertexFormat;
 
 import voltaic.Voltaic;
 import voltaic.api.screen.ITexture;
 import voltaic.prefab.screen.component.ScreenComponentGeneric;
 import voltaic.prefab.utilities.RenderingUtils;
 import voltaic.prefab.utilities.math.Color;
-import net.minecraft.SharedConstants;
-import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiComponent;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.network.chat.Style;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.FormattedCharSequence;
-import net.minecraft.util.Mth;
+import net.minecraft.client.gui.AbstractGui;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.util.IReorderingProcessor;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SharedConstants;
+import net.minecraft.util.Util;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.text.Style;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -55,7 +53,7 @@ public class ScreenComponentEditBox extends ScreenComponentGeneric {
 	public static final int BACKWARDS = -1;
 	public static final int FORWARDS = 1;
 	public static final Color DEFAULT_TEXT_COLOR = new Color(224, 224, 224, 0);
-	private final Font font;
+	private final FontRenderer font;
 	/** Has the current text being edited on the textbox. */
 	private String value = "";
 	private int maxLength = 32;
@@ -78,9 +76,9 @@ public class ScreenComponentEditBox extends ScreenComponentGeneric {
 	private Consumer<String> responder;
 	/** Called to check if the text is valid */
 	private Predicate<String> filter = Objects::nonNull;
-	private BiFunction<String, Integer, FormattedCharSequence> formatter = (p_94147_, p_94148_) -> FormattedCharSequence.forward(p_94147_, Style.EMPTY);
+	private BiFunction<String, Integer, IReorderingProcessor> formatter = (p_94147_, p_94148_) -> IReorderingProcessor.forward(p_94147_, Style.EMPTY);
 
-	public ScreenComponentEditBox(int x, int y, int width, int height, Font font) {
+	public ScreenComponentEditBox(int x, int y, int width, int height, FontRenderer font) {
 		super(x, y, width, height);
 		texture = TextInputTextures.TEXT_INPUT_BASE;
 		this.font = font;
@@ -91,7 +89,7 @@ public class ScreenComponentEditBox extends ScreenComponentGeneric {
 		return this;
 	}
 
-	public ScreenComponentEditBox setFormatter(BiFunction<String, Integer, FormattedCharSequence> textFormatter) {
+	public ScreenComponentEditBox setFormatter(BiFunction<String, Integer, IReorderingProcessor> textFormatter) {
 		this.formatter = textFormatter;
 		return this;
 	}
@@ -284,7 +282,7 @@ public class ScreenComponentEditBox extends ScreenComponentGeneric {
 	}
 
 	public void setCursorPosition(int pos) {
-		this.cursorPos = Mth.clamp(pos, 0, this.value.length());
+		this.cursorPos = MathHelper.clamp(pos, 0, this.value.length());
 	}
 
 	/**
@@ -410,7 +408,7 @@ public class ScreenComponentEditBox extends ScreenComponentGeneric {
 		}
 
 		if (this.isFocused() && mouseOver && button == 0) {
-			int exitBoxXPos = Mth.floor(mouseX) - this.xLocation - ((int) gui.getGuiWidth()) - 4;
+			int exitBoxXPos = MathHelper.floor(mouseX) - this.x - ((int) gui.getGuiWidth()) - 4;
 
 			String text = this.font.plainSubstrByWidth(this.value.substring(this.displayPos), this.getInnerWidth());
 			this.moveCursorTo(this.font.plainSubstrByWidth(text, exitBoxXPos).length() + this.displayPos);
@@ -435,9 +433,9 @@ public class ScreenComponentEditBox extends ScreenComponentGeneric {
 	}
 
 	@Override
-	public void renderBackground(PoseStack poseStack, int xAxis, int yAxis, int guiWidth, int guiHeight) {
+	public void renderBackground(MatrixStack poseStack, int xAxis, int yAxis, int guiWidth, int guiHeight) {
 		RenderingUtils.bindTexture(texture.getLocation());
-		drawExpandedBox(poseStack, this.xLocation + guiWidth, this.yLocation + guiHeight, width, height);
+		drawExpandedBox(poseStack, this.x + guiWidth, this.y + guiHeight, width, height);
 
 		Color textColor = this.isEditable ? this.textColor : this.textColorUneditable;
 		int highlightedSize = this.cursorPos - this.displayPos;
@@ -448,8 +446,8 @@ public class ScreenComponentEditBox extends ScreenComponentGeneric {
 		boolean isHighlightedValid = highlightedSize >= 0 && highlightedSize <= displayedText.length();
 		boolean blinkCursor = this.isFocused() && this.frame / 6 % 2 == 0 && isHighlightedValid;
 
-		int textStartX = this.xLocation + guiWidth + 4;
-		int textStartY = this.yLocation + guiHeight + (this.height - 8) / 2;
+		int textStartX = this.x + guiWidth + 4;
+		int textStartY = this.y + guiHeight + (this.height - 8) / 2;
 
 		int textStartPre = textStartX;
 
@@ -483,7 +481,7 @@ public class ScreenComponentEditBox extends ScreenComponentGeneric {
 
 		if (blinkCursor) {
 			if (isCursorPastLength) {
-				GuiComponent.fill(poseStack, textStartPreCopy, textStartY - 1, textStartPreCopy + 1, textStartY + 1 + 9, -3092272);
+				AbstractGui.fill(poseStack, textStartPreCopy, textStartY - 1, textStartPreCopy + 1, textStartY + 1 + 9, -3092272);
 			} else {
 				this.font.drawShadow(poseStack, "_", textStartPreCopy, textStartY, textColor.color());
 			}
@@ -512,28 +510,26 @@ public class ScreenComponentEditBox extends ScreenComponentGeneric {
 			endY = j;
 		}
 
-		if (endX > this.xLocation + this.width + gui.getGuiWidth()) {
-			endX = (int) (this.xLocation + this.width + gui.getGuiWidth());
+		if (endX > this.x + this.width + gui.getGuiWidth()) {
+			endX = (int) (this.x + this.width + gui.getGuiWidth());
 		}
 
-		if (startX > this.xLocation + this.width + gui.getGuiHeight()) {
-			startX = (int) (this.xLocation + this.width + gui.getGuiHeight());
+		if (startX > this.x + this.width + gui.getGuiHeight()) {
+			startX = (int) (this.x + this.width + gui.getGuiHeight());
 		}
 
-		Tesselator tesselator = Tesselator.getInstance();
-		BufferBuilder bufferbuilder = tesselator.getBuilder();
-		RenderSystem.setShader(GameRenderer::getPositionShader);
-		RenderSystem.setShaderColor(0.0F, 0.0F, 1.0F, 1.0F);
+		Tessellator tessellator = Tessellator.getInstance();
+		BufferBuilder bufferbuilder = tessellator.getBuilder();
+		RenderSystem.color4f(0.0F, 0.0F, 255.0F, 255.0F);
 		RenderSystem.disableTexture();
 		RenderSystem.enableColorLogicOp();
 		RenderSystem.logicOp(GlStateManager.LogicOp.OR_REVERSE);
-		bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION);
-		bufferbuilder.vertex(startX, endY, 0.0D).endVertex();
-		bufferbuilder.vertex(endX, endY, 0.0D).endVertex();
-		bufferbuilder.vertex(endX, startY, 0.0D).endVertex();
-		bufferbuilder.vertex(startX, startY, 0.0D).endVertex();
-		tesselator.end();
-		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+		bufferbuilder.begin(7, DefaultVertexFormats.POSITION);
+		bufferbuilder.vertex((double) startX, (double) endY, 0.0D).endVertex();
+		bufferbuilder.vertex((double) endX, (double) endY, 0.0D).endVertex();
+		bufferbuilder.vertex((double) endX, (double) startY, 0.0D).endVertex();
+		bufferbuilder.vertex((double) startX, (double) startY, 0.0D).endVertex();
+		tessellator.end();
 		RenderSystem.disableColorLogicOp();
 		RenderSystem.enableTexture();
 	}
@@ -610,7 +606,7 @@ public class ScreenComponentEditBox extends ScreenComponentGeneric {
 	 */
 	public void setHighlightPos(int position) {
 		int length = this.value.length();
-		this.highlightPos = Mth.clamp(position, 0, length);
+		this.highlightPos = MathHelper.clamp(position, 0, length);
 		if (this.font != null) {
 			if (this.displayPos > length) {
 				this.displayPos = length;
@@ -631,7 +627,7 @@ public class ScreenComponentEditBox extends ScreenComponentGeneric {
 				this.displayPos -= this.displayPos - this.highlightPos;
 			}
 
-			this.displayPos = Mth.clamp(this.displayPos, 0, length);
+			this.displayPos = MathHelper.clamp(this.displayPos, 0, length);
 		}
 
 	}
@@ -648,19 +644,19 @@ public class ScreenComponentEditBox extends ScreenComponentGeneric {
 	}
 
 	public int getScreenX(int charNum) {
-		return (int) (charNum > this.value.length() ? this.xLocation + gui.getGuiWidth() : this.xLocation + gui.getGuiWidth() + this.font.width(this.value.substring(0, charNum)));
+		return (int) (charNum > this.value.length() ? this.x + gui.getGuiWidth() : this.x + gui.getGuiWidth() + this.font.width(this.value.substring(0, charNum)));
 	}
 
 	public void setX(int xPos) {
-		this.xLocation = xPos;
+		this.x = xPos;
 	}
 
-	public static void drawExpandedBox(PoseStack poseStack, int x, int y, int boxWidth, int boxHeight) {
+	public static void drawExpandedBox(MatrixStack poseStack, int x, int y, int boxWidth, int boxHeight) {
 		if (boxWidth < 18) {
 			if (boxHeight < 18) {
-				GuiComponent.blit(poseStack, x, y, boxWidth, boxHeight, 0, 0, boxWidth, boxHeight, boxWidth, boxHeight);
+				AbstractGui.blit(poseStack, x, y, boxWidth, boxHeight, 0, 0, boxWidth, boxHeight, boxWidth, boxHeight);
 			} else {
-				GuiComponent.blit(poseStack, x, y, boxWidth, 7, 0, 0, boxWidth, 7, boxWidth, 18);
+				AbstractGui.blit(poseStack, x, y, boxWidth, 7, 0, 0, boxWidth, 7, boxWidth, 18);
 
 				int sectionHeight = boxHeight - 14;
 				int heightIterations = sectionHeight / 4;
@@ -668,15 +664,15 @@ public class ScreenComponentEditBox extends ScreenComponentGeneric {
 
 				int heightOffset = 7;
 				for (int i = 0; i < heightIterations; i++) {
-					GuiComponent.blit(poseStack, x, y + heightOffset, boxWidth, 4, 0, 7, boxWidth, 4, boxWidth, 18);
+					AbstractGui.blit(poseStack, x, y + heightOffset, boxWidth, 4, 0, 7, boxWidth, 4, boxWidth, 18);
 					heightOffset += 4;
 				}
-				GuiComponent.blit(poseStack, x, y + heightOffset, boxWidth, remainderHeight, 0, 7, boxWidth, remainderHeight, boxWidth, 18);
+				AbstractGui.blit(poseStack, x, y + heightOffset, boxWidth, remainderHeight, 0, 7, boxWidth, remainderHeight, boxWidth, 18);
 
-				GuiComponent.blit(poseStack, x, y + boxHeight - 7, boxWidth, 7, 0, 11, boxWidth, 7, boxWidth, 18);
+				AbstractGui.blit(poseStack, x, y + boxHeight - 7, boxWidth, 7, 0, 11, boxWidth, 7, boxWidth, 18);
 			}
 		} else if (boxHeight < 18) {
-			GuiComponent.blit(poseStack, x, y, 7, boxHeight, 0, 0, 7, boxHeight, 18, boxHeight);
+			AbstractGui.blit(poseStack, x, y, 7, boxHeight, 0, 0, 7, boxHeight, 18, boxHeight);
 
 			int sectionWidth = boxWidth - 14;
 			int widthIterations = sectionWidth / 4;
@@ -684,12 +680,12 @@ public class ScreenComponentEditBox extends ScreenComponentGeneric {
 
 			int widthOffset = 7;
 			for (int i = 0; i < widthIterations; i++) {
-				GuiComponent.blit(poseStack, x + widthOffset, y, 4, boxHeight, 7, 0, 4, boxHeight, 18, boxHeight);
+				AbstractGui.blit(poseStack, x + widthOffset, y, 4, boxHeight, 7, 0, 4, boxHeight, 18, boxHeight);
 				widthOffset += 4;
 			}
-			GuiComponent.blit(poseStack, x + widthOffset, y, remainderWidth, boxHeight, 7, 0, remainderWidth, boxHeight, 18, boxHeight);
+			AbstractGui.blit(poseStack, x + widthOffset, y, remainderWidth, boxHeight, 7, 0, remainderWidth, boxHeight, 18, boxHeight);
 
-			GuiComponent.blit(poseStack, x + boxWidth - 7, y, 7, boxHeight, 11, 0, 7, boxHeight, 18, boxHeight);
+			AbstractGui.blit(poseStack, x + boxWidth - 7, y, 7, boxHeight, 11, 0, 7, boxHeight, 18, boxHeight);
 		} else {
 			// the button is >= 18x18 at this point
 
@@ -775,7 +771,7 @@ public class ScreenComponentEditBox extends ScreenComponentGeneric {
 
 	}
 
-	private static void draw(PoseStack poseStack, int x, int y, int widthOffset, int heightOffset, int textXOffset, int textYOffset, int width, int height) {
+	private static void draw(MatrixStack poseStack, int x, int y, int widthOffset, int heightOffset, int textXOffset, int textYOffset, int width, int height) {
 		blit(poseStack, x + widthOffset, y + heightOffset, width, height, textXOffset, textYOffset, width, height, 18, 18);
 	}
 

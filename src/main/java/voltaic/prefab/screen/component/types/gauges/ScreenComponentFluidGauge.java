@@ -8,30 +8,30 @@ import voltaic.api.fluid.PropertyFluidTank;
 import voltaic.api.screen.component.FluidTankSupplier;
 import voltaic.common.packet.NetworkHandler;
 import voltaic.common.packet.types.server.PacketUpdateCarriedItemServer;
+import voltaic.prefab.utilities.VoltaicTextUtils;
 import voltaic.prefab.inventory.container.types.GenericContainerBlockEntity;
 import voltaic.prefab.screen.GenericScreen;
 import voltaic.prefab.tile.GenericTile;
-import voltaic.prefab.utilities.VoltaicTextUtils;
 import voltaic.prefab.utilities.CapabilityUtils;
 import voltaic.prefab.utilities.RenderingUtils;
 import voltaic.prefab.utilities.math.Color;
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.sounds.SimpleSoundInstance;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.util.FormattedCharSequence;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.client.audio.SimpleSound;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.IReorderingProcessor;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundEvents;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidTank;
-import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
-import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
+import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 
 @OnlyIn(Dist.CLIENT)
 public class ScreenComponentFluidGauge extends AbstractScreenComponentGauge {
@@ -78,16 +78,16 @@ public class ScreenComponentFluidGauge extends AbstractScreenComponentGauge {
 	}
 
 	@Override
-	protected List<? extends FormattedCharSequence> getTooltips() {
-		List<FormattedCharSequence> tooltips = new ArrayList<>();
+	protected List<? extends IReorderingProcessor> getTooltips() {
+		List<IReorderingProcessor> tooltips = new ArrayList<>();
 		IFluidTank tank = fluidInfoHandler.getTank();
 		if (tank != null) {
 			FluidStack fluidStack = tank.getFluid();
 			if (fluidStack.getAmount() > 0) {
-				tooltips.add(new TranslatableComponent(fluidStack.getTranslationKey()).getVisualOrderText());
-				tooltips.add(VoltaicTextUtils.ratio(ChatFormatter.formatFluidMilibuckets(tank.getFluidAmount()), ChatFormatter.formatFluidMilibuckets(tank.getCapacity())).withStyle(ChatFormatting.GRAY).getVisualOrderText());
+				tooltips.add(new TranslationTextComponent(fluidStack.getTranslationKey()).getVisualOrderText());
+				tooltips.add(VoltaicTextUtils.ratio(ChatFormatter.formatFluidMilibuckets(tank.getFluidAmount()), ChatFormatter.formatFluidMilibuckets(tank.getCapacity())).withStyle(TextFormatting.GRAY).getVisualOrderText());
 			} else {
-				tooltips.add(VoltaicTextUtils.ratio(new TextComponent("0"), ChatFormatter.formatFluidMilibuckets(tank.getCapacity())).withStyle(ChatFormatting.GRAY).getVisualOrderText());
+				tooltips.add(VoltaicTextUtils.ratio(new StringTextComponent("0"), ChatFormatter.formatFluidMilibuckets(tank.getCapacity())).withStyle(TextFormatting.GRAY).getVisualOrderText());
 			}
 		}
 		return tooltips;
@@ -112,12 +112,14 @@ public class ScreenComponentFluidGauge extends AbstractScreenComponentGauge {
 		}
 		return false;
 	}
-
+	
 	@Override
 	public void onMouseClick(double mouseX, double mouseY) {
-
-	    	
-		PropertyFluidTank tank = fluidInfoHandler.getTank() instanceof PropertyFluidTank x ? x : null;
+		PropertyFluidTank tank = null;
+		
+		if(fluidInfoHandler.getTank() instanceof PropertyFluidTank) {
+			tank = (PropertyFluidTank) fluidInfoHandler.getTank();
+		}
 
 		if (tank == null) {
 			return;
@@ -131,7 +133,7 @@ public class ScreenComponentFluidGauge extends AbstractScreenComponentGauge {
 			return;
 		}
 
-		ItemStack stack = screen.getMenu().getCarried();
+		ItemStack stack = Minecraft.getInstance().player.inventory.getCarried();
 
 		IFluidHandlerItem handler = stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).resolve().orElse(CapabilityUtils.EMPTY_FLUID_ITEM);
 
@@ -141,14 +143,14 @@ public class ScreenComponentFluidGauge extends AbstractScreenComponentGauge {
 
 		FluidStack drainedSourceFluid = tank.getFluid().copy();
 
-		int taken = handler.fill(drainedSourceFluid, IFluidHandler.FluidAction.EXECUTE);
+		int taken = handler.fill(drainedSourceFluid, FluidAction.EXECUTE);
 
 		//drain this fluid gauge if the amount taken was greater than zero
 		if (taken > 0) {
 
-			tank.drain(taken, IFluidHandler.FluidAction.EXECUTE);
+			tank.drain(taken, FluidAction.EXECUTE);
 
-			Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.BUCKET_FILL, 1.0F));
+			Minecraft.getInstance().getSoundManager().play(SimpleSound.forUI(SoundEvents.BUCKET_FILL, 1.0F));
 
 			stack = handler.getContainer();
 			
@@ -161,13 +163,13 @@ public class ScreenComponentFluidGauge extends AbstractScreenComponentGauge {
 
 		for(int i = 0; i < handler.getTanks(); i++){
 			drainedSourceFluid = handler.getFluidInTank(i);
-			taken = tank.fill(drainedSourceFluid, IFluidHandler.FluidAction.EXECUTE);
+			taken = tank.fill(drainedSourceFluid, FluidAction.EXECUTE);
 			if(taken <= 0) {
 				continue;
 			}
-			handler.drain(taken, IFluidHandler.FluidAction.EXECUTE);
+			handler.drain(taken, FluidAction.EXECUTE);
 
-			Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.BUCKET_EMPTY, 1.0F));
+			Minecraft.getInstance().getSoundManager().play(SimpleSound.forUI(SoundEvents.BUCKET_EMPTY, 1.0F));
 
 			stack = handler.getContainer();
 			
@@ -175,10 +177,7 @@ public class ScreenComponentFluidGauge extends AbstractScreenComponentGauge {
 
 			return;
 		}
+		
+	}	
 
-
-
-
-
-	}
 }

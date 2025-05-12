@@ -3,12 +3,12 @@ package voltaic.datagen.utils.client;
 import voltaic.Voltaic;
 import voltaic.common.block.states.VoltaicBlockStates;
 import voltaic.datagen.utils.client.model.WireModelBuilder;
-import net.minecraft.core.Direction;
+import net.minecraft.block.Block;
+import net.minecraft.block.PressurePlateBlock;
+import net.minecraft.block.SnowyDirtBlock;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.PressurePlateBlock;
-import net.minecraft.world.level.block.SnowyDirtBlock;
+import net.minecraft.util.Direction;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.generators.BlockModelBuilder;
 import net.minecraftforge.client.model.generators.BlockStateProvider;
 import net.minecraftforge.client.model.generators.ConfiguredModel;
@@ -17,8 +17,8 @@ import net.minecraftforge.client.model.generators.ModelFile;
 import net.minecraftforge.client.model.generators.ModelFile.ExistingModelFile;
 import net.minecraftforge.client.model.generators.loaders.OBJLoaderBuilder;
 import net.minecraftforge.common.data.ExistingFileHelper;
+import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
 
 public abstract class BaseBlockstateProvider extends BlockStateProvider {
 
@@ -169,17 +169,17 @@ public abstract class BaseBlockstateProvider extends BlockStateProvider {
 
     // gotta love dealing with mojank
     public ItemModelBuilder pressurePlateBlock(PressurePlateBlock block, ResourceLocation texture, boolean registerItem) {
-        ModelFile pressurePlate = models().pressurePlate(name(block), texture);
-        ModelFile pressurePlateDown = models().pressurePlateDown(name(block) + "_down", texture);
+    	ModelFile pressurePlate = models().singleTexture(name(block), new ResourceLocation("block/pressure_plate_up"), texture);
+		ModelFile pressurePlateDown = models().singleTexture(name(block) + "_down", new ResourceLocation("block/pressure_plate_down"), texture);
         return pressurePlateBlock(block, pressurePlate, pressurePlateDown, registerItem);
     }
 
     public ItemModelBuilder pressurePlateBlock(PressurePlateBlock block, ModelFile pressurePlate, ModelFile pressurePlateDown, boolean registerItem) {
-        getVariantBuilder(block).partialState().with(PressurePlateBlock.POWERED, true).addModels(new ConfiguredModel(pressurePlateDown)).partialState().with(PressurePlateBlock.POWERED, false).addModels(new ConfiguredModel(pressurePlate));
-        if (registerItem) {
-            return blockItem(block, pressurePlate);
-        }
-        return null;
+    	getVariantBuilder(block).partialState().with(PressurePlateBlock.POWERED, true).addModels(new ConfiguredModel(pressurePlateDown)).partialState().with(PressurePlateBlock.POWERED, false).addModels(new ConfiguredModel(pressurePlate));
+		if (registerItem) {
+			return blockItem(block, pressurePlate);
+		}
+		return null;
     }
 
     public ItemModelBuilder simpleColumnBlock(Block block, ResourceLocation side, ResourceLocation top, boolean registerItem) {

@@ -1,7 +1,8 @@
 package voltaic.prefab.tile.components.type;
 
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.util.text.IFormattableTextComponent;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import voltaic.prefab.tile.components.IComponent;
 import voltaic.prefab.tile.components.IComponentType;
 
@@ -18,8 +19,8 @@ public class ComponentName implements IComponent {
 		return this;
 	}
 
-	public net.minecraft.network.chat.Component getName() {
-		return translation ? new TranslatableComponent(name) : new TextComponent(name);
+	public IFormattableTextComponent getName() {
+		return translation ? new TranslationTextComponent(name) : new StringTextComponent(name);
 	}
 
 	@Override

@@ -8,23 +8,22 @@ import voltaic.common.settings.VoltaicConstants;
 import voltaic.registers.VoltaicCapabilities;
 import voltaic.registers.VoltaicEffects;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nullable;
 
-import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.EquipmentSlotType;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.potion.EffectInstance;
+import net.minecraft.util.Direction;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.util.LazyOptional;
 
-public class CapabilityRadiationRecipient implements IRadiationRecipient, ICapabilitySerializable<CompoundTag> {
+public class CapabilityRadiationRecipient implements IRadiationRecipient, ICapabilitySerializable<CompoundNBT> {
 
-    private static final EquipmentSlot[] ARMOR_SLOTS = {EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET};
+    private static final EquipmentSlotType[] ARMOR_SLOTS = {EquipmentSlotType.HEAD, EquipmentSlotType.CHEST, EquipmentSlotType.LEGS, EquipmentSlotType.FEET};
     
     private final LazyOptional<IRadiationRecipient> lazyOptional = LazyOptional.of(() -> this);
     
@@ -39,7 +38,7 @@ public class CapabilityRadiationRecipient implements IRadiationRecipient, ICapab
     }
     
     @Override
-	public <T> @NotNull LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
+	public <T> LazyOptional<T> getCapability(Capability<T> cap, @Nullable Direction side) {
 		if(cap == null || cap != VoltaicCapabilities.CAPABILITY_RADIATIONRECIPIENT) {
 			return LazyOptional.empty();
 		}
@@ -47,8 +46,8 @@ public class CapabilityRadiationRecipient implements IRadiationRecipient, ICapab
 	}
 
 	@Override
-	public CompoundTag serializeNBT() {
-		CompoundTag tag = new CompoundTag();
+	public CompoundNBT serializeNBT() {
+		CompoundNBT tag = new CompoundNBT();
 		tag.putDouble("recieved", recieved);
 		tag.putDouble("recievedstrength", recievedStrength);
 		tag.putDouble("prevrecieved", prevRecieved);
@@ -57,7 +56,7 @@ public class CapabilityRadiationRecipient implements IRadiationRecipient, ICapab
 	}
 
 	@Override
-	public void deserializeNBT(CompoundTag nbt) {
+	public void deserializeNBT(CompoundNBT nbt) {
 		if(VoltaicCapabilities.CAPABILITY_RADIATIONRECIPIENT == null) {
 			return;
 		}
@@ -74,13 +73,16 @@ public class CapabilityRadiationRecipient implements IRadiationRecipient, ICapab
             return;
         }
 
-        if (entity instanceof Player player && (player.isCreative() || player.isSpectator())) {
-            recieved += rads;
-            recievedStrength += strength;
-            return;
+        if (entity instanceof PlayerEntity) {
+        	PlayerEntity player = (PlayerEntity) entity;
+        	if(player.isCreative() || player.isSpectator()) {
+        		recieved += rads;
+                recievedStrength += strength;
+                return;
+        	}
         }
 
-        if(entity.hasEffect(VoltaicEffects.RADIATION_RESISTANCE.get())) {
+        if(entity.hasEffect(VoltaicEffects.RADIATION_RESISTANCE)) {
             if(rads <= VoltaicConstants.IODINE_RESISTANCE_THRESHHOLD) {
             	recieved += rads;
                 recievedStrength += strength;
@@ -92,7 +94,7 @@ public class CapabilityRadiationRecipient implements IRadiationRecipient, ICapab
 
         int count = 0;
 
-        for (EquipmentSlot slot : ARMOR_SLOTS) {
+        for (EquipmentSlotType slot : ARMOR_SLOTS) {
 
             ItemStack stack = entity.getItemBySlot(slot);
 
@@ -120,18 +122,18 @@ public class CapabilityRadiationRecipient implements IRadiationRecipient, ICapab
             int amplitude = getAmplitudeFromRadiation(rads, strength);
             int time = getDurationFromRadiation(rads);
 
-            if (entity.hasEffect(VoltaicEffects.RADIATION.get())) {
+            if (entity.hasEffect(VoltaicEffects.RADIATION)) {
 
-                MobEffectInstance instance = entity.getEffect(VoltaicEffects.RADIATION.get());
+                EffectInstance instance = entity.getEffect(VoltaicEffects.RADIATION);
 
                 if (instance.getAmplifier() > amplitude) {
-                    entity.addEffect(new MobEffectInstance(VoltaicEffects.RADIATION.get(), time + instance.getDuration(), instance.getAmplifier(), false, true));
+                    entity.addEffect(new EffectInstance(VoltaicEffects.RADIATION, time + instance.getDuration(), instance.getAmplifier(), false, true));
                 } else {
-                    entity.addEffect(new MobEffectInstance(VoltaicEffects.RADIATION.get(), time + instance.getDuration(), amplitude, false, true));
+                    entity.addEffect(new EffectInstance(VoltaicEffects.RADIATION, time + instance.getDuration(), amplitude, false, true));
                 }
 
             } else {
-                entity.addEffect(new MobEffectInstance(VoltaicEffects.RADIATION.get(), time, amplitude, false, true));
+                entity.addEffect(new EffectInstance(VoltaicEffects.RADIATION, time, amplitude, false, true));
             }
         }
 
@@ -163,5 +165,15 @@ public class CapabilityRadiationRecipient implements IRadiationRecipient, ICapab
     public static int getAmplitudeFromRadiation(double radiation, double strength) {
         return (int) Math.min(40.0, radiation / 100.0 * strength);
     }
+
+	@Override
+	public CompoundNBT toTag() {
+		return serializeNBT();
+	}
+
+	@Override
+	public void fromTag(CompoundNBT nbt) {
+		deserializeNBT(nbt);
+	}
 
 }

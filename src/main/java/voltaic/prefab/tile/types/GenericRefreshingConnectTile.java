@@ -8,31 +8,31 @@ import java.util.Set;
 import com.google.common.collect.Sets;
 import com.mojang.datafixers.util.Pair;
 
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.Direction;
 import voltaic.api.network.cable.IRefreshableCable;
 import voltaic.common.block.connect.EnumConnectType;
 import voltaic.prefab.network.AbstractNetwork;
 import voltaic.prefab.utilities.Scheduler;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.block.state.BlockState;
 
 public abstract class GenericRefreshingConnectTile<CABLETYPE, CONDUCTOR extends GenericRefreshingConnectTile<CABLETYPE, CONDUCTOR, NETWORK>, NETWORK extends AbstractNetwork<CONDUCTOR, CABLETYPE, ?, NETWORK>> extends GenericConnectTile implements IRefreshableCable<CABLETYPE, NETWORK> {
 
     private final EnumConnectType[] previousConnections = {EnumConnectType.NONE, EnumConnectType.NONE, EnumConnectType.NONE, EnumConnectType.NONE, EnumConnectType.NONE, EnumConnectType.NONE};
-    protected final BlockEntity[] recieverConnections = new BlockEntity[6];
-    protected final BlockEntity[] prevRecieverConnections = new BlockEntity[6];
-    protected final BlockEntity[] cableConnections = new BlockEntity[6];
-    protected final BlockEntity[] prevCableConnections = new BlockEntity[6];
+    protected final TileEntity[] recieverConnections = new TileEntity[6];
+    protected final TileEntity[] prevRecieverConnections = new TileEntity[6];
+    protected final TileEntity[] cableConnections = new TileEntity[6];
+    protected final TileEntity[] prevCableConnections = new TileEntity[6];
     protected final HashSet<CONDUCTOR> connectionSet = new HashSet<>();
 
     private NETWORK network;
 
     public boolean isQueued = false;
+    
+    private boolean loaded = false;
 
-    public GenericRefreshingConnectTile(BlockEntityType<?> tile, BlockPos pos, BlockState state) {
-        super(tile, pos, state);
+    public GenericRefreshingConnectTile(TileEntityType<?> tile) {
+        super(tile);
     }
 
     public Pair<List<UpdatedReceiver>, List<UpdatedConductor<CONDUCTOR>>> updateAdjacent(Direction[] dirs) {
@@ -50,11 +50,11 @@ public abstract class GenericRefreshingConnectTile<CABLETYPE, CONDUCTOR extends 
             connection = connectionsArr[ordinal];
             prevConnection = previousConnections[ordinal];
 
-            BlockEntity entity = level.getBlockEntity(worldPosition.relative(dir));
-
             if (prevConnection == connection) {
                 continue;
             }
+            
+            TileEntity entity = level.getBlockEntity(worldPosition.relative(dir));
 
             if (connection == EnumConnectType.NONE && prevConnection == EnumConnectType.WIRE) {
                 updatedConductors.add(new UpdatedConductor<>((CONDUCTOR) prevCableConnections[ordinal], true));
@@ -83,7 +83,7 @@ public abstract class GenericRefreshingConnectTile<CABLETYPE, CONDUCTOR extends 
 
         if (flag) {
             connectionSet.clear();
-            for (BlockEntity entity : cableConnections) {
+            for (TileEntity entity : cableConnections) {
                 if (entity == null) {
                     continue;
                 }
@@ -123,7 +123,9 @@ public abstract class GenericRefreshingConnectTile<CABLETYPE, CONDUCTOR extends 
         if (level == null) {
             if (!isQueued) {
                 isQueued = true;
-                Scheduler.schedule(1, () -> updateNetwork(dirs));
+                Scheduler.schedule(20, () -> updateNetwork(dirs));
+            } else {
+            	return;
             }
         }
 
@@ -132,8 +134,11 @@ public abstract class GenericRefreshingConnectTile<CABLETYPE, CONDUCTOR extends 
         if(level.isClientSide) {
             return;
         }
-
+        //locked = true;
+        
         Pair<List<UpdatedReceiver>, List<UpdatedConductor<CONDUCTOR>>> changed = updateAdjacent(dirs);
+        
+        //locked = false;
 
         if (changed.getSecond().isEmpty()) {
 
@@ -225,12 +230,12 @@ public abstract class GenericRefreshingConnectTile<CABLETYPE, CONDUCTOR extends 
     }
 
     @Override
-    public BlockEntity[] getConectedRecievers() {
+    public TileEntity[] getConectedRecievers() {
         return recieverConnections;
     }
 
     @Override
-    public BlockEntity[] getConnectedCables() {
+    public TileEntity[] getConnectedCables() {
         return cableConnections;
     }
 
@@ -259,14 +264,54 @@ public abstract class GenericRefreshingConnectTile<CABLETYPE, CONDUCTOR extends 
     @Override
     public void onLoad() {
         super.onLoad();
-        updateNetwork(Direction.values());
+        Scheduler.schedule(1, () -> {
+        	updateNetwork(Direction.values());
+        });   
     }
 
-    public static record UpdatedReceiver(BlockEntity reciever, boolean removed, Direction dir) {
+    public static class UpdatedReceiver {
+    	
+    	private final TileEntity reciever;
+    	private final boolean removed;
+    	private final Direction dir;
+    	
+    	public UpdatedReceiver(TileEntity reciever, boolean removed, Direction dir) {
+    		this.reciever = reciever;
+    		this.removed = removed;
+    		this.dir = dir;
+    	}
+    	
+    	public TileEntity reciever() {
+    		return reciever;
+    	}
+    	
+    	public boolean removed() {
+    		return removed;
+    	}
+    	
+    	public Direction dir() {
+    		return dir;
+    	}
 
     }
 
-    public static record UpdatedConductor<CONDUCTOR>(CONDUCTOR conductor, boolean removed) {
+    public static class UpdatedConductor<CONDUCTOR> {
+    	
+    	private final CONDUCTOR conductor;
+    	private final boolean removed;
+    	
+    	public UpdatedConductor(CONDUCTOR conductor, boolean removed) {
+    		this.conductor = conductor;
+    		this.removed = removed;
+    	}
+    	
+    	public CONDUCTOR conductor() {
+    		return conductor;
+    	}
+    	
+    	public boolean removed() {
+    		return removed;
+    	}
 
     }
 

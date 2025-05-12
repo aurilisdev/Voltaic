@@ -10,12 +10,12 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import net.minecraft.data.DataGenerator;
-import net.minecraft.data.DataProvider;
-import net.minecraft.data.HashCache;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.data.DirectoryCache;
+import net.minecraft.data.IDataProvider;
+import net.minecraft.util.ResourceLocation;
 import voltaic.Voltaic;
 
-public abstract class BaseAdvancementProvider implements DataProvider {
+public abstract class BaseAdvancementProvider implements IDataProvider {
 	
 	private static final Gson GSON = (new GsonBuilder()).setPrettyPrinting().disableHtmlEscaping().create();
 
@@ -28,7 +28,7 @@ public abstract class BaseAdvancementProvider implements DataProvider {
 	}
 
 	@Override
-	public void run(HashCache cache) throws IOException {
+	public void run(DirectoryCache cache) throws IOException {
 		Set<ResourceLocation> registeredAdvancements = Sets.newHashSet();
 		Path path = generator.getOutputFolder();
 		Consumer<AdvancementBuilder> consumer = advancementBuilder -> {
@@ -38,7 +38,7 @@ public abstract class BaseAdvancementProvider implements DataProvider {
 			Path filePath = path.resolve("data/" + advancementBuilder.id.getNamespace() + "/advancements/" + advancementBuilder.id.getPath() + ".json");
 
 			try {
-				DataProvider.save(GSON, cache, advancementBuilder.serializeToJson(), filePath);
+				IDataProvider.save(GSON, cache, advancementBuilder.serializeToJson(), filePath);
 			} catch (IOException ioexception) {
 				Voltaic.LOGGER.error("Couldn't save advancement {}", filePath, ioexception);
 			}

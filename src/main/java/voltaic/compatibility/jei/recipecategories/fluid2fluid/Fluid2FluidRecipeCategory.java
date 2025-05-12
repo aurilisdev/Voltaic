@@ -10,12 +10,12 @@ import voltaic.common.recipe.categories.fluid2fluid.Fluid2FluidRecipe;
 import voltaic.common.recipe.recipeutils.FluidIngredient;
 import voltaic.common.recipe.recipeutils.ProbableFluid;
 import voltaic.compatibility.jei.recipecategories.AbstractRecipeCategory;
+import voltaic.compatibility.jei.utils.RecipeType;
 import voltaic.compatibility.jei.utils.gui.types.BackgroundObject;
 import voltaic.prefab.utilities.CapabilityUtils;
 import mezz.jei.api.helpers.IGuiHelper;
-import mezz.jei.api.recipe.RecipeType;
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -24,7 +24,7 @@ import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 
 public abstract class Fluid2FluidRecipeCategory<T extends VoltaicRecipe> extends AbstractRecipeCategory<T> {
 
-    public Fluid2FluidRecipeCategory(IGuiHelper guiHelper, Component title, ItemStack inputMachine, BackgroundObject wrapper, RecipeType<T> recipeType, int animationTime) {
+    public Fluid2FluidRecipeCategory(IGuiHelper guiHelper, ITextComponent title, ItemStack inputMachine, BackgroundObject wrapper, RecipeType<T> recipeType, int animationTime) {
         super(guiHelper, title, inputMachine, wrapper, recipeType, animationTime);
     }
 

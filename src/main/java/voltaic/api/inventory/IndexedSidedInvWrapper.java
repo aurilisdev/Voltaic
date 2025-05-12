@@ -2,12 +2,12 @@ package voltaic.api.inventory;
 
 import java.util.function.IntUnaryOperator;
 
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nullable;
 
 import voltaic.prefab.tile.components.type.ComponentInventory;
-import net.minecraft.core.Direction;
-import net.minecraft.world.WorldlyContainer;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.inventory.ISidedInventory;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.Direction;
 import net.minecraftforge.items.IItemHandlerModifiable;
 
 public class IndexedSidedInvWrapper implements IItemHandlerModifiable {
@@ -44,7 +44,7 @@ public class IndexedSidedInvWrapper implements IItemHandlerModifiable {
         return ret;
     }
 
-    public static int getSlot(WorldlyContainer inv, int slot, @Nullable Direction side) {
+    public static int getSlot(ISidedInventory inv, int slot, @Nullable Direction side) {
         int[] slots = inv.getSlotsForFace(side);
         if (slot < slots.length)
             return slots[slot];
@@ -99,7 +99,7 @@ public class IndexedSidedInvWrapper implements IItemHandlerModifiable {
             if (stackInSlot.getCount() >= Math.min(stackInSlot.getMaxStackSize(), getSlotLimit(slot)))
                 return stack;
 
-            if (!ItemStack.isSameItemSameTags(stack, stackInSlot))
+            if (!ItemStack.isSame(stack, stackInSlot))
                 return stack;
 
             if (!inv.canPlaceItemThroughFace(slot1, stack, side) || !inv.canPlaceItem(slot1, stack))

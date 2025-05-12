@@ -6,31 +6,31 @@ import voltaic.prefab.tile.IWrenchable;
 
 import java.util.function.Supplier;
 
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemUseContext;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.ActionResultType;
+import net.minecraft.util.Hand;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 public class ItemWrench extends ItemVoltaic implements IWrenchItem {
 
-	public ItemWrench(Properties properties, Supplier<CreativeModeTab> creativeTab) {
+	public ItemWrench(Properties properties, Supplier<ItemGroup> creativeTab) {
 		super(properties, creativeTab);
 	}
 
 	@Override
-	public InteractionResult useOn(UseOnContext context) {
+	public ActionResultType useOn(ItemUseContext context) {
 
-		Player player = context.getPlayer();
+		PlayerEntity player = context.getPlayer();
 
 		if (player == null) {
-			return InteractionResult.FAIL;
+			return ActionResultType.FAIL;
 		}
 
 		BlockPos pos = context.getClickedPos();
@@ -39,7 +39,9 @@ public class ItemWrench extends ItemVoltaic implements IWrenchItem {
 
 		ItemStack stack = player.getItemInHand(context.getHand());
 
-		if (block instanceof IWrenchable wrenchable) {
+		if (block instanceof IWrenchable) {
+			
+			IWrenchable wrenchable = (IWrenchable) block;
 
 			if (player.isShiftKeyDown()) {
 
@@ -47,7 +49,7 @@ public class ItemWrench extends ItemVoltaic implements IWrenchItem {
 
 					wrenchable.onPickup(stack, pos, player);
 
-					return InteractionResult.CONSUME;
+					return ActionResultType.CONSUME;
 
 				}
 
@@ -55,27 +57,27 @@ public class ItemWrench extends ItemVoltaic implements IWrenchItem {
 
 				wrenchable.onRotate(stack, pos, player);
 
-				return InteractionResult.CONSUME;
+				return ActionResultType.CONSUME;
 
 			}
 
 		}
 
-		return InteractionResult.PASS;
+		return ActionResultType.PASS;
 	}
 
 	@Override
-	public InteractionResultHolder<ItemStack> use(Level pLevel, Player pPlayer, InteractionHand pUsedHand) {
-		return InteractionResultHolder.fail(pPlayer.getItemInHand(pUsedHand));
+	public ActionResult<ItemStack> use(World pLevel, PlayerEntity pPlayer, Hand pUsedHand) {
+		return ActionResult.fail(pPlayer.getItemInHand(pUsedHand));
 	}
 
 	@Override
-	public boolean shouldRotate(ItemStack stack, BlockPos pos, Player player) {
+	public boolean shouldRotate(ItemStack stack, BlockPos pos, PlayerEntity player) {
 		return true;
 	}
 
 	@Override
-	public boolean shouldPickup(ItemStack stack, BlockPos pos, Player player) {
+	public boolean shouldPickup(ItemStack stack, BlockPos pos, PlayerEntity player) {
 		return true;
 	}
 }

@@ -17,5 +17,7 @@ public interface ILocationStorage {
 	List<Location> getLocations();
 
 	Location getLocation(int index);
+	
+	void setLocations(List<Location> locations);
 
 }

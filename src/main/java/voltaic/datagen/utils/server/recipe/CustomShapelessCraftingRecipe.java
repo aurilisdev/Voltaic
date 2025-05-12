@@ -9,14 +9,14 @@ import javax.annotation.Nullable;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
-import net.minecraft.data.recipes.FinishedRecipe;
-import net.minecraft.data.recipes.ShapelessRecipeBuilder;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.data.IFinishedRecipe;
+import net.minecraft.data.ShapelessRecipeBuilder;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.tags.ITag.INamedTag;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.tags.TagKey;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.common.crafting.conditions.ICondition;
 
@@ -80,7 +80,7 @@ public class CustomShapelessCraftingRecipe extends ShapelessRecipeBuilder.Result
 			return this;
 		}
 
-		public Builder addIngredient(TagKey<Item> tag) {
+		public Builder addIngredient(INamedTag<Item> tag) {
 			ingredients.add(Ingredient.of(tag));
 			return this;
 		}
@@ -99,12 +99,12 @@ public class CustomShapelessCraftingRecipe extends ShapelessRecipeBuilder.Result
 			return this;
 		}
 
-		public void complete(String parent, String name, Consumer<FinishedRecipe> consumer) {
+		public void complete(String parent, String name, Consumer<IFinishedRecipe> consumer) {
 			consumer.accept(new CustomShapelessCraftingRecipe(new ResourceLocation(parent, name), item, count, ingredients, recipeConditions));
 		}
 
-		private TagKey<Item> itemTag(ResourceLocation tag) {
-			return ItemTags.create(tag);
+		private INamedTag<Item> itemTag(ResourceLocation tag) {
+			return ItemTags.createOptional(tag);
 		}
 
 	}

@@ -1,6 +1,6 @@
 package voltaic.api.electricity;
 
-import net.minecraft.sounds.SoundEvent;
+import net.minecraft.util.SoundEvent;
 
 /**
  * Wrapper interface allowing for a material a wire is resting on to have a certain voltage value it can insulate to

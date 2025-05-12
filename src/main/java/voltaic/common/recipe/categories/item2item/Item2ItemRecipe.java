@@ -11,8 +11,8 @@ import voltaic.common.recipe.recipeutils.ProbableItem;
 import voltaic.prefab.tile.components.IComponentType;
 import voltaic.prefab.tile.components.type.ComponentInventory;
 import voltaic.prefab.tile.components.type.ComponentProcessor;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.items.wrapper.RecipeWrapper;
 
 public abstract class Item2ItemRecipe extends VoltaicRecipe {

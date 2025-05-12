@@ -10,13 +10,13 @@ import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.network.PacketBuffer;
+import net.minecraft.tags.ITag.INamedTag;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.tags.TagKey;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraftforge.registries.ForgeRegistries;
 import voltaic.api.codec.StreamCodec;
 
 public class CountableIngredient extends Ingredient {
@@ -25,13 +25,13 @@ public class CountableIngredient extends Ingredient {
 	//
 	instance.group(
 			//
-			ForgeRegistries.ITEMS.getCodec().fieldOf("item").forGetter(instance0 -> instance0.item),
+			ItemStack.CODEC.fieldOf("item").forGetter(instance0 -> new ItemStack(instance0.item)),
 			//
 			Codec.INT.fieldOf("count").forGetter(instance0 -> instance0.stackSize)
 
 	)
 			//
-			.apply(instance, (item, amount) -> new CountableIngredient(new ItemStack(item, amount)))
+			.apply(instance, (item, amount) -> new CountableIngredient(new ItemStack(item.getItem(), amount)))
 
 	);
 
@@ -39,13 +39,13 @@ public class CountableIngredient extends Ingredient {
 	//
 	instance.group(
 			//
-			TagKey.codec(ForgeRegistries.Keys.ITEMS).fieldOf("tag").forGetter(instance0 -> instance0.tag),
+			ResourceLocation.CODEC.fieldOf("tag").forGetter(instance0 -> instance0.tag.getName()),
 			//
 			Codec.INT.fieldOf("count").forGetter(instance0 -> instance0.stackSize)
 
 	)
 			//
-			.apply(instance, (tag, count) -> new CountableIngredient(tag, count))
+			.apply(instance, (tag, count) -> new CountableIngredient(ItemTags.createOptional(tag), count))
 	//
 
 	);
@@ -55,7 +55,7 @@ public class CountableIngredient extends Ingredient {
 
 		if (value.tag != null) {
 			return Either.left(value);
-		} else if (value.ingredient != null) {
+		} else if (value.item != null) {
 			return Either.right(value);
 		} else {
 			throw new UnsupportedOperationException("The Countable Ingredient neither has a tag nor a direct item value defined!");
@@ -65,13 +65,13 @@ public class CountableIngredient extends Ingredient {
 
 	public static final Codec<List<CountableIngredient>> LIST_CODEC = CODEC.listOf();
 
-	public static final StreamCodec<FriendlyByteBuf, CountableIngredient> STREAM_CODEC = new StreamCodec<>() {
+	public static final StreamCodec<PacketBuffer, CountableIngredient> STREAM_CODEC = new StreamCodec<PacketBuffer, CountableIngredient>() {
 
 		@Override
-		public void encode(FriendlyByteBuf buffer, CountableIngredient value) {
+		public void encode(PacketBuffer buffer, CountableIngredient value) {
 			buffer.writeBoolean(value.item == null);
-			if(value.item == null) {
-				StreamCodec.RESOURCE_LOCATION.encode(buffer, value.tag.location());
+			if (value.item == null) {
+				StreamCodec.RESOURCE_LOCATION.encode(buffer, value.tag.getName());
 				StreamCodec.INT.encode(buffer, value.stackSize);
 			} else {
 				StreamCodec.ITEM_STACK.encode(buffer, new ItemStack(value.item, value.stackSize));
@@ -79,9 +79,9 @@ public class CountableIngredient extends Ingredient {
 		}
 
 		@Override
-		public CountableIngredient decode(FriendlyByteBuf buffer) {
-			if(buffer.readBoolean()) {
-				return new CountableIngredient(ItemTags.create(StreamCodec.RESOURCE_LOCATION.decode(buffer)), StreamCodec.INT.decode(buffer));
+		public CountableIngredient decode(PacketBuffer buffer) {
+			if (buffer.readBoolean()) {
+				return new CountableIngredient(ItemTags.createOptional(StreamCodec.RESOURCE_LOCATION.decode(buffer)), StreamCodec.INT.decode(buffer));
 			} else {
 				return new CountableIngredient(StreamCodec.ITEM_STACK.decode(buffer));
 			}
@@ -89,10 +89,10 @@ public class CountableIngredient extends Ingredient {
 
 	};
 
-	public static final StreamCodec<FriendlyByteBuf, List<CountableIngredient>> LIST_STREAM_CODEC = new StreamCodec<>() {
+	public static final StreamCodec<PacketBuffer, List<CountableIngredient>> LIST_STREAM_CODEC = new StreamCodec<PacketBuffer, List<CountableIngredient>>() {
 
 		@Override
-		public void encode(FriendlyByteBuf buf, List<CountableIngredient> ings) {
+		public void encode(PacketBuffer buf, List<CountableIngredient> ings) {
 			buf.writeInt(ings.size());
 			for (CountableIngredient ing : ings) {
 				STREAM_CODEC.encode(buf, ing);
@@ -100,7 +100,7 @@ public class CountableIngredient extends Ingredient {
 		}
 
 		@Override
-		public List<CountableIngredient> decode(FriendlyByteBuf buf) {
+		public List<CountableIngredient> decode(PacketBuffer buf) {
 			int length = buf.readInt();
 			List<CountableIngredient> ings = new ArrayList<>();
 			for (int i = 0; i < length; i++) {
@@ -111,11 +111,8 @@ public class CountableIngredient extends Ingredient {
 	};
 
 	private final int stackSize;
-
-	private final Ingredient ingredient;
-
 	@Nullable
-	private TagKey<Item> tag;
+	private INamedTag<Item> tag;
 	@Nullable
 	private Item item;
 
@@ -124,42 +121,53 @@ public class CountableIngredient extends Ingredient {
 
 	public CountableIngredient(ItemStack stack) {
 		super(Stream.empty());
-		ingredient = Ingredient.of(stack);
 		item = stack.getItem();
 		stackSize = stack.getCount();
 	}
 
-	public CountableIngredient(TagKey<Item> tag, int stackSize) {
+	public CountableIngredient(INamedTag<Item> tag, int stackSize) {
 		super(Stream.empty());
-		ingredient = Ingredient.of(tag);
 		this.tag = tag;
 		this.stackSize = stackSize;
 	}
 
 	@Override
 	public boolean test(ItemStack stack) {
-		return ingredient.test(stack) && stackSize <= stack.getCount();
+		if (stack == null) {
+			return false;
+		} else {
+			getItems();
+			if (this.countedItems.length == 0) {
+				return stack.isEmpty();
+			} else {
+				for (ItemStack itemstack : this.countedItems) {
+					if (itemstack.getItem() == stack.getItem() && stack.getCount() >= stackSize) {
+						return true;
+					}
+				}
+
+				return false;
+			}
+		}
 	}
 
 	@Override
 	public ItemStack[] getItems() {
 		if (countedItems == null) {
-			ItemStack[] items = ingredient.getItems();
-			for (ItemStack item : items) {
-				item.setCount(stackSize);
+			if (item != null) {
+				countedItems = new ItemStack[1];
+				countedItems[0] = new ItemStack(item, stackSize);
+			} else if (tag != null) {
+				List<Item> values = tag.getValues();
+				countedItems = new ItemStack[values.size()];
+				int index = 0;
+				for (Item itm : values) {
+					countedItems[index] = new ItemStack(itm, stackSize);
+					index++;
+				}
+			} else {
+				countedItems = new ItemStack[0];
 			}
-			countedItems = items;
-		}
-		return countedItems;
-	}
-
-	public ItemStack[] getItemsArray() {
-		if (countedItems == null) {
-			ItemStack[] items = ingredient.getItems();
-			for (ItemStack item : items) {
-				item.setCount(stackSize);
-			}
-			countedItems = items;
 		}
 		return countedItems;
 	}
@@ -175,14 +183,27 @@ public class CountableIngredient extends Ingredient {
 
 	@Override
 	public String toString() {
-		return getItemsArray().length == 0 ? "empty" : getItemsArray()[0].toString();
+		return getItems().length == 0 ? "empty" : getItems()[0].toString();
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof CountableIngredient otherIng) {
+		if (obj instanceof CountableIngredient) {
+			CountableIngredient otherIng = (CountableIngredient) obj;
+			
+			if(otherIng.stackSize != stackSize) {
+				return false;
+			}
+			
+			if((tag != null && otherIng.tag == null) || (tag == null && otherIng.tag != null)) {
+				return false;
+			}
+			
+			if((item != null && otherIng.item == null) || (item == null && otherIng.item != null)) {
+				return false;
+			}
 
-			return otherIng.stackSize == stackSize && ingredient.equals(otherIng.ingredient);
+			return true;
 
 		}
 		return false;

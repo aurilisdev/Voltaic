@@ -1,8 +1,8 @@
 package voltaic.compatibility.jei.utils.label;
 
+import net.minecraft.util.text.ITextComponent;
 import voltaic.compatibility.jei.recipecategories.AbstractRecipeCategory;
 import voltaic.prefab.utilities.math.Color;
-import net.minecraft.network.chat.Component;
 
 public abstract class AbstractLabelWrapper {
 
@@ -34,5 +34,5 @@ public abstract class AbstractLabelWrapper {
 		return xIsEnd;
 	}
 
-	public abstract Component getComponent(AbstractRecipeCategory<?> category, Object recipe);
+	public abstract ITextComponent getComponent(AbstractRecipeCategory<?> category, Object recipe);
 }

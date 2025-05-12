@@ -1,7 +1,7 @@
 package voltaic.client.screen;
 
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import voltaic.common.inventory.container.ContainerO2OProcessor;
@@ -17,7 +17,7 @@ import voltaic.prefab.tile.components.type.ComponentProcessor;
 
 @OnlyIn(Dist.CLIENT)
 public class ScreenO2OProcessorTriple extends GenericScreen<ContainerO2OProcessorTriple> {
-	public ScreenO2OProcessorTriple(ContainerO2OProcessorTriple container, Inventory playerInventory, Component title) {
+	public ScreenO2OProcessorTriple(ContainerO2OProcessorTriple container, PlayerInventory playerInventory, ITextComponent title) {
 		super(container, playerInventory, title);
 		addComponent(new ScreenComponentProgress(ScreenComponentProgress.ProgressBars.PROGRESS_ARROW_RIGHT, () -> {
 			GenericTile furnace = container.getSafeHost();

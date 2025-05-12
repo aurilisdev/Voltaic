@@ -1,21 +1,20 @@
 package voltaic.prefab.utilities.object;
 
-import com.mojang.math.Vector3f;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import io.netty.buffer.ByteBuf;
-import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.entity.Entity;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.PacketBuffer;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.world.IBlockReader;
+import net.minecraft.world.World;
 import voltaic.api.codec.StreamCodec;
 
 public final class Location {
@@ -34,17 +33,17 @@ public final class Location {
 //
     );
 
-    public static final StreamCodec<ByteBuf, Location> STREAM_CODEC = new StreamCodec<>() {
+    public static final StreamCodec<PacketBuffer, Location> STREAM_CODEC = new StreamCodec<PacketBuffer, Location>() {
 
 		@Override
-		public void encode(ByteBuf buffer, Location value) {
+		public void encode(PacketBuffer buffer, Location value) {
 			buffer.writeDouble(value.x);
 			buffer.writeDouble(value.y);
 			buffer.writeDouble(value.z);
 		}
 
 		@Override
-		public Location decode(ByteBuf buffer) {
+		public Location decode(PacketBuffer buffer) {
 			return new Location(buffer.readDouble(), buffer.readDouble(), buffer.readDouble());
 		}
     	
@@ -100,7 +99,7 @@ public final class Location {
         z = vec.z();
     }
 
-    public Location(Vec3 vec) {
+    public Location(Vector3d vec) {
         x = vec.x;
         y = vec.y;
         z = vec.z;
@@ -191,32 +190,32 @@ public final class Location {
         return new BlockPos((int) Math.floor(x), (int) Math.floor(y), (int) Math.floor(z));
     }
 
-    public BlockState getBlockState(BlockGetter reader) {
+    public BlockState getBlockState(IBlockReader reader) {
         return reader.getBlockState(toBlockPos());
     }
 
-    public Block getBlock(BlockGetter reader) {
+    public Block getBlock(IBlockReader reader) {
         return getBlockState(reader).getBlock();
     }
 
-    public BlockEntity getTile(BlockGetter reader) {
+    public TileEntity getTile(IBlockReader reader) {
         return reader.getBlockEntity(toBlockPos());
     }
 
-    public Location setBlockState(Level world, BlockState state) {
+    public Location setBlockState(World world, BlockState state) {
         world.setBlockAndUpdate(toBlockPos(), state);
         return this;
     }
 
-    public Location setBlock(Level world, Block block) {
+    public Location setBlock(World world, Block block) {
         return setBlockState(world, block.defaultBlockState());
     }
 
-    public Location setAir(Level world) {
+    public Location setAir(World world) {
         return setBlock(world, Blocks.AIR);
     }
 
-    public Location setAirFast(Level world) {
+    public Location setAirFast(World world) {
         world.setBlock(toBlockPos(), Blocks.AIR.defaultBlockState(), 2 | 16);
         return this;
     }
@@ -250,21 +249,21 @@ public final class Location {
         return "[" + intX() + ", " + intY() + ", " + intZ() + "]";
     }
 
-    public static Location readFromNBT(CompoundTag nbt, String name) {
+    public static Location readFromNBT(CompoundNBT nbt, String name) {
         return new Location(nbt.getDouble(name + "X"), nbt.getDouble(name + "Y"), nbt.getDouble(name + "Z"));
     }
 
-    public void writeToNBT(CompoundTag nbt, String name) {
+    public void writeToNBT(CompoundNBT nbt, String name) {
         nbt.putDouble(name + "X", x);
         nbt.putDouble(name + "Y", y);
         nbt.putDouble(name + "Z", z);
     }
 
-    public void toBuffer(FriendlyByteBuf buffer) {
+    public void toBuffer(PacketBuffer buffer) {
         STREAM_CODEC.encode(buffer, this);
     }
 
-    public static Location fromBuffer(FriendlyByteBuf buffer) {
+    public static Location fromBuffer(PacketBuffer buffer) {
         return STREAM_CODEC.decode(buffer);
     }
 }

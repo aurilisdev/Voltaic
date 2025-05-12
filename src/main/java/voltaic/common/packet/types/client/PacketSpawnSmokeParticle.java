@@ -2,9 +2,9 @@ package voltaic.common.packet.types.client;
 
 import java.util.function.Supplier;
 
-import net.minecraft.core.BlockPos;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent.Context;
+import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.fml.network.NetworkEvent.Context;
 
 public class PacketSpawnSmokeParticle {
 
@@ -22,11 +22,11 @@ public class PacketSpawnSmokeParticle {
 		ctx.setPacketHandled(true);
 	}
 
-	public static void encode(PacketSpawnSmokeParticle pkt, FriendlyByteBuf buf) {
+	public static void encode(PacketSpawnSmokeParticle pkt, PacketBuffer buf) {
 		buf.writeBlockPos(pkt.pos);
 	}
 
-	public static PacketSpawnSmokeParticle decode(FriendlyByteBuf buf) {
+	public static PacketSpawnSmokeParticle decode(PacketBuffer buf) {
 		return new PacketSpawnSmokeParticle(buf.readBlockPos());
 	}
 }

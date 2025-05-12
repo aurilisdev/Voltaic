@@ -1,23 +1,21 @@
 package voltaic.client.particle.fluiddrop;
 
-import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.particle.IAnimatedSprite;
+import net.minecraft.client.particle.IParticleFactory;
+import net.minecraft.client.particle.IParticleRenderType;
 import net.minecraft.client.particle.Particle;
-import net.minecraft.client.particle.ParticleEngine;
-import net.minecraft.client.particle.ParticleProvider;
-import net.minecraft.client.particle.ParticleRenderType;
-import net.minecraft.client.particle.SpriteSet;
-import net.minecraft.client.particle.TextureSheetParticle;
-import net.minecraft.util.Mth;
+import net.minecraft.client.particle.SpriteTexturedParticle;
+import net.minecraft.client.particle.ParticleManager.IParticleMetaFactory;
+import net.minecraft.client.world.ClientWorld;
+import net.minecraft.util.math.MathHelper;
 
-public class ParticleFluidDrop extends TextureSheetParticle {
+public class ParticleFluidDrop extends SpriteTexturedParticle {
 
-    private final SpriteSet sprites;
+    private final IAnimatedSprite sprites;
 
-    public ParticleFluidDrop(ClientLevel level, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed, ParticleOptionFluidDrop options, SpriteSet set) {
+    public ParticleFluidDrop(ClientWorld level, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed, ParticleOptionFluidDrop options, IAnimatedSprite set) {
         super(level, x, y, z, xSpeed, ySpeed, zSpeed);
         sprites = set;
-        this.friction = 0.96F;
-        this.speedUpWhenYMotionIsBlocked = true;
         this.xd = 0;
         this.yd = ySpeed;
         this.zd = 0;
@@ -29,13 +27,13 @@ public class ParticleFluidDrop extends TextureSheetParticle {
     }
 
     @Override
-    public ParticleRenderType getRenderType() {
-        return ParticleRenderType.PARTICLE_SHEET_OPAQUE;
+    public IParticleRenderType getRenderType() {
+        return IParticleRenderType.PARTICLE_SHEET_OPAQUE;
     }
 
     @Override
     public float getQuadSize(float scaleFactor) {
-        return this.quadSize * Mth.clamp((this.age + scaleFactor) / this.lifetime * 32.0F, 0.0F, 1.0F);
+        return this.quadSize * MathHelper.clamp((this.age + scaleFactor) / this.lifetime * 32.0F, 0.0F, 1.0F);
     }
 
     @Override
@@ -44,21 +42,21 @@ public class ParticleFluidDrop extends TextureSheetParticle {
         this.setSpriteFromAge(this.sprites);
     }
 
-    public static class Factory implements ParticleProvider<ParticleOptionFluidDrop>, ParticleEngine.SpriteParticleRegistration<ParticleOptionFluidDrop> {
+    public static class Factory implements IParticleFactory<ParticleOptionFluidDrop>, IParticleMetaFactory<ParticleOptionFluidDrop> {
 
-        private final SpriteSet sprites;
+        private final IAnimatedSprite sprites;
 
-        public Factory(SpriteSet sprites) {
+        public Factory(IAnimatedSprite sprites) {
             this.sprites = sprites;
         }
 
         @Override
-        public Particle createParticle(ParticleOptionFluidDrop type, ClientLevel level, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
+        public Particle createParticle(ParticleOptionFluidDrop type, ClientWorld level, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
             return new ParticleFluidDrop(level, x, y, z, xSpeed, ySpeed, zSpeed, type, sprites);
         }
 
         @Override
-        public ParticleProvider<ParticleOptionFluidDrop> create(SpriteSet sprites) {
+        public IParticleFactory<ParticleOptionFluidDrop> create(IAnimatedSprite sprites) {
             return new ParticleFluidDrop.Factory(sprites);
         }
 

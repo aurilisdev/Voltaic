@@ -2,13 +2,13 @@ package voltaic.prefab.screen.component.types;
 
 import java.util.function.Consumer;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.matrix.MatrixStack;
 
+import net.minecraft.util.ResourceLocation;
 import voltaic.Voltaic;
 import voltaic.api.screen.ITexture;
 import voltaic.prefab.screen.component.ScreenComponentGeneric;
 import voltaic.prefab.utilities.RenderingUtils;
-import net.minecraft.resources.ResourceLocation;
 
 public class ScreenComponentVerticalSlider extends ScreenComponentGeneric {
     private int sliderYOffset = 0;
@@ -54,7 +54,7 @@ public class ScreenComponentVerticalSlider extends ScreenComponentGeneric {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (!isHeld && isPointInSlider(this.xLocation, this.yLocation, mouseX - this.gui.getGuiWidth(), mouseY - this.gui.getGuiHeight(), this.width, this.height) && sliderClickConsumer != null) {
+        if (!isHeld && isPointInSlider(this.x, this.y, mouseX - this.gui.getGuiWidth(), mouseY - this.gui.getGuiHeight(), this.width, this.height) && sliderClickConsumer != null) {
             sliderClickConsumer.accept((int) (mouseY - this.gui.getGuiHeight()));
         }
         return super.mouseClicked(mouseX, mouseY, button);
@@ -72,12 +72,12 @@ public class ScreenComponentVerticalSlider extends ScreenComponentGeneric {
     }
 
     @Override
-    public void renderBackground(PoseStack poseStack, int xAxis, int yAxis, int guiWidth, int guiHeight) {
+    public void renderBackground(MatrixStack poseStack, int xAxis, int yAxis, int guiWidth, int guiHeight) {
 
         ITexture bg = VerticalSliderTextures.SLIDER_BACKGROUND;
         RenderingUtils.bindTexture(bg.getLocation());
 
-        blit(poseStack, guiWidth + xLocation - 1, guiHeight + yLocation, width, 1, bg.textureU(), bg.textureV(), bg.textureWidth(), 1, bg.imageWidth(), bg.imageHeight());
+        blit(poseStack, guiWidth + x - 1, guiHeight + y, width, 1, bg.textureU(), bg.textureV(), bg.textureWidth(), 1, bg.imageWidth(), bg.imageHeight());
 
         int permutations = (int) ((height - 2) / 28.0D);
 
@@ -85,13 +85,13 @@ public class ScreenComponentVerticalSlider extends ScreenComponentGeneric {
 
         for (int i = 0; i < permutations; i++) {
 
-        	blit(poseStack, guiWidth + xLocation - 1, guiHeight + yLocation + 1 + i * 28, width, 28, bg.textureU(), bg.textureV() + 1, bg.textureWidth(), 28, bg.imageWidth(), bg.imageHeight());
+        	blit(poseStack, guiWidth + x - 1, guiHeight + y + 1 + i * 28, width, 28, bg.textureU(), bg.textureV() + 1, bg.textureWidth(), 28, bg.imageWidth(), bg.imageHeight());
 
         }
 
-        blit(poseStack, guiWidth + xLocation - 1, guiHeight + yLocation + 1 + 28 * permutations, width, remainder, bg.textureU(), bg.textureV() + 1, bg.textureWidth(), remainder, bg.imageWidth(), bg.imageHeight());
+        blit(poseStack, guiWidth + x - 1, guiHeight + y + 1 + 28 * permutations, width, remainder, bg.textureU(), bg.textureV() + 1, bg.textureWidth(), remainder, bg.imageWidth(), bg.imageHeight());
 
-        blit(poseStack, guiWidth + xLocation - 1, guiHeight + yLocation + height - 1, width, 1, bg.textureU(), bg.textureV() + 29, bg.textureWidth(), 1, bg.imageWidth(), bg.imageHeight());
+        blit(poseStack, guiWidth + x - 1, guiHeight + y + height - 1, width, 1, bg.textureU(), bg.textureV() + 29, bg.textureWidth(), 1, bg.imageWidth(), bg.imageHeight());
 
         ITexture slider;
 
@@ -105,7 +105,7 @@ public class ScreenComponentVerticalSlider extends ScreenComponentGeneric {
 
         }
         RenderingUtils.bindTexture(slider.getLocation());
-        blit(poseStack, guiWidth + xLocation , guiHeight + yLocation + 1 + sliderYOffset, slider.textureWidth(), slider.textureHeight(), slider.textureU(), slider.textureV(), slider.textureWidth(), slider.textureHeight(), slider.imageWidth(), slider.imageHeight());
+        blit(poseStack, guiWidth + x , guiHeight + y + 1 + sliderYOffset, slider.textureWidth(), slider.textureHeight(), slider.textureU(), slider.textureV(), slider.textureWidth(), slider.textureHeight(), slider.imageWidth(), slider.imageHeight());
 
     }
 

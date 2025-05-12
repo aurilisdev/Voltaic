@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
+import net.minecraft.util.Direction;
+import net.minecraft.util.IReorderingProcessor;
+import net.minecraft.util.text.TextFormatting;
 import voltaic.prefab.inventory.container.slot.item.SlotGeneric;
 import voltaic.prefab.screen.GenericScreen;
 import voltaic.prefab.screen.component.button.ScreenComponentButton;
@@ -14,9 +17,6 @@ import voltaic.prefab.screen.component.types.ScreenComponentSlot;
 import voltaic.prefab.screen.component.types.guitab.ScreenComponentGuiTab;
 import voltaic.prefab.utilities.VoltaicTextUtils;
 import voltaic.prefab.utilities.math.Color;
-import net.minecraft.ChatFormatting;
-import net.minecraft.core.Direction;
-import net.minecraft.util.FormattedCharSequence;
 
 public class WrapperInventoryIO {
 
@@ -66,12 +66,12 @@ public class WrapperInventoryIO {
 		}).onTooltip((poseStack, but, xAxis, yAxis) -> {
 			//
 			ScreenComponentButton<?> button = (ScreenComponentButton<?>) but;
-			List<FormattedCharSequence> tooltips = new ArrayList<>();
-			tooltips.add(VoltaicTextUtils.tooltip("inventoryio").withStyle(ChatFormatting.DARK_GRAY).getVisualOrderText());
+			List<IReorderingProcessor> tooltips = new ArrayList<>();
+			tooltips.add(VoltaicTextUtils.tooltip("inventoryio").withStyle(TextFormatting.DARK_GRAY).getVisualOrderText());
 			if (!button.isPressed) {
-				tooltips.add(VoltaicTextUtils.tooltip("inventoryio.presstoshow").withStyle(ChatFormatting.ITALIC, ChatFormatting.GRAY).getVisualOrderText());
+				tooltips.add(VoltaicTextUtils.tooltip("inventoryio.presstoshow").withStyle(TextFormatting.ITALIC, TextFormatting.GRAY).getVisualOrderText());
 			} else {
-				tooltips.add(VoltaicTextUtils.tooltip("inventoryio.presstohide").withStyle(ChatFormatting.ITALIC, ChatFormatting.GRAY).getVisualOrderText());
+				tooltips.add(VoltaicTextUtils.tooltip("inventoryio.presstohide").withStyle(TextFormatting.ITALIC, TextFormatting.GRAY).getVisualOrderText());
 			}
 
 			screen.displayTooltips(poseStack, tooltips, xAxis, yAxis);

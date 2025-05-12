@@ -2,9 +2,10 @@ package voltaic.prefab.tile;
 
 import java.util.UUID;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import voltaic.Voltaic;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import voltaic.api.IWrenchItem;
 import voltaic.common.block.states.VoltaicBlockStates;
@@ -14,29 +15,32 @@ import voltaic.prefab.properties.variant.AbstractProperty;
 import voltaic.prefab.tile.components.IComponent;
 import voltaic.prefab.tile.components.IComponentType;
 import voltaic.prefab.tile.components.type.*;
+import voltaic.prefab.utilities.BlockEntityUtils;
 import voltaic.prefab.utilities.ItemUtils;
 import voltaic.registers.VoltaicCapabilities;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientGamePacketListener;
-import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.stats.Stats;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.Nameable;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.SimpleContainerData;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.tileentity.ITickableTileEntity;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.ActionResultType;
+import net.minecraft.util.Direction;
+import net.minecraft.util.Hand;
+import net.minecraft.util.IIntArray;
+import net.minecraft.util.INameable;
+import net.minecraft.util.IntArray;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.common.util.TriPredicate;
@@ -45,7 +49,7 @@ import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
 import net.minecraftforge.items.CapabilityItemHandler;
 
-public abstract class GenericTile extends BlockEntity implements Nameable, IPropertyHolderTile {
+public abstract class GenericTile extends TileEntity implements INameable, IPropertyHolderTile, ITickableTileEntity {
 
 	private final IComponent[] components = new IComponent[IComponentType.values().length];
 	private final PropertyManager propertyManager = new PropertyManager(this);
@@ -53,8 +57,17 @@ public abstract class GenericTile extends BlockEntity implements Nameable, IProp
 	// use this for manually setting the change flag
 	public boolean isChanged = false;
 
-	public GenericTile(BlockEntityType<?> tileEntityTypeIn, BlockPos worldPos, BlockState blockState) {
-		super(tileEntityTypeIn, worldPos, blockState);
+	public GenericTile(TileEntityType<?> tileEntityTypeIn) {
+		super(tileEntityTypeIn);
+		//worldPosition = BlockEntityUtils.OUT_OF_REACH;
+	}
+
+	@Override
+	public void tick() {
+		if (hasComponent(IComponentType.Tickable)) {
+			ComponentTickable tickable = getComponent(IComponentType.Tickable);
+			tickable.performTick(level);
+		}
 	}
 
 	public <T extends AbstractProperty> T property(T prop) {
@@ -89,18 +102,19 @@ public abstract class GenericTile extends BlockEntity implements Nameable, IProp
 		return this;
 	}
 
-	@Deprecated(since = "Try not using this method.")
+	// Try not using this method
+	@Deprecated
 	public GenericTile forceComponent(IComponent component) {
 		component.holder(this);
 		components[component.getType().ordinal()] = component;
 		return this;
 	}
-	
+
 	@Override
-	public void load(CompoundTag compound) {
-		super.load(compound);
+	public void load(BlockState state, CompoundNBT compound) {
+		super.load(state, compound);
 		if (propertyManager != null && compound.contains(PropertyManager.NBT_KEY)) {
-			CompoundTag propertyData = compound.getCompound(PropertyManager.NBT_KEY);
+			CompoundNBT propertyData = compound.getCompound(PropertyManager.NBT_KEY);
 			propertyManager.loadFromTag(propertyData);
 			compound.remove(PropertyManager.NBT_KEY);
 		}
@@ -111,11 +125,11 @@ public abstract class GenericTile extends BlockEntity implements Nameable, IProp
 			}
 		}
 	}
-	
+
 	@Override
-	protected void saveAdditional(CompoundTag compound) {
+	public CompoundNBT save(CompoundNBT compound) {
 		if (propertyManager != null) {
-			CompoundTag propertyData = new CompoundTag();
+			CompoundNBT propertyData = new CompoundNBT();
 			propertyManager.saveToTag(propertyData);
 			compound.put(PropertyManager.NBT_KEY, propertyData);
 		}
@@ -125,15 +139,17 @@ public abstract class GenericTile extends BlockEntity implements Nameable, IProp
 				component.saveToNBT(compound);
 			}
 		}
-		super.saveAdditional(compound);
+		return super.save(compound);
 	}
 	
+	
+
 	// called either from initial client sync
 	@Override
-	public CompoundTag getUpdateTag() {
-		CompoundTag tag = super.getUpdateTag();
+	public CompoundNBT getUpdateTag() {
+		CompoundNBT tag = super.getUpdateTag();
 		if (propertyManager != null) {
-			CompoundTag propertyData = new CompoundTag();
+			CompoundNBT propertyData = new CompoundNBT();
 			propertyManager.saveAllPropsForClientSync(propertyData);
 			tag.put(PropertyManager.NBT_KEY, propertyData);
 			propertyManager.clean();
@@ -145,15 +161,29 @@ public abstract class GenericTile extends BlockEntity implements Nameable, IProp
 	// Called when Level#sendBlockUpdated is called
 	@Nullable
 	@Override
-	public Packet<ClientGamePacketListener> getUpdatePacket() {
-		return ClientboundBlockEntityDataPacket.create(this, (tile) -> {
-			CompoundTag tag = new CompoundTag();
-			CompoundTag data = new CompoundTag();
-			propertyManager.saveDirtyPropsToTag(data);
-			tag.put(PropertyManager.NBT_KEY, data);
-			return tag;
-		});
+	public SUpdateTileEntityPacket getUpdatePacket() {
+		//if(level == null || worldPosition == null || worldPosition.equals(BlockEntityUtils.OUT_OF_REACH)) {
+		//	return null;
+		//}
+		CompoundNBT tag = new CompoundNBT();
+		CompoundNBT data = new CompoundNBT();
+		propertyManager.saveDirtyPropsToTag(data);
+		tag.put(PropertyManager.NBT_KEY, data);
+		return new SUpdateTileEntityPacket(getBlockPos(), 0, tag);
 	}
+
+	@Override
+	public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
+		CompoundNBT compound = pkt.getTag();
+		if (compound != null && propertyManager != null && compound.contains(PropertyManager.NBT_KEY)) {
+			CompoundNBT propertyData = compound.getCompound(PropertyManager.NBT_KEY);
+			propertyManager.loadFromTag(propertyData);
+			compound.remove(PropertyManager.NBT_KEY);
+
+		}
+	}
+	
+	
 
 	// Only fires on server side
 	@Override
@@ -173,15 +203,15 @@ public abstract class GenericTile extends BlockEntity implements Nameable, IProp
 	}
 
 	@Override
-	public net.minecraft.network.chat.@NotNull Component getName() {
-		return hasComponent(IComponentType.Name) ? this.<ComponentName>getComponent(IComponentType.Name).getName() : new TextComponent(Voltaic.ID + ".default.tile.name");
+	public ITextComponent getName() {
+		return hasComponent(IComponentType.Name) ? this.<ComponentName>getComponent(IComponentType.Name).getName() : new TranslationTextComponent(Voltaic.ID + ".default.tile.name");
 	}
 
 	/* Since you have to register it anyway, might as well make it somewhat faster */
 
 	@Override
-	@NotNull
-	public <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, Direction side) {
+	@Nonnull
+	public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, Direction side) {
 		if (cap == VoltaicCapabilities.CAPABILITY_ELECTRODYNAMIC_BLOCK && components[IComponentType.Electrodynamic.ordinal()] != null) {
 			return components[IComponentType.Electrodynamic.ordinal()].getCapability(cap, side, null);
 		}
@@ -208,8 +238,8 @@ public abstract class GenericTile extends BlockEntity implements Nameable, IProp
 		}
 	}
 
-	public SimpleContainerData getCoordsArray() {
-		SimpleContainerData array = new SimpleContainerData(3);
+	public IIntArray getCoordsArray() {
+		IntArray array = new IntArray(3);
 		array.set(0, worldPosition.getX());
 		array.set(1, worldPosition.getY());
 		array.set(2, worldPosition.getZ());
@@ -246,10 +276,11 @@ public abstract class GenericTile extends BlockEntity implements Nameable, IProp
 	}
 
 	// This is ceded to the tile to allow for greater control with the use function
-	public InteractionResult use(Player player, InteractionHand handIn, BlockHitResult hit) {
+	public ActionResultType use(PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
 
 		ItemStack stack = player.getItemInHand(handIn);
-		if (stack.getItem() instanceof ItemUpgrade upgrade && hasComponent(IComponentType.Inventory)) {
+		if (stack.getItem() instanceof ItemUpgrade && hasComponent(IComponentType.Inventory)) {
+			ItemUpgrade upgrade = (ItemUpgrade) stack.getItem();
 
 			ComponentInventory inv = getComponent(IComponentType.Inventory);
 			// null check for safety
@@ -263,7 +294,7 @@ public abstract class GenericTile extends BlockEntity implements Nameable, IProp
 								inv.setItem(upgradeIndex + i, stack.copy());
 								stack.shrink(stack.getCount());
 							}
-							return InteractionResult.CONSUME;
+							return ActionResultType.CONSUME;
 						}
 						if (ItemUtils.testItems(upgrade, upgradeStack.getItem())) {
 							int room = upgradeStack.getMaxStackSize() - upgradeStack.getCount();
@@ -273,7 +304,7 @@ public abstract class GenericTile extends BlockEntity implements Nameable, IProp
 									upgradeStack.grow(accepted);
 									stack.shrink(accepted);
 								}
-								return InteractionResult.CONSUME;
+								return ActionResultType.CONSUME;
 							}
 						}
 					}
@@ -291,11 +322,11 @@ public abstract class GenericTile extends BlockEntity implements Nameable, IProp
 
 				}
 
-				return InteractionResult.CONSUME;
+				return ActionResultType.CONSUME;
 
 			}
 		}
-		return InteractionResult.PASS;
+		return ActionResultType.PASS;
 	}
 
 	public void onBlockDestroyed() {
@@ -329,13 +360,13 @@ public abstract class GenericTile extends BlockEntity implements Nameable, IProp
 		return 0;
 	}
 
-	public void onEntityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
+	public void onEntityInside(BlockState state, World level, BlockPos pos, Entity entity) {
 
 	}
 
 	public void updateCarriedItemInContainer(ItemStack stack, UUID playerId) {
-		Player player = getLevel().getPlayerByUUID(playerId);
-		player.containerMenu.setCarried(stack);
+		PlayerEntity player = getLevel().getPlayerByUUID(playerId);
+		player.inventory.setCarried(stack);
 	}
 
 	protected static TriPredicate<Integer, ItemStack, ComponentInventory> machineValidator() {
@@ -345,7 +376,7 @@ public abstract class GenericTile extends BlockEntity implements Nameable, IProp
 		//
 				x >= i.getInputBucketStartIndex() && x < i.getUpgradeSlotStartIndex() && y.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY) != null ||
 				//
-				x >= i.getUpgradeSlotStartIndex() && y.getItem() instanceof ItemUpgrade upgrade && i.isUpgradeValid(upgrade.subtype);
+				x >= i.getUpgradeSlotStartIndex() && y.getItem() instanceof ItemUpgrade && i.isUpgradeValid(((ItemUpgrade) y.getItem()).subtype);
 		//
 	}
 

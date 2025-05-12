@@ -14,20 +14,20 @@ import voltaic.prefab.tile.components.CapabilityInputType;
 import voltaic.prefab.tile.components.IComponent;
 import voltaic.prefab.tile.components.IComponentType;
 import voltaic.prefab.utilities.BlockEntityUtils;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.core.NonNullList;
-import net.minecraft.world.ContainerHelper;
-import net.minecraft.world.WorldlyContainer;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.ISidedInventory;
+import net.minecraft.inventory.ItemStackHelper;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.Direction;
+import net.minecraft.util.NonNullList;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.common.util.TriPredicate;
 import net.minecraftforge.items.IItemHandlerModifiable;
 
-public class ComponentInventory implements IComponent, WorldlyContainer {
+public class ComponentInventory implements IComponent, ISidedInventory {
 
     protected static final int[] SLOTS_EMPTY = new int[] {};
     public static final String SAVE_KEY = "itemproperty";
@@ -38,7 +38,7 @@ public class ComponentInventory implements IComponent, WorldlyContainer {
 
     protected TriPredicate<Integer, ItemStack, ComponentInventory> itemValidTest = (x, y, i) -> true;
 
-    protected HashSet<Player> viewing = new HashSet<>();
+    protected HashSet<PlayerEntity> viewing = new HashSet<>();
 
     public HashSet<Integer>[] relativeDirectionToSlotsMap = new HashSet[6]; // Down Up North South West East
 
@@ -93,10 +93,6 @@ public class ComponentInventory implements IComponent, WorldlyContainer {
 
     public ComponentInventory(GenericTile holder, InventoryBuilder builder) {
         holder(holder);
-
-        if (!holder.getBlockState().hasProperty(VoltaicBlockStates.FACING)) {
-            throw new UnsupportedOperationException("The tile " + holder + " must have the FACING direction property!");
-        }
 
         if (builder.builderSize > 0) {
             inventorySize = builder.builderSize;
@@ -197,12 +193,12 @@ public class ComponentInventory implements IComponent, WorldlyContainer {
     }
 
     @Override
-    public void startOpen(Player player) {
+    public void startOpen(PlayerEntity player) {
         viewing.add(player);
     }
 
     @Override
-    public void stopOpen(Player player) {
+    public void stopOpen(PlayerEntity player) {
         viewing.remove(player);
     }
     
@@ -229,8 +225,6 @@ public class ComponentInventory implements IComponent, WorldlyContainer {
     }
 
     private void defineOptionals(Direction facing) {
-
-        holder.invalidateCaps();
 
         slotsForFace = new int[6][];
 
@@ -306,7 +300,7 @@ public class ComponentInventory implements IComponent, WorldlyContainer {
 
     @Override
     public ItemStack removeItemNoUpdate(int index) {
-        return ContainerHelper.takeItem(items.getValue(), index);
+        return ItemStackHelper.takeItem(items.getValue(), index);
     }
 
     @Override
@@ -328,7 +322,7 @@ public class ComponentInventory implements IComponent, WorldlyContainer {
     }
 
     @Override
-    public boolean stillValid(Player player) {
+    public boolean stillValid(PlayerEntity player) {
         BlockPos pos = holder.getBlockPos();
         return holder.getLevel().getBlockEntity(pos) == holder && player.distanceToSqr(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5) <= 64;
     }
@@ -376,7 +370,7 @@ public class ComponentInventory implements IComponent, WorldlyContainer {
         return its;
     }
 
-    public HashSet<Player> getViewing() {
+    public HashSet<PlayerEntity> getViewing() {
         return viewing;
     }
 

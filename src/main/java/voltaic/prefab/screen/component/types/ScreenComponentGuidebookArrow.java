@@ -1,10 +1,10 @@
 package voltaic.prefab.screen.component.types;
 
+import net.minecraft.util.ResourceLocation;
 import voltaic.Voltaic;
 import voltaic.api.screen.ITexture;
 import voltaic.client.guidebook.ScreenGuidebook;
 import voltaic.prefab.screen.component.ScreenComponentGeneric;
-import net.minecraft.resources.ResourceLocation;
 
 public class ScreenComponentGuidebookArrow extends ScreenComponentGeneric {
 

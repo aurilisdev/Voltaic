@@ -1,7 +1,7 @@
 package voltaic.api.screen;
 
+import net.minecraft.util.ResourceLocation;
 import voltaic.Voltaic;
-import net.minecraft.resources.ResourceLocation;
 
 /**
  * Simple wrapper interface allowing for basic compatibility between different textures. Textures are assumed to be 256 x 256

@@ -1,43 +1,43 @@
 package voltaic.api.electricity.formatting;
 
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.util.text.IFormattableTextComponent;
+import net.minecraft.util.text.StringTextComponent;
 
 public class DisplayUnit implements IDisplayUnit {
 
-    private final Component symbol;
-    private final Component name;
-    private final Component namePlural;
-    private final Component distanceFromValue;
+    private final IFormattableTextComponent symbol;
+    private final IFormattableTextComponent name;
+    private final IFormattableTextComponent namePlural;
+    private final IFormattableTextComponent distanceFromValue;
 
-    public DisplayUnit(Component name, Component namePlural, Component symbol, Component distanceFromValue) {
+    public DisplayUnit(IFormattableTextComponent name, IFormattableTextComponent namePlural, IFormattableTextComponent symbol, IFormattableTextComponent distanceFromValue) {
         this.name = name;
         this.namePlural = namePlural;
         this.symbol = symbol;
         this.distanceFromValue = distanceFromValue;
     }
 
-    public DisplayUnit(Component name, Component namePlural, Component symbol) {
-        this(name, namePlural, symbol, new TextComponent(" "));
+    public DisplayUnit(IFormattableTextComponent name, IFormattableTextComponent namePlural, IFormattableTextComponent symbol) {
+        this(name, namePlural, symbol, new StringTextComponent(" "));
     }
 
     @Override
-    public Component getSymbol() {
+    public IFormattableTextComponent getSymbol() {
         return symbol;
     }
 
     @Override
-    public Component getName() {
+    public IFormattableTextComponent getName() {
         return name;
     }
 
     @Override
-    public Component getNamePlural() {
+    public IFormattableTextComponent getNamePlural() {
         return namePlural;
     }
 
     @Override
-    public Component getDistanceFromValue() {
+    public IFormattableTextComponent getDistanceFromValue() {
         return distanceFromValue;
     }
 

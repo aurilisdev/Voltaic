@@ -15,15 +15,14 @@ import com.google.gson.JsonObject;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementRewards;
 import net.minecraft.advancements.Criterion;
-import net.minecraft.advancements.CriterionTriggerInstance;
 import net.minecraft.advancements.DisplayInfo;
 import net.minecraft.advancements.FrameType;
-import net.minecraft.advancements.RequirementsStrategy;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.ItemLike;
+import net.minecraft.advancements.IRequirementsStrategy;
+import net.minecraft.advancements.criterion.CriterionInstance;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.common.crafting.conditions.ICondition;
 import net.minecraftforge.common.extensions.IForgeAdvancementBuilder;
@@ -42,7 +41,7 @@ public class AdvancementBuilder implements IForgeAdvancementBuilder {
 	private Map<String, Criterion> criteria = Maps.newLinkedHashMap();
 	@Nullable
 	private String[][] requirements;
-	private RequirementsStrategy requirementsStrategy = RequirementsStrategy.AND;
+	private IRequirementsStrategy requirementsStrategy = IRequirementsStrategy.AND;
 	@Nullable
 	private String comment;
 	@Nullable
@@ -69,22 +68,18 @@ public class AdvancementBuilder implements IForgeAdvancementBuilder {
 		return this;
 	}
 
-	public AdvancementBuilder display(Item item, Component title, Component description, AdvancementBackgrounds background, FrameType frame, boolean showToast, boolean announceToChat, boolean hidden) {
+	public AdvancementBuilder display(Item item, ITextComponent title, ITextComponent description, AdvancementBackgrounds background, FrameType frame, boolean showToast, boolean announceToChat, boolean hidden) {
 		return this.display(new DisplayInfo(new ItemStack(item), title, description, background.loc, frame, showToast, announceToChat, hidden));
 	}
 
-	public AdvancementBuilder display(ItemStack stack, Component title, Component description, AdvancementBackgrounds background, FrameType frame, boolean showToast, boolean announceToChat, boolean hidden) {
+	public AdvancementBuilder display(ItemStack stack, ITextComponent title, ITextComponent description, AdvancementBackgrounds background, FrameType frame, boolean showToast, boolean announceToChat, boolean hidden) {
 		return this.display(new DisplayInfo(stack, title, description, background.loc, frame, showToast, announceToChat, hidden));
 	}
 
-	public AdvancementBuilder display(ItemStack stack, Component title, Component description, @Nullable ResourceLocation background, FrameType frame, boolean showToast, boolean announceToChat, boolean hidden) {
+	public AdvancementBuilder display(ItemStack stack, ITextComponent title, ITextComponent description, @Nullable ResourceLocation background, FrameType frame, boolean showToast, boolean announceToChat, boolean hidden) {
 		return this.display(new DisplayInfo(stack, title, description, background, frame, showToast, announceToChat, hidden));
 	}
-
-	public AdvancementBuilder display(ItemLike item, Component title, Component description, @Nullable ResourceLocation background, FrameType frame, boolean showToast, boolean announceToChat, boolean hidden) {
-		return this.display(new DisplayInfo(new ItemStack(item.asItem()), title, description, background, frame, showToast, announceToChat, hidden));
-	}
-
+	
 	public AdvancementBuilder display(DisplayInfo display) {
 		this.display = display;
 		return this;
@@ -99,7 +94,7 @@ public class AdvancementBuilder implements IForgeAdvancementBuilder {
 		return this;
 	}
 
-	public AdvancementBuilder addCriterion(String key, CriterionTriggerInstance criterion) {
+	public AdvancementBuilder addCriterion(String key, CriterionInstance criterion) {
 		return this.addCriterion(key, new Criterion(criterion));
 	}
 
@@ -111,7 +106,7 @@ public class AdvancementBuilder implements IForgeAdvancementBuilder {
 		return this;
 	}
 
-	public AdvancementBuilder requirements(RequirementsStrategy strategy) {
+	public AdvancementBuilder requirements(IRequirementsStrategy strategy) {
 		this.requirementsStrategy = strategy;
 		return this;
 	}

@@ -3,9 +3,9 @@ package voltaic.prefab.tile.components;
 import javax.annotation.Nullable;
 
 import voltaic.prefab.tile.GenericTile;
-import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.block.BlockState;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.Direction;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 
@@ -26,10 +26,10 @@ public interface IComponent {
 		return null;
 	}
 
-	default void loadFromNBT(CompoundTag nbt) {
+	default void loadFromNBT(CompoundNBT nbt) {
 	}
 
-	default void saveToNBT(CompoundTag nbt) {
+	default void saveToNBT(CompoundNBT nbt) {
 	}
 
 	default void remove() {

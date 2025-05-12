@@ -4,11 +4,10 @@ import java.util.function.Consumer;
 
 import javax.annotation.Nonnull;
 
+import net.minecraft.world.World;
 import voltaic.prefab.tile.GenericTile;
 import voltaic.prefab.tile.components.IComponent;
 import voltaic.prefab.tile.components.IComponentType;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
 
 public class ComponentTickable implements IComponent {
 
@@ -85,7 +84,7 @@ public class ComponentTickable implements IComponent {
 		return ticks;
 	}
 
-	public void performTick(Level level) {
+	public void performTick(World level) {
 
 		if (level == null) {
 			return;
@@ -105,7 +104,7 @@ public class ComponentTickable implements IComponent {
 
 				holder.setChanged();
 
-				holder.getLevel().sendBlockUpdated(holder.getBlockPos(), holder.getBlockState(), holder.getBlockState(), Block.UPDATE_CLIENTS);
+				holder.getLevel().sendBlockUpdated(holder.getBlockPos(), holder.getBlockState(), holder.getBlockState(), 2);
 
 				holder.isChanged = false;
 			}

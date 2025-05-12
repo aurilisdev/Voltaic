@@ -1,10 +1,10 @@
 package voltaic.common.inventory.container;
 
-import net.minecraft.world.Container;
-import net.minecraft.world.SimpleContainer;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.inventory.ContainerData;
-import net.minecraft.world.inventory.SimpleContainerData;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.Inventory;
+import net.minecraft.util.IIntArray;
+import net.minecraft.util.IntArray;
 import voltaic.prefab.inventory.container.slot.item.SlotGeneric;
 import voltaic.prefab.inventory.container.slot.item.type.SlotRestricted;
 import voltaic.prefab.inventory.container.slot.item.type.SlotUpgrade;
@@ -15,16 +15,16 @@ import voltaic.registers.VoltaicMenuTypes;
 
 public class ContainerO2OProcessorTriple extends GenericContainerBlockEntity<GenericTile> {
 
-	public ContainerO2OProcessorTriple(int id, Inventory playerinv) {
-		this(id, playerinv, new SimpleContainer(12), new SimpleContainerData(3));
+	public ContainerO2OProcessorTriple(int id, PlayerInventory playerinv) {
+		this(id, playerinv, new Inventory(12), new IntArray(3));
 	}
 
-	public ContainerO2OProcessorTriple(int id, Inventory playerinv, Container inventory, ContainerData inventorydata) {
+	public ContainerO2OProcessorTriple(int id, PlayerInventory playerinv, IInventory inventory, IIntArray inventorydata) {
 		super(VoltaicMenuTypes.CONTAINER_O2OPROCESSORTRIPLE.get(), id, playerinv, inventory, inventorydata);
 	}
 
 	@Override
-	public void addInventorySlots(Container inv, Inventory playerinv) {
+	public void addInventorySlots(IInventory inv, PlayerInventory playerinv) {
 		setPlayerInvOffset(20);
 		addSlot(new SlotGeneric(inv, nextIndex(), 56 - ContainerO2OProcessor.startXOffset, 24).setIOColor(new Color(0, 240, 255, 255)));
 		addSlot(new SlotGeneric(inv, nextIndex(), 56 - ContainerO2OProcessor.startXOffset, 44).setIOColor(new Color(0, 240, 255, 255)));

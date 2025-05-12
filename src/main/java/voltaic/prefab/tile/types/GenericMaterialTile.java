@@ -4,17 +4,15 @@ import voltaic.prefab.tile.GenericTile;
 import voltaic.prefab.tile.components.IComponentType;
 import voltaic.prefab.tile.components.utils.IComponentFluidHandler;
 import voltaic.prefab.utilities.CapabilityUtils;
-import net.minecraft.core.BlockPos;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.ActionResultType;
+import net.minecraft.util.Hand;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvents;
+import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
@@ -24,12 +22,12 @@ import net.minecraftforge.fluids.capability.templates.FluidTank;
 //You come up with a better name :D
 public class GenericMaterialTile extends GenericTile {
 
-    public GenericMaterialTile(BlockEntityType<?> tileEntityTypeIn, BlockPos worldPos, BlockState blockState) {
-        super(tileEntityTypeIn, worldPos, blockState);
+    public GenericMaterialTile(TileEntityType<?> tileEntityTypeIn) {
+        super(tileEntityTypeIn);
     }
     
     @Override
-    public InteractionResult use(Player player, InteractionHand handIn, BlockHitResult hit) {
+    public ActionResultType use(PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
     	
     	ItemStack used = player.getItemInHand(handIn);
     	
@@ -37,7 +35,7 @@ public class GenericMaterialTile extends GenericTile {
     		return super.use(player, handIn, hit);
     	}
     	
-    	Level world = getLevel();
+    	World world = getLevel();
 
         IFluidHandlerItem handlerFluidItem = used.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).resolve().orElse(CapabilityUtils.EMPTY_FLUID_ITEM);
 
@@ -66,13 +64,13 @@ public class GenericMaterialTile extends GenericTile {
 
                     }
 
-                    world.playSound(null, player.blockPosition(), SoundEvents.BUCKET_EMPTY, SoundSource.PLAYERS, 1, 1);
+                    world.playSound(null, player.blockPosition(), SoundEvents.BUCKET_EMPTY, SoundCategory.PLAYERS, 1, 1);
 
                     player.setItemInHand(handIn, handlerFluidItem.getContainer());
 
                 }
 
-                return InteractionResult.CONSUME;
+                return ActionResultType.CONSUME;
 
             }
             // now try to fill it
@@ -90,13 +88,13 @@ public class GenericMaterialTile extends GenericTile {
 
                     tank.drain(taken, FluidAction.EXECUTE);
 
-                    world.playSound(null, player.blockPosition(), SoundEvents.BUCKET_FILL, SoundSource.PLAYERS, 1, 1);
+                    world.playSound(null, player.blockPosition(), SoundEvents.BUCKET_FILL, SoundCategory.PLAYERS, 1, 1);
 
                     player.setItemInHand(handIn, handlerFluidItem.getContainer());
 
                 }
 
-                return InteractionResult.CONSUME;
+                return ActionResultType.CONSUME;
 
             }
         }

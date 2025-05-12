@@ -3,33 +3,33 @@ package voltaic.common.block.connect;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.entity.item.ItemEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.BlockItem;
+import net.minecraft.item.BlockItemUseContext;
+import net.minecraft.item.ItemStack;
+import net.minecraft.loot.LootContext;
+import net.minecraft.loot.LootParameters;
+import net.minecraft.state.StateContainer;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ActionResultType;
+import net.minecraft.util.Hand;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.shapes.IBooleanFunction;
+import net.minecraft.util.math.shapes.ISelectionContext;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.shapes.VoxelShapes;
+import net.minecraft.world.IBlockReader;
+import net.minecraft.world.IWorldReader;
+import net.minecraft.world.World;
 import voltaic.common.block.states.VoltaicBlockStates;
 import voltaic.prefab.block.GenericEntityBlockWaterloggable;
 import voltaic.prefab.tile.types.GenericConnectTile;
-import net.minecraft.core.BlockPos;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelReader;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.storage.loot.LootContext;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.shapes.BooleanOp;
-import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.phys.shapes.Shapes;
-import net.minecraft.world.phys.shapes.VoxelShape;
 
 public abstract class AbstractConnectBlock extends GenericEntityBlockWaterloggable {
 
@@ -65,11 +65,14 @@ public abstract class AbstractConnectBlock extends GenericEntityBlockWaterloggab
 	}
 
 	@Override
-	public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
+	public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
 
-		VoxelShape camoShape = Shapes.empty();
+		VoxelShape camoShape = VoxelShapes.empty();
 
-		if (state.getValue(VoltaicBlockStates.HAS_SCAFFOLDING) && worldIn.getBlockEntity(pos) instanceof GenericConnectTile connect) {
+		TileEntity entity = worldIn.getBlockEntity(pos);
+		
+		if (state.getValue(VoltaicBlockStates.HAS_SCAFFOLDING) && entity instanceof GenericConnectTile) {
+			GenericConnectTile connect = (GenericConnectTile) entity;
 
 			if (connect.isCamoAir()) {
 				camoShape = connect.getScaffoldBlock().getShape(worldIn, pos, context);
@@ -79,10 +82,8 @@ public abstract class AbstractConnectBlock extends GenericEntityBlockWaterloggab
 
 		}
 
-		BlockEntity entity = worldIn.getBlockEntity(pos);
-
 		if(!(entity instanceof GenericConnectTile)) {
-			return Shapes.empty();
+			return VoxelShapes.empty();
 		}
 
 		EnumConnectType[] connections = ((GenericConnectTile) entity).readConnections();
@@ -98,19 +99,19 @@ public abstract class AbstractConnectBlock extends GenericEntityBlockWaterloggab
 				continue;
 			}
 
-			shape = Shapes.join(shape, boundingBoxes[i], BooleanOp.OR);
+			shape = VoxelShapes.join(shape, boundingBoxes[i], IBooleanFunction.OR);
 		}
 		shapestates[hash] = shape;
 		if (shape == null) {
-			return Shapes.empty();
+			return VoxelShapes.empty();
 		}
 		return getCamoShape(shape, camoShape);
 	}
 
 	private VoxelShape getCamoShape(VoxelShape wireShape, VoxelShape camoShape) {
-		if (camoShape == Shapes.empty()) return wireShape;
-		if (camoShape == Shapes.block()) return camoShape;
-		return Shapes.join(wireShape, camoShape, BooleanOp.OR);
+		if (camoShape == VoxelShapes.empty()) return wireShape;
+		if (camoShape == VoxelShapes.block()) return camoShape;
+		return VoxelShapes.join(wireShape, camoShape, IBooleanFunction.OR);
 	}
 
 	public static int hashPresentSides(EnumConnectType[] connections) {
@@ -124,13 +125,13 @@ public abstract class AbstractConnectBlock extends GenericEntityBlockWaterloggab
 	}
 
 	@Override
-	public void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+	public void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
 		super.createBlockStateDefinition(builder);
 		builder.add(VoltaicBlockStates.HAS_SCAFFOLDING);
 	}
 
 	@Override
-	public boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
+	public boolean canSurvive(BlockState state, IWorldReader level, BlockPos pos) {
 		if (level.getBlockState(pos).getBlock() instanceof BlockScaffold) {
 			return true;
 		}
@@ -138,9 +139,9 @@ public abstract class AbstractConnectBlock extends GenericEntityBlockWaterloggab
 	}
 
 	@Override
-	public BlockState getStateForPlacement(BlockPlaceContext context) {
+	public BlockState getStateForPlacement(BlockItemUseContext context) {
 		BlockState superState = super.getStateForPlacement(context);
-		Level world = context.getPlayer().level;
+		World world = context.getPlayer().level;
 		boolean set = false;
 		if (world.getBlockState(context.getClickedPos()).getBlock() instanceof BlockScaffold) {
 			superState = superState.setValue(VoltaicBlockStates.HAS_SCAFFOLDING, true);
@@ -156,7 +157,7 @@ public abstract class AbstractConnectBlock extends GenericEntityBlockWaterloggab
 
 	/*
 	@Override
-	public void onPlace(BlockState newState, Level level, BlockPos pos, BlockState oldState, boolean isMoving) {
+	public void onPlace(BlockState newState, World level, BlockPos pos, BlockState oldState, boolean isMoving) {
 		super.onPlace(newState, level, pos, oldState, isMoving);
 		if (newState.hasProperty(ElectrodynamicsBlockStates.HAS_SCAFFOLDING) && oldState.hasProperty(ElectrodynamicsBlockStates.HAS_SCAFFOLDING)) {
 			newState = newState.setValue(ElectrodynamicsBlockStates.HAS_SCAFFOLDING, oldState.getValue(ElectrodynamicsBlockStates.HAS_SCAFFOLDING));
@@ -166,17 +167,23 @@ public abstract class AbstractConnectBlock extends GenericEntityBlockWaterloggab
 	 */
 	
 	@Override
-	public InteractionResult use(BlockState state, Level worldIn, BlockPos pos, Player player, InteractionHand handIn, BlockHitResult hit) {
+	public ActionResultType use(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
 		ItemStack stack = player.getItemInHand(handIn);
 		if (stack.isEmpty()) {
 			return super.use(state, worldIn, pos, player, handIn, hit);
 		}
 
-		if (stack.getItem() instanceof BlockItem blockitem && worldIn.getBlockEntity(pos) instanceof GenericConnectTile connect) {
+		TileEntity blockentity = worldIn.getBlockEntity(pos);
+		
+		if (stack.getItem() instanceof BlockItem && blockentity instanceof GenericConnectTile) {
+			
+			BlockItem blockitem = (BlockItem) stack.getItem();
+			GenericConnectTile connect = (GenericConnectTile) blockentity;
 
-			BlockPlaceContext newCtx = new BlockPlaceContext(player, handIn, stack, hit);
+			BlockItemUseContext newCtx = new BlockItemUseContext(player, handIn, stack, hit);
 
-			if (blockitem.getBlock() instanceof BlockScaffold scaffold) {
+			if (blockitem.getBlock() instanceof BlockScaffold) {
+				BlockScaffold scaffold = (BlockScaffold) blockitem.getBlock();
 				if (!state.getValue(VoltaicBlockStates.HAS_SCAFFOLDING)) {
 					if (!worldIn.isClientSide) {
 						if (!player.isCreative()) {
@@ -186,9 +193,9 @@ public abstract class AbstractConnectBlock extends GenericEntityBlockWaterloggab
 						state = state.setValue(VoltaicBlockStates.HAS_SCAFFOLDING, true);
 						worldIn.setBlockAndUpdate(pos, state);
 						connect.setScaffoldBlock(scaffold.getStateForPlacement(newCtx));
-						worldIn.playSound(null, pos, blockitem.getBlock().defaultBlockState().getSoundType().getPlaceSound(), SoundSource.BLOCKS, 1.0F, 1.0F);
+						worldIn.playSound(null, pos, blockitem.getBlock().defaultBlockState().getSoundType().getPlaceSound(), SoundCategory.BLOCKS, 1.0F, 1.0F);
 					}
-					return InteractionResult.CONSUME;
+					return ActionResultType.CONSUME;
 				}
 
 			} else if (!(blockitem.getBlock() instanceof AbstractConnectBlock) && state.getValue(VoltaicBlockStates.HAS_SCAFFOLDING)) {
@@ -199,10 +206,10 @@ public abstract class AbstractConnectBlock extends GenericEntityBlockWaterloggab
 							stack.shrink(1);
 							player.setItemInHand(handIn, stack);
 						}
-						worldIn.playSound(null, pos, blockitem.getBlock().defaultBlockState().getSoundType().getPlaceSound(), SoundSource.BLOCKS, 1.0F, 1.0F);
+						worldIn.playSound(null, pos, blockitem.getBlock().defaultBlockState().getSoundType().getPlaceSound(), SoundCategory.BLOCKS, 1.0F, 1.0F);
 						worldIn.getChunkSource().getLightEngine().checkBlock(pos);
 					}
-					return InteractionResult.CONSUME;
+					return ActionResultType.CONSUME;
 				}
 				if (!connect.getCamoBlock().is(blockitem.getBlock())) {
 					if (!worldIn.isClientSide) {
@@ -214,9 +221,9 @@ public abstract class AbstractConnectBlock extends GenericEntityBlockWaterloggab
 							player.setItemInHand(handIn, stack);
 						}
 						connect.setCamoBlock(blockitem.getBlock().getStateForPlacement(newCtx));
-						worldIn.playSound(null, pos, blockitem.getBlock().defaultBlockState().getSoundType().getPlaceSound(), SoundSource.BLOCKS, 1.0F, 1.0F);
+						worldIn.playSound(null, pos, blockitem.getBlock().defaultBlockState().getSoundType().getPlaceSound(), SoundCategory.BLOCKS, 1.0F, 1.0F);
 					}
-					return InteractionResult.CONSUME;
+					return ActionResultType.CONSUME;
 
 				}
 			}
@@ -228,7 +235,8 @@ public abstract class AbstractConnectBlock extends GenericEntityBlockWaterloggab
 	@Override
 	public List<ItemStack> getDrops(BlockState state, LootContext.Builder builder) {
 		ArrayList<ItemStack> drops = new ArrayList<>(super.getDrops(state, builder));
-		if (state.getValue(VoltaicBlockStates.HAS_SCAFFOLDING) && builder.getOptionalParameter(LootContextParams.BLOCK_ENTITY) instanceof GenericConnectTile connect) {
+		if (state.getValue(VoltaicBlockStates.HAS_SCAFFOLDING) && builder.getOptionalParameter(LootParameters.BLOCK_ENTITY) instanceof GenericConnectTile) {
+			GenericConnectTile connect = (GenericConnectTile) builder.getOptionalParameter(LootParameters.BLOCK_ENTITY);
 			drops.add(new ItemStack(connect.getScaffoldBlock().getBlock()));
 			if (!connect.isCamoAir()) {
 				drops.add(new ItemStack(connect.getCamoBlock().getBlock()));
@@ -238,12 +246,13 @@ public abstract class AbstractConnectBlock extends GenericEntityBlockWaterloggab
 	}
 
 	@Override
-	public boolean propagatesSkylightDown(BlockState state, BlockGetter level, BlockPos pos) {
+	public boolean propagatesSkylightDown(BlockState state, IBlockReader level, BlockPos pos) {
 		if (!state.getValue(VoltaicBlockStates.HAS_SCAFFOLDING)) {
 			return true;
 		}
-
-		if (level.getBlockEntity(pos) instanceof GenericConnectTile connect) {
+		TileEntity blockEntity = level.getBlockEntity(pos);
+		if (level.getBlockEntity(pos) instanceof GenericConnectTile) {
+			GenericConnectTile connect = (GenericConnectTile) blockEntity;
 			if (connect.isCamoAir()) {
 				return connect.getScaffoldBlock().propagatesSkylightDown(level, pos);
 			}
@@ -254,27 +263,31 @@ public abstract class AbstractConnectBlock extends GenericEntityBlockWaterloggab
 	}
 
 	@Override
-	public int getLightEmission(BlockState state, BlockGetter level, BlockPos pos) {
+	public int getLightValue(BlockState state, IBlockReader level, BlockPos pos) {
 		if (!state.getValue(VoltaicBlockStates.HAS_SCAFFOLDING)) {
 			return 0;
 		}
 
-		if (level.getBlockEntity(pos) instanceof GenericConnectTile connect) {
+		TileEntity blockEntity = level.getBlockEntity(pos);
+		if (level.getBlockEntity(pos) instanceof GenericConnectTile) {
+			GenericConnectTile connect = (GenericConnectTile) blockEntity;
 			if (connect.isCamoAir()) {
-				return connect.getScaffoldBlock().getBlock().getLightEmission(connect.getScaffoldBlock(), level, pos);
+				return connect.getScaffoldBlock().getBlock().getLightValue(connect.getScaffoldBlock(), level, pos);
 			}
-			return connect.getCamoBlock().getBlock().getLightEmission(connect.getCamoBlock(), level, pos);
+			return connect.getCamoBlock().getBlock().getLightValue(connect.getCamoBlock(), level, pos);
 		}
 
 		return 0;
 	}
 
 	@Override
-	public VoxelShape getVisualShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+	public VoxelShape getVisualShape(BlockState state, IBlockReader level, BlockPos pos, ISelectionContext context) {
 		if (!state.getValue(VoltaicBlockStates.HAS_SCAFFOLDING)) {
 			return super.getVisualShape(state, level, pos, context);
 		}
-		if (level.getBlockEntity(pos) instanceof GenericConnectTile connect) {
+		TileEntity blockEntity = level.getBlockEntity(pos);
+		if (level.getBlockEntity(pos) instanceof GenericConnectTile) {
+			GenericConnectTile connect = (GenericConnectTile) blockEntity;
 			if (connect.isCamoAir()) {
 				return connect.getScaffoldBlock().getVisualShape(level, pos, context);
 			}
@@ -284,12 +297,14 @@ public abstract class AbstractConnectBlock extends GenericEntityBlockWaterloggab
 	}
 
 	@Override
-	public void onRotate(ItemStack stack, BlockPos pos, Player player) {
-		Level level = player.level;
+	public void onRotate(ItemStack stack, BlockPos pos, PlayerEntity player) {
+		World level = player.level;
 		if (level.isClientSide()) {
 			return;
 		}
-		if (level.getBlockEntity(pos) instanceof GenericConnectTile connect) {
+		TileEntity blockEntity = level.getBlockEntity(pos);
+		if (level.getBlockEntity(pos) instanceof GenericConnectTile) {
+			GenericConnectTile connect = (GenericConnectTile) blockEntity;
 
 			if (!connect.isCamoAir()) {
 				Block camo = connect.getCamoBlock().getBlock();

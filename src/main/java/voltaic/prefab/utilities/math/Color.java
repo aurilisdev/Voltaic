@@ -1,6 +1,6 @@
 package voltaic.prefab.utilities.math;
 
-import com.mojang.math.Vector3f;
+import net.minecraft.util.math.vector.Vector3f;
 
 /**
  * Wrapper class that standardizes all color value operations into fields
@@ -129,7 +129,8 @@ public class Color {
 		if (obj == null) {
 			return false;
 		}
-		if (obj instanceof Color other) {
+		if (obj instanceof Color) {
+			Color other = (Color) obj;
 			return this.r == other.r && this.g == other.g && this.b == other.b && this.a == other.a;
 		}
 		return false;

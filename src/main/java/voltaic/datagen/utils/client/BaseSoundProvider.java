@@ -1,13 +1,13 @@
 package voltaic.datagen.utils.client;
 
 import net.minecraft.data.DataGenerator;
-import net.minecraft.sounds.SoundEvent;
+import net.minecraft.util.SoundEvent;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.common.data.SoundDefinition;
 import net.minecraftforge.common.data.SoundDefinition.Sound;
 import net.minecraftforge.common.data.SoundDefinition.SoundType;
 import net.minecraftforge.common.data.SoundDefinitionsProvider;
-import net.minecraftforge.registries.RegistryObject;
+import net.minecraftforge.fml.RegistryObject;
 
 public abstract class BaseSoundProvider extends SoundDefinitionsProvider {
 

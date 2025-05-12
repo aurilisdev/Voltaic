@@ -1,7 +1,5 @@
 package voltaic.prefab.properties.variant;
 
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.level.block.Block;
 import voltaic.Voltaic;
 import voltaic.prefab.properties.PropertyManager;
 import voltaic.prefab.properties.types.IPropertyType;
@@ -13,16 +11,18 @@ import java.util.function.Consumer;
 
 import org.apache.logging.log4j.util.TriConsumer;
 
+import net.minecraft.nbt.CompoundNBT;
+
 public class ListProperty<T> extends AbstractProperty<List<T>, ListPropertyType<T, ?>> {
 
     private boolean alreadySynced = false;
 
     //This fires when the property has had a value set and that value is different from the value the property currently has
-    //The property contains the new value and val represents the old value. Level may or may not be present.
+    //The property contains the new value and val represents the old value. World may or may not be present.
 
     private TriConsumer<ListProperty<T>, List<T>, Integer> onChange = (prop, val, index) -> {
     };
-    //this fires when the owning tile has been loaded. This fires on both the client and server-side, and Level is present
+    //this fires when the owning tile has been loaded. This fires on both the client and server-side, and World is present
     private Consumer<ListProperty<T>> onTileLoaded = (prop) -> {
     };
 
@@ -69,7 +69,7 @@ public class ListProperty<T> extends AbstractProperty<List<T>, ListPropertyType<
             if (!manager.getOwner().getLevel().isClientSide()) {
                 if (shouldUpdateOnChange()) {
                     alreadySynced = true;
-                    manager.getOwner().getLevel().sendBlockUpdated(manager.getOwner().getBlockPos(), manager.getOwner().getBlockState(), manager.getOwner().getBlockState(), Block.UPDATE_CLIENTS);
+                    manager.getOwner().getLevel().sendBlockUpdated(manager.getOwner().getBlockPos(), manager.getOwner().getBlockState(), manager.getOwner().getBlockState(), 2);
                     manager.getOwner().setChanged();
                     alreadySynced = false;
                 }
@@ -98,7 +98,7 @@ public class ListProperty<T> extends AbstractProperty<List<T>, ListPropertyType<
             if (!manager.getOwner().getLevel().isClientSide()) {
                 if (shouldUpdateOnChange()) {
                     alreadySynced = true;
-                    manager.getOwner().getLevel().sendBlockUpdated(manager.getOwner().getBlockPos(), manager.getOwner().getBlockState(), manager.getOwner().getBlockState(), Block.UPDATE_CLIENTS);
+                    manager.getOwner().getLevel().sendBlockUpdated(manager.getOwner().getBlockPos(), manager.getOwner().getBlockState(), manager.getOwner().getBlockState(), 2);
                     manager.getOwner().setChanged();
                     alreadySynced = false;
                 }
@@ -129,7 +129,7 @@ public class ListProperty<T> extends AbstractProperty<List<T>, ListPropertyType<
             if (!manager.getOwner().getLevel().isClientSide()) {
                 if (shouldUpdateOnChange()) {
                     alreadySynced = true;
-                    manager.getOwner().getLevel().sendBlockUpdated(manager.getOwner().getBlockPos(), manager.getOwner().getBlockState(), manager.getOwner().getBlockState(), Block.UPDATE_CLIENTS);
+                    manager.getOwner().getLevel().sendBlockUpdated(manager.getOwner().getBlockPos(), manager.getOwner().getBlockState(), manager.getOwner().getBlockState(), 2);
                     manager.getOwner().setChanged();
                     alreadySynced = false;
                 }
@@ -161,7 +161,7 @@ public class ListProperty<T> extends AbstractProperty<List<T>, ListPropertyType<
             if (!manager.getOwner().getLevel().isClientSide()) {
                 if (shouldUpdateOnChange()) {
                     alreadySynced = true;
-                    manager.getOwner().getLevel().sendBlockUpdated(manager.getOwner().getBlockPos(), manager.getOwner().getBlockState(), manager.getOwner().getBlockState(), Block.UPDATE_CLIENTS);
+                    manager.getOwner().getLevel().sendBlockUpdated(manager.getOwner().getBlockPos(), manager.getOwner().getBlockState(), manager.getOwner().getBlockState(), 2);
                     manager.getOwner().setChanged();
                     alreadySynced = false;
                 }
@@ -192,7 +192,7 @@ public class ListProperty<T> extends AbstractProperty<List<T>, ListPropertyType<
             if (!manager.getOwner().getLevel().isClientSide()) {
                 if (shouldUpdateOnChange()) {
                     alreadySynced = true;
-                    manager.getOwner().getLevel().sendBlockUpdated(manager.getOwner().getBlockPos(), manager.getOwner().getBlockState(), manager.getOwner().getBlockState(), Block.UPDATE_CLIENTS);
+                    manager.getOwner().getLevel().sendBlockUpdated(manager.getOwner().getBlockPos(), manager.getOwner().getBlockState(), manager.getOwner().getBlockState(), 2);
                     manager.getOwner().setChanged();
                     alreadySynced = false;
                 }
@@ -223,7 +223,7 @@ public class ListProperty<T> extends AbstractProperty<List<T>, ListPropertyType<
             if (!manager.getOwner().getLevel().isClientSide()) {
                 if (shouldUpdateOnChange()) {
                     alreadySynced = true;
-                    manager.getOwner().getLevel().sendBlockUpdated(manager.getOwner().getBlockPos(), manager.getOwner().getBlockState(), manager.getOwner().getBlockState(), Block.UPDATE_CLIENTS);
+                    manager.getOwner().getLevel().sendBlockUpdated(manager.getOwner().getBlockPos(), manager.getOwner().getBlockState(), manager.getOwner().getBlockState(), 2);
                     manager.getOwner().setChanged();
                     alreadySynced = false;
                 }
@@ -250,7 +250,7 @@ public class ListProperty<T> extends AbstractProperty<List<T>, ListPropertyType<
             if (!manager.getOwner().getLevel().isClientSide()) {
                 if (shouldUpdateOnChange()) {
                     alreadySynced = true;
-                    manager.getOwner().getLevel().sendBlockUpdated(manager.getOwner().getBlockPos(), manager.getOwner().getBlockState(), manager.getOwner().getBlockState(), Block.UPDATE_CLIENTS);
+                    manager.getOwner().getLevel().sendBlockUpdated(manager.getOwner().getBlockPos(), manager.getOwner().getBlockState(), manager.getOwner().getBlockState(), 2);
                     manager.getOwner().setChanged();
                     alreadySynced = false;
                 }
@@ -282,7 +282,7 @@ public class ListProperty<T> extends AbstractProperty<List<T>, ListPropertyType<
         return shouldUpdate;
     }
 
-    public void loadFromTag(CompoundTag tag) {
+    public void loadFromTag(CompoundNBT tag) {
         try {
             List<T> data = (List<T>) getType().readFromTag(new IPropertyType.TagReader(this, tag));
             if (data != null) {

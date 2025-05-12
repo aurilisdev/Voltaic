@@ -4,11 +4,11 @@ import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import net.minecraft.block.AbstractBlock;
+import net.minecraft.block.SoundType;
+import net.minecraft.item.Item;
+import net.minecraft.tags.ITag.INamedTag;
 import voltaic.prefab.utilities.math.Color;
-import net.minecraft.tags.TagKey;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.level.block.SoundType;
-import net.minecraft.world.level.block.state.BlockBehaviour;
 
 /**
  * Defines a wire
@@ -34,7 +34,7 @@ public interface IWire {
     IWireColor getDefaultColor();
 
     @Nullable
-    TagKey<Item> getItemTag();
+    INamedTag<Item> getItemTag();
 
     boolean isDefaultColor();
 
@@ -55,7 +55,7 @@ public interface IWire {
 
         double wireRadius();
 
-        BlockBehaviour.Properties getProperties();
+        AbstractBlock.Properties getProperties();
 
         SoundType getSoundType();
 
@@ -100,7 +100,7 @@ public interface IWire {
         Color getColor();
 
         @Nonnull
-        TagKey<Item> getDyeTag();
+        INamedTag<Item> getDyeTag();
 
     }
 

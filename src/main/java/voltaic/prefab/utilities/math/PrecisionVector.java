@@ -1,6 +1,6 @@
 package voltaic.prefab.utilities.math;
 
-import net.minecraft.world.phys.AABB;
+import net.minecraft.util.math.AxisAlignedBB;
 
 /**
  * Useful wrapper class for automatically splitting doubles into whole and remainder components
@@ -36,11 +36,11 @@ public class PrecisionVector {
 		remZ = z - this.z;
 	}
 
-	public AABB shiftWhole(AABB source) {
+	public AxisAlignedBB shiftWhole(AxisAlignedBB source) {
 		return source.move(x, y, z);
 	}
 
-	public AABB shiftRemainder(AABB source) {
+	public AxisAlignedBB shiftRemainder(AxisAlignedBB source) {
 		return source.move(remX, remY, remZ);
 	}
 

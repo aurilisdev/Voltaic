@@ -1,21 +1,18 @@
 package voltaic.prefab.screen.component.button.type;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
+
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.ITextProperties;
 import voltaic.client.guidebook.utils.pagedata.text.TextWrapperObject;
-
-import com.mojang.blaze3d.vertex.PoseStack;
-
-import net.minecraft.client.gui.Font;
-import net.minecraft.locale.Language;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.FormattedText;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.util.FormattedCharSequence;
+import voltaic.prefab.utilities.VoltaicTextUtils;
 
 //height was 20
 public class ButtonSearchedText extends ButtonSpecificPage {
 
-	private Component chapter = TextComponent.EMPTY;
-	private FormattedText line = TextComponent.EMPTY;
+	private ITextComponent chapter = VoltaicTextUtils.empty();
+	private ITextProperties line = VoltaicTextUtils.empty();
 
 	public int specifiedPage;
 
@@ -26,19 +23,19 @@ public class ButtonSearchedText extends ButtonSpecificPage {
 	}
 
 	@Override
-	public void renderBackground(PoseStack poseStack, int xAxis, int yAxis, int guiWidth, int guiHeight) {
+	public void renderBackground(MatrixStack poseStack, int xAxis, int yAxis, int guiWidth, int guiHeight) {
 		super.renderBackground(poseStack, xAxis, yAxis, guiWidth, guiHeight);
-		drawCenteredStringNoShadow(poseStack, gui.getFontRenderer(), chapter.getVisualOrderText(), this.xLocation + this.width / 2 + guiWidth, this.yLocation + guiHeight - 10, TextWrapperObject.DEFAULT_COLOR.color());
-		drawCenteredStringNoShadow(poseStack, gui.getFontRenderer(), Language.getInstance().getVisualOrder(line), this.xLocation + guiWidth + this.width / 2, this.yLocation + guiHeight + (this.height - 8) / 2, color.color());
+		drawCenteredStringNoShadow(poseStack, gui.getFontRenderer(), chapter.getContents(), this.x + this.width / 2 + guiWidth, this.y + guiHeight - 10, TextWrapperObject.DEFAULT_COLOR.color());
+		drawCenteredStringNoShadow(poseStack, gui.getFontRenderer(), line.getString(), this.x + guiWidth + this.width / 2, this.y + guiHeight + (this.height - 8) / 2, color.color());
 
 	}
 
-	public void setChapter(Component chapter) {
+	public void setChapter(ITextComponent chapter) {
 		this.chapter = chapter;
 	}
 
-	public void setLine(FormattedText line) {
-		this.line = line;
+	public void setLine(ITextProperties text) {
+		this.line = text;
 	}
 
 	public void setPage(int page) {
@@ -54,8 +51,8 @@ public class ButtonSearchedText extends ButtonSpecificPage {
 		return super.isVisible() && shouldShow;
 	}
 
-	public void drawCenteredStringNoShadow(PoseStack poseStack, Font font, FormattedCharSequence text, int pX, int pY, int pColor) {
-		drawString(poseStack, font, text, pX - font.width(text) / 2, pY, pColor);
+	public static void drawCenteredStringNoShadow(MatrixStack stack, FontRenderer font, String text, int pX, int pY, int pColor) {
+		drawString(stack, font, text, pX - font.width(text) / 2, pY, pColor);
 	}
 
 }

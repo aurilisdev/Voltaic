@@ -1,15 +1,15 @@
 package voltaic.datagen.utils.client;
 
+import net.minecraft.block.Block;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.sounds.SoundEvent;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.material.Fluid;
+import net.minecraft.fluid.Fluid;
+import net.minecraft.item.Item;
+import net.minecraft.util.RegistryKey;
+import net.minecraft.util.SoundEvent;
+import net.minecraft.world.World;
 import net.minecraftforge.common.data.LanguageProvider;
+import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
 
 public abstract class BaseLangKeyProvider extends LanguageProvider {
 
@@ -69,7 +69,7 @@ public abstract class BaseLangKeyProvider extends LanguageProvider {
 		add("gui." + modID + "." + key, translation);
 	}
 
-	public void addDimension(ResourceKey<Level> dim, String translation) {
+	public void addDimension(RegistryKey<World> dim, String translation) {
 		addDimension(dim.location().getPath(), translation);
 	}
 

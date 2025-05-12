@@ -6,12 +6,12 @@ import javax.annotation.Nullable;
 
 import com.google.gson.JsonObject;
 
-import net.minecraft.data.recipes.FinishedRecipe;
-import net.minecraft.data.recipes.SingleItemRecipeBuilder;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.data.IFinishedRecipe;
+import net.minecraft.data.SingleItemRecipeBuilder;
+import net.minecraft.item.Item;
+import net.minecraft.item.crafting.IRecipeSerializer;
+import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.util.ResourceLocation;
 
 /**
  * Imagine mojank providing a working data generator that didn't have the recipe book hard-coded into it
@@ -21,7 +21,7 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
  */
 public class CustomSingleItemRecipeBuilder extends SingleItemRecipeBuilder.Result {
 
-	public CustomSingleItemRecipeBuilder(ResourceLocation id, RecipeSerializer<?> recipe, Ingredient input, Item result, int count) {
+	public CustomSingleItemRecipeBuilder(ResourceLocation id, IRecipeSerializer<?> recipe, Ingredient input, Item result, int count) {
 		super(id, recipe, "", input, result, count, null, null);
 	}
 
@@ -32,24 +32,24 @@ public class CustomSingleItemRecipeBuilder extends SingleItemRecipeBuilder.Resul
 	}
 
 	public static Builder stonecuttingRecipe(Ingredient input, Item output, int count) {
-		return new Builder(input, output, count, RecipeSerializer.STONECUTTER);
+		return new Builder(input, output, count, IRecipeSerializer.STONECUTTER);
 	}
 
 	public static class Builder {
 
 		private final Item result;
 		private final int count;
-		private final RecipeSerializer<?> serializer;
+		private final IRecipeSerializer<?> serializer;
 		private final Ingredient input;
 
-		public Builder(Ingredient input, Item result, int count, RecipeSerializer<?> serializer) {
+		public Builder(Ingredient input, Item result, int count, IRecipeSerializer<?> serializer) {
 			this.result = result;
 			this.count = count;
 			this.serializer = serializer;
 			this.input = input;
 		}
 
-		public void complete(String parent, String name, Consumer<FinishedRecipe> consumer) {
+		public void complete(String parent, String name, Consumer<IFinishedRecipe> consumer) {
 			consumer.accept(new CustomSingleItemRecipeBuilder(new ResourceLocation(parent, name), serializer, input, result, count));
 		}
 

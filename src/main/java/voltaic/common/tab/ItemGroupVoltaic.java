@@ -1,10 +1,10 @@
 package voltaic.common.tab;
 
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemStack;
 import voltaic.registers.VoltaicItems;
 
-public class ItemGroupVoltaic extends CreativeModeTab {
+public class ItemGroupVoltaic extends ItemGroup {
 
 	public ItemGroupVoltaic(String label) {
 		super(label);

@@ -2,12 +2,12 @@ package voltaic.api.fluid;
 
 import java.util.function.Predicate;
 
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 
 import voltaic.prefab.properties.variant.SingleProperty;
 import voltaic.prefab.properties.types.PropertyTypes;
 import voltaic.prefab.tile.GenericTile;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
 
@@ -54,8 +54,8 @@ public class PropertyFluidTank extends FluidTank {
 	}
 
 	@Override
-	public CompoundTag writeToNBT(CompoundTag nbt) {
-		CompoundTag tag = new CompoundTag();
+	public CompoundNBT writeToNBT(CompoundNBT nbt) {
+		CompoundNBT tag = new CompoundNBT();
 		getFluid().writeToNBT(tag);
 		tag.putInt("capacity", getCapacity());
 		nbt.put(fluidStackProperty.getName() + "tank", tag);
@@ -63,8 +63,8 @@ public class PropertyFluidTank extends FluidTank {
 	}
 
 	@Override
-	public FluidTank readFromNBT(CompoundTag nbt) {
-		CompoundTag tag = nbt.getCompound(fluidStackProperty.getName() + "name");
+	public FluidTank readFromNBT(CompoundNBT nbt) {
+		CompoundNBT tag = nbt.getCompound(fluidStackProperty.getName() + "name");
 		setFluid(FluidStack.loadFluidStackFromNBT(tag));
 		setCapacity(tag.getInt("capacity"));
 		return this;
@@ -83,7 +83,7 @@ public class PropertyFluidTank extends FluidTank {
 	}
 
 	@Override
-	@NotNull
+	@Nonnull
 	public FluidStack getFluid() {
 		return fluidStackProperty.getValue();
 	}
@@ -130,7 +130,7 @@ public class PropertyFluidTank extends FluidTank {
 		return filled;
 	}
 
-	@NotNull
+	@Nonnull
 	@Override
 	public FluidStack drain(FluidStack resource, FluidAction action) {
 		if (resource.isEmpty() || !resource.isFluidEqual(getFluid())) {
@@ -139,7 +139,7 @@ public class PropertyFluidTank extends FluidTank {
 		return drain(resource.getAmount(), action);
 	}
 
-	@NotNull
+	@Nonnull
 	@Override
 	public FluidStack drain(int maxDrain, FluidAction action) {
 		int drained = maxDrain;

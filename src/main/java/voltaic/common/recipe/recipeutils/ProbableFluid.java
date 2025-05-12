@@ -8,46 +8,43 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import voltaic.Voltaic;
 import voltaic.api.codec.StreamCodec;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.registries.ForgeRegistries;
 
 public class ProbableFluid {
 
     public static final Codec<ProbableFluid> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             //
-            ForgeRegistries.FLUIDS.getCodec().fieldOf("fluid").forGetter(instance0 -> instance0.fluid.getFluid()),
-            //
-            Codec.INT.fieldOf("amount").forGetter(instance0 -> instance0.fluid.getAmount()),
+            FluidStack.CODEC.fieldOf("fluid").forGetter(instance0 -> instance0.fluid),
             //
             Codec.DOUBLE.fieldOf("chance").forGetter(instance0 -> instance0.chance)
 
     )
             //
-            .apply(instance, (fluid, amt, chance) -> new ProbableFluid(new FluidStack(fluid, amt), chance))
+            .apply(instance, (fluid, chance) -> new ProbableFluid(fluid, chance))
 
     //
     );
 
     public static final Codec<List<ProbableFluid>> LIST_CODEC = CODEC.listOf();
 
-    public static final StreamCodec<FriendlyByteBuf, ProbableFluid> STREAM_CODEC = new StreamCodec<>() {
+    public static final StreamCodec<PacketBuffer, ProbableFluid> STREAM_CODEC = new StreamCodec<PacketBuffer, ProbableFluid>() {
         @Override
-        public ProbableFluid decode(FriendlyByteBuf buf) {
+        public ProbableFluid decode(PacketBuffer buf) {
             return new ProbableFluid(StreamCodec.FLUID_STACK.decode(buf), buf.readDouble());
         }
 
         @Override
-        public void encode(FriendlyByteBuf buf, ProbableFluid fluid) {
+        public void encode(PacketBuffer buf, ProbableFluid fluid) {
             StreamCodec.FLUID_STACK.encode(buf, fluid.fluid);
             buf.writeDouble(fluid.chance);
         }
     };
 
-    public static final StreamCodec<FriendlyByteBuf, List<ProbableFluid>> LIST_STREAM_CODEC = new StreamCodec<>() {
+    public static final StreamCodec<PacketBuffer, List<ProbableFluid>> LIST_STREAM_CODEC = new StreamCodec<PacketBuffer, List<ProbableFluid>>() {
 
         @Override
-        public void encode(FriendlyByteBuf buf, List<ProbableFluid> probable) {
+        public void encode(PacketBuffer buf, List<ProbableFluid> probable) {
             buf.writeInt(probable.size());
             for (ProbableFluid fluid : probable) {
                 STREAM_CODEC.encode(buf, fluid);
@@ -55,7 +52,7 @@ public class ProbableFluid {
         }
 
         @Override
-        public List<ProbableFluid> decode(FriendlyByteBuf buf) {
+        public List<ProbableFluid> decode(PacketBuffer buf) {
             int count = buf.readInt();
             List<ProbableFluid> fluids = new ArrayList<>();
             for (int i = 0; i < count; i++) {

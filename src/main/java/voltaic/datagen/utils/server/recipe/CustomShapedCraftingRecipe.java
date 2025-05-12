@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.function.Consumer;
 
 import javax.annotation.Nullable;
@@ -11,24 +12,38 @@ import javax.annotation.Nullable;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
-import net.minecraft.data.recipes.FinishedRecipe;
-import net.minecraft.data.recipes.ShapedRecipeBuilder;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.data.IFinishedRecipe;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.IRecipeSerializer;
+import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.tags.ITag.INamedTag;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.tags.TagKey;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.registry.Registry;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.common.crafting.conditions.ICondition;
 
-public class CustomShapedCraftingRecipe extends ShapedRecipeBuilder.Result {
+public class CustomShapedCraftingRecipe implements IFinishedRecipe {
 
+	private final ResourceLocation id;
+	private final Item result;
+	private final int count;
+	private final String group;
+	private final List<String> pattern;
+	private final Map<Character, Ingredient> key;
+	
 	@Nullable
 	private ICondition[] recipeConditions;
 
 	private CustomShapedCraftingRecipe(ResourceLocation recipeId, Item result, int count, List<String> pattern, Map<Character, Ingredient> keys, ICondition[] recipeConditions) {
-		super(recipeId, result, count, "", pattern, keys, null, null);
+		id = recipeId;
+		this.result = result;
+		this.count = count;
+		group = "";
+		this.pattern = pattern;
+		key = keys;
+		
 		this.recipeConditions = recipeConditions;
 	}
 
@@ -38,7 +53,31 @@ public class CustomShapedCraftingRecipe extends ShapedRecipeBuilder.Result {
 
 	@Override
 	public void serializeRecipeData(JsonObject json) {
-		super.serializeRecipeData(json);
+		if (!this.group.isEmpty()) {
+			json.addProperty("group", this.group);
+		}
+
+		JsonArray jsonarray = new JsonArray();
+
+		for (String s : this.pattern) {
+			jsonarray.add(s);
+		}
+
+		json.add("pattern", jsonarray);
+		JsonObject jsonobject = new JsonObject();
+
+		for (Entry<Character, Ingredient> entry : this.key.entrySet()) {
+			jsonobject.add(String.valueOf(entry.getKey()), entry.getValue().toJson());
+		}
+
+		json.add("key", jsonobject);
+		JsonObject jsonobject1 = new JsonObject();
+		jsonobject1.addProperty("item", Registry.ITEM.getKey(this.result).toString());
+		if (this.count > 1) {
+			jsonobject1.addProperty("count", this.count);
+		}
+
+		json.add("result", jsonobject1);
 
 		if (recipeConditions == null || recipeConditions.length == 0) {
 			return;
@@ -89,7 +128,7 @@ public class CustomShapedCraftingRecipe extends ShapedRecipeBuilder.Result {
 			return this;
 		}
 
-		public Builder addKey(Character key, TagKey<Item> ing) {
+		public Builder addKey(Character key, INamedTag<Item> ing) {
 			keys.put(key, Ingredient.of(ing));
 			return this;
 		}
@@ -113,7 +152,7 @@ public class CustomShapedCraftingRecipe extends ShapedRecipeBuilder.Result {
 			return this;
 		}
 
-		public void complete(String parent, String name, Consumer<FinishedRecipe> consumer) {
+		public void complete(String parent, String name, Consumer<IFinishedRecipe> consumer) {
 			for (Character character : keys.keySet()) {
 				if (isKeyNotUsed(character)) {
 					throw new UnsupportedOperationException("The key " + character + " is defined by never used!");
@@ -134,10 +173,25 @@ public class CustomShapedCraftingRecipe extends ShapedRecipeBuilder.Result {
 
 		}
 
-		private TagKey<Item> itemTag(ResourceLocation tag) {
-			return ItemTags.create(tag);
+		private INamedTag<Item> itemTag(ResourceLocation tag) {
+			return ItemTags.createOptional(tag);
 		}
 
+	}
+
+	@Override
+	public ResourceLocation getId() {
+		return id;
+	}
+
+	@Override
+	public IRecipeSerializer<?> getType() {
+		return IRecipeSerializer.SHAPED_RECIPE;
+	}
+
+	@Override
+	public ResourceLocation getAdvancementId() {
+		return null;
 	}
 
 }

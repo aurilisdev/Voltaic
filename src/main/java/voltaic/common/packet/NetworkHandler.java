@@ -2,15 +2,14 @@ package voltaic.common.packet;
 
 import java.util.Optional;
 
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.network.NetworkDirection;
+import net.minecraftforge.fml.network.NetworkRegistry;
+import net.minecraftforge.fml.network.simple.SimpleChannel;
 import voltaic.Voltaic;
 import voltaic.common.packet.types.client.*;
 import voltaic.common.packet.types.server.PacketSendUpdatePropertiesServer;
-import voltaic.common.packet.types.server.PacketSwapBattery;
 import voltaic.common.packet.types.server.PacketUpdateCarriedItemServer;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.network.NetworkDirection;
-import net.minecraftforge.network.NetworkRegistry;
-import net.minecraftforge.network.simple.SimpleChannel;
 
 public class NetworkHandler {
 
@@ -30,7 +29,6 @@ public class NetworkHandler {
         // SERVER
 
         CHANNEL.registerMessage(disc++, PacketSendUpdatePropertiesServer.class, PacketSendUpdatePropertiesServer::encode, PacketSendUpdatePropertiesServer::decode, PacketSendUpdatePropertiesServer::handle, Optional.of(NetworkDirection.PLAY_TO_SERVER));
-        CHANNEL.registerMessage(disc++, PacketSwapBattery.class, PacketSwapBattery::encode, PacketSwapBattery::decode, PacketSwapBattery::handle, Optional.of(NetworkDirection.PLAY_TO_SERVER));
         CHANNEL.registerMessage(disc++, PacketUpdateCarriedItemServer.class, PacketUpdateCarriedItemServer::encode, PacketUpdateCarriedItemServer::decode, PacketUpdateCarriedItemServer::handle, Optional.of(NetworkDirection.PLAY_TO_SERVER));
 
     }

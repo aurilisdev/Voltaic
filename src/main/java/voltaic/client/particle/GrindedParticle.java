@@ -2,28 +2,26 @@ package voltaic.client.particle;
 
 import javax.annotation.Nullable;
 
-import org.jetbrains.annotations.NotNull;
-
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.particle.ParticleRenderType;
-import net.minecraft.client.particle.TextureSheetParticle;
-import net.minecraft.client.renderer.LevelRenderer;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.client.particle.IParticleRenderType;
+import net.minecraft.client.particle.SpriteTexturedParticle;
+import net.minecraft.client.renderer.WorldRenderer;
+import net.minecraft.client.world.ClientWorld;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
-public class GrindedParticle extends TextureSheetParticle {
+public class GrindedParticle extends SpriteTexturedParticle {
 
 	private final BlockState sourceState;
 	private BlockPos sourcePos;
 	private final float uCoord;
 	private final float vCoord;
 
-	public GrindedParticle(ClientLevel world, double x, double y, double z, double motionX, double motionY, double motionZ, BlockState state) {
+	public GrindedParticle(ClientWorld world, double x, double y, double z, double motionX, double motionY, double motionZ, BlockState state) {
 		super(world, x, y, z, motionX, motionY, motionZ);
 		sourceState = state;
 		setSprite(Minecraft.getInstance().getBlockRenderer().getBlockModelShaper().getParticleIcon(state));
@@ -37,8 +35,8 @@ public class GrindedParticle extends TextureSheetParticle {
 	}
 
 	@Override
-	public @NotNull ParticleRenderType getRenderType() {
-		return ParticleRenderType.TERRAIN_SHEET;
+	public IParticleRenderType getRenderType() {
+		return IParticleRenderType.TERRAIN_SHEET;
 	}
 
 	public GrindedParticle setBlockPos(BlockPos pos) {
@@ -90,7 +88,7 @@ public class GrindedParticle extends TextureSheetParticle {
 	@Override
 	public int getLightColor(float partialTick) {
 		int i = super.getLightColor(partialTick);
-		int j = LevelRenderer.getLightColor(level, new BlockPos((int) Math.floor(x), (int) Math.floor(y), (int) Math.floor(z)));
+		int j = WorldRenderer.getLightColor(level, new BlockPos((int) Math.floor(x), (int) Math.floor(y), (int) Math.floor(z)));
 		return i == 0 ? j : i;
 	}
 

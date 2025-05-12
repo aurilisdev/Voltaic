@@ -1,11 +1,11 @@
 package voltaic.api;
 
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.BlockPos;
 
 public interface IWrenchItem {
-	boolean shouldRotate(ItemStack stack, BlockPos pos, Player player);
+	boolean shouldRotate(ItemStack stack, BlockPos pos, PlayerEntity player);
 
-	boolean shouldPickup(ItemStack stack, BlockPos pos, Player player);
+	boolean shouldPickup(ItemStack stack, BlockPos pos, PlayerEntity player);
 }

@@ -2,41 +2,41 @@ package voltaic.prefab.utilities;
 
 import java.util.List;
 
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.container.Slot;
+import net.minecraft.item.ItemStack;
 
 public final class ContainerUtils {
 
 	static final int PLAYER_INV_Y_DEFAULT = 84;
 	static final int PLAYER_INV_X_DEFAULT = 8;
 
-	public static ItemStack handleShiftClick(List<Slot> slots, Player player, int slotIndex) {
+	public static ItemStack handleShiftClick(List<Slot> slots, PlayerEntity player, int slotIndex) {
 		Slot sourceSlot = slots.get(slotIndex);
 		ItemStack inputStack = sourceSlot.getItem();
 		if (inputStack == null) {
 			return null;
 		}
 
-		boolean sourceIsPlayer = sourceSlot.container == player.getInventory();
+		boolean sourceIsPlayer = sourceSlot.container == player.inventory;
 
 		ItemStack copy = inputStack.copy();
 
 		if (sourceIsPlayer) {
-			if (!mergeStack(player.getInventory(), false, sourceSlot, slots, false)) {
+			if (!mergeStack(player.inventory, false, sourceSlot, slots, false)) {
 				return ItemStack.EMPTY;
 			}
 			return copy;
 		}
 		boolean isMachineOutput = !sourceSlot.mayPlace(inputStack);
-		if (!mergeStack(player.getInventory(), true, sourceSlot, slots, !isMachineOutput)) {
+		if (!mergeStack(player.inventory, true, sourceSlot, slots, !isMachineOutput)) {
 			return ItemStack.EMPTY;
 		}
 		return copy;
 	}
 
-	private static boolean mergeStack(Inventory playerInv, boolean mergeIntoPlayer, Slot sourceSlot, List<Slot> slots, boolean reverse) {
+	private static boolean mergeStack(PlayerInventory playerInv, boolean mergeIntoPlayer, Slot sourceSlot, List<Slot> slots, boolean reverse) {
 		ItemStack sourceStack = sourceSlot.getItem();
 
 		int originalSize = sourceStack.getCount();

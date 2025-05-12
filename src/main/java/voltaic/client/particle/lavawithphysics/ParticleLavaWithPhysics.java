@@ -1,24 +1,23 @@
 package voltaic.client.particle.lavawithphysics;
 
-import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.particle.IAnimatedSprite;
+import net.minecraft.client.particle.IParticleFactory;
+import net.minecraft.client.particle.IParticleRenderType;
 import net.minecraft.client.particle.Particle;
-import net.minecraft.client.particle.ParticleEngine;
-import net.minecraft.client.particle.ParticleProvider;
-import net.minecraft.client.particle.ParticleRenderType;
-import net.minecraft.client.particle.SpriteSet;
-import net.minecraft.client.particle.TextureSheetParticle;
-import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.client.particle.SpriteTexturedParticle;
+import net.minecraft.client.particle.ParticleManager.IParticleMetaFactory;
+import net.minecraft.client.world.ClientWorld;
+import net.minecraft.particles.ParticleTypes;
 
-public class ParticleLavaWithPhysics extends TextureSheetParticle {
+public class ParticleLavaWithPhysics extends SpriteTexturedParticle {
 
-    private final SpriteSet sprites;
+    private final IAnimatedSprite sprites;
     private final double bounceFactor;
 
-    public ParticleLavaWithPhysics(ClientLevel level, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed, ParticleOptionLavaWithPhysics options, SpriteSet sprites) {
+    public ParticleLavaWithPhysics(ClientWorld level, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed, ParticleOptionLavaWithPhysics options, IAnimatedSprite sprites) {
         super(level, x, y, z, xSpeed, ySpeed, zSpeed);
         this.sprites = sprites;
         this.gravity = 0.75F;
-        this.friction = 0.999F;
         this.hasPhysics = true;
         this.bounceFactor = options.bounceFactor;
         this.xd = xSpeed;
@@ -30,8 +29,8 @@ public class ParticleLavaWithPhysics extends TextureSheetParticle {
     }
 
     @Override
-    public ParticleRenderType getRenderType() {
-        return ParticleRenderType.PARTICLE_SHEET_OPAQUE;
+    public IParticleRenderType getRenderType() {
+        return IParticleRenderType.PARTICLE_SHEET_OPAQUE;
     }
 
     @Override
@@ -67,21 +66,21 @@ public class ParticleLavaWithPhysics extends TextureSheetParticle {
         }
     }
 
-    public static class Factory implements ParticleProvider<ParticleOptionLavaWithPhysics>, ParticleEngine.SpriteParticleRegistration<ParticleOptionLavaWithPhysics> {
+    public static class Factory implements IParticleFactory<ParticleOptionLavaWithPhysics>,IParticleMetaFactory<ParticleOptionLavaWithPhysics> {
 
-        private final SpriteSet sprites;
+        private final IAnimatedSprite sprites;
 
-        public Factory(SpriteSet sprites) {
+        public Factory(IAnimatedSprite sprites) {
             this.sprites = sprites;
         }
 
         @Override
-        public Particle createParticle(ParticleOptionLavaWithPhysics type, ClientLevel level, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
+        public Particle createParticle(ParticleOptionLavaWithPhysics type, ClientWorld level, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
             return new ParticleLavaWithPhysics(level, x, y, z, xSpeed, ySpeed, zSpeed, type, sprites);
         }
 
         @Override
-        public ParticleProvider<ParticleOptionLavaWithPhysics> create(SpriteSet sprites) {
+        public IParticleFactory<ParticleOptionLavaWithPhysics> create(IAnimatedSprite sprites) {
             return new ParticleLavaWithPhysics.Factory(sprites);
         }
 

@@ -1,6 +1,6 @@
 package voltaic.prefab.block;
 
-import net.minecraft.core.BlockPos;
+import net.minecraft.util.math.BlockPos;
 
 public class HashDistanceBlockPos extends BlockPos {
 	public int hash = 0;

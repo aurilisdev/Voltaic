@@ -5,9 +5,12 @@ import voltaic.prefab.tile.GenericTile;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.world.level.Level;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Direction;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 public class BlockEntityUtils {
 
@@ -31,7 +34,7 @@ public class BlockEntityUtils {
 	}
 
 	public static void updateLit(GenericTile tile, Boolean value) {
-		Level world = tile.getLevel();
+		World world = tile.getLevel();
 		BlockPos pos = tile.getBlockPos();
 		if (tile.getBlockState().hasProperty(VoltaicBlockStates.LIT)) {
 			world.setBlockAndUpdate(pos, world.getBlockState(pos).setValue(VoltaicBlockStates.LIT, value));
@@ -79,6 +82,13 @@ public class BlockEntityUtils {
             return Direction.WEST;
         }
 		return null;
+	}
+	
+	public static void saveToItem(TileEntity entity, ItemStack stack) {
+		CompoundNBT compoundnbt = entity.save(new CompoundNBT());
+		if (!compoundnbt.isEmpty()) {
+			stack.addTagElement("BlockEntityTag", compoundnbt);
+		}
 	}
 
 
