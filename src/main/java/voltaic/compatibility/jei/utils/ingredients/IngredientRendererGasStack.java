@@ -11,6 +11,7 @@ import voltaic.api.gas.GasStack;
 import voltaic.client.VoltaicClientRegister;
 import voltaic.compatibility.jei.utils.gui.types.gasgauge.IGasGaugeTexture;
 import voltaic.prefab.screen.component.types.gauges.ScreenComponentGasGauge;
+import voltaic.prefab.utilities.RenderingUtils;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
@@ -23,7 +24,9 @@ public class IngredientRendererGasStack implements IIngredientRenderer<GasStack>
 
 		@Override
 		public void render(GuiGraphics graphics, GasStack ingredient) {
+			RenderingUtils.setShaderColor(ingredient.getGas().getColor());
 			graphics.blit(0, 0, 0, 16, 16, VoltaicClientRegister.getSprite(VoltaicClientRegister.TEXTURE_GAS));
+			RenderingUtils.resetShaderColor();
 		}
 
 		@Override

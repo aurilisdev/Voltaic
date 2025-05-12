@@ -4,6 +4,7 @@ import java.util.function.Supplier;
 
 import javax.annotation.Nullable;
 
+import voltaic.prefab.utilities.math.Color;
 import voltaic.registers.VoltaicGases;
 import voltaic.registers.VoltaicRegistries;
 import net.minecraft.core.Holder;
@@ -32,19 +33,22 @@ public class Gas {
 	private final int condensationTemp; // Degrees Kelvin; set to 0 if this gas does not condense
 	@Nullable
 	private final Supplier<Fluid> condensedFluid; // set to empty if gas does not condense
+	private final Color color;
 
-	public Gas(Supplier<Item> container, Component description) {
+	public Gas(Supplier<Item> container, Component description, Color color) {
 		this.container = container;
 		this.description = description;
 		this.condensationTemp = 0;
 		this.condensedFluid = () -> Fluids.EMPTY;
+		this.color = color;
 	}
 
-	public Gas(Supplier<Item> container, Component description, int condensationTemp, Supplier<Fluid> condensedFluid) {
+	public Gas(Supplier<Item> container, Component description, int condensationTemp, Color color, Supplier<Fluid> condensedFluid) {
 		this.container = container;
 		this.description = description;
 		this.condensationTemp = condensationTemp;
 		this.condensedFluid = condensedFluid;
+		this.color = color;
 	}
 
 	public Component getDescription() {
@@ -68,7 +72,7 @@ public class Gas {
 	}
 
 	public boolean noCondensedFluid() {
-		return condensedFluid == null || condensedFluid == Fluids.EMPTY;
+		return condensedFluid == null || condensedFluid.get() == Fluids.EMPTY;
 	}
 
 	public Fluid getCondensedFluid() {
@@ -81,6 +85,10 @@ public class Gas {
 			return other == this;
 		}
 		return false;
+	}
+	
+	public Color getColor() {
+		return color;
 	}
 
 	@Override
