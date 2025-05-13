@@ -17,14 +17,14 @@ import java.util.concurrent.CompletableFuture;
 
 public abstract class BaseRadioactiveItemsProvider implements DataProvider {
 
-	public static final String LOC = "data/" + Voltaic.ID + "/" + RadioactiveItemRegister.FOLDER + "/" + RadioactiveItemRegister.FILE_NAME;
-
 	private final PackOutput output;
 	private final String modID;
+	private final String loc;
 
 	public BaseRadioactiveItemsProvider(PackOutput output, String modID) {
 		this.output = output;
 		this.modID = modID;
+		loc = "data/" + Voltaic.ID + "/" + RadioactiveItemRegister.FOLDER + "/" + modID + "_" + RadioactiveItemRegister.FILE_NAME;
 	}
 
 	@Override
@@ -32,7 +32,7 @@ public abstract class BaseRadioactiveItemsProvider implements DataProvider {
 		JsonObject json = new JsonObject();
 		getRadioactiveItems(json);
 
-		Path parent = output.getOutputFolder().resolve(LOC + ".json");
+		Path parent = output.getOutputFolder().resolve(loc + ".json");
 
 		return CompletableFuture.allOf(DataProvider.saveStable(cache, json, parent));
 	}

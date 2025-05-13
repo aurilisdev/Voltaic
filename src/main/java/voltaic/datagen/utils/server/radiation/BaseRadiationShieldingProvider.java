@@ -17,14 +17,14 @@ import voltaic.common.reloadlistener.RadiationShieldingRegister;
 
 public abstract class BaseRadiationShieldingProvider implements DataProvider {
 
-    public static final String LOC = "data/" + Voltaic.ID + "/" + RadiationShieldingRegister.FOLDER + "/" + RadiationShieldingRegister.FILE_NAME;
-
     private final PackOutput output;
     private final String modID;
+    private final String loc;
 
     public BaseRadiationShieldingProvider(PackOutput output, String modID) {
         this.output = output;
         this.modID = modID;
+        loc = "data/" + Voltaic.ID + "/" + RadiationShieldingRegister.FOLDER + "/" + modID + "_" + RadiationShieldingRegister.FILE_NAME;
     }
 
     @Override
@@ -32,7 +32,7 @@ public abstract class BaseRadiationShieldingProvider implements DataProvider {
         JsonObject json = new JsonObject();
         getRadiationShielding(json);
 
-        Path parent = output.getOutputFolder().resolve(LOC + ".json");
+        Path parent = output.getOutputFolder().resolve(loc + ".json");
 
         return CompletableFuture.allOf(DataProvider.saveStable(cache, json, parent));
     }
