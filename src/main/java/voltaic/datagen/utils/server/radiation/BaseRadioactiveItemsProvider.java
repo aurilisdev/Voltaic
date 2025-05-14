@@ -17,14 +17,14 @@ import java.nio.file.Path;
 
 public abstract class BaseRadioactiveItemsProvider implements DataProvider {
 
-	public static final String LOC = "data/" + Voltaic.ID + "/" + RadioactiveItemRegister.FOLDER + "/" + RadioactiveItemRegister.FILE_NAME;
-
 	private final DataGenerator dataGenerator;
 	private final String modID;
+	private final String loc;
 
 	public BaseRadioactiveItemsProvider(DataGenerator dataGenerator, String modID) {
 		this.dataGenerator = dataGenerator;
 		this.modID = modID;
+		loc = "data/" + Voltaic.ID + "/" + RadioactiveItemRegister.FOLDER + "/" + modID + "_" + RadioactiveItemRegister.FILE_NAME;
 	}
 
 	@Override
@@ -32,7 +32,7 @@ public abstract class BaseRadioactiveItemsProvider implements DataProvider {
 		JsonObject json = new JsonObject();
 		getRadioactiveItems(json);
 
-		Path parent = dataGenerator.getOutputFolder().resolve(LOC + ".json");
+		Path parent = dataGenerator.getOutputFolder().resolve(loc + ".json");
 		try {
 
 			DataProvider.saveStable(cache, json, parent);
