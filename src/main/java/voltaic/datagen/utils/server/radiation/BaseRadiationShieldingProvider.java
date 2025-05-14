@@ -20,14 +20,14 @@ public abstract class BaseRadiationShieldingProvider implements DataProvider {
 	
 	private static final Gson GSON = (new GsonBuilder()).setPrettyPrinting().disableHtmlEscaping().create();
 
-    public static final String LOC = "data/" + Voltaic.ID + "/" + RadiationShieldingRegister.FOLDER + "/" + RadiationShieldingRegister.FILE_NAME;
-
     private final DataGenerator dataGenerator;
     private final String modID;
+    private final String loc;
 
     public BaseRadiationShieldingProvider(DataGenerator dataGenerator, String modID) {
         this.dataGenerator = dataGenerator;
         this.modID = modID;
+        loc = "data/" + Voltaic.ID + "/" + RadiationShieldingRegister.FOLDER + "/" + modID + "_" + RadiationShieldingRegister.FILE_NAME;
     }
 
     @Override
@@ -35,7 +35,7 @@ public abstract class BaseRadiationShieldingProvider implements DataProvider {
         JsonObject json = new JsonObject();
         getRadiationShielding(json);
 
-        Path parent = dataGenerator.getOutputFolder().resolve(LOC + ".json");
+        Path parent = dataGenerator.getOutputFolder().resolve(loc + ".json");
 		try {
 
 			DataProvider.save(GSON, cache, json, parent);

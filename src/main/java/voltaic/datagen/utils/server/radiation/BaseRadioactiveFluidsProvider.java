@@ -21,14 +21,14 @@ public abstract class BaseRadioactiveFluidsProvider implements DataProvider {
 	
 	private static final Gson GSON = (new GsonBuilder()).setPrettyPrinting().disableHtmlEscaping().create();
 
-	public static final String LOC = "data/" + Voltaic.ID + "/" + RadioactiveFluidRegister.FOLDER + "/" + RadioactiveFluidRegister.FILE_NAME;
-
 	private final DataGenerator dataGenerator;
 	private final String modID;
+	private final String loc;
 
 	public BaseRadioactiveFluidsProvider(DataGenerator dataGenerator, String modID) {
 		this.dataGenerator = dataGenerator;
 		this.modID = modID;
+		loc = "data/" + Voltaic.ID + "/" + RadioactiveFluidRegister.FOLDER + "/" + modID + "_" +RadioactiveFluidRegister.FILE_NAME;
 	}
 
 	@Override
@@ -36,7 +36,7 @@ public abstract class BaseRadioactiveFluidsProvider implements DataProvider {
 		JsonObject json = new JsonObject();
 		getRadioactiveItems(json);
 
-		Path parent = dataGenerator.getOutputFolder().resolve(LOC + ".json");
+		Path parent = dataGenerator.getOutputFolder().resolve(loc + ".json");
 		try {
 
 			DataProvider.save(GSON, cache, json, parent);
