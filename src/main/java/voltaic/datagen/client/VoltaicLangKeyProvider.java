@@ -19,7 +19,7 @@ public class VoltaicLangKeyProvider extends BaseLangKeyProvider {
             case EN_US:
             default:
 
-            	add("itemGroup.itemgroup" + Voltaic.ID, "Voltaic");
+            	add("itemGroup.itemgroup" + Voltaic.ID + "main", "Voltaic");
 
                 addItem(VoltaicItems.GUIDEBOOK, "VEC 1st Edition");
                 addItem(VoltaicItems.ITEM_WRENCH, "Wrench");

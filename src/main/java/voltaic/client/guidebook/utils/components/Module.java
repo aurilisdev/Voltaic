@@ -53,7 +53,7 @@ public abstract class Module {
 	public OnKeyPress onKeyPress() {
 		return null;
 	}
-
+	
 	public boolean isFirst() {
 		return false;
 	}
