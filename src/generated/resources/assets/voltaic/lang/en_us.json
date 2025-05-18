@@ -96,7 +96,7 @@
   "guidebook.voltaic.titlequote": "\"There is nothing more permanent than a temporary solution.\"",
   "item.voltaic.guidebook": "VEC 1st Edition",
   "item.voltaic.wrench": "Wrench",
-  "itemGroup.itemgroupvoltaic": "Voltaic",
+  "itemGroup.itemgroupvoltaicmain": "Voltaic",
   "subtitles.voltaic.batteryswap": "Battery is swapped",
   "subtitles.voltaic.pressurerelease": "Gas hisses",
   "tooltip.voltaic.currentgas": "Gas: %s",
