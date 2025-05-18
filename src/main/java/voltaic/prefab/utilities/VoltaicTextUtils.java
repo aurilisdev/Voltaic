@@ -113,7 +113,7 @@ public class VoltaicTextUtils {
 	}
 	
 	public static IFormattableTextComponent empty() {
-		return EMPTY;
+		return new StringTextComponent("");
 	}
 
 }
