@@ -1,0 +1,31 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "conditions": [
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:mod_loaded",
+        "modid": "electrodynamics"
+      }
+    }
+  ],
+  "key": {
+    "B": {
+      "tag": "forge:ingots/gold"
+    },
+    "C": {
+      "item": "minecraft:cactus"
+    },
+    "P": {
+      "tag": "forge:ingots/iron"
+    }
+  },
+  "pattern": [
+    "C",
+    "B",
+    "P"
+  ],
+  "result": {
+    "item": "voltaic:upgradeitemvoid"
+  }
+}

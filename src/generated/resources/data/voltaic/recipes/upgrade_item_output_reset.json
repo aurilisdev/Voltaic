@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "conditions": [
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:mod_loaded",
+        "modid": "electrodynamics"
+      }
+    }
+  ],
+  "ingredients": [
+    {
+      "item": "voltaic:upgradeitemoutput"
+    }
+  ],
+  "result": {
+    "item": "voltaic:upgradeitemoutput"
+  }
+}
