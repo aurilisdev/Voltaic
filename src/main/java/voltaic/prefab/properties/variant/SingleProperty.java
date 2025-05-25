@@ -41,6 +41,7 @@ public class SingleProperty<T> extends AbstractProperty<T, SinglePropertyType<T,
         return this;
     }
 
+    @Override
     public void setValue(Object updated) {
 
         if (alreadySynced) {

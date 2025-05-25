@@ -1,0 +1,34 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "PPP",
+    "BCB",
+    "BSB"
+  ],
+  "key": {
+    "P": {
+      "tag": "forge:glass_panes"
+    },
+    "B": {
+      "tag": "forge:dusts/redstone"
+    },
+    "C": {
+      "tag": "forge:ingots/gold"
+    },
+    "S": {
+      "tag": "forge:ingots/iron"
+    }
+  },
+  "result": {
+    "item": "voltaic:upgradeimprovedsolarcell"
+  },
+  "conditions": [
+    {
+      "value": {
+        "modid": "electrodynamics",
+        "type": "forge:mod_loaded"
+      },
+      "type": "forge:not"
+    }
+  ]
+}

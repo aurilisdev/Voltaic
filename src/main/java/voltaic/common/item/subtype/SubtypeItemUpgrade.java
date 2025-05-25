@@ -26,23 +26,23 @@ import net.minecraftforge.items.IItemHandler;
 
 public enum SubtypeItemUpgrade implements ISubtype {
 
-    basiccapacity(2, VoltaicTextUtils.tooltip("upgrade.basiccapacity")),
+    basiccapacity(2, VoltaicTextUtils.tooltip("upgrade.basiccapacity"), "electrodynamics"),
     // box.currentCapacityMultiplier.set(Math.min(box.currentCapacityMultiplier.get()
     // * 1.5, Math.pow(1.5, 3)));
     // box.currentVoltageMultiplier.set(Math.min(box.currentVoltageMultiplier.get()
     // * 2, 2));
 
-    basicspeed(3, VoltaicTextUtils.tooltip("upgrade.basicspeed")),
+    basicspeed(3, VoltaicTextUtils.tooltip("upgrade.basicspeed"), "electrodynamics", "assemblyline", "blastcraft"),
     // processor.operatingSpeed.set(Math.min(processor.operatingSpeed.get() * 1.5,
     // Math.pow(1.5, 3)));
 
-    advancedcapacity(4, VoltaicTextUtils.tooltip("upgrade.advancedcapacity")),
+    advancedcapacity(4, VoltaicTextUtils.tooltip("upgrade.advancedcapacity"), "electrodynamics"),
     // box.currentCapacityMultiplier.set(Math.min(box.currentCapacityMultiplier.get()
     // * 2.25, Math.pow(2.25, 3)));
     // box.currentVoltageMultiplier.set(Math.min(box.currentVoltageMultiplier.get()
     // * 4, 4));
 
-    advancedspeed(3, VoltaicTextUtils.tooltip("upgrade.advancedspeed")),
+    advancedspeed(3, VoltaicTextUtils.tooltip("upgrade.advancedspeed"), "electrodynamics", "assemblyline", "blastcraft"),
     // processor.operatingSpeed.set(Math.min(processor.operatingSpeed.get() * 2.25,
     // Math.pow(2.25, 3)));
 
@@ -87,7 +87,7 @@ public enum SubtypeItemUpgrade implements ISubtype {
             }
         }
 
-    }, 1, VoltaicTextUtils.tooltip("upgrade.iteminput")),
+    }, 1, VoltaicTextUtils.tooltip("upgrade.iteminput"), "electrodynamics", "assemblyline", "blastcraft"),
     // I can't really optimize this one any more than it is
     itemoutput((holder, upgrade, index) -> {
         ComponentInventory inv = holder.getComponent(IComponentType.Inventory);
@@ -143,17 +143,17 @@ public enum SubtypeItemUpgrade implements ISubtype {
             }
         }
 
-    }, 1, VoltaicTextUtils.tooltip("upgrade.itemoutput")),
-    improvedsolarcell(1, VoltaicTextUtils.tooltip("upgrade.improvedsolarcell")),
+    }, 1, VoltaicTextUtils.tooltip("upgrade.itemoutput"), "electrodynamics", "assemblyline", "blastcraft"),
+    improvedsolarcell(1, VoltaicTextUtils.tooltip("upgrade.improvedsolarcell"), "electrodynamics"),
     // generator.setMultiplier(2.25);
-    stator(1, VoltaicTextUtils.tooltip("upgrade.stator")),
+    stator(1, VoltaicTextUtils.tooltip("upgrade.stator"), "electrodynamics"),
     // generator.setMultiplier(2.25);
-    range(12, VoltaicTextUtils.tooltip("upgrade.range")),
-    experience(1, VoltaicTextUtils.tooltip("upgrade.experience")),
-    itemvoid(1, VoltaicTextUtils.tooltip("upgrade.itemvoid")),
-    silktouch(1, VoltaicTextUtils.tooltip("upgrade.silktouch")),
-    fortune(3, VoltaicTextUtils.tooltip("upgrade.fortune")),
-    unbreaking(3, VoltaicTextUtils.tooltip("upgrade.unbreaking"));
+    range(12, VoltaicTextUtils.tooltip("upgrade.range"), "assemblyline", "ballistix"),
+    experience(1, VoltaicTextUtils.tooltip("upgrade.experience"), "electrodynamics", "assemblyline", "blastcraft"),
+    itemvoid(1, VoltaicTextUtils.tooltip("upgrade.itemvoid"), "electrodynamics"),
+    silktouch(1, VoltaicTextUtils.tooltip("upgrade.silktouch"), "electrodynamics"),
+    fortune(3, VoltaicTextUtils.tooltip("upgrade.fortune"), "electrodynamics"),
+    unbreaking(3, VoltaicTextUtils.tooltip("upgrade.unbreaking"), "electrodynamics");
 
     public final TriConsumer<GenericTile, ItemStack, Integer> applyUpgrade;
     public final int maxSize;
@@ -161,20 +161,23 @@ public enum SubtypeItemUpgrade implements ISubtype {
     public final boolean isEmpty;
 
     public final MutableComponent name;
+    public final String[] modIds;
 
-    SubtypeItemUpgrade(TriConsumer<GenericTile, ItemStack, Integer> applyUpgrade, int maxSize, MutableComponent name) {
+    SubtypeItemUpgrade(TriConsumer<GenericTile, ItemStack, Integer> applyUpgrade, int maxSize, MutableComponent name, String... modIds) {
         this.applyUpgrade = applyUpgrade;
         this.maxSize = maxSize;
         isEmpty = false;
         this.name = name;
+        this.modIds = modIds;
     }
 
-    SubtypeItemUpgrade(int maxStackSize, MutableComponent name) {
+    SubtypeItemUpgrade(int maxStackSize, MutableComponent name, String... modIds) {
         applyUpgrade = (holder, upgrade, index) -> {
         };
         maxSize = maxStackSize;
         isEmpty = true;
         this.name = name;
+        this.modIds = modIds;
     }
 
     @Override
