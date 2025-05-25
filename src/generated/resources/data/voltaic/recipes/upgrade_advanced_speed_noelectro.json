@@ -1,0 +1,39 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "conditions": [
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:mod_loaded",
+        "modid": "electrodynamics"
+      }
+    }
+  ],
+  "key": {
+    "B": {
+      "item": "voltaic:upgradebasicspeed"
+    },
+    "C": {
+      "tag": "forge:gems/diamond"
+    },
+    "G": {
+      "item": "minecraft:chain"
+    },
+    "P": {
+      "tag": "forge:ingots/iron"
+    },
+    "W": {
+      "tag": "forge:ingots/copper"
+    }
+  },
+  "pattern": [
+    "PGP",
+    "BWB",
+    "CGC"
+  ],
+  "result": {
+    "item": "voltaic:upgradeadvancedspeed"
+  },
+  "show_notification": false
+}

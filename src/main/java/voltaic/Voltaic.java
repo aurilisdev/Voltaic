@@ -3,7 +3,6 @@ package voltaic;
 import java.util.Random;
 import java.util.function.Consumer;
 
-import voltaic.api.electricity.formatting.MeasurementUnits;
 import voltaic.common.reloadlistener.RadiationShieldingRegister;
 import voltaic.common.reloadlistener.RadioactiveFluidRegister;
 import voltaic.common.reloadlistener.RadioactiveGasRegister;
@@ -65,7 +64,6 @@ public class Voltaic {
     public Voltaic() {
     	IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
         ELECTRODYNAMICS_LOADED = ModList.get().isLoaded(ELECTRODYNAMICS_MOD_ID);
-        MeasurementUnits.init();
         ConfigurationHandler.registerConfig(VoltaicConstants.class);
         // MUST GO BEFORE BLOCKS!!!!
         VoltaicBlockStates.init();

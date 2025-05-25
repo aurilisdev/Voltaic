@@ -5,6 +5,7 @@ import voltaic.common.item.subtype.SubtypeItemUpgrade;
 import voltaic.datagen.utils.client.BaseItemModelsProvider;
 import voltaic.registers.VoltaicItems;
 import net.minecraft.data.PackOutput;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraftforge.common.data.ExistingFileHelper;
 
 public class VoltaicItemModelsProvider extends BaseItemModelsProvider {
@@ -21,8 +22,8 @@ public class VoltaicItemModelsProvider extends BaseItemModelsProvider {
         //layeredItem(VoltaicAPIItems.ITEM_ANTIDOTE, Parent.GENERATED, itemLoc("antidote"));
         //layeredItem(VoltaicAPIItems.ITEM_IODINETABLET, Parent.GENERATED, itemLoc("iodinetablet"));
 
-        for (@SuppressWarnings("unused") SubtypeItemUpgrade upgrade : SubtypeItemUpgrade.values()) {
-            //layeredBuilder(name(VoltaicAPIItems.ITEMS_UPGRADE.getValue(upgrade)), Parent.GENERATED, itemLoc("upgrade/" + upgrade.tag())).transforms().transform(ItemDisplayContext.GUI).scale(0.8F).end();
+        for (SubtypeItemUpgrade upgrade : SubtypeItemUpgrade.values()) {
+            layeredBuilder(name(VoltaicItems.ITEMS_UPGRADE.getValue(upgrade)), Parent.GENERATED, itemLoc("upgrade/" + upgrade.tag())).transforms().transform(ItemDisplayContext.GUI).scale(0.8F).end();
         }
 
     }
