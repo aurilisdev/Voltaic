@@ -122,6 +122,8 @@ public abstract class AbstractProperty<T, PROPERTYTYPE extends IPropertyType> {
         return value;
     }
 
+    public abstract void setValue(Object newValue);
+
     /**
      * Documentation note: This merely forces the value of the property and does not indicate that it is dirty!
      *

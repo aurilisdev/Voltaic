@@ -129,8 +129,7 @@ public class PropertyManager {
 			Voltaic.LOGGER.info("The property " + prop.getName() + " that sent data to the tile at " + owner.getBlockPos() + " encountered a null level. The data was not loaded");
 			return;
 		}
-		prop.overwriteValue(prop.getType().readFromTag(new IPropertyType.TagReader(prop, data, owner.getLevel().registryAccess())));
-		owner.setChanged();
+		prop.setValue(prop.getType().readFromTag(new IPropertyType.TagReader(prop, data, owner.getLevel().registryAccess())));
 	}
 
 	public void onTileLoaded() {

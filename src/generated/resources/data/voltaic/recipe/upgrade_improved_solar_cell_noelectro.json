@@ -1,0 +1,36 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:mod_loaded",
+        "modid": "electrodynamics"
+      }
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": {
+      "tag": "c:dusts/redstone"
+    },
+    "C": {
+      "tag": "c:ingots/gold"
+    },
+    "P": {
+      "tag": "c:glass_panes"
+    },
+    "S": {
+      "tag": "c:ingots/iron"
+    }
+  },
+  "pattern": [
+    "PPP",
+    "BCB",
+    "BSB"
+  ],
+  "result": {
+    "count": 1,
+    "id": "voltaic:upgradeimprovedsolarcell"
+  }
+}

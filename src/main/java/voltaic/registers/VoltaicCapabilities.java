@@ -1,12 +1,12 @@
 package voltaic.registers;
 
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
+import net.neoforged.neoforge.capabilities.*;
 import voltaic.api.radiation.CapabilityRadiationRecipient;
 import voltaic.api.radiation.util.IRadiationRecipient;
-import net.neoforged.neoforge.capabilities.EntityCapability;
 import org.jetbrains.annotations.Nullable;
 
 import voltaic.Voltaic;
@@ -15,8 +15,7 @@ import voltaic.api.gas.IGasHandler;
 import voltaic.api.gas.IGasHandlerItem;
 import voltaic.api.misc.ILocationStorage;
 import net.minecraft.core.Direction;
-import net.neoforged.neoforge.capabilities.BlockCapability;
-import net.neoforged.neoforge.capabilities.ItemCapability;
+import voltaic.prefab.tile.GenericTile;
 
 @EventBusSubscriber(modid = Voltaic.ID, bus = EventBusSubscriber.Bus.MOD)
 public class VoltaicCapabilities {
@@ -35,6 +34,14 @@ public class VoltaicCapabilities {
 
     @SubscribeEvent
     public static void registerCapabilities(RegisterCapabilitiesEvent event) {
+
+        VoltaicTiles.BLOCK_ENTITY_TYPES.getEntries().forEach(entry -> {
+            event.registerBlockEntity(VoltaicCapabilities.CAPABILITY_ELECTRODYNAMIC_BLOCK, (BlockEntityType<? extends GenericTile>) entry.get(), (tile, context) -> tile.getElectrodynamicCapability(context));
+            event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, (BlockEntityType<? extends GenericTile>) entry.get(), (tile, context) -> tile.getFluidHandlerCapability(context));
+            event.registerBlockEntity(VoltaicCapabilities.CAPABILITY_GASHANDLER_BLOCK, (BlockEntityType<? extends GenericTile>) entry.get(), (tile, context) -> tile.getGasHandlerCapability(context));
+            event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, (BlockEntityType<? extends GenericTile>) entry.get(), (tile, context) -> tile.getItemHandlerCapability(context));
+            event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, (BlockEntityType<? extends GenericTile>) entry.get(), (tile, context) -> tile.getForgeEnergyCapability(context));
+        });
 
         BuiltInRegistries.ENTITY_TYPE.forEach(entry -> event.registerEntity(CAPABILITY_RADIATIONRECIPIENT, entry, (entity, context) -> new CapabilityRadiationRecipient()));
 

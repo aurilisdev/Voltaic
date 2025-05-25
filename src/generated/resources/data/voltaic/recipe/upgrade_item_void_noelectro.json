@@ -1,0 +1,33 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:mod_loaded",
+        "modid": "electrodynamics"
+      }
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": {
+      "tag": "c:ingots/gold"
+    },
+    "C": {
+      "item": "minecraft:cactus"
+    },
+    "P": {
+      "tag": "c:ingots/iron"
+    }
+  },
+  "pattern": [
+    "C",
+    "B",
+    "P"
+  ],
+  "result": {
+    "count": 1,
+    "id": "voltaic:upgradeitemvoid"
+  }
+}

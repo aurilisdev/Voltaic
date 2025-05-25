@@ -50,12 +50,12 @@ public class Voltaic {
 
     private static final String ELECTRODYNAMICS_MOD_ID = "electrodynamics";
 
+
     @Nullable
     private static Boolean ELECTRODYNAMICS_LOADED = null;
 
     public Voltaic(IEventBus bus) {
         ELECTRODYNAMICS_LOADED = ModList.get().isLoaded(ELECTRODYNAMICS_MOD_ID);
-        MeasurementUnits.init();
         ConfigurationHandler.registerConfig(VoltaicConstants.class);
         // MUST GO BEFORE BLOCKS!!!!
         VoltaicBlockStates.init();

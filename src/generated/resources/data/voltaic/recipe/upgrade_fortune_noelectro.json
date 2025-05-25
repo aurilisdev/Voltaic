@@ -1,0 +1,40 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:mod_loaded",
+        "modid": "electrodynamics"
+      }
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": {
+      "type": "voltaic:enchantmentingredient",
+      "enchantments": [
+        "c:increase_block_drops"
+      ],
+      "ingredient": {
+        "item": "minecraft:enchanted_book"
+      },
+      "isStrict": false
+    },
+    "C": {
+      "tag": "c:gems/emerald"
+    },
+    "P": {
+      "tag": "c:ingots/iron"
+    }
+  },
+  "pattern": [
+    "PCP",
+    "CBC",
+    "PCP"
+  ],
+  "result": {
+    "count": 1,
+    "id": "voltaic:upgradefortune"
+  }
+}
