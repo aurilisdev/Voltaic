@@ -1,0 +1,35 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "conditions": [
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:mod_loaded",
+        "modid": "electrodynamics"
+      }
+    }
+  ],
+  "key": {
+    "B": {
+      "type": "forge:partial_nbt",
+      "item": "minecraft:enchanted_book",
+      "nbt": "{StoredEnchantments:[{id:\"minecraft:unbreaking\",lvl:1s}]}"
+    },
+    "C": {
+      "tag": "forge:gems/diamond"
+    },
+    "P": {
+      "tag": "forge:ingots/iron"
+    }
+  },
+  "pattern": [
+    "PCP",
+    "CBC",
+    "PCP"
+  ],
+  "result": {
+    "item": "voltaic:upgradeunbreaking"
+  },
+  "show_notification": false
+}

@@ -1,6 +1,7 @@
 package voltaic.datagen.server.recipe;
 
 import voltaic.Voltaic;
+import voltaic.common.item.subtype.SubtypeItemUpgrade;
 import voltaic.datagen.utils.server.recipe.AbstractRecipeGenerator;
 import voltaic.datagen.utils.server.recipe.CustomShapedCraftingRecipe;
 import voltaic.datagen.utils.server.recipe.CustomShapelessCraftingRecipe;
@@ -9,8 +10,13 @@ import voltaic.registers.VoltaicItems;
 import java.util.function.Consumer;
 
 import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.world.item.EnchantedBookItem;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.EnchantmentInstance;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraftforge.common.Tags;
+import net.minecraftforge.common.crafting.PartialNBTIngredient;
 import net.minecraftforge.common.crafting.conditions.ModLoadedCondition;
 import net.minecraftforge.common.crafting.conditions.NotCondition;
 
@@ -23,9 +29,8 @@ public class VoltaicCraftingTableRecipes extends AbstractRecipeGenerator {
 
         addGear(output);
 
-        /*
 
-        ShapedCraftingRecipeBuilder.start(VoltaicAPIItems.ITEMS_UPGRADE.getValue(SubtypeItemUpgrade.advancedcapacity), 1)
+        CustomShapedCraftingRecipe.start(VoltaicItems.ITEMS_UPGRADE.getValue(SubtypeItemUpgrade.advancedcapacity), 1)
                 //
                 .addPattern("PBP")
                 //
@@ -35,7 +40,7 @@ public class VoltaicCraftingTableRecipes extends AbstractRecipeGenerator {
                 //
                 .addKey('P', Tags.Items.INGOTS_IRON)
                 //
-                .addKey('B', VoltaicAPIItems.ITEMS_UPGRADE.getValue(SubtypeItemUpgrade.basiccapacity))
+                .addKey('B', VoltaicItems.ITEMS_UPGRADE.getValue(SubtypeItemUpgrade.basiccapacity))
                 //
                 .addKey('W', Tags.Items.INGOTS_COPPER)
                 //
@@ -43,9 +48,9 @@ public class VoltaicCraftingTableRecipes extends AbstractRecipeGenerator {
                 //
                 .addConditions(new NotCondition(new ModLoadedCondition(ELECTRODYNAMICS_ID)))
                 //
-                .complete(VoltaicAPI.ID, "upgrade_advanced_capacity", output);
+                .complete(Voltaic.ID, "upgrade_advanced_capacity_noelectro", output);
 
-        ShapedCraftingRecipeBuilder.start(VoltaicAPIItems.ITEMS_UPGRADE.getValue(SubtypeItemUpgrade.advancedspeed), 1)
+        CustomShapedCraftingRecipe.start(VoltaicItems.ITEMS_UPGRADE.getValue(SubtypeItemUpgrade.advancedspeed), 1)
                 //
                 .addPattern("PGP")
                 //
@@ -57,7 +62,7 @@ public class VoltaicCraftingTableRecipes extends AbstractRecipeGenerator {
                 //
                 .addKey('G', Items.CHAIN)
                 //
-                .addKey('B', VoltaicAPIItems.ITEMS_UPGRADE.getValue(SubtypeItemUpgrade.basicspeed))
+                .addKey('B', VoltaicItems.ITEMS_UPGRADE.getValue(SubtypeItemUpgrade.basicspeed))
                 //
                 .addKey('W', Tags.Items.INGOTS_COPPER)
                 //
@@ -65,9 +70,9 @@ public class VoltaicCraftingTableRecipes extends AbstractRecipeGenerator {
                 //
                 .addConditions(new NotCondition(new ModLoadedCondition(ELECTRODYNAMICS_ID)))
                 //
-                .complete(VoltaicAPI.ID, "upgrade_advanced_speed", output);
+                .complete(Voltaic.ID, "upgrade_advanced_speed_noelectro", output);
 
-        ShapedCraftingRecipeBuilder.start(VoltaicAPIItems.ITEMS_UPGRADE.getValue(SubtypeItemUpgrade.basiccapacity), 1)
+        CustomShapedCraftingRecipe.start(VoltaicItems.ITEMS_UPGRADE.getValue(SubtypeItemUpgrade.basiccapacity), 1)
                 //
                 .addPattern("PBP")
                 //
@@ -85,9 +90,9 @@ public class VoltaicCraftingTableRecipes extends AbstractRecipeGenerator {
                 //
                 .addConditions(new NotCondition(new ModLoadedCondition(ELECTRODYNAMICS_ID)))
                 //
-                .complete(VoltaicAPI.ID, "upgrade_basic_capacity", output);
+                .complete(Voltaic.ID, "upgrade_basic_capacity_noelectro", output);
 
-        ShapedCraftingRecipeBuilder.start(VoltaicAPIItems.ITEMS_UPGRADE.getValue(SubtypeItemUpgrade.basicspeed), 1)
+        CustomShapedCraftingRecipe.start(VoltaicItems.ITEMS_UPGRADE.getValue(SubtypeItemUpgrade.basicspeed), 1)
                 //
                 .addPattern("PGP")
                 //
@@ -105,9 +110,9 @@ public class VoltaicCraftingTableRecipes extends AbstractRecipeGenerator {
                 //
                 .addConditions(new NotCondition(new ModLoadedCondition(ELECTRODYNAMICS_ID)))
                 //
-                .complete(VoltaicAPI.ID, "upgrade_basic_speed", output);
+                .complete(Voltaic.ID, "upgrade_basic_speed_noelectro", output);
 
-        ShapedCraftingRecipeBuilder.start(VoltaicAPIItems.ITEMS_UPGRADE.getValue(SubtypeItemUpgrade.experience), 1)
+        CustomShapedCraftingRecipe.start(VoltaicItems.ITEMS_UPGRADE.getValue(SubtypeItemUpgrade.experience), 1)
                 //
                 .addPattern("PBP")
                 //
@@ -123,9 +128,11 @@ public class VoltaicCraftingTableRecipes extends AbstractRecipeGenerator {
                 //
                 .addConditions(new NotCondition(new ModLoadedCondition(ELECTRODYNAMICS_ID)))
                 //
-                .complete(VoltaicAPI.ID, "upgrade_experience", output);
-
-        ShapedCraftingRecipeBuilder.start(VoltaicAPIItems.ITEMS_UPGRADE.getValue(SubtypeItemUpgrade.fortune), 1)
+                .complete(Voltaic.ID, "upgrade_experience_noelectro", output);
+        
+        ItemStack fortuneBook = new ItemStack(Items.ENCHANTED_BOOK);
+		EnchantedBookItem.addEnchantment(fortuneBook, new EnchantmentInstance(Enchantments.BLOCK_FORTUNE, 1));
+        CustomShapedCraftingRecipe.start(VoltaicItems.ITEMS_UPGRADE.getValue(SubtypeItemUpgrade.fortune), 1)
                 //
                 .addPattern("PCP")
                 //
@@ -137,13 +144,13 @@ public class VoltaicCraftingTableRecipes extends AbstractRecipeGenerator {
                 //
                 .addKey('C', Tags.Items.GEMS_EMERALD)
                 //
-                .addKey('B', new EnchantmentIngredient(Ingredient.of(Items.ENCHANTED_BOOK), Lists.newArrayList(Tags.Enchantments.INCREASE_BLOCK_DROPS), false))
+                .addKey('B', PartialNBTIngredient.of(fortuneBook.getItem(), fortuneBook.getTag()))
                 //
                 .addConditions(new NotCondition(new ModLoadedCondition(ELECTRODYNAMICS_ID)))
                 //
-                .complete(VoltaicAPI.ID, "upgrade_fortune", output);
+                .complete(Voltaic.ID, "upgrade_fortune_noelectro", output);
 
-        ShapedCraftingRecipeBuilder.start(VoltaicAPIItems.ITEMS_UPGRADE.getValue(SubtypeItemUpgrade.improvedsolarcell), 1)
+        CustomShapedCraftingRecipe.start(VoltaicItems.ITEMS_UPGRADE.getValue(SubtypeItemUpgrade.improvedsolarcell), 1)
                 //
                 .addPattern("PPP")
                 //
@@ -161,9 +168,9 @@ public class VoltaicCraftingTableRecipes extends AbstractRecipeGenerator {
                 //
                 .addConditions(new NotCondition(new ModLoadedCondition(ELECTRODYNAMICS_ID)))
                 //
-                .complete(VoltaicAPI.ID, "upgrade_improved_solar_cell", output);
+                .complete(Voltaic.ID, "upgrade_improved_solar_cell_noelectro", output);
 
-        ShapedCraftingRecipeBuilder.start(VoltaicAPIItems.ITEMS_UPGRADE.getValue(SubtypeItemUpgrade.iteminput), 1)
+        CustomShapedCraftingRecipe.start(VoltaicItems.ITEMS_UPGRADE.getValue(SubtypeItemUpgrade.iteminput), 1)
                 //
                 .addPattern("C")
                 //
@@ -179,9 +186,9 @@ public class VoltaicCraftingTableRecipes extends AbstractRecipeGenerator {
                 //
                 .addConditions(new NotCondition(new ModLoadedCondition(ELECTRODYNAMICS_ID)))
                 //
-                .complete(VoltaicAPI.ID, "upgrade_item_input", output);
+                .complete(Voltaic.ID, "upgrade_item_input_noelectro", output);
 
-        ShapedCraftingRecipeBuilder.start(VoltaicAPIItems.ITEMS_UPGRADE.getValue(SubtypeItemUpgrade.itemoutput), 1)
+        CustomShapedCraftingRecipe.start(VoltaicItems.ITEMS_UPGRADE.getValue(SubtypeItemUpgrade.itemoutput), 1)
                 //
                 .addPattern("C")
                 //
@@ -197,9 +204,9 @@ public class VoltaicCraftingTableRecipes extends AbstractRecipeGenerator {
                 //
                 .addConditions(new NotCondition(new ModLoadedCondition(ELECTRODYNAMICS_ID)))
                 //
-                .complete(VoltaicAPI.ID, "upgrade_item_output", output);
+                .complete(Voltaic.ID, "upgrade_item_output_noelectro", output);
 
-        ShapedCraftingRecipeBuilder.start(VoltaicAPIItems.ITEMS_UPGRADE.getValue(SubtypeItemUpgrade.itemvoid), 1)
+        CustomShapedCraftingRecipe.start(VoltaicItems.ITEMS_UPGRADE.getValue(SubtypeItemUpgrade.itemvoid), 1)
                 //
                 .addPattern("C")
                 //
@@ -215,9 +222,9 @@ public class VoltaicCraftingTableRecipes extends AbstractRecipeGenerator {
                 //
                 .addConditions(new NotCondition(new ModLoadedCondition(ELECTRODYNAMICS_ID)))
                 //
-                .complete(VoltaicAPI.ID, "upgrade_item_void", output);
+                .complete(Voltaic.ID, "upgrade_item_void_noelectro", output);
 
-        ShapedCraftingRecipeBuilder.start(VoltaicAPIItems.ITEMS_UPGRADE.getValue(SubtypeItemUpgrade.range), 1)
+        CustomShapedCraftingRecipe.start(VoltaicItems.ITEMS_UPGRADE.getValue(SubtypeItemUpgrade.range), 1)
                 //
                 .addPattern("PWP")
                 //
@@ -233,10 +240,11 @@ public class VoltaicCraftingTableRecipes extends AbstractRecipeGenerator {
                 //
                 .addConditions(new NotCondition(new ModLoadedCondition(ELECTRODYNAMICS_ID)))
                 //
-                .complete(VoltaicAPI.ID, "upgrade_range", output);
+                .complete(Voltaic.ID, "upgrade_range_noelectro", output);
 
-
-        ShapedCraftingRecipeBuilder.start(VoltaicAPIItems.ITEMS_UPGRADE.getValue(SubtypeItemUpgrade.silktouch), 1)
+        ItemStack silkTouchBook = new ItemStack(Items.ENCHANTED_BOOK);
+		EnchantedBookItem.addEnchantment(silkTouchBook, new EnchantmentInstance(Enchantments.SILK_TOUCH, 1));
+        CustomShapedCraftingRecipe.start(VoltaicItems.ITEMS_UPGRADE.getValue(SubtypeItemUpgrade.silktouch), 1)
                 //
                 .addPattern("PCP")
                 //
@@ -248,13 +256,13 @@ public class VoltaicCraftingTableRecipes extends AbstractRecipeGenerator {
                 //
                 .addKey('C', Tags.Items.GEMS_AMETHYST)
                 //
-                .addKey('B', new EnchantmentIngredient(Ingredient.of(Items.ENCHANTED_BOOK), Lists.newArrayList(ModularElectricityTags.Enchantments.SILK_TOUCH), false))
+                .addKey('B', PartialNBTIngredient.of(silkTouchBook.getItem(), silkTouchBook.getTag()))
                 //
                 .addConditions(new NotCondition(new ModLoadedCondition(ELECTRODYNAMICS_ID)))
                 //
-                .complete(VoltaicAPI.ID, "upgrade_silk_touch", output);
+                .complete(Voltaic.ID, "upgrade_silk_touch_noelectro", output);
 
-        ShapedCraftingRecipeBuilder.start(VoltaicAPIItems.ITEMS_UPGRADE.getValue(SubtypeItemUpgrade.stator), 1)
+        CustomShapedCraftingRecipe.start(VoltaicItems.ITEMS_UPGRADE.getValue(SubtypeItemUpgrade.stator), 1)
                 //
                 .addPattern("PCP")
                 //
@@ -270,9 +278,11 @@ public class VoltaicCraftingTableRecipes extends AbstractRecipeGenerator {
                 //
                 .addConditions(new NotCondition(new ModLoadedCondition(ELECTRODYNAMICS_ID)))
                 //
-                .complete(VoltaicAPI.ID, "upgrade_stator", output);
+                .complete(Voltaic.ID, "upgrade_stator_noelectro", output);
 
-        ShapedCraftingRecipeBuilder.start(VoltaicAPIItems.ITEMS_UPGRADE.getValue(SubtypeItemUpgrade.unbreaking), 1)
+        ItemStack unbreakingBook = new ItemStack(Items.ENCHANTED_BOOK);
+		EnchantedBookItem.addEnchantment(unbreakingBook, new EnchantmentInstance(Enchantments.UNBREAKING, 1));
+        CustomShapedCraftingRecipe.start(VoltaicItems.ITEMS_UPGRADE.getValue(SubtypeItemUpgrade.unbreaking), 1)
                 //
                 .addPattern("PCP")
                 //
@@ -284,30 +294,31 @@ public class VoltaicCraftingTableRecipes extends AbstractRecipeGenerator {
                 //
                 .addKey('C', Tags.Items.GEMS_DIAMOND)
                 //
-                .addKey('B', new EnchantmentIngredient(Ingredient.of(Items.ENCHANTED_BOOK), Lists.newArrayList(ModularElectricityTags.Enchantments.UNBREAKING), false))
+                .addKey('B', PartialNBTIngredient.of(unbreakingBook.getItem(), unbreakingBook.getTag()))
                 //
                 .addConditions(new NotCondition(new ModLoadedCondition(ELECTRODYNAMICS_ID)))
                 //
-                .complete(VoltaicAPI.ID, "upgrade_unbreaking", output);
+                .complete(Voltaic.ID, "upgrade_unbreaking_noelectro", output);
 
-        ShapelessCraftingRecipeBuilder.start(VoltaicAPIItems.ITEMS_UPGRADE.getValue(SubtypeItemUpgrade.itemoutput), 1)
+        CustomShapelessCraftingRecipe.start(VoltaicItems.ITEMS_UPGRADE.getValue(SubtypeItemUpgrade.itemoutput), 1)
                 //
-                .addIngredient(VoltaicAPIItems.ITEMS_UPGRADE.getValue(SubtypeItemUpgrade.itemoutput))
+                .addIngredient(VoltaicItems.ITEMS_UPGRADE.getValue(SubtypeItemUpgrade.itemoutput))
                 //
                 .addConditions(new NotCondition(new ModLoadedCondition(ELECTRODYNAMICS_ID)))
                 //
-                .complete(VoltaicAPI.ID, "upgrade_item_output_reset", output);
+                .complete(Voltaic.ID, "upgrade_item_output_reset", output);
 
-        ShapelessCraftingRecipeBuilder.start(VoltaicAPIItems.ITEMS_UPGRADE.getValue(SubtypeItemUpgrade.iteminput), 1)
+        CustomShapelessCraftingRecipe.start(VoltaicItems.ITEMS_UPGRADE.getValue(SubtypeItemUpgrade.iteminput), 1)
                 //
-                .addIngredient(VoltaicAPIItems.ITEMS_UPGRADE.getValue(SubtypeItemUpgrade.iteminput))
+                .addIngredient(VoltaicItems.ITEMS_UPGRADE.getValue(SubtypeItemUpgrade.iteminput))
                 //
                 .addConditions(new NotCondition(new ModLoadedCondition(ELECTRODYNAMICS_ID)))
                 //
-                .complete(VoltaicAPI.ID, "upgrade_item_input_reset", output);
+                .complete(Voltaic.ID, "upgrade_item_input_reset", output);
 
+        /*
 
-        ShapelessCraftingRecipeBuilder.start(VoltaicAPIItems.ITEM_ANTIDOTE.get(), 3)
+        CustomShapelessCraftingRecipe.start(VoltaicItems.ITEM_ANTIDOTE.get(), 3)
                 //
                 .addIngredient(Items.GLASS_BOTTLE)
                 //
@@ -317,9 +328,9 @@ public class VoltaicCraftingTableRecipes extends AbstractRecipeGenerator {
                 //
                 .addIngredient(ItemTags.FISHES)
                 //
-                .complete(VoltaicAPI.ID, "antidote", output);
+                .complete(Voltaic.ID, "antidote", output);
 
-        ShapelessCraftingRecipeBuilder.start(VoltaicAPIItems.ITEM_IODINETABLET.get(), 3)
+        CustomShapelessCraftingRecipe.start(VoltaicItems.ITEM_IODINETABLET.get(), 3)
                 //
                 .addIngredient(Tags.Items.GEMS_AMETHYST)
                 //
@@ -331,7 +342,7 @@ public class VoltaicCraftingTableRecipes extends AbstractRecipeGenerator {
                 //
                 .addConditions(new NotCondition(new ModLoadedCondition(ELECTRODYNAMICS_ID)))
                 //
-                .complete(VoltaicAPI.ID, "iodinetablet", output);
+                .complete(Voltaic.ID, "iodinetablet", output);
 
          */
 
@@ -360,7 +371,7 @@ public class VoltaicCraftingTableRecipes extends AbstractRecipeGenerator {
                 //
                 .addConditions(new NotCondition(new ModLoadedCondition(ELECTRODYNAMICS_ID)))
                 //
-                .complete(Voltaic.ID, "wrench", output);
+                .complete(Voltaic.ID, "wrench_noelectro", output);
 
     }
 
