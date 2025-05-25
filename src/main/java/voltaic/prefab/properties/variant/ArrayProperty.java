@@ -10,7 +10,6 @@ import java.util.function.Consumer;
 
 import org.apache.logging.log4j.util.TriConsumer;
 
-import net.minecraft.block.Block;
 import net.minecraft.nbt.CompoundNBT;
 
 public class ArrayProperty<T> extends AbstractProperty<T[], ArrayPropertyType<T, ?>> {
@@ -47,6 +46,39 @@ public class ArrayProperty<T> extends AbstractProperty<T[], ArrayPropertyType<T,
     public ArrayProperty<T> onTileLoaded(Consumer<ArrayProperty<T>> event) {
         onTileLoaded = onTileLoaded.andThen(event);
         return this;
+    }
+    
+    @Override
+    public void setValue(Object updated) {
+
+        if (alreadySynced) {
+            return;
+        }
+        /*
+        if (!updated.getClass().equals(value.getClass())) {
+            throw new RuntimeException("Value " + updated + " being set for " + getName() + " on tile " + getPropertyManager().getOwner() + " is an invalid data type!");
+        }
+
+         */
+
+        T[] old = getValue();
+        value = (T[]) updated;
+        setDirty();
+        PropertyManager manager = getPropertyManager();
+        if (isDirty() && manager.getOwner().getLevel() != null) {
+            if (!manager.getOwner().getLevel().isClientSide()) {
+                if (shouldUpdateOnChange()) {
+                    alreadySynced = true;
+                    manager.getOwner().getLevel().sendBlockUpdated(manager.getOwner().getBlockPos(), manager.getOwner().getBlockState(), manager.getOwner().getBlockState(), 2);
+                    manager.getOwner().setChanged();
+                    alreadySynced = false;
+                }
+                manager.setDirty(this);
+            } else if(shouldUpdateServer()) {
+                updateServer();
+            }
+            onChange.accept(this, old, -1);
+        }
     }
 
     public void setValue(Object updated, int index) {
