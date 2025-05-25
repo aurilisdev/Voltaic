@@ -1,0 +1,34 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "conditions": [
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:mod_loaded",
+        "modid": "electrodynamics"
+      }
+    }
+  ],
+  "key": {
+    "B": {
+      "tag": "forge:dusts/redstone"
+    },
+    "C": {
+      "tag": "forge:ingots/gold"
+    },
+    "P": {
+      "tag": "forge:ingots/iron"
+    },
+    "W": {
+      "tag": "forge:ingots/copper"
+    }
+  },
+  "pattern": [
+    "PBP",
+    "BWB",
+    "CBC"
+  ],
+  "result": {
+    "item": "voltaic:upgradebasiccapacity"
+  }
+}

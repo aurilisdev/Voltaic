@@ -29,7 +29,7 @@ public class CachedTileOutput {
 	}
 
 	public boolean valid() {
-		return cache != null;
+		return cache != null && !cache.isRemoved();
 	}
 
 	public void update(BlockPos pos) {
