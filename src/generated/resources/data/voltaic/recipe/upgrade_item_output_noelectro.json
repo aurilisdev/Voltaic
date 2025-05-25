@@ -1,0 +1,33 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:mod_loaded",
+        "modid": "electrodynamics"
+      }
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "A": {
+      "tag": "c:ingots/iron"
+    },
+    "C": {
+      "tag": "c:ingots/gold"
+    },
+    "P": {
+      "item": "minecraft:piston"
+    }
+  },
+  "pattern": [
+    "C",
+    "P",
+    "A"
+  ],
+  "result": {
+    "count": 1,
+    "id": "voltaic:upgradeitemoutput"
+  }
+}

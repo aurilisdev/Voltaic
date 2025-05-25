@@ -26,7 +26,7 @@ public abstract class BaseAdvancementProvider implements DataProvider {
     private final List<AdvancementBuilder> builders = new ArrayList<>();
 
     public BaseAdvancementProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registries, String modID) {
-        this.pathProvider = output.createPathProvider(PackOutput.Target.DATA_PACK, "advancements");
+        this.pathProvider = output.createPathProvider(PackOutput.Target.DATA_PACK, "advancement");
         this.registries = registries;
         this.modID = modID;
     }

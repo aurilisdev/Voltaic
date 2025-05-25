@@ -1,0 +1,36 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:mod_loaded",
+        "modid": "electrodynamics"
+      }
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": {
+      "tag": "c:ingots/gold"
+    },
+    "G": {
+      "item": "minecraft:chain"
+    },
+    "P": {
+      "tag": "c:ingots/iron"
+    },
+    "W": {
+      "item": "minecraft:sugar"
+    }
+  },
+  "pattern": [
+    "PGP",
+    "WWW",
+    "CGC"
+  ],
+  "result": {
+    "count": 1,
+    "id": "voltaic:upgradebasicspeed"
+  }
+}

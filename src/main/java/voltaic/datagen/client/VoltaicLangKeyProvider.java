@@ -1,6 +1,7 @@
 package voltaic.datagen.client;
 
 import voltaic.Voltaic;
+import voltaic.common.item.subtype.SubtypeItemUpgrade;
 import voltaic.datagen.utils.client.BaseLangKeyProvider;
 import voltaic.registers.*;
 import net.minecraft.data.PackOutput;
@@ -23,22 +24,22 @@ public class VoltaicLangKeyProvider extends BaseLangKeyProvider {
 
                 addItem(VoltaicItems.GUIDEBOOK, "VEC 1st Edition");
                 addItem(VoltaicItems.ITEM_WRENCH, "Wrench");
-                //addItem(VoltaicAPIItems.ITEMS_UPGRADE.getValue(SubtypeItemUpgrade.advancedcapacity), "Advanced Capacity Upgrade");
-                //addItem(VoltaicAPIItems.ITEMS_UPGRADE.getValue(SubtypeItemUpgrade.advancedspeed), "Advanced Speed Upgrade");
-                //addItem(VoltaicAPIItems.ITEMS_UPGRADE.getValue(SubtypeItemUpgrade.basiccapacity), "Basic Capacity Upgrade");
-                //addItem(VoltaicAPIItems.ITEMS_UPGRADE.getValue(SubtypeItemUpgrade.basicspeed), "Basic Speed Upgrade");
-                //addItem(VoltaicAPIItems.ITEMS_UPGRADE.getValue(SubtypeItemUpgrade.experience), "Experience Upgrade");
-                //addItem(VoltaicAPIItems.ITEMS_UPGRADE.getValue(SubtypeItemUpgrade.fortune), "Fortune Upgrade");
-                //addItem(VoltaicAPIItems.ITEMS_UPGRADE.getValue(SubtypeItemUpgrade.improvedsolarcell), "Solar Cell Upgrade");
-                //addItem(VoltaicAPIItems.ITEMS_UPGRADE.getValue(SubtypeItemUpgrade.iteminput), "Auto-Injector Upgrade");
-                //addItem(VoltaicAPIItems.ITEMS_UPGRADE.getValue(SubtypeItemUpgrade.itemoutput), "Auto-Ejector Upgrade");
-                //addItem(VoltaicAPIItems.ITEMS_UPGRADE.getValue(SubtypeItemUpgrade.itemvoid), "Void Upgrade");
-                //addItem(VoltaicAPIItems.ITEMS_UPGRADE.getValue(SubtypeItemUpgrade.range), "Range Upgrade");
-                //addItem(VoltaicAPIItems.ITEMS_UPGRADE.getValue(SubtypeItemUpgrade.silktouch), "Silk Touch Upgrade");
-                //addItem(VoltaicAPIItems.ITEMS_UPGRADE.getValue(SubtypeItemUpgrade.stator), "Stator Upgrade");
-                //addItem(VoltaicAPIItems.ITEMS_UPGRADE.getValue(SubtypeItemUpgrade.unbreaking), "Unbreaking Upgrade");
-                //addItem(VoltaicAPIItems.ITEM_ANTIDOTE, "Antidote");
-                //addItem(VoltaicAPIItems.ITEM_IODINETABLET, "Iodine Tablet");
+                addItem(VoltaicItems.ITEMS_UPGRADE.getValue(SubtypeItemUpgrade.advancedcapacity), "Advanced Capacity Upgrade");
+                addItem(VoltaicItems.ITEMS_UPGRADE.getValue(SubtypeItemUpgrade.advancedspeed), "Advanced Speed Upgrade");
+                addItem(VoltaicItems.ITEMS_UPGRADE.getValue(SubtypeItemUpgrade.basiccapacity), "Basic Capacity Upgrade");
+                addItem(VoltaicItems.ITEMS_UPGRADE.getValue(SubtypeItemUpgrade.basicspeed), "Basic Speed Upgrade");
+                addItem(VoltaicItems.ITEMS_UPGRADE.getValue(SubtypeItemUpgrade.experience), "Experience Upgrade");
+                addItem(VoltaicItems.ITEMS_UPGRADE.getValue(SubtypeItemUpgrade.fortune), "Fortune Upgrade");
+                addItem(VoltaicItems.ITEMS_UPGRADE.getValue(SubtypeItemUpgrade.improvedsolarcell), "Solar Cell Upgrade");
+                addItem(VoltaicItems.ITEMS_UPGRADE.getValue(SubtypeItemUpgrade.iteminput), "Auto-Injector Upgrade");
+                addItem(VoltaicItems.ITEMS_UPGRADE.getValue(SubtypeItemUpgrade.itemoutput), "Auto-Ejector Upgrade");
+                addItem(VoltaicItems.ITEMS_UPGRADE.getValue(SubtypeItemUpgrade.itemvoid), "Void Upgrade");
+                addItem(VoltaicItems.ITEMS_UPGRADE.getValue(SubtypeItemUpgrade.range), "Range Upgrade");
+                addItem(VoltaicItems.ITEMS_UPGRADE.getValue(SubtypeItemUpgrade.silktouch), "Silk Touch Upgrade");
+                addItem(VoltaicItems.ITEMS_UPGRADE.getValue(SubtypeItemUpgrade.stator), "Stator Upgrade");
+                addItem(VoltaicItems.ITEMS_UPGRADE.getValue(SubtypeItemUpgrade.unbreaking), "Unbreaking Upgrade");
+                //addItem(VoltaicItems.ITEM_ANTIDOTE, "Antidote");
+                //addItem(VoltaicItems.ITEM_IODINETABLET, "Iodine Tablet");
 
                 addGas(VoltaicGases.EMPTY, "Empty");
 
