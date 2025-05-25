@@ -138,6 +138,8 @@ public abstract class AbstractProperty<T, PROPERTYTYPE extends IPropertyType> {
     public boolean isDirty() {
         return isDirty;
     }
+    
+    public abstract void setValue(Object newValue);
 
     /**
      * This method should be used only as a last resort
