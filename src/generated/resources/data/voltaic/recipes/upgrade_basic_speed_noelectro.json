@@ -1,0 +1,34 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "PGP",
+    "WWW",
+    "CGC"
+  ],
+  "key": {
+    "P": {
+      "tag": "forge:ingots/iron"
+    },
+    "C": {
+      "tag": "forge:ingots/gold"
+    },
+    "G": {
+      "item": "minecraft:chain"
+    },
+    "W": {
+      "item": "minecraft:sugar"
+    }
+  },
+  "result": {
+    "item": "voltaic:upgradebasicspeed"
+  },
+  "conditions": [
+    {
+      "value": {
+        "modid": "electrodynamics",
+        "type": "forge:mod_loaded"
+      },
+      "type": "forge:not"
+    }
+  ]
+}

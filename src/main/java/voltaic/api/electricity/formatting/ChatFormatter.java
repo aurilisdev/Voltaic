@@ -2,16 +2,12 @@ package voltaic.api.electricity.formatting;
 
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
 
 import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import voltaic.prefab.utilities.VoltaicTextUtils;
 
 public class ChatFormatter {
-
-	private static final ArrayList<IMeasurementUnit> MEASUREMENT_UNITS = new ArrayList<>(Arrays.asList(MeasurementUnits.PICO, MeasurementUnits.NANO, MeasurementUnits.MICRO, MeasurementUnits.MILLI, MeasurementUnits.NONE, MeasurementUnits.KILO, MeasurementUnits.MEGA, MeasurementUnits.GIGA));
 
 	public static IFormattableTextComponent getChatDisplay(double value, IDisplayUnit unit, int decimalPlaces, boolean isShort) {
 		if (value < Long.MIN_VALUE + 10000) {
@@ -33,21 +29,21 @@ public class ChatFormatter {
 			return new StringTextComponent(value + "").append(unit.getDistanceFromValue()).append(unitName);
 		}
 
-		for(int i = 0; i < MEASUREMENT_UNITS.size(); i++) {
+		for(int i = 0; i < MeasurementUnits.values().length; i++) {
 
-			IMeasurementUnit measurement = MEASUREMENT_UNITS.get(i);
+			IMeasurementUnit measurement = MeasurementUnits.values()[i];
 
 			if (value < measurement.getValue()) {
 
 				if (i == 0) {
 					return formatDecimals(measurement.process(value), decimalPlaces).append(unit.getDistanceFromValue()).append(measurement.getName(isShort)).append(unitName);
 				}
-				measurement = MEASUREMENT_UNITS.get(i - 1);
+				measurement = MeasurementUnits.values()[i - 1];
 				return formatDecimals(measurement.process(value), decimalPlaces).append(unit.getDistanceFromValue()).append(measurement.getName(isShort)).append(unitName);
 			}
 		}
 
-		IMeasurementUnit measurement = MEASUREMENT_UNITS.get(MEASUREMENT_UNITS.size() - 1);
+		IMeasurementUnit measurement = MeasurementUnits.values()[MeasurementUnits.values().length - 1];
 		return formatDecimals(measurement.process(value), decimalPlaces).append(unit.getDistanceFromValue()).append(measurement.getName(isShort)).append(unitName);
 	}
 
@@ -108,33 +104,5 @@ public class ChatFormatter {
 		}
 		return key;
 	}
-
-	public static void addMeasurementUnit(IMeasurementUnit unit) {
-		if(MEASUREMENT_UNITS.isEmpty()) {
-			MEASUREMENT_UNITS.add(unit);
-		} else {
-
-			boolean added = false;
-
-			for(int i = 0; i < MEASUREMENT_UNITS.size(); i++) {
-
-				IMeasurementUnit curr = MEASUREMENT_UNITS.get(i);
-
-				if(curr.getValue() == unit.getValue()) {
-					throw new UnsupportedOperationException("There is already a measurement unit with the value of " + unit.getValue());
-				}
-
-				if(curr.getValue() > unit.getValue()) {
-					MEASUREMENT_UNITS.add(i, unit);
-					added = true;
-					break;
-				}
-
-			}
-
-			if(!added) {
-				MEASUREMENT_UNITS.add(unit);
-			}
-		}
-	}
+	
 }
