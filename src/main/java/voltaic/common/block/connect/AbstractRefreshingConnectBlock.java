@@ -41,6 +41,8 @@ public abstract class AbstractRefreshingConnectBlock<CONDUCTOR extends GenericCo
         }
 
         conductor.writeConnections(Direction.values(), connections);
+        
+        //conductor.updateNetwork(Direction.values());
 
     }
 
