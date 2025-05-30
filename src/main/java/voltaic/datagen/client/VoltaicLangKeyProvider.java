@@ -200,6 +200,9 @@ public class VoltaicLangKeyProvider extends BaseLangKeyProvider {
                 addGuiLabel("measurementunit.giga.symbol", "G");
 
                 addChatMessage("guidebookclick", "Click Here");
+                
+                add("effect.voltaic.radiation", "Radiation");
+                add("effect.voltaic.radiationresistance", "Radiation Resistance");
 
                 addSubtitle(VoltaicSounds.SOUND_BATTERY_SWAP, "Battery is swapped");
                 addSubtitle(VoltaicSounds.SOUND_PRESSURERELEASE, "Gas hisses");

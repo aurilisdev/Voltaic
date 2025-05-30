@@ -38,7 +38,7 @@ public class ItemRadioactive extends ItemVoltaic {
         super.inventoryTick(stack, world, entity, itemSlot, isSelected);
         RadioactiveObject rad = RadioactiveItemRegister.getValue(stack.getItem());
 
-        if (entity instanceof LivingEntity living) {
+        if (entity instanceof LivingEntity living && !world.isClientSide) {
             IRadiationRecipient cap = living.getCapability(VoltaicCapabilities.CAPABILITY_RADIATIONRECIPIENT).orElse(CapabilityUtils.EMPTY_RADIATION_REPIPIENT);
             if (cap == CapabilityUtils.EMPTY_RADIATION_REPIPIENT) {
                 return;
