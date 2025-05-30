@@ -7,6 +7,8 @@
   "dimension.voltaic.overworld": "The Overworld",
   "dimension.voltaic.the_end": "The End",
   "dimension.voltaic.the_nether": "The Nether",
+  "effect.voltaic.radiation": "Radiation",
+  "effect.voltaic.radiationresistance": "Radiation Resistance",
   "gas.voltaic.empty": "Empty",
   "gui.voltaic.displayunit.ampere.name": "Ampere",
   "gui.voltaic.displayunit.ampere.nameplural": "Amperes",
