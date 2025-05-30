@@ -18,8 +18,8 @@ public record RadioactiveObject(double strength, double amount) {
 		
 		@Override
 		public void encode(ByteBuf buffer, RadioactiveObject value) {
-			buffer.writeDouble(value.amount);
 			buffer.writeDouble(value.strength);
+			buffer.writeDouble(value.amount);
 		}
 		
 		@Override
