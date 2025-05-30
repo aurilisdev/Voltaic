@@ -19,8 +19,8 @@ public class RadioactiveObject {
 		
 		@Override
 		public void encode(PacketBuffer buffer, RadioactiveObject value) {
-			buffer.writeDouble(value.amount);
 			buffer.writeDouble(value.strength);
+			buffer.writeDouble(value.amount);
 		}
 		
 		@Override
