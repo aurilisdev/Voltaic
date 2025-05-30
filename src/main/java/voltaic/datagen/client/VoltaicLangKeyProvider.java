@@ -203,6 +203,9 @@ public class VoltaicLangKeyProvider extends BaseLangKeyProvider {
 
                 addSubtitle(VoltaicSounds.SOUND_BATTERY_SWAP, "Battery is swapped");
                 addSubtitle(VoltaicSounds.SOUND_PRESSURERELEASE, "Gas hisses");
+                
+                add("effect.voltaic.radiation", "Radiation");
+                add("effect.voltaic.radiationresistance", "Radiation Resistance");
 
                 addDimension(World.OVERWORLD, "The Overworld");
                 addDimension(World.NETHER, "The Nether");
