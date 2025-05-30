@@ -259,7 +259,8 @@ public abstract class GenericRefreshingConnectTile<CABLETYPE, CONDUCTOR extends 
     @Override
     public void onLoad() {
         super.onLoad();
-        updateNetwork(Direction.values());
+        Scheduler.schedule(2, () -> updateNetwork(Direction.values()));
+        //updateNetwork(Direction.values());
     }
 
     public static record UpdatedReceiver(BlockEntity reciever, boolean removed, Direction dir) {
