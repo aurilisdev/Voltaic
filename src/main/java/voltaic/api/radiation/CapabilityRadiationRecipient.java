@@ -24,23 +24,23 @@ import net.minecraftforge.common.util.LazyOptional;
 
 public class CapabilityRadiationRecipient implements IRadiationRecipient, ICapabilitySerializable<CompoundTag> {
 
-    private static final EquipmentSlot[] ARMOR_SLOTS = {EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET};
-    
-    private final LazyOptional<IRadiationRecipient> lazyOptional = LazyOptional.of(() -> this);
-    
-    private double recieved = 0;
-    private double recievedStrength = 0;
-    
-    private double prevRecieved = 0;
-    private double prevRecievedStrength = 0;
-    
-    public CapabilityRadiationRecipient() {
-    	
-    }
-    
-    @Override
+	private static final EquipmentSlot[] ARMOR_SLOTS = { EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET };
+
+	private final LazyOptional<IRadiationRecipient> lazyOptional = LazyOptional.of(() -> this);
+
+	private double recieved = 0;
+	private double recievedStrength = 0;
+
+	private double prevRecieved = 0;
+	private double prevRecievedStrength = 0;
+
+	public CapabilityRadiationRecipient() {
+
+	}
+
+	@Override
 	public <T> @NotNull LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-		if(cap == null || cap != VoltaicCapabilities.CAPABILITY_RADIATIONRECIPIENT) {
+		if (cap == null || cap != VoltaicCapabilities.CAPABILITY_RADIATIONRECIPIENT) {
 			return LazyOptional.empty();
 		}
 		return lazyOptional.cast();
@@ -58,7 +58,7 @@ public class CapabilityRadiationRecipient implements IRadiationRecipient, ICapab
 
 	@Override
 	public void deserializeNBT(CompoundTag nbt) {
-		if(VoltaicCapabilities.CAPABILITY_RADIATIONRECIPIENT == null) {
+		if (VoltaicCapabilities.CAPABILITY_RADIATIONRECIPIENT == null) {
 			return;
 		}
 		recieved = nbt.getDouble("recieved");
@@ -67,100 +67,101 @@ public class CapabilityRadiationRecipient implements IRadiationRecipient, ICapab
 		prevRecievedStrength = nbt.getDouble("prevrecievedstrength");
 	}
 
-    @Override
-    public void recieveRadiation(LivingEntity entity, double rads, double strength) {
+	@Override
+	public void recieveRadiation(LivingEntity entity, double rads, double strength) {
 
-        if (rads <= 0) {
-            return;
-        }
+		if (rads <= 0) {
+			return;
+		}
 
-        if (entity instanceof Player player && (player.isCreative() || player.isSpectator())) {
-            recieved += rads;
-            recievedStrength += strength;
-            return;
-        }
+		if (entity instanceof Player player && (player.isCreative() || player.isSpectator())) {
+			recieved += rads;
+			recievedStrength += strength;
+			return;
+		}
 
-        if(entity.hasEffect(VoltaicEffects.RADIATION_RESISTANCE.get())) {
-            if(rads <= VoltaicConstants.IODINE_RESISTANCE_THRESHHOLD) {
-            	recieved += rads;
-                recievedStrength += strength;
-                return;
-            }
-	    rads = rads * VoltaicConstants.IODINE_RAD_REDUCTION;
-        }
+		if (entity.hasEffect(VoltaicEffects.RADIATION_RESISTANCE.get())) {
+			if (rads <= VoltaicConstants.IODINE_RESISTANCE_THRESHHOLD) {
+				recieved += rads;
+				recievedStrength += strength;
+				return;
+			}
+			rads = rads * VoltaicConstants.IODINE_RAD_REDUCTION;
+		}
 
-        int count = 0;
+		int count = 0;
 
-        for (EquipmentSlot slot : ARMOR_SLOTS) {
+		for (EquipmentSlot slot : ARMOR_SLOTS) {
 
-            ItemStack stack = entity.getItemBySlot(slot);
+			ItemStack stack = entity.getItemBySlot(slot);
 
-            if (stack.getItem() instanceof IHazmatSuit) {
+			if (stack.getItem() instanceof IHazmatSuit) {
 
-                //TODO implement damage reduction based on radiation amount and strength
+				// TODO implement damage reduction based on radiation amount and strength
 
-                count++;
+				count++;
 
-                float damage = (float) (rads * 2.15f) / 2169.9975f;
+				float damage = (float) (rads * 2.15f) / 2169.9975f;
 
-                if (Voltaic.RANDOM.nextFloat() >= damage) {
-                    continue;
-                }
+				if (Voltaic.RANDOM.nextFloat() >= damage) {
+					continue;
+				}
 
-                stack.hurtAndBreak((int) Math.ceil(damage), entity, item -> {});
+				stack.hurtAndBreak((int) Math.ceil(damage), entity, item -> {
+				});
 
-            }
+			}
 
-        }
+		}
 
-        // Not Full Set
-        if (count < 4) {
+		// Not Full Set
+		if (count < 4) {
 
-            int amplitude = getAmplitudeFromRadiation(rads, strength);
-            int time = getDurationFromRadiation(rads);
+			int amplitude = getAmplitudeFromRadiation(rads, strength);
+			int time = getDurationFromRadiation(rads);
 
-            if (entity.hasEffect(VoltaicEffects.RADIATION.get())) {
+			if (entity.hasEffect(VoltaicEffects.RADIATION.get())) {
 
-                MobEffectInstance instance = entity.getEffect(VoltaicEffects.RADIATION.get());
+				MobEffectInstance instance = entity.getEffect(VoltaicEffects.RADIATION.get());
 
-                if (instance.getAmplifier() > amplitude) {
-                    entity.addEffect(new MobEffectInstance(VoltaicEffects.RADIATION.get(), time + instance.getDuration(), instance.getAmplifier(), false, true));
-                } else {
-                    entity.addEffect(new MobEffectInstance(VoltaicEffects.RADIATION.get(), time + instance.getDuration(), amplitude, false, true));
-                }
+				if (instance.getAmplifier() > amplitude) {
+					entity.addEffect(new MobEffectInstance(VoltaicEffects.RADIATION.get(), time + instance.getDuration(), instance.getAmplifier(), false, true));
+				} else {
+					entity.addEffect(new MobEffectInstance(VoltaicEffects.RADIATION.get(), time + instance.getDuration(), amplitude, false, true));
+				}
 
-            } else {
-                entity.addEffect(new MobEffectInstance(VoltaicEffects.RADIATION.get(), time, amplitude, false, true));
-            }
-        }
+			} else {
+				entity.addEffect(new MobEffectInstance(VoltaicEffects.RADIATION.get(), time, amplitude, false, true));
+			}
+		}
 
-        recieved += rads;
-        recievedStrength += strength;
+		recieved += rads;
+		recievedStrength += strength;
 
-    }
+	}
 
-    @Override
-    public RadioactiveObject getRecievedRadiation(LivingEntity entity) {
-        return new RadioactiveObject(recieved, recievedStrength);
-    }
+	@Override
+	public RadioactiveObject getRecievedRadiation(LivingEntity entity) {
+		return new RadioactiveObject(prevRecievedStrength, prevRecieved);
+	}
 
-    @Override
-    public void tick(LivingEntity entity) {
+	@Override
+	public void tick(LivingEntity entity) {
 
-        prevRecieved = recieved;
-        prevRecievedStrength = recievedStrength;
+		prevRecieved = recieved;
+		prevRecievedStrength = recievedStrength;
 
-        recieved = 0;
-        recievedStrength = 0;
+		recieved = 0;
+		recievedStrength = 0;
 
-    }
+	}
 
-    public static int getDurationFromRadiation(double radiation) {
-        return (int) Math.max(20.0, radiation / 100.0 * 20.0);
-    }
+	public static int getDurationFromRadiation(double radiation) {
+		return (int) Math.max(20.0, radiation / 100.0 * 20.0);
+	}
 
-    public static int getAmplitudeFromRadiation(double radiation, double strength) {
-        return (int) Math.min(40.0, radiation / 100.0 * strength);
-    }
+	public static int getAmplitudeFromRadiation(double radiation, double strength) {
+		return (int) Math.min(40.0, radiation / 100.0 * strength);
+	}
 
 }
