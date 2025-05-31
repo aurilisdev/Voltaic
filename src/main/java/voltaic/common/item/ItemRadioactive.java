@@ -27,7 +27,7 @@ public class ItemRadioactive extends ItemVoltaic {
         RadioactiveObject rad = RadioactiveItemRegister.getValue(stack.getItem());
         double amount = stack.getCount() * rad.amount();
         int range = (int) (Math.sqrt(amount) / (5 * Math.sqrt(2)) * 1.25);
-        RadiationSystem.addRadiationSource(world, new SimpleRadiationSource(amount, rad.strength(), range, true, 0, entity.getOnPos(), false));
+        RadiationSystem.addRadiationSource(world, new SimpleRadiationSource(amount, rad.strength(), range, true, 0, entity.getOnPos().above(), false));
         return super.onEntityItemUpdate(stack, entity);
     }
 
