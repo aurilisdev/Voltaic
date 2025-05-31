@@ -45,8 +45,7 @@ public interface IItemElectric {
 
     public static void setEnergyStored(ItemStack stack, double amount) {
         ElectricItemData data = stack.getOrDefault(VoltaicDataComponentTypes.ELECTRIC_ITEM_DATA, defaultData((IItemElectric) stack.getItem()));
-        data.joulesStored = amount;
-        stack.set(VoltaicDataComponentTypes.ELECTRIC_ITEM_DATA, data);
+        stack.set(VoltaicDataComponentTypes.ELECTRIC_ITEM_DATA, data.setJoulesStored(amount));
     }
 
     default double getMaximumCapacity(ItemStack item) {
@@ -55,19 +54,17 @@ public interface IItemElectric {
 
     static void setMaximumCapacity(ItemStack item, double amt) {
         ElectricItemData data = item.getOrDefault(VoltaicDataComponentTypes.ELECTRIC_ITEM_DATA, defaultData((IItemElectric) item.getItem()));
-        data.maxJoules = amt;
-        item.set(VoltaicDataComponentTypes.ELECTRIC_ITEM_DATA, data);
+        item.set(VoltaicDataComponentTypes.ELECTRIC_ITEM_DATA, data.setMaxJoules(amt));
     }
 
     default double getReceiveLimit(ItemStack item) {
-        return item.getOrDefault(VoltaicDataComponentTypes.ELECTRIC_ITEM_DATA, defaultData((IItemElectric) item.getItem())).receiveCap;
+        return item.getOrDefault(VoltaicDataComponentTypes.ELECTRIC_ITEM_DATA, defaultData((IItemElectric) item.getItem())).recieveCap();
     }
 
     static void setReceiveLimit(ItemStack stack, double amount) {
 
         ElectricItemData data = stack.getOrDefault(VoltaicDataComponentTypes.ELECTRIC_ITEM_DATA, defaultData((IItemElectric) stack.getItem()));
-        data.receiveCap = amount;
-        stack.set(VoltaicDataComponentTypes.ELECTRIC_ITEM_DATA, data);
+        stack.set(VoltaicDataComponentTypes.ELECTRIC_ITEM_DATA, data.setRecieveCap(amount));
     }
 
     default double getExtractLimit(ItemStack item) {
@@ -76,8 +73,7 @@ public interface IItemElectric {
 
     static void setExtractLimit(ItemStack stack, double amount) {
         ElectricItemData data = stack.getOrDefault(VoltaicDataComponentTypes.ELECTRIC_ITEM_DATA, defaultData((IItemElectric) stack.getItem()));
-        data.extractCap = amount;
-        stack.set(VoltaicDataComponentTypes.ELECTRIC_ITEM_DATA, data);
+        stack.set(VoltaicDataComponentTypes.ELECTRIC_ITEM_DATA, data.setExtractCap(amount));
     }
 
     default boolean isEnergyStorageOnly() {
@@ -220,9 +216,7 @@ public interface IItemElectric {
 
         ElectricItemData data = tool.getOrDefault(VoltaicDataComponentTypes.ELECTRIC_ITEM_DATA, defaultData((IItemElectric) tool.getItem()));
 
-        data.battery = battery;
-
-        tool.set(VoltaicDataComponentTypes.ELECTRIC_ITEM_DATA, data);
+        tool.set(VoltaicDataComponentTypes.ELECTRIC_ITEM_DATA, data.setBattery(battery));
     }
 
     ElectricItemProperties getElectricProperties();
@@ -233,27 +227,7 @@ public interface IItemElectric {
         tooltip.add(VoltaicTextUtils.tooltip("currbattery", ((IItemElectric) stack.getItem()).getCurrentBattery(stack).getDisplayName().copy().withStyle(ChatFormatting.GRAY)).withStyle(ChatFormatting.DARK_GRAY));
     }
 
-    public static class ElectricItemData {
-
-        public double joulesStored;
-
-        public double maxJoules;
-
-        public double voltage;
-        public double receiveCap;
-
-        public double extractCap;
-
-        public ItemStack battery;
-
-        public ElectricItemData(double joulesStored, double maxJoules, double voltage, double receiveCap, double extractCap, ItemStack battery) {
-            this.joulesStored = joulesStored;
-            this.maxJoules = maxJoules;
-            this.voltage = voltage;
-            this.receiveCap = receiveCap;
-            this.extractCap = extractCap;
-            this.battery = battery;
-        }
+    public static record ElectricItemData(double joulesStored, double maxJoules, double voltage, double recieveCap, double extractCap, ItemStack battery) {
 
         public static final Codec<ElectricItemData> CODEC = RecordCodecBuilder.create(instance ->
                         //
@@ -265,7 +239,7 @@ public interface IItemElectric {
                                 //
                                 Codec.DOUBLE.fieldOf(VOLTAGE).forGetter(instance0 -> instance0.voltage),
                                 //
-                                Codec.DOUBLE.fieldOf(RECEIVE_LIMIT).forGetter(instance0 -> instance0.receiveCap),
+                                Codec.DOUBLE.fieldOf(RECEIVE_LIMIT).forGetter(instance0 -> instance0.recieveCap),
                                 //
                                 Codec.DOUBLE.fieldOf(EXTRACT_LIMIT).forGetter(instance0 -> instance0.extractCap),
                                 //
@@ -281,23 +255,47 @@ public interface IItemElectric {
                 ByteBufCodecs.DOUBLE, instance0 -> instance0.joulesStored,
                 ByteBufCodecs.DOUBLE, instance0 -> instance0.maxJoules,
                 ByteBufCodecs.DOUBLE, instance0 -> instance0.voltage,
-                ByteBufCodecs.DOUBLE, instance0 -> instance0.receiveCap,
+                ByteBufCodecs.DOUBLE, instance0 -> instance0.recieveCap,
                 ByteBufCodecs.DOUBLE, instance0 -> instance0.extractCap,
                 ItemStack.OPTIONAL_STREAM_CODEC, instance0 -> instance0.battery,
                 ElectricItemData::new
         );
 
+        public ElectricItemData setJoulesStored(double joulesStored) {
+            return new ElectricItemData(joulesStored, maxJoules, voltage, recieveCap, extractCap, battery);
+        }
+
+        public ElectricItemData setMaxJoules(double maxJoules) {
+            return new ElectricItemData(joulesStored, maxJoules, voltage, recieveCap, extractCap, battery);
+        }
+
+        public ElectricItemData setVoltage(double voltage) {
+            return new ElectricItemData(joulesStored, maxJoules, voltage, recieveCap, extractCap, battery);
+        }
+
+        public ElectricItemData setRecieveCap(double recieveCap) {
+            return new ElectricItemData(joulesStored, maxJoules, voltage, recieveCap, extractCap, battery);
+        }
+
+        public ElectricItemData setExtractCap(double extractCap) {
+            return new ElectricItemData(joulesStored, maxJoules, voltage, recieveCap, extractCap, battery);
+        }
+
+        public ElectricItemData setBattery(ItemStack battery) {
+            return new ElectricItemData(joulesStored, maxJoules, voltage, recieveCap, extractCap, battery);
+        }
+
         @Override
         public boolean equals(Object obj) {
             if (obj instanceof ElectricItemData data) {
-                return joulesStored == data.joulesStored && maxJoules == data.maxJoules && voltage == data.voltage && receiveCap == data.receiveCap && extractCap == data.extractCap && battery == data.battery;
+                return joulesStored == data.joulesStored && maxJoules == data.maxJoules && voltage == data.voltage && recieveCap == data.recieveCap && extractCap == data.extractCap && battery == data.battery;
             }
             return false;
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(joulesStored, maxJoules, voltage, receiveCap, extractCap, battery);
+            return Objects.hash(joulesStored, maxJoules, voltage, recieveCap, extractCap, battery);
         }
     }
 
