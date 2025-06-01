@@ -113,7 +113,7 @@ public class ListPropertyType <TYPE, BUFFERTYPE extends PacketBuffer> implements
             int size = data.getInt("size");
 
             if(size <= 0) {
-                return reader.prop().getValue();
+                return new ArrayList<>();
             }
 
             List<TYPE> list = new ArrayList<>(size);

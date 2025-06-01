@@ -111,7 +111,7 @@ public class ArrayPropertyType<TYPE, BUFFERTYPE extends PacketBuffer> implements
             int size = data.getInt("size");
 
             if(size <= 0) {
-                return reader.prop().getValue();
+                return Arrays.copyOf(defaultArr, defaultArr.length);
             }
 
             TYPE[] newArr = Arrays.copyOf(defaultArr, size);
