@@ -102,11 +102,11 @@ public class SetPropertyType<TYPE, BUFFERTYPE extends ByteBuf> implements IPrope
 
             int size = data.getInt("size");
 
-            if (size <= 0) {
-                return reader.prop().getValue();
-            }
-
             HashSet<TYPE> set = new HashSet<>();
+
+            if (size <= 0) {
+                return set;
+            }
 
             for (int i = 0; i < size; i++) {
 
