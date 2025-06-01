@@ -101,12 +101,12 @@ public class SetPropertyType<TYPE, BUFFERTYPE extends PacketBuffer> implements I
             }
 
             int size = data.getInt("size");
+            
+            HashSet<TYPE> set = new HashSet<>();
 
             if (size <= 0) {
-                return reader.prop().getValue();
+                return set;
             }
-
-            HashSet<TYPE> set = new HashSet<>();
 
             for (int i = 0; i < size; i++) {
 
