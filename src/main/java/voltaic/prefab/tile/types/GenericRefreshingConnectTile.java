@@ -96,6 +96,9 @@ public abstract class GenericRefreshingConnectTile<CABLETYPE, CONDUCTOR extends 
 
     @Override
     public NETWORK getNetwork() {
+        if(network == null) {
+            createNetworkFromThis();
+        }
         return network;
     }
 
