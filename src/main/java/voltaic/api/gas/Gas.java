@@ -23,7 +23,7 @@ import net.minecraft.world.level.material.Fluids;
  */
 public class Gas {
 
-	public static final int ROOM_TEMPERATURE = 293;
+	public static final int ROOM_TEMPERATURE = 380;
 	public static final int PRESSURE_AT_SEA_LEVEL = 1;
 	public static final int MINIMUM_HEAT_BURN_TEMP = 327;
 	public static final int MINIMUM_FREEZE_TEMP = 260;
