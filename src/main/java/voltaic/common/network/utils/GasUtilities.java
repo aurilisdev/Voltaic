@@ -64,7 +64,7 @@ public class GasUtilities {
 
             IGasHandler handler = faceTile.getCapability(VoltaicCapabilities.CAPABILITY_GASHANDLER_BLOCK, direction.getOpposite()).orElse(CapabilityUtils.EMPTY_GAS);
 
-            if (handler == CapabilityUtils.EMPTY_GAS) {
+            if (handler == null) {
                 continue;
             }
 
