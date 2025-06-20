@@ -10,24 +10,25 @@ import voltaic.prefab.utilities.BlockEntityUtils;
 
 public class SimpleRadiationSource implements IRadiationSource {
 
-    public static final SimpleRadiationSource NONE = new SimpleRadiationSource(0, 0, 0, false, 0, BlockEntityUtils.OUT_OF_REACH, false);
+    public static final SimpleRadiationSource NONE = new SimpleRadiationSource(0, 0, 0, false, 0, BlockEntityUtils.OUT_OF_REACH, false, false);
 
     public static final Codec<SimpleRadiationSource> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 
-            Codec.DOUBLE.fieldOf("amount").forGetter(SimpleRadiationSource::amount),
+    		Codec.DOUBLE.fieldOf("amount").forGetter(SimpleRadiationSource::amount),
             Codec.DOUBLE.fieldOf("strength").forGetter(SimpleRadiationSource::strength),
             Codec.INT.fieldOf("spread").forGetter(SimpleRadiationSource::getDistanceSpread),
             Codec.BOOL.fieldOf("temporary").forGetter(SimpleRadiationSource::isTemporary),
             Codec.INT.fieldOf("persistanceticks").forGetter(SimpleRadiationSource::getPersistanceTicks),
             BlockPos.CODEC.fieldOf("location").forGetter(SimpleRadiationSource::location),
-            Codec.BOOL.fieldOf("lingers").forGetter(SimpleRadiationSource::shouldLinger)
+            Codec.BOOL.fieldOf("lingers").forGetter(SimpleRadiationSource::shouldLinger),
+            Codec.BOOL.fieldOf("shouldcombine").forGetter(SimpleRadiationSource::shouldCombine)
 
 
     ).apply(instance, SimpleRadiationSource::new));
 
     public static final StreamCodec<PacketBuffer, SimpleRadiationSource> STREAM_CODEC = new StreamCodec<PacketBuffer, SimpleRadiationSource>() {
 		
-		@Override
+    	@Override
 		public void encode(PacketBuffer buffer, SimpleRadiationSource value) {
 			StreamCodec.DOUBLE.encode(buffer, value.amount);
 			StreamCodec.DOUBLE.encode(buffer, value.strength);
@@ -36,11 +37,12 @@ public class SimpleRadiationSource implements IRadiationSource {
 			StreamCodec.INT.encode(buffer, value.ticks);
 			StreamCodec.BLOCK_POS.encode(buffer, value.location);
 			StreamCodec.BOOL.encode(buffer, value.shouldLinger);
+			StreamCodec.BOOL.encode(buffer, value.shouldCombine);
 		}
 		
 		@Override
 		public SimpleRadiationSource decode(PacketBuffer buffer) {
-			return new SimpleRadiationSource(StreamCodec.DOUBLE.decode(buffer), StreamCodec.DOUBLE.decode(buffer), StreamCodec.INT.decode(buffer), StreamCodec.BOOL.decode(buffer), StreamCodec.INT.decode(buffer), StreamCodec.BLOCK_POS.decode(buffer), StreamCodec.BOOL.decode(buffer));
+			return new SimpleRadiationSource(StreamCodec.DOUBLE.decode(buffer), StreamCodec.DOUBLE.decode(buffer), StreamCodec.INT.decode(buffer), StreamCodec.BOOL.decode(buffer), StreamCodec.INT.decode(buffer), StreamCodec.BLOCK_POS.decode(buffer), StreamCodec.BOOL.decode(buffer), StreamCodec.BOOL.decode(buffer));
 		}
 	};
 	
@@ -51,8 +53,9 @@ public class SimpleRadiationSource implements IRadiationSource {
 	private final int ticks;
 	private final BlockPos location;
 	private final boolean shouldLinger;
+	private final boolean shouldCombine;
 	
-	public SimpleRadiationSource(double amount, double strength, int distance, boolean isTemporary, int ticks, BlockPos location, boolean shouldLinger) {
+	public SimpleRadiationSource(double amount, double strength, int distance, boolean isTemporary, int ticks, BlockPos location, boolean shouldLinger, boolean shouldCombine) {
 		this.amount = amount;
 		this.strength = strength;
 		this.distance = distance;
@@ -60,6 +63,7 @@ public class SimpleRadiationSource implements IRadiationSource {
 		this.ticks = ticks;
 		this.location = location;
 		this.shouldLinger = shouldLinger;
+		this.shouldCombine = shouldCombine;
 	}
 
     @Override
@@ -119,6 +123,10 @@ public class SimpleRadiationSource implements IRadiationSource {
     
     public boolean shouldLinger() {
     	return shouldLinger;
+    }
+    
+    public boolean shouldCombine() {
+    	return this.shouldCombine;
     }
 
 }

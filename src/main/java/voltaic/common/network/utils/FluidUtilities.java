@@ -18,7 +18,7 @@ import net.minecraftforge.fluids.capability.templates.FluidTank;
 public class FluidUtilities {
 
 	public static boolean isFluidReceiver(TileEntity acceptor, Direction dir) {
-		return acceptor != null && acceptor.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, dir).orElse(CapabilityUtils.EMPTY_FLUID) != CapabilityUtils.EMPTY_FLUID;
+		return acceptor != null && acceptor.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, dir).isPresent();
 	}
 
 	public static int receiveFluid(TileEntity acceptor, Direction direction, FluidStack perReceiver, boolean debug) {
@@ -65,7 +65,7 @@ public class FluidUtilities {
 
 			IFluidHandler handler = faceTile.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, direction.getOpposite()).orElse(CapabilityUtils.EMPTY_FLUID);
 
-			if(handler == null) {
+			if(handler == CapabilityUtils.EMPTY_FLUID) {
 			    continue;
 			}
 
@@ -113,7 +113,7 @@ public class FluidUtilities {
 
 			IFluidHandlerItem handler = stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).orElse(CapabilityUtils.EMPTY_FLUID_ITEM);
 			
-			if(handler == null) {
+			if(handler == CapabilityUtils.EMPTY_FLUID_ITEM) {
 			    continue;
 			}
 
@@ -163,7 +163,7 @@ public class FluidUtilities {
 			
 			IFluidHandlerItem handler = stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).orElse(CapabilityUtils.EMPTY_FLUID_ITEM);
 			
-			if(handler == null) {
+			if(handler == CapabilityUtils.EMPTY_FLUID_ITEM) {
 			    continue;
 			}
 
