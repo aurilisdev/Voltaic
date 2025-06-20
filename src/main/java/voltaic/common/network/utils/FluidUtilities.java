@@ -20,7 +20,7 @@ import net.minecraftforge.fluids.capability.templates.FluidTank;
 public class FluidUtilities {
 
 	public static boolean isFluidReceiver(BlockEntity acceptor, Direction dir) {
-		return acceptor != null && acceptor.getCapability(ForgeCapabilities.FLUID_HANDLER, dir).orElse(CapabilityUtils.EMPTY_FLUID) != CapabilityUtils.EMPTY_FLUID;
+		return acceptor != null && acceptor.getCapability(ForgeCapabilities.FLUID_HANDLER, dir).isPresent();
 	}
 
 	public static int receiveFluid(BlockEntity acceptor, Direction direction, FluidStack perReceiver, boolean debug) {
@@ -67,7 +67,7 @@ public class FluidUtilities {
 
 			IFluidHandler handler = faceTile.getCapability(ForgeCapabilities.FLUID_HANDLER, direction.getOpposite()).orElse(CapabilityUtils.EMPTY_FLUID);
 
-			if(handler == null) {
+			if(handler == CapabilityUtils.EMPTY_FLUID) {
 			    continue;
 			}
 
@@ -115,7 +115,7 @@ public class FluidUtilities {
 
 			IFluidHandlerItem handler = stack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).orElse(CapabilityUtils.EMPTY_FLUID_ITEM);
 			
-			if(handler == null) {
+			if(handler == CapabilityUtils.EMPTY_FLUID_ITEM) {
 			    continue;
 			}
 
@@ -165,7 +165,7 @@ public class FluidUtilities {
 			
 			IFluidHandlerItem handler = stack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).orElse(CapabilityUtils.EMPTY_FLUID_ITEM);
 			
-			if(handler == null) {
+			if(handler == CapabilityUtils.EMPTY_FLUID_ITEM) {
 			    continue;
 			}
 
