@@ -9,9 +9,9 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 
-public record SimpleRadiationSource(double amount, double strength, int distance, boolean isTemporary, int ticks, BlockPos location, boolean shouldLinger) implements IRadiationSource {
+public record SimpleRadiationSource(double amount, double strength, int distance, boolean isTemporary, int ticks, BlockPos location, boolean shouldLinger, boolean shouldCombine) implements IRadiationSource {
 
-    public static final SimpleRadiationSource NONE = new SimpleRadiationSource(0, 0, 0, false, 0, BlockEntityUtils.OUT_OF_REACH, false);
+    public static final SimpleRadiationSource NONE = new SimpleRadiationSource(0, 0, 0, false, 0, BlockEntityUtils.OUT_OF_REACH, false, false);
 
     public static final Codec<SimpleRadiationSource> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 
@@ -21,7 +21,8 @@ public record SimpleRadiationSource(double amount, double strength, int distance
             Codec.BOOL.fieldOf("temporary").forGetter(SimpleRadiationSource::isTemporary),
             Codec.INT.fieldOf("persistanceticks").forGetter(SimpleRadiationSource::getPersistanceTicks),
             BlockPos.CODEC.fieldOf("location").forGetter(SimpleRadiationSource::location),
-            Codec.BOOL.fieldOf("lingers").forGetter(SimpleRadiationSource::shouldLinger)
+            Codec.BOOL.fieldOf("lingers").forGetter(SimpleRadiationSource::shouldLinger),
+            Codec.BOOL.fieldOf("shouldcombine").forGetter(SimpleRadiationSource::shouldCombine)
 
 
     ).apply(instance, SimpleRadiationSource::new));

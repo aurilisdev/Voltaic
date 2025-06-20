@@ -18,16 +18,16 @@ import java.util.List;
 
 public class RadiationUtils {
 
-    public static void handleRadioactiveGases(GenericTile tile, ComponentGasHandlerMulti multi, int radius, boolean isTemp, int ticks, boolean shouldLinger) {
-        handleRadioactiveGases(tile, multi.getInputTanks(), radius, isTemp, ticks, shouldLinger);
-        handleRadioactiveGases(tile, multi.getOutputTanks(), radius, isTemp, ticks, shouldLinger);
+    public static void handleRadioactiveGases(GenericTile tile, ComponentGasHandlerMulti multi, int radius, boolean isTemp, int ticks, boolean shouldLinger, boolean shouldCombine) {
+        handleRadioactiveGases(tile, multi.getInputTanks(), radius, isTemp, ticks, shouldLinger, shouldCombine);
+        handleRadioactiveGases(tile, multi.getOutputTanks(), radius, isTemp, ticks, shouldLinger, shouldCombine);
     }
 
-    public static void handleRadioactiveGases(GenericTile tile, ComponentGasHandlerSimple simple, int radius, boolean isTemp, int ticks, boolean shouldLinger) {
-        handleRadioactiveGases(tile, simple.getInputTanks(), radius, isTemp, ticks, shouldLinger);
+    public static void handleRadioactiveGases(GenericTile tile, ComponentGasHandlerSimple simple, int radius, boolean isTemp, int ticks, boolean shouldLinger, boolean shouldCombine) {
+        handleRadioactiveGases(tile, simple.getInputTanks(), radius, isTemp, ticks, shouldLinger, shouldCombine);
     }
 
-    public static void handleRadioactiveGases(GenericTile tile, GasTank[] tanks, int radius, boolean isTemp, int ticks, boolean shouldLinger) {
+    public static void handleRadioactiveGases(GenericTile tile, GasTank[] tanks, int radius, boolean isTemp, int ticks, boolean shouldLinger, boolean shouldCombine) {
 
         double totRadiation = 0;
         double totStrength = 0;
@@ -56,20 +56,20 @@ public class RadiationUtils {
             return;
         }
 
-        RadiationSystem.addRadiationSource(tile.getLevel(), new SimpleRadiationSource(totRadiation, totStrength, radius, isTemp, ticks, tile.getBlockPos(), shouldLinger));
+        RadiationSystem.addRadiationSource(tile.getLevel(), new SimpleRadiationSource(totRadiation, totStrength, radius, isTemp, ticks, tile.getBlockPos(), shouldLinger, shouldCombine));
 
     }
 
-    public static void handleRadioactiveFluids(GenericTile tile, ComponentFluidHandlerMulti multi, int radius, boolean isTemp, int ticks, boolean shouldLinger) {
-        handleRadioactiveFluids(tile, multi.getInputTanks(), radius, isTemp, ticks, shouldLinger);
-        handleRadioactiveFluids(tile, multi.getOutputTanks(), radius, isTemp, ticks, shouldLinger);
+    public static void handleRadioactiveFluids(GenericTile tile, ComponentFluidHandlerMulti multi, int radius, boolean isTemp, int ticks, boolean shouldLinger, boolean shouldCombine) {
+        handleRadioactiveFluids(tile, multi.getInputTanks(), radius, isTemp, ticks, shouldLinger, shouldCombine);
+        handleRadioactiveFluids(tile, multi.getOutputTanks(), radius, isTemp, ticks, shouldLinger, shouldCombine);
     }
 
-    public static void handleRadioactiveFluids(GenericTile tile, ComponentFluidHandlerSimple simple, int radius, boolean isTemp, int ticks, boolean shouldLinger) {
-        handleRadioactiveFluids(tile, simple.getInputTanks(), radius, isTemp, ticks, shouldLinger);
+    public static void handleRadioactiveFluids(GenericTile tile, ComponentFluidHandlerSimple simple, int radius, boolean isTemp, int ticks, boolean shouldLinger, boolean shouldCombine) {
+        handleRadioactiveFluids(tile, simple.getInputTanks(), radius, isTemp, ticks, shouldLinger, shouldCombine);
     }
 
-    public static void handleRadioactiveFluids(GenericTile tile, FluidTank[] tanks, int radius, boolean isTemp, int ticks, boolean shouldLinger) {
+    public static void handleRadioactiveFluids(GenericTile tile, FluidTank[] tanks, int radius, boolean isTemp, int ticks, boolean shouldLinger, boolean shouldCombine) {
 
         double totRadiation = 0;
         double totStrength = 0;
@@ -98,16 +98,16 @@ public class RadiationUtils {
             return;
         }
 
-        RadiationSystem.addRadiationSource(tile.getLevel(), new SimpleRadiationSource(totRadiation, totStrength, radius, isTemp, ticks, tile.getBlockPos(), shouldLinger));
+        RadiationSystem.addRadiationSource(tile.getLevel(), new SimpleRadiationSource(totRadiation, totStrength, radius, isTemp, ticks, tile.getBlockPos(), shouldLinger, shouldCombine));
 
     }
 
-    public static void handleRadioactiveItems(GenericTile tile, ComponentInventory inv, int radius, boolean isTemp, int ticks, boolean shouldLinger) {
-        handleRadioactiveItems(tile, inv.getInputContents(), radius, isTemp, ticks, shouldLinger);
-        handleRadioactiveItems(tile, inv.getOutputContents(), radius, isTemp, ticks, shouldLinger);
+    public static void handleRadioactiveItems(GenericTile tile, ComponentInventory inv, int radius, boolean isTemp, int ticks, boolean shouldLinger, boolean shouldCombine) {
+        handleRadioactiveItems(tile, inv.getInputContents(), radius, isTemp, ticks, shouldLinger, shouldCombine);
+        handleRadioactiveItems(tile, inv.getOutputContents(), radius, isTemp, ticks, shouldLinger, shouldCombine);
     }
 
-    public static void handleRadioactiveItems(GenericTile tile, List<ItemStack> items, int radius, boolean isTemp, int ticks, boolean shouldLinger) {
+    public static void handleRadioactiveItems(GenericTile tile, List<ItemStack> items, int radius, boolean isTemp, int ticks, boolean shouldLinger, boolean shouldCombine) {
 
         double totRadiation = 0;
         double totStrength = 0;
@@ -134,7 +134,7 @@ public class RadiationUtils {
             return;
         }
 
-        RadiationSystem.addRadiationSource(tile.getLevel(), new SimpleRadiationSource(totRadiation, totStrength, radius, isTemp, ticks, tile.getBlockPos(), shouldLinger));
+        RadiationSystem.addRadiationSource(tile.getLevel(), new SimpleRadiationSource(totRadiation, totStrength, radius, isTemp, ticks, tile.getBlockPos(), shouldLinger, shouldCombine));
 
     }
 
