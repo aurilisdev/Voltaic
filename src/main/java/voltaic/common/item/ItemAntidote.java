@@ -1,7 +1,5 @@
 package voltaic.common.item;
 
-import voltaic.registers.VoltaicEffects;
-
 import java.util.function.Supplier;
 
 import net.minecraft.advancements.CriteriaTriggers;
@@ -26,7 +24,7 @@ public class ItemAntidote extends ItemVoltaic {
     @Override
     public ItemStack finishUsingItem(ItemStack stack, Level worldIn, LivingEntity entityLiving) {
         if (!worldIn.isClientSide) {
-        	entityLiving.removeEffect(VoltaicEffects.RADIATION.get());
+        	entityLiving.removeAllEffects();
         }
         if (entityLiving instanceof ServerPlayer serverplayerentity) {
             CriteriaTriggers.CONSUME_ITEM.trigger(serverplayerentity, stack);
