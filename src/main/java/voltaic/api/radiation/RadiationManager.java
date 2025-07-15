@@ -126,33 +126,29 @@ public class RadiationManager implements IRadiationManager {
 
         /* Permanent Radiation Sources */
 
-        BlockPos previousPos = null;
-        BlockPos position = null;
+        BlockPos position;
+        AABB sourceBB;
+        List<LivingEntity> list;
 
         HashMap<BlockPos, SimpleRadiationSource> permanentSources = world.getData(VoltaicAttachmentTypes.PERMANENT_RADIATION_SOURCES);
         Iterator<Map.Entry<BlockPos, SimpleRadiationSource>> iteratorPerm = permanentSources.entrySet().iterator();
         Map.Entry<BlockPos, SimpleRadiationSource> entryPerm = null;
         SimpleRadiationSource permanentSource = null;
-        boolean didChange = false;
 
         while (iteratorPerm.hasNext()) {
             entryPerm = iteratorPerm.next();
-            previousPos = position;
             position = entryPerm.getKey();
             permanentSource = entryPerm.getValue();
-
-            // filter out weird hashmap fuckery; there should only be one permanent source at a given location
-            if (previousPos != null && position.equals(previousPos)) {
-                didChange = true;
-                iteratorPerm.remove();
-                continue;
-            }
 
             if (!world.isLoaded(position)) {
                 continue;
             }
 
-            for (LivingEntity entity : world.getEntitiesOfClass(LivingEntity.class, new AABB(position.getX() - permanentSource.distance(), position.getY() - permanentSource.distance(), position.getZ() - permanentSource.distance(), position.getX() + permanentSource.distance() + 1, position.getY() + permanentSource.distance() + 1, position.getZ() + permanentSource.distance() + 1))) {
+            sourceBB = new AABB(position.getX() - permanentSource.distance(), position.getY() - permanentSource.distance(), position.getZ() - permanentSource.distance(), position.getX() + permanentSource.distance() + 1, position.getY() + permanentSource.distance() + 1, position.getZ() + permanentSource.distance() + 1);
+            list = world.getEntitiesOfClass(LivingEntity.class, sourceBB);
+
+
+            for (LivingEntity entity : list) {
                 IRadiationRecipient capability = entity.getCapability(VoltaicCapabilities.CAPABILITY_RADIATIONRECIPIENT);
                 if (capability == null) {
                     continue;
@@ -164,15 +160,7 @@ public class RadiationManager implements IRadiationManager {
             }
         }
 
-        if (didChange) {
-            world.setData(VoltaicAttachmentTypes.PERMANENT_RADIATION_SOURCES, permanentSources);
-        }
-
         /* Temporary Radiation Sources */
-
-        position = null;
-        previousPos = null;
-        didChange = false;
 
         HashMap<BlockPos, FadingRadiationSource> fadingSources = world.getData(VoltaicAttachmentTypes.FADING_RADIATION_SOURCES);
 
@@ -183,18 +171,15 @@ public class RadiationManager implements IRadiationManager {
 
         while (iteratorTemp.hasNext()) {
             entryTemp = iteratorTemp.next();
-            previousPos = position;
             position = entryTemp.getKey();
             temporarySource = entryTemp.getValue();
 
-            // filter out weird hashmap fuckery; there should only be one temporary source at a given location
-            if (previousPos != null && position.equals(previousPos)) {
-                iteratorTemp.remove();
-                continue;
-            }
+            if (world.isLoaded(position)) {
 
-            if (world.hasChunkAt(position)) {
-                for (LivingEntity entity : world.getEntitiesOfClass(LivingEntity.class, new AABB(position.getX() - temporarySource.distance, position.getY() - temporarySource.distance, position.getZ() - temporarySource.distance, position.getX() + temporarySource.distance + 1, position.getY() + temporarySource.distance + 1, position.getZ() + temporarySource.distance + 1))) {
+                sourceBB = new AABB(position.getX() - temporarySource.distance, position.getY() - temporarySource.distance, position.getZ() - temporarySource.distance, position.getX() + temporarySource.distance + 1, position.getY() + temporarySource.distance + 1, position.getZ() + temporarySource.distance + 1);
+                list = world.getEntitiesOfClass(LivingEntity.class, sourceBB);
+
+                for (LivingEntity entity : list) {
 
                     IRadiationRecipient capability = entity.getCapability(VoltaicCapabilities.CAPABILITY_RADIATIONRECIPIENT);
                     if (capability == null) {
@@ -226,10 +211,6 @@ public class RadiationManager implements IRadiationManager {
 
         /* Fading Radiation Sources */
 
-        position = null;
-        previousPos = null;
-        didChange = false;
-
         Iterator<Map.Entry<BlockPos, FadingRadiationSource>> iteratorFading = fadingSources.entrySet().iterator();
         Map.Entry<BlockPos, FadingRadiationSource> entryFading = null;
         FadingRadiationSource fadingSource;
@@ -239,18 +220,15 @@ public class RadiationManager implements IRadiationManager {
 
         while (iteratorFading.hasNext()) {
             entryFading = iteratorFading.next();
-            previousPos = position;
             position = entryFading.getKey();
             fadingSource = entryFading.getValue();
 
-            // filter out weird hashmap fuckery; there should only be one fading source at a given location
-            if (previousPos != null && position.equals(previousPos)) {
-                iteratorFading.remove();
-                continue;
-            }
+            if (world.isLoaded(position)) {
 
-            if (world.hasChunkAt(position)) {
-                for (LivingEntity entity : world.getEntitiesOfClass(LivingEntity.class, new AABB(position.getX() - fadingSource.distance, position.getY() - fadingSource.distance, position.getZ() - fadingSource.distance, position.getX() + fadingSource.distance + 1, position.getY() + fadingSource.distance + 1, position.getZ() + fadingSource.distance + 1))) {
+                sourceBB = new AABB(position.getX() - fadingSource.distance, position.getY() - fadingSource.distance, position.getZ() - fadingSource.distance, position.getX() + fadingSource.distance + 1, position.getY() + fadingSource.distance + 1, position.getZ() + fadingSource.distance + 1);
+                list = world.getEntitiesOfClass(LivingEntity.class, sourceBB);
+
+                for (LivingEntity entity : list) {
                     IRadiationRecipient capability = entity.getCapability(VoltaicCapabilities.CAPABILITY_RADIATIONRECIPIENT);
                     if (capability == null) {
                         continue;
