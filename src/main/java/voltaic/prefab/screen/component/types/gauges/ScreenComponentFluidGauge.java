@@ -132,6 +132,10 @@ public class ScreenComponentFluidGauge extends AbstractScreenComponentGauge {
 		}
 
 		ItemStack stack = screen.getMenu().getCarried();
+		
+		if(stack.isEmpty() || stack.getOrCreateTag().getBoolean("hasclickedonfluidgauge")) {
+			return;
+		}
 
 		IFluidHandlerItem handler = stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).resolve().orElse(CapabilityUtils.EMPTY_FLUID_ITEM);
 
@@ -152,7 +156,11 @@ public class ScreenComponentFluidGauge extends AbstractScreenComponentGauge {
 
 			stack = handler.getContainer();
 			
+			stack.getOrCreateTag().putBoolean("hasclickedonfluidgauge", true);
+			
 			NetworkHandler.CHANNEL.sendToServer(new PacketUpdateCarriedItemServer(stack.copy(), ((GenericContainerBlockEntity<?>) screen.getMenu()).getSafeHost().getBlockPos(), Minecraft.getInstance().player.getUUID()));
+			
+			screen.getMenu().setCarried(stack);
 
 			return;
 
@@ -171,7 +179,11 @@ public class ScreenComponentFluidGauge extends AbstractScreenComponentGauge {
 
 			stack = handler.getContainer();
 			
+			stack.getOrCreateTag().putBoolean("hasclickedonfluidgauge", true);
+			
 			NetworkHandler.CHANNEL.sendToServer(new PacketUpdateCarriedItemServer(stack.copy(), ((GenericContainerBlockEntity<?>) screen.getMenu()).getSafeHost().getBlockPos(), Minecraft.getInstance().player.getUUID()));
+			
+			screen.getMenu().setCarried(stack);
 
 			return;
 		}

@@ -34,7 +34,7 @@ public abstract class BaseRadioactiveFluidsProvider implements DataProvider {
 	@Override
 	public void run(HashCache cache) {
 		JsonObject json = new JsonObject();
-		getRadioactiveItems(json);
+		getRadioactiveFluids(json);
 
 		Path parent = dataGenerator.getOutputFolder().resolve(loc + ".json");
 		try {
@@ -46,10 +46,9 @@ public abstract class BaseRadioactiveFluidsProvider implements DataProvider {
 		}
 	}
 
-	public abstract void getRadioactiveItems(JsonObject json);
+	public abstract void getRadioactiveFluids(JsonObject json);
 
-	@SuppressWarnings("unused")
-	public void addItem(Fluid fluid, double radiationAmount, double radiationStrength, JsonObject json) {
+	public void addBlock(Fluid fluid, double radiationAmount, double radiationStrength, JsonObject json) {
 		JsonObject data = new JsonObject();
 		json.add(ForgeRegistries.FLUIDS.getKey(fluid).toString(), RadioactiveObject.CODEC.encode(new RadioactiveObject(radiationStrength, radiationAmount), JsonOps.INSTANCE, data).result().get());
 	}
@@ -61,7 +60,7 @@ public abstract class BaseRadioactiveFluidsProvider implements DataProvider {
 
 	@Override
 	public String getName() {
-		return modID + " Radioactive Items Provider";
+		return modID + " Radioactive Fluids Provider";
 	}
 
 }

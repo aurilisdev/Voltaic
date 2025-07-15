@@ -9,6 +9,8 @@ import org.jetbrains.annotations.Nullable;
 import voltaic.api.IWrenchItem;
 import voltaic.common.block.states.VoltaicBlockStates;
 import voltaic.common.item.ItemUpgrade;
+import voltaic.common.packet.NetworkHandler;
+import voltaic.common.packet.types.client.PacketUpdateCariedItemClient;
 import voltaic.prefab.properties.PropertyManager;
 import voltaic.prefab.properties.variant.AbstractProperty;
 import voltaic.prefab.tile.components.IComponent;
@@ -23,6 +25,7 @@ import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -44,6 +47,7 @@ import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
 import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.network.NetworkDirection;
 
 public abstract class GenericTile extends BlockEntity implements Nameable, IPropertyHolderTile {
 
@@ -333,9 +337,12 @@ public abstract class GenericTile extends BlockEntity implements Nameable, IProp
 
 	}
 
+	//serverside
 	public void updateCarriedItemInContainer(ItemStack stack, UUID playerId) {
-		Player player = getLevel().getPlayerByUUID(playerId);
+		ServerPlayer player = (ServerPlayer) getLevel().getPlayerByUUID(playerId);
+		stack.getOrCreateTag().putBoolean("hasclickedonfluidgauge", false);
 		player.containerMenu.setCarried(stack);
+		NetworkHandler.CHANNEL.sendTo(new PacketUpdateCariedItemClient(stack, worldPosition, playerId), player.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
 	}
 
 	protected static TriPredicate<Integer, ItemStack, ComponentInventory> machineValidator() {
