@@ -1,13 +1,13 @@
 package voltaic.common.packet.types.client;
 
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import voltaic.api.gas.Gas;
 import voltaic.api.radiation.util.RadiationShielding;
 import voltaic.api.radiation.util.RadioactiveObject;
 import voltaic.client.guidebook.ScreenGuidebook;
-import voltaic.common.reloadlistener.RadiationShieldingRegister;
-import voltaic.common.reloadlistener.RadioactiveFluidRegister;
-import voltaic.common.reloadlistener.RadioactiveGasRegister;
-import voltaic.common.reloadlistener.RadioactiveItemRegister;
+import voltaic.common.reloadlistener.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
@@ -17,6 +17,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.Fluid;
 
 import java.util.HashMap;
+import java.util.UUID;
 
 /**
  * Apparently with packets, certain class calls cannot be called within the packet itself because Java
@@ -60,4 +61,19 @@ public class ClientBarrierMethods {
         RadiationShieldingRegister.INSTANCE.setClientValues(shielding);
     }
 
+    public static void handleUpdateCarriedItemClient(ItemStack carriedItem, BlockPos tilePos, UUID playerId) {
+        Player player = Minecraft.getInstance().player;
+        Level level = Minecraft.getInstance().level;
+
+        if(player == null || !player.getUUID().equals(playerId)) {
+            return;
+        }
+
+        player.containerMenu.setCarried(carriedItem);
+
+    }
+
+    public static void handleSetClientRadioactiveBlocks(HashMap<Block, RadioactiveObject> blocks) {
+        RadioactiveBlockRegister.INSTANCE.setClientValues(blocks);
+    }
 }

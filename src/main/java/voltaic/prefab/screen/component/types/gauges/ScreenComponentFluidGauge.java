@@ -30,6 +30,7 @@ import net.neoforged.neoforge.fluids.IFluidTank;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
 import net.neoforged.neoforge.network.PacketDistributor;
+import voltaic.registers.VoltaicDataComponentTypes;
 
 @OnlyIn(Dist.CLIENT)
 public class ScreenComponentFluidGauge extends AbstractScreenComponentGauge {
@@ -132,6 +133,10 @@ public class ScreenComponentFluidGauge extends AbstractScreenComponentGauge {
 
 		ItemStack stack = screen.getMenu().getCarried();
 
+		if(stack.isEmpty() || stack.getOrDefault(VoltaicDataComponentTypes.HASCLICKEDONFLUIDGAUGE, false)) {
+			return;
+		}
+
 		IFluidHandlerItem handler = stack.getCapability(Capabilities.FluidHandler.ITEM);
 
 		if(handler == null) {
@@ -151,7 +156,11 @@ public class ScreenComponentFluidGauge extends AbstractScreenComponentGauge {
 
 			stack = handler.getContainer();
 
+			screen.getMenu().setCarried(stack);
+
 			PacketDistributor.sendToServer(new PacketUpdateCarriedItemServer(stack.copy(), ((GenericContainerBlockEntity<?>) screen.getMenu()).getSafeHost().getBlockPos(), Minecraft.getInstance().player.getUUID()));
+
+			stack.set(VoltaicDataComponentTypes.HASCLICKEDONFLUIDGAUGE, true);
 
 			return;
 
@@ -170,7 +179,11 @@ public class ScreenComponentFluidGauge extends AbstractScreenComponentGauge {
 
 			stack = handler.getContainer();
 
+			screen.getMenu().setCarried(stack);
+
 			PacketDistributor.sendToServer(new PacketUpdateCarriedItemServer(stack.copy(), ((GenericContainerBlockEntity<?>) screen.getMenu()).getSafeHost().getBlockPos(), Minecraft.getInstance().player.getUUID()));
+
+			stack.set(VoltaicDataComponentTypes.HASCLICKEDONFLUIDGAUGE, true);
 
 			return;
 		}

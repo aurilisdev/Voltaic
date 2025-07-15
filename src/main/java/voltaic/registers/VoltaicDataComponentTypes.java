@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.mojang.serialization.Codec;
 
+import net.minecraft.core.component.DataComponents;
 import voltaic.Voltaic;
 import voltaic.api.fluid.FluidStackComponent;
 import voltaic.api.gas.GasStack;
@@ -46,6 +47,7 @@ public class VoltaicDataComponentTypes {
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Boolean>> RESET = DATA_COMPONENT_TYPES.register("reset", () -> DataComponentType.<Boolean>builder().persistent(Codec.BOOL).networkSynchronized(ByteBufCodecs.BOOL).cacheEncoding().build());
 
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Boolean>> SUCESS = DATA_COMPONENT_TYPES.register(NBTUtils.SUCESS, () -> DataComponentType.<Boolean>builder().persistent(Codec.BOOL).networkSynchronized(ByteBufCodecs.BOOL).cacheEncoding().build());
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Boolean>> HASCLICKEDONFLUIDGAUGE = DATA_COMPONENT_TYPES.register("hasclickedonfluidgauge", () -> DataComponentType.<Boolean>builder().persistent(Codec.BOOL).networkSynchronized(ByteBufCodecs.BOOL).cacheEncoding().build());
 
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> PLATES = DATA_COMPONENT_TYPES.register(NBTUtils.PLATES, () -> DataComponentType.<Integer>builder().persistent(Codec.INT).networkSynchronized(ByteBufCodecs.INT).cacheEncoding().build());
 

@@ -116,6 +116,7 @@
   "item.voltaic.wrench": "Wrench",
   "subtitles.voltaic.batteryswap": "Battery is swapped",
   "subtitles.voltaic.pressurerelease": "Gas hisses",
+  "tooltip.voltaic.currbattery": "Battery: %s",
   "tooltip.voltaic.currentgas": "Gas: %s",
   "tooltip.voltaic.gasamount": "Amount: %1$s / %2$s",
   "tooltip.voltaic.gaspressure": "Pressure: %s",

@@ -10,6 +10,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
 import voltaic.Voltaic;
 import voltaic.api.radiation.util.RadiationShielding;
@@ -39,15 +40,15 @@ public abstract class BaseRadiationShieldingProvider implements DataProvider {
 
     public abstract void getRadiationShielding(JsonObject json);
 
-    public static void addBlock(Block block, double radiationAmount, double radiationLevel, JsonObject json) {
+    public void addBlock(Block block, double radiationAmount, double radiationLevel, JsonObject json) {
         JsonObject data = new JsonObject();
         json.add(BuiltInRegistries.BLOCK.getKey(block).toString(), RadiationShielding.CODEC.encode(new RadiationShielding(radiationAmount, radiationLevel), JsonOps.INSTANCE, data).getOrThrow());
     }
 
-//    private void addTag(TagKey<Block> tag, double radiationAmount, double radiationLevel, JsonObject json) {
-//        JsonObject data = new JsonObject();
-//        json.add("#" + tag.location().toString(), RadiationShielding.CODEC.encode(new RadiationShielding(radiationAmount, radiationLevel), JsonOps.INSTANCE, data).getOrThrow());
-//    }
+    public void addTag(TagKey<Block> tag, double radiationAmount, double radiationLevel, JsonObject json) {
+        JsonObject data = new JsonObject();
+        json.add("#" + tag.location().toString(), RadiationShielding.CODEC.encode(new RadiationShielding(radiationAmount, radiationLevel), JsonOps.INSTANCE, data).getOrThrow());
+    }
 
     @Override
     public String getName() {
