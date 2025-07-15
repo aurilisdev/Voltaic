@@ -182,6 +182,10 @@ public class ScreenComponentGasGauge extends ScreenComponentGeneric {
 
 		ItemStack stack = screen.getMenu().getCarried();
 
+		if (stack.isEmpty() || stack.getOrCreateTag().getBoolean("hasclickedonfluidgauge")) {
+			return;
+		}
+
 		GasStack drainedGasSource = tank.getGas().copy();
 
 		IGasHandlerItem handler = stack.getCapability(VoltaicCapabilities.CAPABILITY_GASHANDLER_ITEM).resolve().orElse(CapabilityUtils.EMPTY_GAS_ITEM);
@@ -192,43 +196,49 @@ public class ScreenComponentGasGauge extends ScreenComponentGeneric {
 
 		int taken = handler.fill(drainedGasSource, GasAction.EXECUTE);
 
-		//drain this gas gauge if the amount taken was greater than zero
+		// drain this gas gauge if the amount taken was greater than zero
 		if (taken > 0) {
 
 			tank.drain(taken, GasAction.EXECUTE);
 
 			Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(VoltaicSounds.SOUND_PRESSURERELEASE.get(), 1.0F));
-
-			stack = handler.getContainer();
 			
+			stack = handler.getContainer();
+
+			stack.getOrCreateTag().putBoolean("hasclickedonfluidgauge", true);
+
 			NetworkHandler.CHANNEL.sendToServer(new PacketUpdateCarriedItemServer(stack.copy(), ((GenericContainerBlockEntity<?>) screen.getMenu()).getSafeHost().getBlockPos(), Minecraft.getInstance().player.getUUID()));
+
+			screen.getMenu().setCarried(stack);
 
 			return;
 		}
-		//we didn't drain the gauge, now we try to fill it
-		for(int i = 0; i < handler.getTanks(); i++){
+		// we didn't drain the gauge, now we try to fill it
+		for (int i = 0; i < handler.getTanks(); i++) {
 			drainedGasSource = handler.getGasInTank(i);
 			taken = tank.fill(drainedGasSource, GasAction.EXECUTE);
-			if(taken <= 0) {
+			if (taken <= 0) {
 				continue;
 			}
 			handler.drain(taken, GasAction.EXECUTE);
 
 			Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(VoltaicSounds.SOUND_PRESSURERELEASE.get(), 1.0F));
-
-			stack = handler.getContainer();
 			
+			stack = handler.getContainer();
+
+			stack.getOrCreateTag().putBoolean("hasclickedonfluidgauge", true);
+
 			NetworkHandler.CHANNEL.sendToServer(new PacketUpdateCarriedItemServer(stack.copy(), ((GenericContainerBlockEntity<?>) screen.getMenu()).getSafeHost().getBlockPos(), Minecraft.getInstance().player.getUUID()));
+
+			screen.getMenu().setCarried(stack);
 
 			return;
 		}
 
-
 	}
 
-		public enum GasGaugeTextures implements ITexture {
-		BACKGROUND_DEFAULT(14, 49, 0, 0, 256, 256, TEXTURE),
-		LEVEL_DEFAULT(14, 49, 14, 0, 256, 256, TEXTURE);
+	public enum GasGaugeTextures implements ITexture {
+		BACKGROUND_DEFAULT(14, 49, 0, 0, 256, 256, TEXTURE), LEVEL_DEFAULT(14, 49, 14, 0, 256, 256, TEXTURE);
 
 		private final int textureWidth;
 		private final int textureHeight;

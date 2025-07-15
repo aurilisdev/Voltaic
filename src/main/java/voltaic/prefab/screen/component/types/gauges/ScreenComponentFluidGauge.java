@@ -115,7 +115,6 @@ public class ScreenComponentFluidGauge extends AbstractScreenComponentGauge {
 	@Override
 	public void onMouseClick(double mouseX, double mouseY) {
 
-	    	
 		PropertyFluidTank tank = fluidInfoHandler.getTank() instanceof PropertyFluidTank x ? x : null;
 
 		if (tank == null) {
@@ -132,9 +131,13 @@ public class ScreenComponentFluidGauge extends AbstractScreenComponentGauge {
 
 		ItemStack stack = screen.getMenu().getCarried();
 
+		if (stack.isEmpty() || stack.getOrCreateTag().getBoolean("hasclickedonfluidgauge")) {
+			return;
+		}
+
 		IFluidHandlerItem handler = stack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).resolve().orElse(CapabilityUtils.EMPTY_FLUID_ITEM);
 
-		if(handler == CapabilityUtils.EMPTY_FLUID_ITEM) {
+		if (handler == CapabilityUtils.EMPTY_FLUID_ITEM) {
 			return;
 		}
 
@@ -142,42 +145,46 @@ public class ScreenComponentFluidGauge extends AbstractScreenComponentGauge {
 
 		int taken = handler.fill(drainedSourceFluid, IFluidHandler.FluidAction.EXECUTE);
 
-		//drain this fluid gauge if the amount taken was greater than zero
+		// drain this fluid gauge if the amount taken was greater than zero
 		if (taken > 0) {
 
 			tank.drain(taken, IFluidHandler.FluidAction.EXECUTE);
 
 			Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.BUCKET_FILL, 1.0F));
-
-			stack = handler.getContainer();
 			
+			stack = handler.getContainer();
+
+			stack.getOrCreateTag().putBoolean("hasclickedonfluidgauge", true);
+
 			NetworkHandler.CHANNEL.sendToServer(new PacketUpdateCarriedItemServer(stack.copy(), ((GenericContainerBlockEntity<?>) screen.getMenu()).getSafeHost().getBlockPos(), Minecraft.getInstance().player.getUUID()));
+
+			screen.getMenu().setCarried(stack);
 
 			return;
 
 		}
-		//we didn't drain the gauge, now we try to fill it
+		// we didn't drain the gauge, now we try to fill it
 
-		for(int i = 0; i < handler.getTanks(); i++){
+		for (int i = 0; i < handler.getTanks(); i++) {
 			drainedSourceFluid = handler.getFluidInTank(i);
 			taken = tank.fill(drainedSourceFluid, IFluidHandler.FluidAction.EXECUTE);
-			if(taken <= 0) {
+			if (taken <= 0) {
 				continue;
 			}
 			handler.drain(taken, IFluidHandler.FluidAction.EXECUTE);
 
 			Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.BUCKET_EMPTY, 1.0F));
-
-			stack = handler.getContainer();
 			
+			stack = handler.getContainer();
+
+			stack.getOrCreateTag().putBoolean("hasclickedonfluidgauge", true);
+
 			NetworkHandler.CHANNEL.sendToServer(new PacketUpdateCarriedItemServer(stack.copy(), ((GenericContainerBlockEntity<?>) screen.getMenu()).getSafeHost().getBlockPos(), Minecraft.getInstance().player.getUUID()));
+
+			screen.getMenu().setCarried(stack);
 
 			return;
 		}
-
-
-
-
 
 	}
 }

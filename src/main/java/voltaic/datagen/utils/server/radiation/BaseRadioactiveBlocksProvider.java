@@ -2,56 +2,55 @@ package voltaic.datagen.utils.server.radiation;
 
 import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
-import voltaic.Voltaic;
-import voltaic.api.gas.Gas;
-import voltaic.api.radiation.util.RadioactiveObject;
-import voltaic.common.reloadlistener.RadioactiveGasRegister;
-import voltaic.registers.VoltaicRegistries;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.level.block.Block;
+import voltaic.Voltaic;
+import voltaic.api.radiation.util.RadioactiveObject;
+import voltaic.common.reloadlistener.RadioactiveBlockRegister;
 
 import java.nio.file.Path;
 import java.util.concurrent.CompletableFuture;
 
-public abstract class BaseRadioactiveGasesProvider implements DataProvider {
+public abstract class BaseRadioactiveBlocksProvider implements DataProvider {
 
     private final PackOutput output;
     private final String modID;
     private final String loc;
 
-    public BaseRadioactiveGasesProvider(PackOutput output, String modID) {
+    public BaseRadioactiveBlocksProvider(PackOutput output, String modID) {
         this.output = output;
         this.modID = modID;
-        loc = "data/" + Voltaic.ID + "/" + RadioactiveGasRegister.FOLDER + "/" + modID + "_" + RadioactiveGasRegister.FILE_NAME;
+        loc = "data/" + Voltaic.ID + "/" + RadioactiveBlockRegister.FOLDER + "/" + modID + "_" + RadioactiveBlockRegister.FILE_NAME;
     }
 
     @Override
     public CompletableFuture<?> run(CachedOutput cache) {
         JsonObject json = new JsonObject();
-        getRadioactiveGases(json);
+        getRadioactiveBlocks(json);
 
         Path parent = output.getOutputFolder().resolve(loc + ".json");
 
         return CompletableFuture.allOf(DataProvider.saveStable(cache, json, parent));
     }
 
-    public abstract void getRadioactiveGases(JsonObject json);
+    public abstract void getRadioactiveBlocks(JsonObject json);
 
-    public void addItem(Gas gas, double radiationAmount, double radiationStrength, JsonObject json) {
+    public void addBlock(Block block, double radiationAmount, double radiationStrength, JsonObject json) {
         JsonObject data = new JsonObject();
-        json.add(VoltaicRegistries.gasRegistry().getKey(gas).toString(), RadioactiveObject.CODEC.encode(new RadioactiveObject(radiationStrength, radiationAmount), JsonOps.INSTANCE, data).result().get());
+        json.add(BuiltInRegistries.BLOCK.getKey(block).toString(), RadioactiveObject.CODEC.encode(new RadioactiveObject(radiationStrength, radiationAmount), JsonOps.INSTANCE, data).result().get());
     }
 
-    public void addTag(TagKey<Gas> tag, double radiationAmount, double radiationStrength, JsonObject json) {
+    public void addTag(TagKey<Block> tag, double radiationAmount, double radiationStrength, JsonObject json) {
         JsonObject data = new JsonObject();
         json.add("#" + tag.location().toString(), RadioactiveObject.CODEC.encode(new RadioactiveObject(radiationStrength, radiationAmount), JsonOps.INSTANCE, data).result().get());
     }
 
     @Override
     public String getName() {
-        return modID + " Radioactive Gases Provider";
+        return modID + " Radioactive Blocks Provider";
     }
-
 }
