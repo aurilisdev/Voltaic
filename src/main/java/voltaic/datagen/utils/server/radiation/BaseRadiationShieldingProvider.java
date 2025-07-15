@@ -11,6 +11,7 @@ import net.minecraft.block.Block;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DirectoryCache;
 import net.minecraft.data.IDataProvider;
+import net.minecraft.tags.ITag.INamedTag;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.io.IOException;
@@ -47,15 +48,15 @@ public abstract class BaseRadiationShieldingProvider implements IDataProvider {
 
     public abstract void getRadiationShielding(JsonObject json);
 
-    public static void addBlock(Block block, double radiationAmount, double radiationLevel, JsonObject json) {
+    public void addBlock(Block block, double radiationAmount, double radiationLevel, JsonObject json) {
         JsonObject data = new JsonObject();
         json.add(ForgeRegistries.BLOCKS.getKey(block).toString(), RadiationShielding.CODEC.encode(new RadiationShielding(radiationAmount, radiationLevel), JsonOps.INSTANCE, data).result().get());
     }
 
-//    private void addTag(TagKey<Block> tag, double radiationAmount, double radiationLevel, JsonObject json) {
-//        JsonObject data = new JsonObject();
-//        json.add("#" + tag.location().toString(), RadiationShielding.CODEC.encode(new RadiationShielding(radiationAmount, radiationLevel), JsonOps.INSTANCE, data).getOrThrow());
-//    }
+    public void addTag(INamedTag<Block> tag, double radiationAmount, double radiationLevel, JsonObject json) {
+        JsonObject data = new JsonObject();
+        json.add("#" + tag.getName().toString(), RadiationShielding.CODEC.encode(new RadiationShielding(radiationAmount, radiationLevel), JsonOps.INSTANCE, data).result().get());
+    }
 
     @Override
     public String getName() {

@@ -17,6 +17,7 @@ import voltaic.prefab.utilities.RenderingUtils;
 import voltaic.prefab.utilities.math.Color;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.SimpleSound;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IReorderingProcessor;
 import net.minecraft.util.ResourceLocation;
@@ -133,7 +134,12 @@ public class ScreenComponentFluidGauge extends AbstractScreenComponentGauge {
 			return;
 		}
 
-		ItemStack stack = Minecraft.getInstance().player.inventory.getCarried();
+		PlayerInventory inv = Minecraft.getInstance().player.inventory;
+		ItemStack stack = inv.getCarried();
+		
+		if(stack.isEmpty() || stack.getOrCreateTag().getBoolean("hasclickedonfluidgauge")) {
+			return;
+		}
 
 		IFluidHandlerItem handler = stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).resolve().orElse(CapabilityUtils.EMPTY_FLUID_ITEM);
 
@@ -154,7 +160,12 @@ public class ScreenComponentFluidGauge extends AbstractScreenComponentGauge {
 
 			stack = handler.getContainer();
 			
+			stack.getOrCreateTag().putBoolean("hasclickedonfluidgauge", true);
+			
 			NetworkHandler.CHANNEL.sendToServer(new PacketUpdateCarriedItemServer(stack.copy(), ((GenericContainerBlockEntity<?>) screen.getMenu()).getSafeHost().getBlockPos(), Minecraft.getInstance().player.getUUID()));
+			
+			inv.setCarried(stack);
+			inv.setChanged();
 
 			return;
 
@@ -173,7 +184,12 @@ public class ScreenComponentFluidGauge extends AbstractScreenComponentGauge {
 
 			stack = handler.getContainer();
 			
+			stack.getOrCreateTag().putBoolean("hasclickedonfluidgauge", true);
+			
 			NetworkHandler.CHANNEL.sendToServer(new PacketUpdateCarriedItemServer(stack.copy(), ((GenericContainerBlockEntity<?>) screen.getMenu()).getSafeHost().getBlockPos(), Minecraft.getInstance().player.getUUID()));
+			
+			inv.setCarried(stack);
+			inv.setChanged();
 
 			return;
 		}

@@ -31,8 +31,8 @@ public class RadiationManager implements IRadiationManager, ICapabilitySerializa
 	private final HashMap<BlockPos, SimpleRadiationSource> permanentSources = new HashMap<>();
 	private final HashMap<BlockPos, IRadiationManager.TemporaryRadiationSource> temporarySources = new HashMap<>();
 	private final HashMap<BlockPos, IRadiationManager.FadingRadiationSource> fadingSources = new HashMap<>();
-	private final HashMap<BlockPosVolume, Double> localizedDisapations = new HashMap<>();
-	private double defaultDisipation = VoltaicConstants.BACKROUND_RADIATION_DISSIPATION;
+	private final HashMap<BlockPosVolume, Double> localizedDissipations = new HashMap<>();
+	private double defaultRadiationDisipation = VoltaicConstants.BACKROUND_RADIATION_DISSIPATION;
 
     public RadiationManager() {
 
@@ -101,10 +101,10 @@ public class RadiationManager implements IRadiationManager, ICapabilitySerializa
 		// Localized
 		
 		CompoundNBT localized = new CompoundNBT();
-        size = localizedDisapations.size();
+        size = localizedDissipations.size();
         localized.putInt("size", size);
         i = 0;
-        for (Map.Entry<BlockPosVolume, Double> entry : localizedDisapations.entrySet()) {
+        for (Map.Entry<BlockPosVolume, Double> entry : localizedDissipations.entrySet()) {
             CompoundNBT store = new CompoundNBT();
             BlockPosVolume.CODEC.encodeStart(NBTDynamicOps.INSTANCE, entry.getKey()).result().ifPresent(tag -> store.put("pos", tag));
             store.putDouble("amount", entry.getValue());
@@ -116,7 +116,7 @@ public class RadiationManager implements IRadiationManager, ICapabilitySerializa
         
         // Default Dissipation
         
-        total.putDouble("defaultdissipation", defaultDisipation);
+        total.putDouble("defaultdissipation", defaultRadiationDisipation);
 
 		return total;
 	}
@@ -168,7 +168,7 @@ public class RadiationManager implements IRadiationManager, ICapabilitySerializa
         
         // Localized Dissipations 
         
-        localizedDisapations.clear();
+        localizedDissipations.clear();
         
         CompoundNBT localized = nbt.getCompound("localizeddissipations");
         
@@ -176,12 +176,12 @@ public class RadiationManager implements IRadiationManager, ICapabilitySerializa
         for (int i = 0; i < size; i++) {
 
             CompoundNBT stored = localized.getCompound("" + i);
-            localizedDisapations.put(BlockPosVolume.CODEC.parse(new Dynamic<>(NBTDynamicOps.INSTANCE, stored.get("pos"))).result().get(), stored.getDouble("amount"));
+            localizedDissipations.put(BlockPosVolume.CODEC.parse(new Dynamic<>(NBTDynamicOps.INSTANCE, stored.get("pos"))).result().get(), stored.getDouble("amount"));
         }
         
         // Default Dissipation
         
-        defaultDisipation = nbt.getDouble("defaultdissipation");
+        defaultRadiationDisipation = nbt.getDouble("defaultdissipation");
 
 	
 	}
@@ -246,17 +246,17 @@ public class RadiationManager implements IRadiationManager, ICapabilitySerializa
 
     @Override
     public void setDisipation(double radiationDisipation, World world) {
-        defaultDisipation = radiationDisipation;
+        defaultRadiationDisipation = radiationDisipation;
     }
 
     @Override
     public void setLocalizedDisipation(double disipation, BlockPosVolume area, World world) {
-        localizedDisapations.put(area, disipation + localizedDisapations.getOrDefault(area, 0.0));
+        localizedDissipations.put(area, disipation + localizedDissipations.getOrDefault(area, 0.0));
     }
 
     @Override
     public void removeLocalizedDisipation(BlockPosVolume area, World world) {
-        localizedDisapations.remove(area);
+        localizedDissipations.remove(area);
     }
 
     @Override
@@ -281,14 +281,33 @@ public class RadiationManager implements IRadiationManager, ICapabilitySerializa
     @Override
     public void tick(World world) {
 
-        /* Apply Radiation */
+    	/* Permanent Radiation Sources */
 
-        BlockPos position;
-        SimpleRadiationSource permanentSource;
+        BlockPos previousPos = null;
+        BlockPos position = null;
 
-        for (Map.Entry<BlockPos, SimpleRadiationSource> entry : permanentSources.entrySet()) {
-            position = entry.getKey();
-            permanentSource = entry.getValue();
+        Iterator<Map.Entry<BlockPos, SimpleRadiationSource>> iteratorPerm = permanentSources.entrySet().iterator();
+        Map.Entry<BlockPos, SimpleRadiationSource> entryPerm = null;
+        SimpleRadiationSource permanentSource = null;
+        boolean didChange = false;
+
+        while (iteratorPerm.hasNext()) {
+            entryPerm = iteratorPerm.next();
+            previousPos = position;
+            position = entryPerm.getKey();
+            permanentSource = entryPerm.getValue();
+
+            // filter out weird hashmap fuckery; there should only be one permanent source at a given location
+            if (previousPos != null && position.equals(previousPos)) {
+                didChange = true;
+                iteratorPerm.remove();
+                continue;
+            }
+
+            if (!world.isLoaded(position)) {
+                continue;
+            }
+
             for (LivingEntity entity : world.getEntitiesOfClass(LivingEntity.class, new AxisAlignedBB(position.getX() - permanentSource.distance(), position.getY() - permanentSource.distance(), position.getZ() - permanentSource.distance(), position.getX() + permanentSource.distance() + 1, position.getY() + permanentSource.distance() + 1, position.getZ() + permanentSource.distance() + 1))) {
                 IRadiationRecipient capability = entity.getCapability(VoltaicCapabilities.CAPABILITY_RADIATIONRECIPIENT).orElse(CapabilityUtils.EMPTY_RADIATION_REPIPIENT);
                 if (capability == CapabilityUtils.EMPTY_RADIATION_REPIPIENT) {
@@ -301,82 +320,95 @@ public class RadiationManager implements IRadiationManager, ICapabilitySerializa
             }
         }
 
-        TemporaryRadiationSource temporarySource;
+        /* Temporary Radiation Sources */
 
-        for (Map.Entry<BlockPos, TemporaryRadiationSource> entry : temporarySources.entrySet()) {
-            position = entry.getKey();
-            temporarySource = entry.getValue();
+        position = null;
+        previousPos = null;
+        didChange = false;
 
-            for (LivingEntity entity : world.getEntitiesOfClass(LivingEntity.class, new AxisAlignedBB(position.getX() - temporarySource.distance, position.getY() - temporarySource.distance, position.getZ() - temporarySource.distance, position.getX() + temporarySource.distance + 1, position.getY() + temporarySource.distance + 1, position.getZ() + temporarySource.distance + 1))) {
+        Iterator<Map.Entry<BlockPos, TemporaryRadiationSource>> iteratorTemp = temporarySources.entrySet().iterator();
+        Map.Entry<BlockPos, TemporaryRadiationSource> entryTemp = null;
+        TemporaryRadiationSource temporarySource = null;
 
-                IRadiationRecipient capability = entity.getCapability(VoltaicCapabilities.CAPABILITY_RADIATIONRECIPIENT).orElse(CapabilityUtils.EMPTY_RADIATION_REPIPIENT);
-                if (capability == CapabilityUtils.EMPTY_RADIATION_REPIPIENT) {
-                    continue;
-                }
+        while (iteratorTemp.hasNext()) {
+            entryTemp = iteratorTemp.next();
+            previousPos = position;
+            position = entryTemp.getKey();
+            temporarySource = entryTemp.getValue();
 
-                for (int i = 0; i < (int) Math.ceil(entity.getBbHeight()); i++) {
-                    capability.recieveRadiation(entity, getAppliedRadiation(world, position, entity.blockPosition().above(i + 1), temporarySource.radiation, temporarySource.strength), temporarySource.strength);
-                }
-
-
+            // filter out weird hashmap fuckery; there should only be one temporary source at a given location
+            if (previousPos != null && position.equals(previousPos)) {
+                iteratorTemp.remove();
+                continue;
             }
 
+            if (world.hasChunkAt(position)) {
+                for (LivingEntity entity : world.getEntitiesOfClass(LivingEntity.class, new AxisAlignedBB(position.getX() - temporarySource.distance, position.getY() - temporarySource.distance, position.getZ() - temporarySource.distance, position.getX() + temporarySource.distance + 1, position.getY() + temporarySource.distance + 1, position.getZ() + temporarySource.distance + 1))) {
 
-        }
+                    IRadiationRecipient capability = entity.getCapability(VoltaicCapabilities.CAPABILITY_RADIATIONRECIPIENT).orElse(CapabilityUtils.EMPTY_RADIATION_REPIPIENT);
+                    if (capability == CapabilityUtils.EMPTY_RADIATION_REPIPIENT) {
+                        continue;
+                    }
 
-        FadingRadiationSource fadingSource;
+                    for (int i = 0; i < (int) Math.ceil(entity.getBbHeight()); i++) {
+                        capability.recieveRadiation(entity, getAppliedRadiation(world, position, entity.blockPosition().above(i + 1), temporarySource.radiation, temporarySource.strength), temporarySource.strength);
+                    }
 
-        for (Map.Entry<BlockPos, FadingRadiationSource> entry : fadingSources.entrySet()) {
 
-            position = entry.getKey();
-            fadingSource = entry.getValue();
-
-            for (LivingEntity entity : world.getEntitiesOfClass(LivingEntity.class, new AxisAlignedBB(position.getX() - fadingSource.distance, position.getY() - fadingSource.distance, position.getZ() - fadingSource.distance, position.getX() + fadingSource.distance + 1, position.getY() + fadingSource.distance + 1, position.getZ() + fadingSource.distance + 1))) {
-                IRadiationRecipient capability = entity.getCapability(VoltaicCapabilities.CAPABILITY_RADIATIONRECIPIENT).orElse(CapabilityUtils.EMPTY_RADIATION_REPIPIENT);
-                if (capability == CapabilityUtils.EMPTY_RADIATION_REPIPIENT) {
-                    continue;
                 }
-
-                for (int i = 0; i < (int) Math.ceil(entity.getBbHeight()); i++) {
-                    capability.recieveRadiation(entity, getAppliedRadiation(world, position, entity.blockPosition().above(i + 1), fadingSource.radiation, fadingSource.strength), fadingSource.strength);
-                }
-
             }
 
-        }
+            temporarySource.ticks = temporarySource.ticks - 1;
 
-
-        /* Handle Temporary Sources */
-
-
-        for(Iterator<Map.Entry<BlockPos, TemporaryRadiationSource>> it = temporarySources.entrySet().iterator(); it.hasNext(); ) {
-            Map.Entry<BlockPos, TemporaryRadiationSource> entry = it.next();
-            position = entry.getKey();
-            temporarySource = entry.getValue();
-	
-            temporarySource.ticks = temporarySource.ticks - 1;	
             if (temporarySource.ticks < 0) {
-                it.remove();
+                iteratorTemp.remove();
                 if (temporarySource.leaveFading) {
                     FadingRadiationSource existing = fadingSources.getOrDefault(position, FadingRadiationSource.NONE);
-                    fadingSources.put(position, new FadingRadiationSource(Math.max(temporarySource.distance, existing.distance), Math.max(temporarySource.strength, existing.strength), temporarySource.radiation + existing.radiation));
+                    fadingSources.put(position, new FadingRadiationSource(Math.max(temporarySource.distance, existing.distance), Math.max(temporarySource.strength, existing.strength), Math.max(temporarySource.radiation, existing.radiation)));
                 }
             }
 
+
         }
 
+        /* Fading Radiation Sources */
 
-        /* Handle Fading Sources */
+        position = null;
+        previousPos = null;
+        didChange = false;
 
-        for(Iterator<Map.Entry<BlockPos, FadingRadiationSource>> it = fadingSources.entrySet().iterator(); it.hasNext(); ) {
-            Map.Entry<BlockPos, FadingRadiationSource> entry = it.next();
+        Iterator<Map.Entry<BlockPos, FadingRadiationSource>> iteratorFading = fadingSources.entrySet().iterator();
+        Map.Entry<BlockPos, FadingRadiationSource> entryFading = null;
+        FadingRadiationSource fadingSource;
+        boolean hit = false;
 
-            position = entry.getKey();
-            fadingSource = entry.getValue();
+        while (iteratorFading.hasNext()) {
+            entryFading = iteratorFading.next();
+            previousPos = position;
+            position = entryFading.getKey();
+            fadingSource = entryFading.getValue();
 
-            boolean hit = false;
+            // filter out weird hashmap fuckery; there should only be one fading source at a given location
+            if (previousPos != null && position.equals(previousPos)) {
+                iteratorFading.remove();
+                continue;
+            }
 
-            for (Map.Entry<BlockPosVolume, Double> localized : localizedDisapations.entrySet()) {
+            if (world.hasChunkAt(position)) {
+                for (LivingEntity entity : world.getEntitiesOfClass(LivingEntity.class, new AxisAlignedBB(position.getX() - fadingSource.distance, position.getY() - fadingSource.distance, position.getZ() - fadingSource.distance, position.getX() + fadingSource.distance + 1, position.getY() + fadingSource.distance + 1, position.getZ() + fadingSource.distance + 1))) {
+                    IRadiationRecipient capability = entity.getCapability(VoltaicCapabilities.CAPABILITY_RADIATIONRECIPIENT).orElse(CapabilityUtils.EMPTY_RADIATION_REPIPIENT);
+                    if (capability == CapabilityUtils.EMPTY_RADIATION_REPIPIENT) {
+                        continue;
+                    }
+
+                    for (int i = 0; i < (int) Math.ceil(entity.getBbHeight()); i++) {
+                        capability.recieveRadiation(entity, getAppliedRadiation(world, position, entity.blockPosition().above(i + 1), fadingSource.radiation, fadingSource.strength), fadingSource.strength);
+                    }
+
+                }
+            }
+
+            for (Map.Entry<BlockPosVolume, Double> localized : localizedDissipations.entrySet()) {
                 if (localized.getKey().isIn(position)) {
                     fadingSource.radiation = fadingSource.radiation - localized.getValue();
                     hit = true;
@@ -385,11 +417,11 @@ public class RadiationManager implements IRadiationManager, ICapabilitySerializa
             }
 
             if (!hit) {
-                fadingSource.radiation = fadingSource.radiation - defaultDisipation;
+                fadingSource.radiation = fadingSource.radiation - defaultRadiationDisipation;
             }
 
             if (fadingSource.radiation <= 0) {
-                it.remove();
+                iteratorFading.remove();
             }
 
         }

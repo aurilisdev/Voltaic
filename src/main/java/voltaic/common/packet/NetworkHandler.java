@@ -25,6 +25,8 @@ public class NetworkHandler {
     	CHANNEL.registerMessage(disc++, PacketSetClientRadioactiveItems.class, PacketSetClientRadioactiveItems::encode, PacketSetClientRadioactiveItems::decode, PacketSetClientRadioactiveItems::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
         CHANNEL.registerMessage(disc++, PacketSetClientRadioactiveFluids.class, PacketSetClientRadioactiveFluids::encode, PacketSetClientRadioactiveFluids::decode, PacketSetClientRadioactiveFluids::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
         CHANNEL.registerMessage(disc++, PacketSetClientRadiationShielding.class, PacketSetClientRadiationShielding::encode, PacketSetClientRadiationShielding::decode, PacketSetClientRadiationShielding::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+        CHANNEL.registerMessage(disc++, PacketUpdateCariedItemClient.class, PacketUpdateCariedItemClient::encode, PacketUpdateCariedItemClient::decode, PacketUpdateCariedItemClient::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+        CHANNEL.registerMessage(disc++, PacketSetClientRadioactiveBlocks.class, PacketSetClientRadioactiveBlocks::encode, PacketSetClientRadioactiveBlocks::decode,PacketSetClientRadioactiveBlocks::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
 
         // SERVER
 

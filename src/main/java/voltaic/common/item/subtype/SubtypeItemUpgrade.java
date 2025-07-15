@@ -148,7 +148,7 @@ public enum SubtypeItemUpgrade implements ISubtype {
     // generator.setMultiplier(2.25);
     stator(1, VoltaicTextUtils.tooltip("upgrade.stator"), "electrodynamics"),
     // generator.setMultiplier(2.25);
-    range(12, VoltaicTextUtils.tooltip("upgrade.range"), "assemblyline", "ballistix"),
+    range(12, VoltaicTextUtils.tooltip("upgrade.range"), "electrodynamics", "assemblyline", "ballistix"),
     experience(1, VoltaicTextUtils.tooltip("upgrade.experience"), "electrodynamics", "assemblyline", "blastcraft"),
     itemvoid(1, VoltaicTextUtils.tooltip("upgrade.itemvoid"), "electrodynamics"),
     silktouch(1, VoltaicTextUtils.tooltip("upgrade.silktouch"), "electrodynamics"),

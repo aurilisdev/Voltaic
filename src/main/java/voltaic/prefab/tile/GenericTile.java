@@ -10,18 +10,20 @@ import voltaic.Voltaic;
 import voltaic.api.IWrenchItem;
 import voltaic.common.block.states.VoltaicBlockStates;
 import voltaic.common.item.ItemUpgrade;
+import voltaic.common.packet.NetworkHandler;
+import voltaic.common.packet.types.client.PacketUpdateCariedItemClient;
 import voltaic.prefab.properties.PropertyManager;
 import voltaic.prefab.properties.variant.AbstractProperty;
 import voltaic.prefab.tile.components.IComponent;
 import voltaic.prefab.tile.components.IComponentType;
 import voltaic.prefab.tile.components.type.*;
-import voltaic.prefab.utilities.BlockEntityUtils;
 import voltaic.prefab.utilities.ItemUtils;
 import voltaic.registers.VoltaicCapabilities;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
@@ -47,6 +49,7 @@ import net.minecraftforge.common.util.TriPredicate;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
+import net.minecraftforge.fml.network.NetworkDirection;
 import net.minecraftforge.items.CapabilityItemHandler;
 
 public abstract class GenericTile extends TileEntity implements INameable, IPropertyHolderTile, ITickableTileEntity {
@@ -364,9 +367,13 @@ public abstract class GenericTile extends TileEntity implements INameable, IProp
 
 	}
 
+	//serverside
 	public void updateCarriedItemInContainer(ItemStack stack, UUID playerId) {
-		PlayerEntity player = getLevel().getPlayerByUUID(playerId);
+		ServerPlayerEntity player = (ServerPlayerEntity) getLevel().getPlayerByUUID(playerId);
+		stack.getOrCreateTag().putBoolean("hasclickedonfluidgauge", false);
 		player.inventory.setCarried(stack);
+		player.inventory.setChanged();
+		NetworkHandler.CHANNEL.sendTo(new PacketUpdateCariedItemClient(stack, worldPosition, playerId), player.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
 	}
 
 	protected static TriPredicate<Integer, ItemStack, ComponentInventory> machineValidator() {
