@@ -2,10 +2,10 @@ package voltaic.registers;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.Dynamic;
+import net.minecraft.world.phys.AABB;
 import voltaic.Voltaic;
 import voltaic.api.radiation.RadiationManager;
 import voltaic.api.radiation.SimpleRadiationSource;
-import voltaic.api.radiation.util.BlockPosVolume;
 import voltaic.api.radiation.util.IRadiationManager;
 import voltaic.common.settings.VoltaicConstants;
 import net.minecraft.core.BlockPos;
@@ -19,6 +19,7 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import org.jetbrains.annotations.Nullable;
+import voltaic.prefab.utilities.CodecUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -126,16 +127,16 @@ public class VoltaicAttachmentTypes {
         }
     }).build());
 
-    public static final DeferredHolder<AttachmentType<?>, AttachmentType<HashMap<BlockPosVolume, Double>>> LOCALIZED_DISSIPATIONS = ATTACHMENT_TYPES.register("localizeddissipations", () -> AttachmentType.builder(() -> new HashMap<BlockPosVolume, Double>()).serialize(new IAttachmentSerializer<CompoundTag, HashMap<BlockPosVolume, Double>>() {
+    public static final DeferredHolder<AttachmentType<?>, AttachmentType<HashMap<AABB, Double>>> LOCALIZED_DISSIPATIONS = ATTACHMENT_TYPES.register("localizeddissipations", () -> AttachmentType.builder(() -> new HashMap<AABB, Double>()).serialize(new IAttachmentSerializer<CompoundTag, HashMap<AABB, Double>>() {
         @Override
-        public HashMap<BlockPosVolume, Double> read(IAttachmentHolder holder, CompoundTag tag, HolderLookup.Provider provider) {
-            HashMap<BlockPosVolume, Double> data = new HashMap<>();
+        public HashMap<AABB, Double> read(IAttachmentHolder holder, CompoundTag tag, HolderLookup.Provider provider) {
+            HashMap<AABB, Double> data = new HashMap<>();
 
             int size = tag.getInt("size");
             for (int i = 0; i < size; i++) {
 
                 CompoundTag stored = tag.getCompound("" + i);
-                data.put(BlockPosVolume.CODEC.parse(new Dynamic<>(NbtOps.INSTANCE, stored.get("pos"))).result().get(), stored.getDouble("amount"));
+                data.put(CodecUtils.AABB_CODEC.parse(new Dynamic<>(NbtOps.INSTANCE, stored.get("pos"))).result().get(), stored.getDouble("amount"));
             }
 
 
@@ -143,14 +144,14 @@ public class VoltaicAttachmentTypes {
         }
 
         @Override
-        public @Nullable CompoundTag write(HashMap<BlockPosVolume, Double> attachment, HolderLookup.Provider provider) {
+        public @Nullable CompoundTag write(HashMap<AABB, Double> attachment, HolderLookup.Provider provider) {
             CompoundTag data = new CompoundTag();
             int size = attachment.size();
             data.putInt("size", size);
             int i = 0;
-            for (Map.Entry<BlockPosVolume, Double> entry : attachment.entrySet()) {
+            for (Map.Entry<AABB, Double> entry : attachment.entrySet()) {
                 CompoundTag store = new CompoundTag();
-                BlockPosVolume.CODEC.encodeStart(NbtOps.INSTANCE, entry.getKey()).ifSuccess(tag -> store.put("pos", tag));
+                CodecUtils.AABB_CODEC.encodeStart(NbtOps.INSTANCE, entry.getKey()).ifSuccess(tag -> store.put("pos", tag));
                 store.putDouble("amount", entry.getValue());
                 data.put(i + "", store);
                 i++;

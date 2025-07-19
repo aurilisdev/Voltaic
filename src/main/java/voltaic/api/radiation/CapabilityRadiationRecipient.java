@@ -26,14 +26,14 @@ public class CapabilityRadiationRecipient implements IRadiationRecipient {
 
         if (entity instanceof Player player && (player.isCreative() || player.isSpectator())) {
             player.setData(VoltaicAttachmentTypes.RECIEVED_RADIATIONAMOUNT, player.getData(VoltaicAttachmentTypes.RECIEVED_RADIATIONAMOUNT) + rads);
-            player.setData(VoltaicAttachmentTypes.RECIEVED_RADIATIONSTRENGTH, player.getData(VoltaicAttachmentTypes.RECIEVED_RADIATIONSTRENGTH) + strength);
+            player.setData(VoltaicAttachmentTypes.RECIEVED_RADIATIONSTRENGTH, strength);
             return;
         }
 
         if(entity.hasEffect(VoltaicEffects.RADIATION_RESISTANCE)) {
             if(rads <= VoltaicConstants.IODINE_RESISTANCE_THRESHHOLD) {
                 entity.setData(VoltaicAttachmentTypes.RECIEVED_RADIATIONAMOUNT, entity.getData(VoltaicAttachmentTypes.RECIEVED_RADIATIONAMOUNT) + rads);
-                entity.setData(VoltaicAttachmentTypes.RECIEVED_RADIATIONSTRENGTH, entity.getData(VoltaicAttachmentTypes.RECIEVED_RADIATIONSTRENGTH) + strength);
+                entity.setData(VoltaicAttachmentTypes.RECIEVED_RADIATIONSTRENGTH, strength);
                 return;
             }
 	    rads *= VoltaicConstants.IODINE_RAD_REDUCTION;
@@ -85,7 +85,7 @@ public class CapabilityRadiationRecipient implements IRadiationRecipient {
         }
 
         entity.setData(VoltaicAttachmentTypes.RECIEVED_RADIATIONAMOUNT, entity.getData(VoltaicAttachmentTypes.RECIEVED_RADIATIONAMOUNT) + rads);
-        entity.setData(VoltaicAttachmentTypes.RECIEVED_RADIATIONSTRENGTH, entity.getData(VoltaicAttachmentTypes.RECIEVED_RADIATIONSTRENGTH) + strength);
+        entity.setData(VoltaicAttachmentTypes.RECIEVED_RADIATIONSTRENGTH, strength);
 
     }
 

@@ -12,12 +12,15 @@ import com.mojang.datafixers.util.Function7;
 import com.mojang.datafixers.util.Function8;
 import com.mojang.datafixers.util.Function9;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 /**
@@ -26,6 +29,11 @@ import net.minecraft.world.phys.Vec3;
  * @author skip999
  */
 public class CodecUtils {
+
+    public static final Codec<AABB> AABB_CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            Vec3.CODEC.fieldOf("min").forGetter(AABB::getMinPosition),
+            Vec3.CODEC.fieldOf("max").forGetter(AABB::getMaxPosition)
+    ).apply(instance, AABB::new));
 
     public static final StreamCodec<ByteBuf, Vec3> VEC3_STREAM_CODEC = new StreamCodec<>() {
         @Override
