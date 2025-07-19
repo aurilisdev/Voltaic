@@ -10,6 +10,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
@@ -18,7 +19,6 @@ import net.minecraftforge.items.IItemHandler;
 import voltaic.api.gas.IGasHandler;
 import voltaic.api.gas.IGasHandlerItem;
 import voltaic.api.radiation.SimpleRadiationSource;
-import voltaic.api.radiation.util.BlockPosVolume;
 import voltaic.api.radiation.util.IRadiationManager;
 import voltaic.api.radiation.util.IRadiationRecipient;
 import voltaic.api.radiation.util.RadioactiveObject;
@@ -447,12 +447,12 @@ public class CapabilityUtils {
 		}
 
 		@Override
-		public void setLocalizedDisipation(double disipation, BlockPosVolume area, Level level) {
+		public void setLocalizedDisipation(double disipation, AABB area, Level level) {
 
 		}
 
 		@Override
-		public void removeLocalizedDisipation(BlockPosVolume area, Level level) {
+		public void removeLocalizedDisipation(AABB area, Level level) {
 
 		}
 

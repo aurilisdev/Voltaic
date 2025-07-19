@@ -9,7 +9,10 @@ import com.mojang.datafixers.util.Function13;
 import com.mojang.datafixers.util.Function7;
 import com.mojang.datafixers.util.Function8;
 import com.mojang.datafixers.util.Function9;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
+import net.minecraft.world.phys.AABB;
 import voltaic.api.codec.StreamCodec;
 
 /**
@@ -18,6 +21,15 @@ import voltaic.api.codec.StreamCodec;
  * @author skip999
  */
 public class CodecUtils {
+	
+	public static final Codec<AABB> AABB_CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            Codec.DOUBLE.fieldOf("xmin").forGetter(instance0 -> instance0.minX),
+            Codec.DOUBLE.fieldOf("ymin").forGetter(instance0 -> instance0.minY),
+            Codec.DOUBLE.fieldOf("zmin").forGetter(instance0 -> instance0.minZ),
+            Codec.DOUBLE.fieldOf("xmax").forGetter(instance0 -> instance0.maxX),
+            Codec.DOUBLE.fieldOf("ymax").forGetter(instance0 -> instance0.maxY),
+            Codec.DOUBLE.fieldOf("zmax").forGetter(instance0 -> instance0.maxZ)
+    ).apply(instance, AABB::new));
 
     public static <B, C, T1, T2, T3, T4, T5, T6, T7> StreamCodec<B, C> composite(
             final StreamCodec<? super B, T1> pCodec1,

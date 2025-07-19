@@ -76,14 +76,14 @@ public class CapabilityRadiationRecipient implements IRadiationRecipient, ICapab
 
 		if (entity instanceof Player player && (player.isCreative() || player.isSpectator())) {
 			recieved += rads;
-			recievedStrength += strength;
+			recievedStrength = strength;
 			return;
 		}
 
 		if (entity.hasEffect(VoltaicEffects.RADIATION_RESISTANCE.get())) {
 			if (rads <= VoltaicConstants.IODINE_RESISTANCE_THRESHHOLD) {
 				recieved += rads;
-				recievedStrength += strength;
+				recievedStrength = strength;
 				return;
 			}
 			rads = rads * VoltaicConstants.IODINE_RAD_REDUCTION;
@@ -136,7 +136,7 @@ public class CapabilityRadiationRecipient implements IRadiationRecipient, ICapab
 		}
 
 		recieved += rads;
-		recievedStrength += strength;
+		recievedStrength = strength;
 
 	}
 
