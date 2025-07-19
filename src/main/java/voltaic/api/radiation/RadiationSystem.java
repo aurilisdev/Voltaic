@@ -1,14 +1,14 @@
 package voltaic.api.radiation;
 
 import voltaic.Voltaic;
-import voltaic.api.radiation.util.BlockPosVolume;
 import voltaic.api.radiation.util.IRadiationManager;
 import voltaic.api.radiation.util.IRadiationRecipient;
+import voltaic.common.settings.VoltaicConstants;
 import voltaic.prefab.utilities.CapabilityUtils;
 import voltaic.registers.VoltaicCapabilities;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
 import net.minecraftforge.event.TickEvent.Phase;
 import net.minecraftforge.event.TickEvent.PlayerTickEvent;
 import net.minecraftforge.event.TickEvent.WorldTickEvent;
@@ -35,7 +35,12 @@ public class RadiationSystem {
 		if(level.isClientSide()) {
 			return;
 		}
-
+		
+		if(!VoltaicConstants.RADIATION_SYSTEM_ENABLED) {
+			wipeAllSources(level);
+			return;
+		}
+	
 		IRadiationManager manager = level.getCapability(VoltaicCapabilities.CAPABILITY_RADIATIONMANAGER).orElse(CapabilityUtils.EMPTY_MANAGER);
 		
 		if(manager == CapabilityUtils.EMPTY_MANAGER) {
@@ -50,18 +55,21 @@ public class RadiationSystem {
 	@SubscribeEvent
 	public static void entityTick(PlayerTickEvent event) {
 		
-		if(event.player == null || event.player.level.isClientSide()) {
+		if(!VoltaicConstants.RADIATION_SYSTEM_ENABLED || event.player.level.isClientSide() || event.player == null) {
 			return;
 		}
 		IRadiationRecipient capability = event.player.getCapability(VoltaicCapabilities.CAPABILITY_RADIATIONRECIPIENT).orElse(CapabilityUtils.EMPTY_RADIATION_REPIPIENT);
 		if(capability == CapabilityUtils.EMPTY_RADIATION_REPIPIENT) {
 			return;
 		}
-		capability.tick((LivingEntity) event.player);
+		capability.tick(event.player);
 
 	}
 
 	public static void addRadiationSource(Level world, SimpleRadiationSource source) {
+		if(!VoltaicConstants.RADIATION_SYSTEM_ENABLED) {
+			return;
+		}
 		if(source == null) {
 			throw new UnsupportedOperationException("source cannot be null");
 		}
@@ -75,6 +83,9 @@ public class RadiationSystem {
 	}
 
 	public static void removeRadiationSource(Level world, BlockPos pos, boolean shouldLinger) {
+		if(!VoltaicConstants.RADIATION_SYSTEM_ENABLED) {
+			return;
+		}
 		if(pos == null) {
 			throw new UnsupportedOperationException("position cannot be null");
 		}
@@ -99,7 +110,10 @@ public class RadiationSystem {
 		return new ArrayList<>(sources);
 	}
 
-	public static void addDisipation(Level world, double amount, BlockPosVolume volume) {
+	public static void addDisipation(Level world, double amount, AABB volume) {
+		if(!VoltaicConstants.RADIATION_SYSTEM_ENABLED) {
+			return;
+		}
 		IRadiationManager manager = world.getCapability(VoltaicCapabilities.CAPABILITY_RADIATIONMANAGER).orElse(CapabilityUtils.EMPTY_MANAGER);
 		
 		if(manager == CapabilityUtils.EMPTY_MANAGER) {
@@ -108,7 +122,7 @@ public class RadiationSystem {
 		manager.setLocalizedDisipation(amount, volume, world);
 	}
 
-	public static void removeDisipation(Level world, BlockPosVolume volume) {
+	public static void removeDisipation(Level world, AABB volume) {
 		IRadiationManager manager = world.getCapability(VoltaicCapabilities.CAPABILITY_RADIATIONMANAGER).orElse(CapabilityUtils.EMPTY_MANAGER);
 		
 		if(manager == CapabilityUtils.EMPTY_MANAGER) {
@@ -125,6 +139,7 @@ public class RadiationSystem {
 		}
 		manager.wipeAllSources(world);
 	}
+
 
 
 	/*
