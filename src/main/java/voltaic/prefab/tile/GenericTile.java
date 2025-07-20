@@ -213,10 +213,12 @@ public abstract class GenericTile extends BlockEntity implements Nameable, IProp
 	}
 
 	public SimpleContainerData getCoordsArray() {
-		SimpleContainerData array = new SimpleContainerData(3);
-		array.set(0, worldPosition.getX());
-		array.set(1, worldPosition.getY());
-		array.set(2, worldPosition.getZ());
+		SimpleContainerData array = new SimpleContainerData(5);
+		array.set(0, worldPosition.getX() / 30000);
+		array.set(1, getBlockPos().getX() % 30000);
+		array.set(2, worldPosition.getY());
+		array.set(3, worldPosition.getZ() / 30000);
+		array.set(4, getBlockPos().getZ() % 30000);
 		return array;
 	}
 
