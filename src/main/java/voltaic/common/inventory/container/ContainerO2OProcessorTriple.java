@@ -16,7 +16,7 @@ import voltaic.registers.VoltaicMenuTypes;
 public class ContainerO2OProcessorTriple extends GenericContainerBlockEntity<GenericTile> {
 
 	public ContainerO2OProcessorTriple(int id, PlayerInventory playerinv) {
-		this(id, playerinv, new Inventory(12), new IntArray(3));
+		this(id, playerinv, new Inventory(12), new IntArray(5));
 	}
 
 	public ContainerO2OProcessorTriple(int id, PlayerInventory playerinv, IInventory inventory, IIntArray inventorydata) {
