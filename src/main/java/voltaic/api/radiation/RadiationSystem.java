@@ -1,9 +1,10 @@
 package voltaic.api.radiation;
 
+import net.minecraft.world.phys.AABB;
 import voltaic.Voltaic;
-import voltaic.api.radiation.util.BlockPosVolume;
 import voltaic.api.radiation.util.IRadiationManager;
 import voltaic.api.radiation.util.IRadiationRecipient;
+import voltaic.common.settings.VoltaicConstants;
 import voltaic.registers.VoltaicAttachmentTypes;
 import voltaic.registers.VoltaicCapabilities;
 import net.minecraft.core.BlockPos;
@@ -30,6 +31,11 @@ public class RadiationSystem {
 			return;
 		}
 
+		if(!VoltaicConstants.RADIATION_SYSTEM_ENABLED) {
+			wipeAllSources(level);
+			return;
+		}
+
 		IRadiationManager manager = level.getData(VoltaicAttachmentTypes.RADIATION_MANAGER);
 
 		manager.tick(level);
@@ -39,7 +45,7 @@ public class RadiationSystem {
 
 	@SubscribeEvent
 	public static void entityTick(EntityTickEvent.Post event) {
-		if(event.getEntity().level().isClientSide() || !(event.getEntity() instanceof LivingEntity)) {
+		if(!VoltaicConstants.RADIATION_SYSTEM_ENABLED || event.getEntity().level().isClientSide() || !(event.getEntity() instanceof LivingEntity)) {
 			return;
 		}
 		IRadiationRecipient capability = event.getEntity().getCapability(VoltaicCapabilities.CAPABILITY_RADIATIONRECIPIENT);
@@ -51,6 +57,9 @@ public class RadiationSystem {
 	}
 
 	public static void addRadiationSource(Level world, SimpleRadiationSource source) {
+		if(!VoltaicConstants.RADIATION_SYSTEM_ENABLED) {
+			return;
+		}
 		if(source == null) {
 			throw new UnsupportedOperationException("source cannot be null");
 		}
@@ -60,6 +69,9 @@ public class RadiationSystem {
 	}
 
 	public static void removeRadiationSource(Level world, BlockPos pos, boolean shouldLinger) {
+		if(!VoltaicConstants.RADIATION_SYSTEM_ENABLED) {
+			return;
+		}
 		if(pos == null) {
 			throw new UnsupportedOperationException("position cannot be null");
 		}
@@ -76,12 +88,15 @@ public class RadiationSystem {
 		return new ArrayList<>(sources);
 	}
 
-	public static void addDisipation(Level world, double amount, BlockPosVolume volume) {
+	public static void addDisipation(Level world, double amount, AABB volume) {
+		if(!VoltaicConstants.RADIATION_SYSTEM_ENABLED) {
+			return;
+		}
 		IRadiationManager manager = world.getData(VoltaicAttachmentTypes.RADIATION_MANAGER);
 		manager.setLocalizedDisipation(amount, volume, world);
 	}
 
-	public static void removeDisipation(Level world, BlockPosVolume volume) {
+	public static void removeDisipation(Level world, AABB volume) {
 		IRadiationManager manager = world.getData(VoltaicAttachmentTypes.RADIATION_MANAGER);
 		manager.removeLocalizedDisipation(volume, world);
 	}

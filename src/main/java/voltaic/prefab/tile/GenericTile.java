@@ -2,7 +2,9 @@ package voltaic.prefab.tile;
 
 import java.util.UUID;
 
+import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.network.PacketDistributor;
 import voltaic.Voltaic;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -13,6 +15,8 @@ import voltaic.api.gas.IGasHandler;
 import voltaic.api.gas.GasTank;
 import voltaic.common.block.states.VoltaicBlockStates;
 import voltaic.common.item.ItemUpgrade;
+import voltaic.common.packet.NetworkHandler;
+import voltaic.common.packet.types.client.PacketUpdateCariedItemClient;
 import voltaic.prefab.properties.PropertyManager;
 import voltaic.prefab.properties.variant.AbstractProperty;
 import voltaic.prefab.tile.components.CapabilityInputType;
@@ -50,6 +54,7 @@ import net.neoforged.neoforge.common.util.TriPredicate;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
 import net.neoforged.neoforge.items.IItemHandler;
+import voltaic.registers.VoltaicDataComponentTypes;
 
 public abstract class GenericTile extends BlockEntity implements Nameable, IPropertyHolderTile {
 
@@ -361,9 +366,11 @@ public abstract class GenericTile extends BlockEntity implements Nameable, IProp
     }
 
     public void updateCarriedItemInContainer(ItemStack stack, UUID playerId) {
-        Player player = getLevel().getPlayerByUUID(playerId);
+        ServerPlayer player = (ServerPlayer) getLevel().getPlayerByUUID(playerId);
         if (player.hasContainerOpen()) {
+            stack.set(VoltaicDataComponentTypes.HASCLICKEDONFLUIDGAUGE, false);
             player.containerMenu.setCarried(stack);
+            PacketDistributor.sendToPlayer(player, new PacketUpdateCariedItemClient(stack, worldPosition, playerId));
         }
     }
 

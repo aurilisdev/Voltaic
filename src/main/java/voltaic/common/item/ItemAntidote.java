@@ -24,7 +24,7 @@ public class ItemAntidote extends ItemVoltaic {
     @Override
     public ItemStack finishUsingItem(ItemStack stack, Level worldIn, LivingEntity entityLiving) {
         if (!worldIn.isClientSide) {
-            entityLiving.removeEffectsCuredBy(EffectRadiation.CURE);
+            entityLiving.removeAllEffects();
         }
         if (entityLiving instanceof ServerPlayer serverplayerentity) {
             CriteriaTriggers.CONSUME_ITEM.trigger(serverplayerentity, stack);

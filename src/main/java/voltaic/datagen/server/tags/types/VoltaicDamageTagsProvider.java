@@ -23,6 +23,7 @@ public class VoltaicDamageTagsProvider extends DamageTypeTagsProvider {
 		tag(DamageTypeTags.WITCH_RESISTANT_TO).add(VoltaicDamageTypes.ELECTRICITY, VoltaicDamageTypes.RADIATION);
 		tag(DamageTypeTags.AVOIDS_GUARDIAN_THORNS).add(VoltaicDamageTypes.ELECTRICITY, VoltaicDamageTypes.RADIATION);
 		tag(DamageTypeTags.ALWAYS_TRIGGERS_SILVERFISH).add(VoltaicDamageTypes.ELECTRICITY, VoltaicDamageTypes.RADIATION);
+		tag(DamageTypeTags.NO_KNOCKBACK).add(VoltaicDamageTypes.RADIATION);
 	}
 
 }

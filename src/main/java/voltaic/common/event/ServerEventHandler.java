@@ -3,10 +3,7 @@ package voltaic.common.event;
 import voltaic.Voltaic;
 import voltaic.api.multiblock.assemblybased.CommandScanMultiblock;
 import voltaic.common.command.CommandWipeRadiationSources;
-import voltaic.common.reloadlistener.RadiationShieldingRegister;
-import voltaic.common.reloadlistener.RadioactiveFluidRegister;
-import voltaic.common.reloadlistener.RadioactiveGasRegister;
-import voltaic.common.reloadlistener.RadioactiveItemRegister;
+import voltaic.common.reloadlistener.*;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
@@ -22,6 +19,7 @@ public class ServerEventHandler {
 		event.addListener(RadioactiveFluidRegister.INSTANCE);
 		event.addListener(RadioactiveGasRegister.INSTANCE);
 		event.addListener(RadiationShieldingRegister.INSTANCE);
+		event.addListener(RadioactiveBlockRegister.INSTANCE);
 	}
 
 	@SubscribeEvent
@@ -30,6 +28,7 @@ public class ServerEventHandler {
 		RadioactiveFluidRegister.INSTANCE.generateTagValues();
 		RadioactiveGasRegister.INSTANCE.generateTagValues();
 		RadiationShieldingRegister.INSTANCE.generateTagValues();
+		RadioactiveBlockRegister.INSTANCE.generateTagValues();
 	}
 
 	@SubscribeEvent

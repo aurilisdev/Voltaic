@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
+import voltaic.registers.VoltaicDataComponentTypes;
 import voltaic.registers.VoltaicSounds;
 import org.joml.Matrix4f;
 
@@ -177,6 +178,10 @@ public class ScreenComponentGasGauge extends ScreenComponentGeneric {
 
 		ItemStack stack = screen.getMenu().getCarried();
 
+		if(stack.isEmpty() || stack.getOrDefault(VoltaicDataComponentTypes.HASCLICKEDONFLUIDGAUGE, false)) {
+			return;
+		}
+
 		GasStack drainedGasSource = tank.getGas().copy();
 
 		IGasHandlerItem handler = stack.getCapability(VoltaicCapabilities.CAPABILITY_GASHANDLER_ITEM);
@@ -196,7 +201,11 @@ public class ScreenComponentGasGauge extends ScreenComponentGeneric {
 
 			stack = handler.getContainer();
 
+			screen.getMenu().setCarried(stack);
+
 			PacketDistributor.sendToServer(new PacketUpdateCarriedItemServer(stack.copy(), ((GenericContainerBlockEntity<?>) screen.getMenu()).getSafeHost().getBlockPos(), Minecraft.getInstance().player.getUUID()));
+
+			stack.set(VoltaicDataComponentTypes.HASCLICKEDONFLUIDGAUGE, true);
 
 			return;
 		}
@@ -213,7 +222,11 @@ public class ScreenComponentGasGauge extends ScreenComponentGeneric {
 
 			stack = handler.getContainer();
 
+			screen.getMenu().setCarried(stack);
+
 			PacketDistributor.sendToServer(new PacketUpdateCarriedItemServer(stack.copy(), ((GenericContainerBlockEntity<?>) screen.getMenu()).getSafeHost().getBlockPos(), Minecraft.getInstance().player.getUUID()));
+
+			stack.set(VoltaicDataComponentTypes.HASCLICKEDONFLUIDGAUGE, true);
 
 			return;
 		}

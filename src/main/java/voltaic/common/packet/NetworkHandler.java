@@ -31,6 +31,8 @@ public class NetworkHandler {
         registry.playToClient(PacketSetClientRadioactiveFluids.TYPE, PacketSetClientRadioactiveFluids.CODEC, PacketSetClientRadioactiveFluids::handle);
         registry.playToClient(PacketSetClientRadioactiveGases.TYPE, PacketSetClientRadioactiveGases.CODEC, PacketSetClientRadioactiveGases::handle);
         registry.playToClient(PacketSetClientRadiationShielding.TYPE, PacketSetClientRadiationShielding.CODEC, PacketSetClientRadiationShielding::handle);
+        registry.playToClient(PacketUpdateCariedItemClient.TYPE, PacketUpdateCariedItemClient.CODEC, PacketUpdateCariedItemClient::handle);
+        registry.playToClient(PacketSetClientRadioactiveBlocks.TYPE, PacketSetClientRadioactiveBlocks.CODEC, PacketSetClientRadioactiveBlocks::handle);
 
         // SERVER
 
