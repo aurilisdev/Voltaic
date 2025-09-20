@@ -24,11 +24,7 @@ public class ComponentForgeEnergy implements IComponent {
             throw new RuntimeException("You must define a ComponentElectrodynamic before defining a ComponentForgeEnergy!");
         }
         electro = holder.getComponent(IComponentType.Electrodynamic);
-        if(Voltaic.isElectroLoaded() == null) {
-            throw new RuntimeException("You are doing something very wrong indeed");
-        }
         electroLoaded = Voltaic.isElectroLoaded();
-
     }
 
     @Override
