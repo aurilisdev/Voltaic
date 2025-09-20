@@ -25,5 +25,4 @@ authors="${mod_authors}" #optional
 description='''${mod_description}'''
 
 [[accessTransformers]]
-
 file="META-INF/accesstransformer.cfg"
