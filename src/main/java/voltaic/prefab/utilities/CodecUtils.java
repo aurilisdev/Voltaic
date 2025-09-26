@@ -18,6 +18,7 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.util.Util;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.math.vector.Vector3f;
 import voltaic.api.codec.StreamCodec;
@@ -28,6 +29,15 @@ import voltaic.api.codec.StreamCodec;
  * @author skip999
  */
 public class CodecUtils {
+	
+	public static final Codec<AxisAlignedBB> AABB_CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            Codec.DOUBLE.fieldOf("xmin").forGetter(instance0 -> instance0.minX),
+            Codec.DOUBLE.fieldOf("ymin").forGetter(instance0 -> instance0.minY),
+            Codec.DOUBLE.fieldOf("zmin").forGetter(instance0 -> instance0.minZ),
+            Codec.DOUBLE.fieldOf("xmax").forGetter(instance0 -> instance0.maxX),
+            Codec.DOUBLE.fieldOf("ymax").forGetter(instance0 -> instance0.maxY),
+            Codec.DOUBLE.fieldOf("zmax").forGetter(instance0 -> instance0.maxZ)
+    ).apply(instance, AxisAlignedBB::new));
 	
 	public static final Codec<Vector3d> VEC3_CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			//
@@ -62,8 +72,8 @@ public class CodecUtils {
 		}
 	}
 
-	public static UUID uuidFromIntArray(int[] p_235886_) {
-		return new UUID((long) p_235886_[0] << 32 | (long) p_235886_[1] & 4294967295L, (long) p_235886_[2] << 32 | (long) p_235886_[3] & 4294967295L);
+	public static UUID uuidFromIntArray(int[] intArray) {
+		return new UUID((long) intArray[0] << 32 | (long) intArray[1] & 4294967295L, (long) intArray[2] << 32 | (long) intArray[3] & 4294967295L);
 	}
 
 	public static int[] uuidToIntArray(UUID pUuid) {

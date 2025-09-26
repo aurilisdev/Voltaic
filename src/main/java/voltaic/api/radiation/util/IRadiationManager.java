@@ -4,9 +4,12 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 import voltaic.api.radiation.SimpleRadiationSource;
+import voltaic.prefab.utilities.BlockEntityUtils;
 
 import java.util.List;
 
@@ -55,9 +58,9 @@ public interface IRadiationManager {
      */
     public void setDisipation(double radiationDisipation, World level);
 
-    public void setLocalizedDisipation(double disipation, BlockPosVolume area, World level);
+    public void setLocalizedDisipation(double disipation, AxisAlignedBB area, World level);
 
-    public void removeLocalizedDisipation(BlockPosVolume area, World level);
+    public void removeLocalizedDisipation(AxisAlignedBB area, World level);
 
     /**
      * Removes a radiation source from this manager
@@ -92,38 +95,46 @@ public interface IRadiationManager {
      */
     public static class FadingRadiationSource {
 
-        public static final FadingRadiationSource NONE = new FadingRadiationSource(0, 0, 0);
+    	public static final FadingRadiationSource NONE = new FadingRadiationSource(0, 0, 0, BlockEntityUtils.OUT_OF_REACH);
 
         public static final Codec<FadingRadiationSource> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 Codec.INT.fieldOf("distance").forGetter(instance0 -> instance0.distance),
                 Codec.DOUBLE.fieldOf("strength").forGetter(instance0 -> instance0.strength),
-                Codec.DOUBLE.fieldOf("amount").forGetter(instance0 -> instance0.radiation)
+                Codec.DOUBLE.fieldOf("amount").forGetter(instance0 -> instance0.radiation),
+                BlockPos.CODEC.optionalFieldOf("position", BlockEntityUtils.OUT_OF_REACH).forGetter(instance0 -> instance0.position)
 
         ).apply(instance, FadingRadiationSource::new));
 
 
         public final int distance;
+        public final BlockPos position;
         public double strength;
         public double radiation;
+        public final AxisAlignedBB boundingBox;
+        public final ChunkPos chunkPos;
 
-        public FadingRadiationSource(int distance, double strength, double radiation) {
+        public FadingRadiationSource(int distance, double strength, double radiation, BlockPos position) {
             this.distance = distance;
             this.strength = strength;
             this.radiation = radiation;
+            this.position = position;
+            boundingBox = new AxisAlignedBB(this.position).inflate(distance);
+            chunkPos = new ChunkPos(position);
         }
 
     }
 
     public static class TemporaryRadiationSource {
 
-        public static final TemporaryRadiationSource NONE = new TemporaryRadiationSource(0, 0, 0, false, 0);
+    	public static final TemporaryRadiationSource NONE = new TemporaryRadiationSource(0, 0, 0, false, 0, BlockEntityUtils.OUT_OF_REACH);
 
         public static final Codec<TemporaryRadiationSource> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 Codec.INT.fieldOf("ticks").forGetter(instance0 -> instance0.ticks),
                 Codec.DOUBLE.fieldOf("strength").forGetter(instance0 -> instance0.strength),
                 Codec.DOUBLE.fieldOf("amount").forGetter(instance0 -> instance0.radiation),
                 Codec.BOOL.fieldOf("leavefading").forGetter(instance0 -> instance0.leaveFading),
-                Codec.INT.fieldOf("distance").forGetter(instance0 -> instance0.distance)
+                Codec.INT.fieldOf("distance").forGetter(instance0 -> instance0.distance),
+                BlockPos.CODEC.optionalFieldOf("position", BlockEntityUtils.OUT_OF_REACH).forGetter(instance0 -> instance0.position)
 
         ).apply(instance, TemporaryRadiationSource::new));
 
@@ -132,13 +143,19 @@ public interface IRadiationManager {
         public final double radiation;
         public final boolean leaveFading;
         public final int distance;
+        public final BlockPos position;
+        public final AxisAlignedBB boundingBox;
+        public final ChunkPos chunkPos;
 
-        public TemporaryRadiationSource(int ticks, double strength, double radiation, boolean leaveFading, int distance) {
+        public TemporaryRadiationSource(int ticks, double strength, double radiation, boolean leaveFading, int distance, BlockPos position) {
             this.ticks = ticks;
             this.strength = strength;
             this.radiation = radiation;
             this.leaveFading = leaveFading;
             this.distance = distance;
+            this.position = position;
+            boundingBox = new AxisAlignedBB(this.position).inflate(distance);
+            chunkPos = new ChunkPos(position);
         }
 
 

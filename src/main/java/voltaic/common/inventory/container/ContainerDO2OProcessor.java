@@ -21,7 +21,7 @@ public class ContainerDO2OProcessor extends GenericContainerBlockEntity<GenericT
 	public static final int startXOffset = 36;
 
 	public ContainerDO2OProcessor(int id, PlayerInventory playerinv) {
-		this(id, playerinv, new Inventory(7), new IntArray(3));
+		this(id, playerinv, new Inventory(7), new IntArray(5));
 	}
 
 	public ContainerDO2OProcessor(int id, PlayerInventory playerinv, IInventory inventory, IIntArray inventorydata) {
