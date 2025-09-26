@@ -5,18 +5,21 @@ import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 import net.minecraftforge.items.IItemHandler;
 import voltaic.api.radiation.SimpleRadiationSource;
-import voltaic.api.radiation.util.BlockPosVolume;
 import voltaic.api.radiation.util.IRadiationManager;
 import voltaic.api.radiation.util.IRadiationRecipient;
 import voltaic.api.radiation.util.RadioactiveObject;
@@ -24,6 +27,15 @@ import voltaic.prefab.utilities.object.TransferPack;
 import voltaic.api.electricity.ICapabilityElectrodynamic;
 
 public class CapabilityUtils {
+	
+	public static final Codec<AABB> AABB_CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            Codec.DOUBLE.fieldOf("xmin").forGetter(instance0 -> instance0.minX),
+            Codec.DOUBLE.fieldOf("ymin").forGetter(instance0 -> instance0.minY),
+            Codec.DOUBLE.fieldOf("zmin").forGetter(instance0 -> instance0.minZ),
+            Codec.DOUBLE.fieldOf("xmax").forGetter(instance0 -> instance0.maxX),
+            Codec.DOUBLE.fieldOf("ymax").forGetter(instance0 -> instance0.maxY),
+            Codec.DOUBLE.fieldOf("zmax").forGetter(instance0 -> instance0.maxZ)
+    ).apply(instance, AABB::new));
 
 	public static final IFluidHandler EMPTY_FLUID = new IFluidHandler() {
 
@@ -321,12 +333,12 @@ public class CapabilityUtils {
 		}
 
 		@Override
-		public void setLocalizedDisipation(double disipation, BlockPosVolume area, Level level) {
+		public void setLocalizedDisipation(double disipation, AABB area, Level level) {
 
 		}
 
 		@Override
-		public void removeLocalizedDisipation(BlockPosVolume area, Level level) {
+		public void removeLocalizedDisipation(AABB area, Level level) {
 
 		}
 

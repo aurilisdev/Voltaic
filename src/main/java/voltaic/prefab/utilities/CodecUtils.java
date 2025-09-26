@@ -15,6 +15,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.Util;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import voltaic.api.codec.StreamCodec;
 
@@ -24,6 +25,15 @@ import voltaic.api.codec.StreamCodec;
  * @author skip999
  */
 public class CodecUtils {
+	
+	public static final Codec<AABB> AABB_CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            Codec.DOUBLE.fieldOf("xmin").forGetter(instance0 -> instance0.minX),
+            Codec.DOUBLE.fieldOf("ymin").forGetter(instance0 -> instance0.minY),
+            Codec.DOUBLE.fieldOf("zmin").forGetter(instance0 -> instance0.minZ),
+            Codec.DOUBLE.fieldOf("xmax").forGetter(instance0 -> instance0.maxX),
+            Codec.DOUBLE.fieldOf("ymax").forGetter(instance0 -> instance0.maxY),
+            Codec.DOUBLE.fieldOf("zmax").forGetter(instance0 -> instance0.maxZ)
+    ).apply(instance, AABB::new));
 	
 	public static final Codec<Vec3> VEC3_CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			//
@@ -35,14 +45,14 @@ public class CodecUtils {
 			//
 			.apply(instance, Vec3::new));
 
-	public static final Codec<UUID> UUID_CODEC = Codec.INT_STREAM.comapFlatMap((p_235884_) -> {
-		return Util.fixedSize(p_235884_, 4).map(CodecUtils::uuidFromIntArray);
-	}, (p_235888_) -> {
-		return Arrays.stream(uuidToIntArray(p_235888_));
+	public static final Codec<UUID> UUID_CODEC = Codec.INT_STREAM.comapFlatMap((intStream) -> {
+		return Util.fixedSize(intStream, 4).map(CodecUtils::uuidFromIntArray);
+	}, (intArray) -> {
+		return Arrays.stream(uuidToIntArray(intArray));
 	});
 
-	public static UUID uuidFromIntArray(int[] p_235886_) {
-		return new UUID((long) p_235886_[0] << 32 | (long) p_235886_[1] & 4294967295L, (long) p_235886_[2] << 32 | (long) p_235886_[3] & 4294967295L);
+	public static UUID uuidFromIntArray(int[] intArray) {
+		return new UUID((long) intArray[0] << 32 | (long) intArray[1] & 4294967295L, (long) intArray[2] << 32 | (long) intArray[3] & 4294967295L);
 	}
 
 	public static int[] uuidToIntArray(UUID pUuid) {
