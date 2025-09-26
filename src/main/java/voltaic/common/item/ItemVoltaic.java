@@ -15,6 +15,7 @@ import voltaic.api.radiation.SimpleRadiationSource;
 import voltaic.api.radiation.util.IRadiationRecipient;
 import voltaic.api.radiation.util.RadioactiveObject;
 import voltaic.common.reloadlistener.RadioactiveItemRegister;
+import voltaic.common.settings.VoltaicConstants;
 import voltaic.prefab.utilities.CapabilityUtils;
 import voltaic.registers.VoltaicCapabilities;
 
@@ -41,7 +42,15 @@ public class ItemVoltaic extends Item {
 	
 	@Override
     public boolean onEntityItemUpdate(ItemStack stack, ItemEntity entity) {
+		
+		super.onEntityItemUpdate(stack, entity);
+		
         Level world = entity.level;
+        
+        if(world.isClientSide || !VoltaicConstants.RADIATION_SYSTEM_ENABLED) {
+        	return super.onEntityItemUpdate(stack, entity);
+        }
+        
         RadioactiveObject rad = RadioactiveItemRegister.getValue(stack.getItem());
         double amount = stack.getCount() * rad.amount();
         int range = (int) (Math.sqrt(amount) / (5 * Math.sqrt(2)) * 1.25);
@@ -52,6 +61,11 @@ public class ItemVoltaic extends Item {
     @Override
     public void inventoryTick(ItemStack stack, Level world, Entity entity, int itemSlot, boolean isSelected) {
         super.inventoryTick(stack, world, entity, itemSlot, isSelected);
+        
+        if(world.isClientSide || !VoltaicConstants.RADIATION_SYSTEM_ENABLED) {
+        	return;
+        }
+        
         RadioactiveObject rad = RadioactiveItemRegister.getValue(stack.getItem());
 
         if (entity instanceof LivingEntity living && !world.isClientSide) {
