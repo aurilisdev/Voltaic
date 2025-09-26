@@ -74,6 +74,7 @@ public class VoltaicLangKeyProvider extends BaseLangKeyProvider {
                 addTooltip("gaspressure", "Pressure: %s");
                 addTooltip("maxpressure", "Max Pressure: %s");
                 addTooltip("maxtemperature", "Max Temp: %s");
+                addTooltip("currbattery", "Battery: %s");
 
                 addTooltip("tankmaxin", "In %1$s : %2$s");
                 addTooltip("tankmaxout", "Out %1$s : %2$s");

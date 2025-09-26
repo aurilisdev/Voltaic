@@ -27,7 +27,15 @@ public abstract class GenericContainerBlockEntity<T extends BlockEntity> extends
 
 	@Nullable
 	public T getUnsafeHost() {
-		return (T) getLevel().getBlockEntity(new BlockPos(getData().get(0), getData().get(1), getData().get(2)));
+		
+		ContainerData data = getData();
+		
+		int x = data.get(0) * 30000 + data.get(1);
+		int y = data.get(2); //realistically y will only be between -64 (0 if 1.16.5) and 300
+		int z = data.get(3) * 30000 + data.get(4);
+		
+		
+		return (T) getLevel().getBlockEntity(new BlockPos(x, y ,z));
 	}
 
 	@Override

@@ -12,16 +12,25 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 public class TickableSoundTile<T extends BlockEntity & ITickableSound> extends AbstractTickableSoundInstance {
 
     // Yes it's weird, but I couldn't think of a better way
-    private static final double MAXIMUM_DISTANCE = 10;
+    public static final double MAXIMUM_DISTANCE = 10;
 
     protected final T tile;
-    private final float initialVolume;
-
-    public TickableSoundTile(SoundEvent event, T tile, boolean repeat) {
-        this(event, SoundSource.BLOCKS, tile, 0.5F, 1.0F, repeat);
+    protected final float initialVolume;
+    protected final double range;
+    
+    public TickableSoundTile(SoundEvent event, T tile, double range, boolean repeat) {
+        this(event, SoundSource.BLOCKS, tile, 0.5F, 1.0F, range, repeat);
     }
 
+    public TickableSoundTile(SoundEvent event, T tile, boolean repeat) {
+    	this(event, SoundSource.BLOCKS, tile, 0.5F, 1.0F, MAXIMUM_DISTANCE, repeat);
+    }
+    
     public TickableSoundTile(SoundEvent event, SoundSource source, T tile, float volume, float pitch, boolean repeat) {
+        this(event, source, tile, volume, pitch, MAXIMUM_DISTANCE, repeat);
+    }
+
+    public TickableSoundTile(SoundEvent event, SoundSource source, T tile, float volume, float pitch, double range, boolean repeat) {
         super(event, source, SoundInstance.createUnseededRandom());
         this.tile = tile;
         this.volume = volume;
@@ -31,18 +40,21 @@ public class TickableSoundTile<T extends BlockEntity & ITickableSound> extends A
         z = tile.getBlockPos().getZ();
         looping = repeat;
         initialVolume = volume;
+        this.range = range;
     }
 
     @Override
     public void tick() {
-        if (!tile.shouldPlaySound() || tile.isRemoved()) {
+    	if (!tile.shouldPlaySound() || tile.isRemoved()) {
             stop();
         }
         Player player = Minecraft.getInstance().player;
         double distance = WorldUtils.distanceBetweenPositions(player.blockPosition(), tile.getBlockPos());
-        if (distance > 0 && distance <= MAXIMUM_DISTANCE) {
+        if(distance <= 1) {
+            volume = initialVolume;
+        } else if (distance > 1 && distance <= range) {
             volume = (float) (initialVolume / distance);
-        } else if (distance > MAXIMUM_DISTANCE) {
+        } else if (distance > range) {
             volume = 0;
         } else {
             volume = initialVolume;
