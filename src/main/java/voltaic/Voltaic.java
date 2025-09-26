@@ -4,6 +4,7 @@ import java.util.Random;
 import java.util.function.Consumer;
 
 import voltaic.common.reloadlistener.RadiationShieldingRegister;
+import voltaic.common.reloadlistener.RadioactiveBlockRegister;
 import voltaic.common.reloadlistener.RadioactiveFluidRegister;
 import voltaic.common.reloadlistener.RadioactiveItemRegister;
 import org.apache.logging.log4j.LogManager;
@@ -76,6 +77,7 @@ public class Voltaic {
         RadioactiveItemRegister.INSTANCE = new RadioactiveItemRegister().subscribeAsSyncable(NetworkHandler.CHANNEL);
         RadioactiveFluidRegister.INSTANCE = new RadioactiveFluidRegister().subscribeAsSyncable(NetworkHandler.CHANNEL);
         RadiationShieldingRegister.INSTANCE = new RadiationShieldingRegister().subscribeAsSyncable(NetworkHandler.CHANNEL);
+        RadioactiveBlockRegister.INSTANCE = new RadioactiveBlockRegister().subscribeAsSyncable(NetworkHandler.CHANNEL);
         // CraftingHelper.register(ConfigCondition.Serializer.INSTANCE); // Probably wrong location after update from 1.18.2 to
         // 1.19.2
 

@@ -14,6 +14,7 @@ import voltaic.api.radiation.CapabilityRadiationRecipient;
 import voltaic.api.radiation.RadiationManager;
 import voltaic.common.command.CommandWipeRadiationSources;
 import voltaic.common.reloadlistener.RadiationShieldingRegister;
+import voltaic.common.reloadlistener.RadioactiveBlockRegister;
 import voltaic.common.reloadlistener.RadioactiveFluidRegister;
 import voltaic.common.reloadlistener.RadioactiveItemRegister;
 import voltaic.prefab.utilities.CapabilityUtils;
@@ -27,6 +28,7 @@ public class ServerEventHandler {
 		event.addListener(RadioactiveItemRegister.INSTANCE);
 		event.addListener(RadioactiveFluidRegister.INSTANCE);
 		event.addListener(RadiationShieldingRegister.INSTANCE);
+		event.addListener(RadioactiveBlockRegister.INSTANCE);
 	}
 
 	@SubscribeEvent
@@ -34,6 +36,7 @@ public class ServerEventHandler {
 		RadioactiveItemRegister.INSTANCE.generateTagValues();
 		RadioactiveFluidRegister.INSTANCE.generateTagValues();
 		RadiationShieldingRegister.INSTANCE.generateTagValues();
+		RadioactiveBlockRegister.INSTANCE.generateTagValues();
 	}
 
 	@SubscribeEvent
