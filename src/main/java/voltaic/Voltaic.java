@@ -37,7 +37,7 @@ import voltaic.registers.UnifiedVoltaicRegister;
 
 @Mod(Voltaic.ID)
 @EventBusSubscriber(modid = Voltaic.ID, bus = EventBusSubscriber.Bus.MOD)
-public class Voltaic {
+public final class Voltaic {
 
     public static Logger LOGGER = LogManager.getLogger(Voltaic.ID);
 
@@ -46,26 +46,27 @@ public class Voltaic {
     public static final String ID = "voltaic";
     public static final String NAME = "Voltaic";
 
-    public static final String MEKANISM_ID = "mekanism";
+    //public static final String MEKANISM_ID = "mekanism";
 
     private static final String ELECTRODYNAMICS_MOD_ID = "electrodynamics";
 
-
-    @Nullable
-    private static Boolean ELECTRODYNAMICS_LOADED = null;
-
-    public Voltaic(IEventBus bus) {
-        ELECTRODYNAMICS_LOADED = ModList.get().isLoaded(ELECTRODYNAMICS_MOD_ID);
-        ConfigurationHandler.registerConfig(VoltaicConstants.class);
+    public Voltaic(IEventBus bus, ModContainer container) {
+        var config = new VoltaicConfig();
+        ConfigurationHandler.load(VoltaicConstants.class);
         // MUST GO BEFORE BLOCKS!!!!
         VoltaicBlockStates.init();
         UnifiedVoltaicRegister.register(bus);
 
+        bus.addListener((FMLLoadCompleteEvent event) -> {
+            ConfigurationHandler.fillFromLegacyConfig(config);
+        });
+
+        container.registerConfig(ModConfig.Type.COMMON, config.SPEC);
+        container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
     }
 
     @SubscribeEvent
     public static void onCommonSetup(FMLCommonSetupEvent event) {
-
         NeoForge.EVENT_BUS.addListener(getGuidebookListener());
         VoltaicTags.init();
         RadioactiveItemRegister.INSTANCE = new RadioactiveItemRegister().subscribeAsSyncable();
@@ -86,14 +87,11 @@ public class Voltaic {
     @SubscribeEvent
     @OnlyIn(Dist.CLIENT)
     public static void onClientSetup(FMLClientSetupEvent event) {
-        event.enqueueWork(() -> {
-            VoltaicClientRegister.setup();
-        });
+        event.enqueueWork(VoltaicClientRegister::setup);
     }
 
     // Don't really have a better place to put this for now
     private static Consumer<OnDatapackSyncEvent> getGuidebookListener() {
-
         return event -> {
             ServerPlayer player = event.getPlayer();
             if (player == null) {
@@ -102,30 +100,25 @@ public class Voltaic {
                 PacketDistributor.sendToPlayer(player, PacketResetGuidebookPages.PACKET);
             }
         };
-
     }
 
-    public static final ResourceLocation rl(String path) {
+    public static ResourceLocation rl(String path) {
         return ResourceLocation.fromNamespaceAndPath(ID, path);
     }
 
-    public static final ResourceLocation vanillarl(String path) {
+    public static ResourceLocation vanillarl(String path) {
         return ResourceLocation.withDefaultNamespace(path);
     }
 
-    public static final ResourceLocation forgerl(String path) {
+    public static ResourceLocation forgerl(String path) {
         return ResourceLocation.fromNamespaceAndPath("neoforge", path);
     }
 
-    public static final ResourceLocation commonrl(String path) {
+    public static ResourceLocation commonrl(String path) {
         return ResourceLocation.fromNamespaceAndPath("c", path);
     }
 
-    // This returns null to help us catch inappropriate references of this parameter
-    // This will only be accurate after FMLCommonSetupEvent has fired, meaning if you
-    // call this before that, you will have an inaccurate result.
-    public static final Boolean isElectroLoaded() {
-        return ELECTRODYNAMICS_LOADED;
+    public static boolean isElectroLoaded() {
+        return ModList.get().isLoaded(ELECTRODYNAMICS_MOD_ID);
     }
-
 }
