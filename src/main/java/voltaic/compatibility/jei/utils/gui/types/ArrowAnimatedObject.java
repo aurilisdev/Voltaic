@@ -1,9 +1,9 @@
 package voltaic.compatibility.jei.utils.gui.types;
 
+import mezz.jei.api.gui.drawable.IDrawableAnimated.StartDirection;
 import voltaic.api.screen.ITexture;
 import voltaic.compatibility.jei.utils.gui.ScreenObject;
 import voltaic.prefab.screen.component.types.ScreenComponentProgress.ProgressBars;
-import mezz.jei.api.gui.drawable.IDrawableAnimated.StartDirection;
 
 public class ArrowAnimatedObject extends ScreenObject {
 

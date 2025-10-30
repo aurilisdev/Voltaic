@@ -4,10 +4,6 @@ import java.util.List;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 
-import voltaic.Voltaic;
-import voltaic.api.screen.ITexture;
-import voltaic.prefab.screen.component.ScreenComponentGeneric;
-import voltaic.prefab.utilities.RenderingUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -16,6 +12,10 @@ import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import voltaic.Voltaic;
+import voltaic.api.screen.ITexture;
+import voltaic.prefab.screen.component.ScreenComponentGeneric;
+import voltaic.prefab.utilities.RenderingUtils;
 
 @OnlyIn(Dist.CLIENT)
 public abstract class AbstractScreenComponentGauge extends ScreenComponentGeneric {

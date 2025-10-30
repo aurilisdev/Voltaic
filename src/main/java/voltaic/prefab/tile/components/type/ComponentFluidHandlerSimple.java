@@ -7,13 +7,6 @@ import javax.annotation.Nullable;
 
 import org.jetbrains.annotations.NotNull;
 
-import voltaic.api.fluid.PropertyFluidTank;
-import voltaic.common.block.states.VoltaicBlockStates;
-import voltaic.prefab.tile.GenericTile;
-import voltaic.prefab.tile.components.CapabilityInputType;
-import voltaic.prefab.tile.components.IComponentType;
-import voltaic.prefab.tile.components.utils.IComponentFluidHandler;
-import voltaic.prefab.utilities.BlockEntityUtils;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.tags.TagKey;
@@ -21,6 +14,13 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import voltaic.api.fluid.PropertyFluidTank;
+import voltaic.common.block.states.VoltaicBlockStates;
+import voltaic.prefab.tile.GenericTile;
+import voltaic.prefab.tile.components.CapabilityInputType;
+import voltaic.prefab.tile.components.IComponentType;
+import voltaic.prefab.tile.components.utils.IComponentFluidHandler;
+import voltaic.prefab.utilities.BlockEntityUtils;
 
 /**
  * Extension of PropertyFluidTank implementing directional I/O and the Component system

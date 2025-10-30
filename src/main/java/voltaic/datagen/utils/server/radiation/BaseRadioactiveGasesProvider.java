@@ -1,19 +1,20 @@
 package voltaic.datagen.utils.server.radiation;
 
+import java.nio.file.Path;
+import java.util.concurrent.CompletableFuture;
+
 import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
+
+import net.minecraft.data.CachedOutput;
+import net.minecraft.data.DataProvider;
+import net.minecraft.data.PackOutput;
+import net.minecraft.tags.TagKey;
 import voltaic.Voltaic;
 import voltaic.api.gas.Gas;
 import voltaic.api.radiation.util.RadioactiveObject;
 import voltaic.common.reloadlistener.RadioactiveGasRegister;
 import voltaic.registers.VoltaicGases;
-import net.minecraft.data.CachedOutput;
-import net.minecraft.data.DataProvider;
-import net.minecraft.data.PackOutput;
-import net.minecraft.tags.TagKey;
-
-import java.nio.file.Path;
-import java.util.concurrent.CompletableFuture;
 
 public abstract class BaseRadioactiveGasesProvider implements DataProvider {
 

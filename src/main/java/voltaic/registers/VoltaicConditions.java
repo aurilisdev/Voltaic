@@ -2,12 +2,12 @@ package voltaic.registers;
 
 import com.mojang.serialization.MapCodec;
 
-import voltaic.Voltaic;
-import voltaic.common.condition.ConfigCondition;
 import net.neoforged.neoforge.common.conditions.ICondition;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
+import voltaic.Voltaic;
+import voltaic.common.condition.ConfigCondition;
 
 public class VoltaicConditions {
 

@@ -1,7 +1,5 @@
 package voltaic.registers;
 
-import voltaic.Voltaic;
-import voltaic.common.inventory.container.*;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -9,6 +7,12 @@ import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.MenuType.MenuSupplier;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import voltaic.Voltaic;
+import voltaic.common.inventory.container.ContainerDO2OProcessor;
+import voltaic.common.inventory.container.ContainerGuidebook;
+import voltaic.common.inventory.container.ContainerO2OProcessor;
+import voltaic.common.inventory.container.ContainerO2OProcessorDouble;
+import voltaic.common.inventory.container.ContainerO2OProcessorTriple;
 
 public class VoltaicMenuTypes {
 	public static final DeferredRegister<MenuType<?>> MENU_TYPES = DeferredRegister.create(Registries.MENU, Voltaic.ID);

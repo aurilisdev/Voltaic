@@ -1,12 +1,12 @@
 package voltaic.datagen.client;
 
+import net.minecraft.data.PackOutput;
 import net.minecraft.world.item.ItemDisplayContext;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import voltaic.Voltaic;
 import voltaic.common.item.subtype.SubtypeItemUpgrade;
 import voltaic.datagen.utils.client.BaseItemModelsProvider;
 import voltaic.registers.VoltaicItems;
-import net.minecraft.data.PackOutput;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 public class VoltaicItemModelsProvider extends BaseItemModelsProvider {
 

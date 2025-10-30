@@ -2,14 +2,14 @@ package voltaic.client.guidebook.utils.pagedata.graphics;
 
 import javax.annotation.Nullable;
 
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.network.chat.Component;
 import voltaic.client.guidebook.ScreenGuidebook;
 import voltaic.client.guidebook.utils.components.Page;
 import voltaic.client.guidebook.utils.pagedata.AbstractWrapperObject;
 import voltaic.client.guidebook.utils.pagedata.OnClick;
 import voltaic.client.guidebook.utils.pagedata.OnKeyPress;
 import voltaic.client.guidebook.utils.pagedata.OnTooltip;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.network.chat.Component;
 
 /**
  * A specialized version of AbstractWrapperObject for drawing images amongst other graphics to the guidebook screen. The image can also have text associated with it.

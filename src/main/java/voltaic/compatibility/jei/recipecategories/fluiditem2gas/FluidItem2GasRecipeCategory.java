@@ -5,16 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
-import voltaic.api.gas.IGasHandlerItem;
-import voltaic.api.gas.GasAction;
-import voltaic.api.gas.GasStack;
-import voltaic.common.recipe.categories.fluiditem2gas.FluidItem2GasRecipe;
-import voltaic.common.recipe.recipeutils.CountableIngredient;
-import voltaic.common.recipe.recipeutils.FluidIngredient;
-import voltaic.common.recipe.recipeutils.ProbableFluid;
-import voltaic.compatibility.jei.recipecategories.AbstractRecipeCategory;
-import voltaic.compatibility.jei.utils.gui.types.BackgroundObject;
-import voltaic.registers.VoltaicCapabilities;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.RecipeType;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -24,6 +14,16 @@ import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
 import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
+import voltaic.api.gas.GasAction;
+import voltaic.api.gas.GasStack;
+import voltaic.api.gas.IGasHandlerItem;
+import voltaic.common.recipe.categories.fluiditem2gas.FluidItem2GasRecipe;
+import voltaic.common.recipe.recipeutils.CountableIngredient;
+import voltaic.common.recipe.recipeutils.FluidIngredient;
+import voltaic.common.recipe.recipeutils.ProbableFluid;
+import voltaic.compatibility.jei.recipecategories.AbstractRecipeCategory;
+import voltaic.compatibility.jei.utils.gui.types.BackgroundObject;
+import voltaic.registers.VoltaicCapabilities;
 
 public class FluidItem2GasRecipeCategory<T extends FluidItem2GasRecipe> extends AbstractRecipeCategory<T> {
 

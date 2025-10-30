@@ -1,9 +1,9 @@
 package voltaic.prefab.screen.component.button.type;
 
-import voltaic.Voltaic;
-import voltaic.api.screen.ITexture;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
+import voltaic.Voltaic;
+import voltaic.api.screen.ITexture;
 
 public class ButtonModuleSelector extends ButtonSpecificPage {
 

@@ -2,13 +2,13 @@ package voltaic.datagen.server.tags.types;
 
 import java.util.concurrent.CompletableFuture;
 
-import voltaic.Voltaic;
-import voltaic.registers.VoltaicDamageTypes;
 import net.minecraft.core.HolderLookup.Provider;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.DamageTypeTagsProvider;
 import net.minecraft.tags.DamageTypeTags;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import voltaic.Voltaic;
+import voltaic.registers.VoltaicDamageTypes;
 
 public class VoltaicDamageTagsProvider extends DamageTypeTagsProvider {
 

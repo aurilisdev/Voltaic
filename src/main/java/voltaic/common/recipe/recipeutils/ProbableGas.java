@@ -6,11 +6,11 @@ import java.util.List;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import voltaic.Voltaic;
 import voltaic.api.gas.GasStack;
 import voltaic.registers.VoltaicGases;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.StreamCodec;
 
 public class ProbableGas {
 

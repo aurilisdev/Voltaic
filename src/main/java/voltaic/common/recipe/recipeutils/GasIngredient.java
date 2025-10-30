@@ -13,10 +13,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import voltaic.api.gas.Gas;
-import voltaic.api.gas.GasStack;
-import voltaic.registers.VoltaicIngredients;
-import voltaic.registers.VoltaicGases;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.tags.TagKey;
@@ -24,6 +20,10 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.common.crafting.ICustomIngredient;
 import net.neoforged.neoforge.common.crafting.IngredientType;
 import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
+import voltaic.api.gas.Gas;
+import voltaic.api.gas.GasStack;
+import voltaic.registers.VoltaicGases;
+import voltaic.registers.VoltaicIngredients;
 
 /**
  * An extension of the Ingredient class for Gases

@@ -1,9 +1,9 @@
 package voltaic.compatibility.jei.utils.gui.types;
 
+import mezz.jei.api.recipe.RecipeIngredientRole;
 import voltaic.api.screen.ITexture;
 import voltaic.api.screen.component.ISlotTexture;
 import voltaic.compatibility.jei.utils.gui.ScreenObject;
-import mezz.jei.api.recipe.RecipeIngredientRole;
 
 public class ItemSlotObject extends ScreenObject {
 

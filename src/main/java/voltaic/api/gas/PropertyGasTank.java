@@ -3,13 +3,13 @@ package voltaic.api.gas;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 
-import voltaic.prefab.properties.variant.SingleProperty;
-import voltaic.prefab.properties.types.PropertyTypes;
-import voltaic.prefab.tile.GenericTile;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.Level.ExplosionInteraction;
 import net.minecraft.world.level.block.Blocks;
+import voltaic.prefab.properties.types.PropertyTypes;
+import voltaic.prefab.properties.variant.SingleProperty;
+import voltaic.prefab.tile.GenericTile;
 
 /**
  * An extension of the GasTank class incorporating the Electrodynamics property system

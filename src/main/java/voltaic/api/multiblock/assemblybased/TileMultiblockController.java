@@ -5,18 +5,6 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
-import voltaic.api.electricity.ICapabilityElectrodynamic;
-import voltaic.api.gas.IGasHandler;
-import voltaic.api.gas.GasTank;
-import voltaic.common.block.states.VoltaicBlockStates;
-import voltaic.prefab.properties.variant.ListProperty;
-import voltaic.prefab.properties.variant.SingleProperty;
-import voltaic.prefab.properties.types.PropertyTypes;
-import voltaic.prefab.tile.components.type.ComponentElectrodynamic;
-import voltaic.prefab.tile.components.type.ComponentInventory;
-import voltaic.prefab.tile.components.type.ComponentPacketHandler;
-import voltaic.prefab.tile.components.type.ComponentTickable;
-import voltaic.prefab.utilities.Scheduler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceKey;
@@ -37,6 +25,18 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
 import net.neoforged.neoforge.items.IItemHandler;
+import voltaic.api.electricity.ICapabilityElectrodynamic;
+import voltaic.api.gas.GasTank;
+import voltaic.api.gas.IGasHandler;
+import voltaic.common.block.states.VoltaicBlockStates;
+import voltaic.prefab.properties.types.PropertyTypes;
+import voltaic.prefab.properties.variant.ListProperty;
+import voltaic.prefab.properties.variant.SingleProperty;
+import voltaic.prefab.tile.components.type.ComponentElectrodynamic;
+import voltaic.prefab.tile.components.type.ComponentInventory;
+import voltaic.prefab.tile.components.type.ComponentPacketHandler;
+import voltaic.prefab.tile.components.type.ComponentTickable;
+import voltaic.prefab.utilities.Scheduler;
 
 /**
  * @author skip999

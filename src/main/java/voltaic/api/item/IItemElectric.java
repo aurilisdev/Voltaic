@@ -6,11 +6,6 @@ import java.util.Objects;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import voltaic.prefab.item.ElectricItemProperties;
-import voltaic.prefab.utilities.VoltaicTextUtils;
-import voltaic.prefab.utilities.object.TransferPack;
-import voltaic.registers.VoltaicDataComponentTypes;
-import voltaic.registers.VoltaicSounds;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -25,6 +20,11 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import voltaic.prefab.item.ElectricItemProperties;
+import voltaic.prefab.utilities.VoltaicTextUtils;
+import voltaic.prefab.utilities.object.TransferPack;
+import voltaic.registers.VoltaicDataComponentTypes;
+import voltaic.registers.VoltaicSounds;
 
 public interface IItemElectric {
 

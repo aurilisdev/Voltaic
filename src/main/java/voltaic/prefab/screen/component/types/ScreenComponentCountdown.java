@@ -4,16 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.DoubleSupplier;
 
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FormattedCharSequence;
 import voltaic.Voltaic;
 import voltaic.api.electricity.formatting.ChatFormatter;
 import voltaic.api.electricity.formatting.DisplayUnits;
 import voltaic.api.screen.ITexture;
 import voltaic.api.screen.component.TextPropertySupplier;
 import voltaic.prefab.screen.component.utils.AbstractScreenComponentInfo;
-import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.FormattedCharSequence;
 
 public class ScreenComponentCountdown extends AbstractScreenComponentInfo {
 

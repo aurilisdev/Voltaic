@@ -2,15 +2,6 @@ package voltaic.api.multiblock.subnodebased;
 
 import org.jetbrains.annotations.Nullable;
 
-import voltaic.api.electricity.ICapabilityElectrodynamic;
-import voltaic.api.gas.IGasHandler;
-import voltaic.api.multiblock.subnodebased.parent.IMultiblockParentTile;
-import voltaic.prefab.properties.variant.SingleProperty;
-import voltaic.prefab.properties.types.PropertyTypes;
-import voltaic.prefab.tile.GenericTile;
-import voltaic.prefab.tile.components.type.ComponentPacketHandler;
-import voltaic.prefab.utilities.BlockEntityUtils;
-import voltaic.registers.VoltaicTiles;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
@@ -24,6 +15,15 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.items.IItemHandler;
+import voltaic.api.electricity.ICapabilityElectrodynamic;
+import voltaic.api.gas.IGasHandler;
+import voltaic.api.multiblock.subnodebased.parent.IMultiblockParentTile;
+import voltaic.prefab.properties.types.PropertyTypes;
+import voltaic.prefab.properties.variant.SingleProperty;
+import voltaic.prefab.tile.GenericTile;
+import voltaic.prefab.tile.components.type.ComponentPacketHandler;
+import voltaic.prefab.utilities.BlockEntityUtils;
+import voltaic.registers.VoltaicTiles;
 
 public class TileMultiSubnode extends GenericTile {
 

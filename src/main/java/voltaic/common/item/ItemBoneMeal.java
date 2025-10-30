@@ -2,11 +2,11 @@ package voltaic.common.item;
 
 import java.util.List;
 
-import voltaic.api.creativetab.CreativeTabSupplier;
 import net.minecraft.core.Holder;
 import net.minecraft.world.item.BoneMealItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
+import voltaic.api.creativetab.CreativeTabSupplier;
 
 public class ItemBoneMeal extends BoneMealItem implements CreativeTabSupplier {
 

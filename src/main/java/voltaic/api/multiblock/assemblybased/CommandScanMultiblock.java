@@ -16,7 +16,6 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.serialization.JsonOps;
 
-import voltaic.Voltaic;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.coordinates.Coordinates;
@@ -28,6 +27,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import voltaic.Voltaic;
 
 /**
  * The two block positions are the bounds represented by the whole number (floor) of the coordinate at a given position.

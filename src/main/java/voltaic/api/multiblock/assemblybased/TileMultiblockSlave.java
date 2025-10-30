@@ -2,20 +2,6 @@ package voltaic.api.multiblock.assemblybased;
 
 import org.jetbrains.annotations.Nullable;
 
-import voltaic.Voltaic;
-import voltaic.api.electricity.ICapabilityElectrodynamic;
-import voltaic.api.gas.IGasHandler;
-import voltaic.api.gas.GasTank;
-import voltaic.client.model.block.modelproperties.ModelPropertySlaveNode;
-import voltaic.prefab.properties.variant.SingleProperty;
-import voltaic.prefab.properties.types.PropertyTypes;
-import voltaic.prefab.tile.components.type.ComponentElectrodynamic;
-import voltaic.prefab.tile.components.type.ComponentInventory;
-import voltaic.prefab.tile.components.type.ComponentPacketHandler;
-import voltaic.prefab.tile.components.type.ComponentTickable;
-import voltaic.prefab.utilities.BlockEntityUtils;
-import voltaic.prefab.utilities.Scheduler;
-import voltaic.registers.VoltaicTiles;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
@@ -34,6 +20,20 @@ import net.neoforged.neoforge.client.model.data.ModelData;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
 import net.neoforged.neoforge.items.IItemHandler;
+import voltaic.Voltaic;
+import voltaic.api.electricity.ICapabilityElectrodynamic;
+import voltaic.api.gas.GasTank;
+import voltaic.api.gas.IGasHandler;
+import voltaic.client.model.block.modelproperties.ModelPropertySlaveNode;
+import voltaic.prefab.properties.types.PropertyTypes;
+import voltaic.prefab.properties.variant.SingleProperty;
+import voltaic.prefab.tile.components.type.ComponentElectrodynamic;
+import voltaic.prefab.tile.components.type.ComponentInventory;
+import voltaic.prefab.tile.components.type.ComponentPacketHandler;
+import voltaic.prefab.tile.components.type.ComponentTickable;
+import voltaic.prefab.utilities.BlockEntityUtils;
+import voltaic.prefab.utilities.Scheduler;
+import voltaic.registers.VoltaicTiles;
 
 /**
  * @author skip999

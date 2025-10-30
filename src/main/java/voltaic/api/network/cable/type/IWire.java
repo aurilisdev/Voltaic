@@ -4,11 +4,11 @@ import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import voltaic.prefab.utilities.math.Color;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import voltaic.prefab.utilities.math.Color;
 
 /**
  * Defines a wire

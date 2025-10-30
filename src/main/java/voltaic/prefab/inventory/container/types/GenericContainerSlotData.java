@@ -1,9 +1,9 @@
 package voltaic.prefab.inventory.container.types;
 
-import voltaic.prefab.inventory.container.GenericContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.inventory.MenuType;
+import voltaic.prefab.inventory.container.GenericContainer;
 
 public abstract class GenericContainerSlotData<CONTAINERTYPE> extends GenericContainer<CONTAINERTYPE> {
 

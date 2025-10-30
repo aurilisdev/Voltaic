@@ -4,9 +4,9 @@ import java.util.function.Predicate;
 
 import javax.annotation.Nonnull;
 
-import voltaic.api.gas.utils.IGasTank;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import voltaic.api.gas.utils.IGasTank;
 
 public class GasTank implements IGasTank, IGasHandler {
 

@@ -1,9 +1,9 @@
 package voltaic.client.guidebook.utils.pagedata.graphics;
 
+import net.minecraft.client.gui.GuiGraphics;
 import voltaic.api.gas.Gas;
 import voltaic.client.VoltaicClientRegister;
 import voltaic.client.guidebook.utils.components.Page;
-import net.minecraft.client.gui.GuiGraphics;
 import voltaic.prefab.utilities.RenderingUtils;
 
 public class GasWrapperObject extends AbstractGraphicWrapper<GasWrapperObject> {

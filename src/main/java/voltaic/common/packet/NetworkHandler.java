@@ -2,16 +2,23 @@ package voltaic.common.packet;
 
 import java.util.HashMap;
 
-import voltaic.Voltaic;
-import voltaic.common.packet.types.client.*;
-import voltaic.common.packet.types.server.PacketSendUpdatePropertiesServer;
-import voltaic.common.packet.types.server.PacketSwapBattery;
-import voltaic.common.packet.types.server.PacketUpdateCarriedItemServer;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
+import voltaic.Voltaic;
+import voltaic.common.packet.types.client.PacketResetGuidebookPages;
+import voltaic.common.packet.types.client.PacketSetClientRadiationShielding;
+import voltaic.common.packet.types.client.PacketSetClientRadioactiveBlocks;
+import voltaic.common.packet.types.client.PacketSetClientRadioactiveFluids;
+import voltaic.common.packet.types.client.PacketSetClientRadioactiveGases;
+import voltaic.common.packet.types.client.PacketSetClientRadioactiveItems;
+import voltaic.common.packet.types.client.PacketSpawnSmokeParticle;
+import voltaic.common.packet.types.client.PacketUpdateCariedItemClient;
+import voltaic.common.packet.types.server.PacketSendUpdatePropertiesServer;
+import voltaic.common.packet.types.server.PacketSwapBattery;
+import voltaic.common.packet.types.server.PacketUpdateCarriedItemServer;
 
 @EventBusSubscriber(modid = Voltaic.ID, bus = EventBusSubscriber.Bus.MOD)
 public class NetworkHandler {

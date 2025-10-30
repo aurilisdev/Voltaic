@@ -1,5 +1,10 @@
 package voltaic.compatibility.jei.recipecategories.fluid2gas;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
+
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.RecipeType;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -18,11 +23,6 @@ import voltaic.common.recipe.recipeutils.ProbableGas;
 import voltaic.compatibility.jei.recipecategories.AbstractRecipeCategory;
 import voltaic.compatibility.jei.utils.gui.types.BackgroundObject;
 import voltaic.registers.VoltaicCapabilities;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
 
 public abstract class Fluid2GasRecipeCategory<T extends Fluid2GasRecipe> extends AbstractRecipeCategory<T> {
 

@@ -1,18 +1,20 @@
 package voltaic.prefab.properties.types;
 
-import com.mojang.serialization.Codec;
-import io.netty.buffer.ByteBuf;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtOps;
-import net.minecraft.network.codec.StreamCodec;
-
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Function;
+
+import javax.annotation.Nonnull;
+
+import com.mojang.serialization.Codec;
+
+import io.netty.buffer.ByteBuf;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.network.codec.StreamCodec;
 
 public class ListPropertyType <TYPE, BUFFERTYPE extends ByteBuf> implements IPropertyType<List<TYPE>, BUFFERTYPE> {
 

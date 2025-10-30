@@ -2,12 +2,12 @@ package voltaic.compatibility.jei.utils.ingredients;
 
 import org.jetbrains.annotations.Nullable;
 
-import voltaic.api.gas.GasStack;
-import voltaic.registers.VoltaicGases;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import net.minecraft.resources.ResourceLocation;
+import voltaic.api.gas.GasStack;
+import voltaic.registers.VoltaicGases;
 
 public class IngredientHelperGasStack implements IIngredientHelper<GasStack> {
 

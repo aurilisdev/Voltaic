@@ -3,11 +3,11 @@ package voltaic.api.misc;
 import java.util.ArrayList;
 import java.util.List;
 
-import voltaic.prefab.utilities.object.Location;
-import voltaic.registers.VoltaicCapabilities;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.neoforged.neoforge.common.util.INBTSerializable;
+import voltaic.prefab.utilities.object.Location;
+import voltaic.registers.VoltaicCapabilities;
 
 public class CapabilityLocationStorage implements ILocationStorage, INBTSerializable<CompoundTag> {
 

@@ -2,12 +2,12 @@ package voltaic.datagen.utils.client.model;
 
 import com.google.gson.JsonObject;
 
-import voltaic.client.model.block.bakerytypes.CableModelLoader;
-import voltaic.common.block.connect.EnumConnectType;
 import net.neoforged.neoforge.client.model.generators.CustomLoaderBuilder;
 import net.neoforged.neoforge.client.model.generators.ModelBuilder;
 import net.neoforged.neoforge.client.model.generators.ModelFile;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import voltaic.client.model.block.bakerytypes.CableModelLoader;
+import voltaic.common.block.connect.EnumConnectType;
 
 public class WireModelBuilder<T extends ModelBuilder<T>> extends CustomLoaderBuilder<T> {
 

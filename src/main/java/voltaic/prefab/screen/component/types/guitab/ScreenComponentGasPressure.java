@@ -3,6 +3,8 @@ package voltaic.prefab.screen.component.types.guitab;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.ChatFormatting;
+import net.minecraft.util.FormattedCharSequence;
 import voltaic.api.electricity.formatting.ChatFormatter;
 import voltaic.api.electricity.formatting.DisplayUnits;
 import voltaic.api.gas.PropertyGasTank;
@@ -15,8 +17,6 @@ import voltaic.prefab.tile.GenericTile;
 import voltaic.prefab.tile.components.IComponentType;
 import voltaic.prefab.tile.components.utils.IComponentGasHandler;
 import voltaic.prefab.utilities.VoltaicTextUtils;
-import net.minecraft.ChatFormatting;
-import net.minecraft.util.FormattedCharSequence;
 
 public class ScreenComponentGasPressure extends ScreenComponentGuiTab {
 

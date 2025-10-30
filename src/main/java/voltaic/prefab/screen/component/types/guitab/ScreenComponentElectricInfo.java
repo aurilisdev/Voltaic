@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
+import net.minecraft.ChatFormatting;
+import net.minecraft.util.FormattedCharSequence;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import voltaic.api.electricity.formatting.ChatFormatter;
 import voltaic.api.electricity.formatting.DisplayUnits;
 import voltaic.api.electricity.generator.IElectricGenerator;
@@ -18,10 +22,6 @@ import voltaic.prefab.tile.components.type.ComponentElectrodynamic;
 import voltaic.prefab.tile.components.type.ComponentProcessor;
 import voltaic.prefab.utilities.VoltaicTextUtils;
 import voltaic.prefab.utilities.object.TransferPack;
-import net.minecraft.ChatFormatting;
-import net.minecraft.util.FormattedCharSequence;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public class ScreenComponentElectricInfo extends ScreenComponentGuiTab {

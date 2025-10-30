@@ -1,16 +1,18 @@
 package voltaic.prefab.properties.types;
 
-import com.mojang.serialization.Codec;
-import io.netty.buffer.ByteBuf;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtOps;
-import net.minecraft.network.codec.StreamCodec;
-
-import javax.annotation.Nonnull;
 import java.util.HashSet;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Function;
+
+import javax.annotation.Nonnull;
+
+import com.mojang.serialization.Codec;
+
+import io.netty.buffer.ByteBuf;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.network.codec.StreamCodec;
 
 public class SetPropertyType<TYPE, BUFFERTYPE extends ByteBuf> implements IPropertyType<HashSet<TYPE>, BUFFERTYPE> {
 

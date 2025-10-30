@@ -1,12 +1,12 @@
 package voltaic.prefab.screen.component.types;
 
+import java.util.function.Consumer;
+
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 import voltaic.Voltaic;
 import voltaic.api.screen.ITexture;
 import voltaic.prefab.screen.component.ScreenComponentGeneric;
-
-import java.util.function.Consumer;
 
 public class ScreenComponentHorizontalSlider extends ScreenComponentGeneric {
     private int sliderXOffset = 0;

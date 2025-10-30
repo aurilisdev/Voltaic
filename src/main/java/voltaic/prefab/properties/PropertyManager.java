@@ -3,12 +3,12 @@ package voltaic.prefab.properties;
 import java.util.ArrayList;
 import java.util.HashSet;
 
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
 import voltaic.Voltaic;
 import voltaic.prefab.properties.types.IPropertyType;
 import voltaic.prefab.properties.variant.AbstractProperty;
 import voltaic.prefab.tile.GenericTile;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
 
 /**
  * A wrapper class designed to manage data properties on a tile

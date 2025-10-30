@@ -1,12 +1,12 @@
 package voltaic.registers;
 
-import voltaic.Voltaic;
-import voltaic.prefab.utilities.VoltaicTextUtils;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import voltaic.Voltaic;
+import voltaic.prefab.utilities.VoltaicTextUtils;
 
 public class VoltaicCreativeTabs {
 

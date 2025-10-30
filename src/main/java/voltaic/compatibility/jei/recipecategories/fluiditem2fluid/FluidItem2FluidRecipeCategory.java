@@ -5,12 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
-import voltaic.common.recipe.categories.fluiditem2fluid.FluidItem2FluidRecipe;
-import voltaic.common.recipe.recipeutils.CountableIngredient;
-import voltaic.common.recipe.recipeutils.FluidIngredient;
-import voltaic.common.recipe.recipeutils.ProbableFluid;
-import voltaic.compatibility.jei.recipecategories.AbstractRecipeCategory;
-import voltaic.compatibility.jei.utils.gui.types.BackgroundObject;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.RecipeType;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -20,6 +14,12 @@ import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
 import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
+import voltaic.common.recipe.categories.fluiditem2fluid.FluidItem2FluidRecipe;
+import voltaic.common.recipe.recipeutils.CountableIngredient;
+import voltaic.common.recipe.recipeutils.FluidIngredient;
+import voltaic.common.recipe.recipeutils.ProbableFluid;
+import voltaic.compatibility.jei.recipecategories.AbstractRecipeCategory;
+import voltaic.compatibility.jei.utils.gui.types.BackgroundObject;
 
 public abstract class FluidItem2FluidRecipeCategory<T extends FluidItem2FluidRecipe> extends AbstractRecipeCategory<T> {
 

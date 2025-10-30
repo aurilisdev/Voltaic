@@ -13,7 +13,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
 
-import voltaic.Voltaic;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.AdvancementRequirements;
@@ -30,6 +29,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
 import net.neoforged.neoforge.common.conditions.ICondition;
 import net.neoforged.neoforge.common.extensions.IAdvancementBuilderExtension;
+import voltaic.Voltaic;
 
 public class AdvancementBuilder implements IAdvancementBuilderExtension {
 

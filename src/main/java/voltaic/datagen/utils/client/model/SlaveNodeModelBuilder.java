@@ -2,11 +2,11 @@ package voltaic.datagen.utils.client.model;
 
 import com.google.gson.JsonObject;
 
-import voltaic.client.model.block.bakerytypes.SlaveNodeModelLoader;
 import net.neoforged.neoforge.client.model.generators.CustomLoaderBuilder;
 import net.neoforged.neoforge.client.model.generators.ModelBuilder;
 import net.neoforged.neoforge.client.model.generators.ModelFile;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import voltaic.client.model.block.bakerytypes.SlaveNodeModelLoader;
 
 public class SlaveNodeModelBuilder <T extends ModelBuilder<T>> extends CustomLoaderBuilder<T> {
 

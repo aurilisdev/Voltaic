@@ -3,11 +3,11 @@ package voltaic.common.recipe.recipeutils;
 import java.util.Collections;
 import java.util.List;
 
-import voltaic.api.gas.GasStack;
-import voltaic.common.recipe.VoltaicRecipe;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
+import voltaic.api.gas.GasStack;
+import voltaic.common.recipe.VoltaicRecipe;
 
 public abstract class AbstractMaterialRecipe extends VoltaicRecipe {
 

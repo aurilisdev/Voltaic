@@ -1,6 +1,5 @@
 package voltaic.common.item;
 
-import voltaic.registers.VoltaicEffects;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.Holder;
 import net.minecraft.server.level.ServerPlayer;
@@ -15,6 +14,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemUtils;
 import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
+import voltaic.registers.VoltaicEffects;
 
 public class ItemIodineTablet extends ItemVoltaic {
 

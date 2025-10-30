@@ -1,8 +1,8 @@
 package voltaic.prefab.screen.component.types;
 
+import net.minecraft.client.gui.GuiGraphics;
 import voltaic.prefab.screen.component.ScreenComponentGeneric;
 import voltaic.prefab.utilities.math.Color;
-import net.minecraft.client.gui.GuiGraphics;
 
 public class ScreenComponentFillArea extends ScreenComponentGeneric {
 

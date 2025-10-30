@@ -1,10 +1,10 @@
 package voltaic.registers;
 
-import voltaic.Voltaic;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.sounds.SoundEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import voltaic.Voltaic;
 
 public class VoltaicSounds {
 

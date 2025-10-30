@@ -3,22 +3,22 @@ package voltaic.registers;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.core.registries.Registries;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModList;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredRegister;
 import voltaic.Voltaic;
 import voltaic.api.creativetab.CreativeTabSupplier;
 import voltaic.api.registration.BulkDeferredHolder;
 import voltaic.common.item.ItemUpgrade;
 import voltaic.common.item.gear.ItemGuidebook;
 import voltaic.common.item.gear.ItemWrench;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredRegister;
 import voltaic.common.item.subtype.SubtypeItemUpgrade;
 
 public class VoltaicItems {

@@ -1,20 +1,24 @@
 package voltaic.registers;
 
+import org.jetbrains.annotations.Nullable;
+
+import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.capabilities.*;
-import voltaic.api.radiation.CapabilityRadiationRecipient;
-import voltaic.api.radiation.util.IRadiationRecipient;
-import org.jetbrains.annotations.Nullable;
-
+import net.neoforged.neoforge.capabilities.BlockCapability;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.EntityCapability;
+import net.neoforged.neoforge.capabilities.ItemCapability;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import voltaic.Voltaic;
 import voltaic.api.electricity.ICapabilityElectrodynamic;
 import voltaic.api.gas.IGasHandler;
 import voltaic.api.gas.IGasHandlerItem;
 import voltaic.api.misc.ILocationStorage;
-import net.minecraft.core.Direction;
+import voltaic.api.radiation.CapabilityRadiationRecipient;
+import voltaic.api.radiation.util.IRadiationRecipient;
 import voltaic.prefab.tile.GenericTile;
 
 @EventBusSubscriber(modid = Voltaic.ID, bus = EventBusSubscriber.Bus.MOD)

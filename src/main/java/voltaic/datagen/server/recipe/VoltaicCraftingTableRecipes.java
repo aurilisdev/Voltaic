@@ -1,7 +1,13 @@
 package voltaic.datagen.server.recipe;
 
 import com.google.common.collect.Lists;
+
+import net.minecraft.data.recipes.RecipeOutput;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.neoforged.neoforge.common.Tags;
+import net.neoforged.neoforge.common.conditions.ModLoadedCondition;
+import net.neoforged.neoforge.common.conditions.NotCondition;
 import voltaic.Voltaic;
 import voltaic.common.item.subtype.SubtypeItemUpgrade;
 import voltaic.common.recipe.recipeutils.EnchantmentIngredient;
@@ -10,11 +16,6 @@ import voltaic.datagen.utils.server.recipe.AbstractRecipeGenerator;
 import voltaic.datagen.utils.server.recipe.ShapedCraftingRecipeBuilder;
 import voltaic.datagen.utils.server.recipe.ShapelessCraftingRecipeBuilder;
 import voltaic.registers.VoltaicItems;
-import net.minecraft.data.recipes.RecipeOutput;
-import net.minecraft.world.item.Items;
-import net.neoforged.neoforge.common.Tags;
-import net.neoforged.neoforge.common.conditions.ModLoadedCondition;
-import net.neoforged.neoforge.common.conditions.NotCondition;
 
 public class VoltaicCraftingTableRecipes extends AbstractRecipeGenerator {
 

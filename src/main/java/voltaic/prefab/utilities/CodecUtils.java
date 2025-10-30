@@ -11,9 +11,9 @@ import com.mojang.datafixers.util.Function13;
 import com.mojang.datafixers.util.Function7;
 import com.mojang.datafixers.util.Function8;
 import com.mojang.datafixers.util.Function9;
-
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;

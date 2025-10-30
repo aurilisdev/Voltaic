@@ -2,13 +2,13 @@ package voltaic.prefab.tile.components.type;
 
 import java.util.function.BiFunction;
 
-import voltaic.prefab.tile.GenericTile;
-import voltaic.prefab.tile.components.IComponent;
-import voltaic.prefab.tile.components.IComponentType;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import voltaic.prefab.tile.GenericTile;
+import voltaic.prefab.tile.components.IComponent;
+import voltaic.prefab.tile.components.IComponentType;
 
 public class ComponentContainerProvider implements IComponent, MenuProvider {
 

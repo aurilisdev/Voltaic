@@ -2,11 +2,6 @@ package voltaic.api.multiblock.subnodebased.parent;
 
 import org.jetbrains.annotations.Nullable;
 
-import voltaic.api.electricity.ICapabilityElectrodynamic;
-import voltaic.api.gas.IGasHandler;
-import voltaic.api.multiblock.subnodebased.Subnode;
-import voltaic.api.multiblock.subnodebased.child.IMultiblockChildBlock;
-import voltaic.api.multiblock.subnodebased.TileMultiSubnode;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
@@ -22,6 +17,11 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.items.IItemHandler;
+import voltaic.api.electricity.ICapabilityElectrodynamic;
+import voltaic.api.gas.IGasHandler;
+import voltaic.api.multiblock.subnodebased.Subnode;
+import voltaic.api.multiblock.subnodebased.TileMultiSubnode;
+import voltaic.api.multiblock.subnodebased.child.IMultiblockChildBlock;
 import voltaic.registers.VoltaicBlocks;
 
 public interface IMultiblockParentTile {

@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.mojang.datafixers.util.Pair;
 
+import net.neoforged.neoforge.fluids.FluidStack;
 import voltaic.common.recipe.recipeutils.AbstractMaterialRecipe;
 import voltaic.common.recipe.recipeutils.CountableIngredient;
 import voltaic.common.recipe.recipeutils.FluidIngredient;
@@ -14,7 +15,6 @@ import voltaic.common.recipe.recipeutils.ProbableItem;
 import voltaic.prefab.tile.components.IComponentType;
 import voltaic.prefab.tile.components.type.ComponentInventory;
 import voltaic.prefab.tile.components.type.ComponentProcessor;
-import net.neoforged.neoforge.fluids.FluidStack;
 
 public abstract class Item2FluidRecipe extends AbstractMaterialRecipe {
 

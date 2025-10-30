@@ -2,12 +2,12 @@ package voltaic.prefab.utilities;
 
 import org.jetbrains.annotations.NotNull;
 
-import voltaic.api.gas.IGasHandler;
-import voltaic.api.gas.GasAction;
-import voltaic.api.gas.GasStack;
 import net.neoforged.neoforge.energy.IEnergyStorage;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import voltaic.api.gas.GasAction;
+import voltaic.api.gas.GasStack;
+import voltaic.api.gas.IGasHandler;
 
 public class CapabilityUtils {
 

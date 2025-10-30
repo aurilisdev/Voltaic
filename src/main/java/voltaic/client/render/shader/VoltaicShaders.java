@@ -10,12 +10,12 @@ import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat.Mode;
 
-import voltaic.Voltaic;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.client.event.RegisterShadersEvent;
+import voltaic.Voltaic;
 
 //@EventBusSubscriber(modid = References.ID, bus = Bus.MOD, value = Dist.CLIENT)
 public class VoltaicShaders extends RenderType {

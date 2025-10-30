@@ -3,10 +3,16 @@ package voltaic.compatibility.jei;
 import java.util.ArrayList;
 import java.util.List;
 
-import mezz.jei.api.recipe.RecipeType;
-import mezz.jei.api.registration.IGuiHandlerRegistration;
 import org.jetbrains.annotations.NotNull;
 
+import mezz.jei.api.IModPlugin;
+import mezz.jei.api.JeiPlugin;
+import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.api.registration.IExtraIngredientRegistration;
+import mezz.jei.api.registration.IGuiHandlerRegistration;
+import mezz.jei.api.registration.IModIngredientRegistration;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import voltaic.Voltaic;
 import voltaic.api.gas.Gas;
 import voltaic.api.gas.GasStack;
@@ -17,17 +23,11 @@ import voltaic.client.screen.ScreenO2OProcessorDouble;
 import voltaic.client.screen.ScreenO2OProcessorTriple;
 import voltaic.compatibility.jei.screenhandlers.ScreenHandlerGuidebook;
 import voltaic.compatibility.jei.screenhandlers.ScreenHandlerMaterialScreen;
-import voltaic.compatibility.jei.utils.ingredients.VoltaicJeiTypes;
 import voltaic.compatibility.jei.utils.ingredients.IngredientHelperGasStack;
 import voltaic.compatibility.jei.utils.ingredients.IngredientRendererGasStack;
+import voltaic.compatibility.jei.utils.ingredients.VoltaicJeiTypes;
 import voltaic.prefab.screen.types.GenericMaterialScreen;
 import voltaic.registers.VoltaicGases;
-import mezz.jei.api.IModPlugin;
-import mezz.jei.api.JeiPlugin;
-import mezz.jei.api.registration.IExtraIngredientRegistration;
-import mezz.jei.api.registration.IModIngredientRegistration;
-import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.registries.DeferredHolder;
 
 @JeiPlugin
 public class VoltaicJEIPlugin implements IModPlugin {

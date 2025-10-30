@@ -2,6 +2,10 @@ package voltaic.compatibility.jei.screenhandlers;
 
 import java.util.Optional;
 
+import mezz.jei.api.gui.handlers.IGuiContainerHandler;
+import mezz.jei.api.runtime.IClickableIngredient;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.IFluidTank;
 import voltaic.api.gas.GasStack;
 import voltaic.api.gas.utils.IGasTank;
 import voltaic.compatibility.jei.screenhandlers.cliableingredients.ClickableFluidIngredient;
@@ -9,10 +13,6 @@ import voltaic.compatibility.jei.screenhandlers.cliableingredients.ClickableGasI
 import voltaic.prefab.screen.component.types.gauges.ScreenComponentFluidGauge;
 import voltaic.prefab.screen.component.types.gauges.ScreenComponentGasGauge;
 import voltaic.prefab.screen.types.GenericMaterialScreen;
-import mezz.jei.api.gui.handlers.IGuiContainerHandler;
-import mezz.jei.api.runtime.IClickableIngredient;
-import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.IFluidTank;
 
 public class ScreenHandlerMaterialScreen implements IGuiContainerHandler<GenericMaterialScreen<?>> {
 

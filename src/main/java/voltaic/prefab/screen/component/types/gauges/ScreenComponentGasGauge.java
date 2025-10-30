@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
-import voltaic.registers.VoltaicDataComponentTypes;
-import voltaic.registers.VoltaicSounds;
 import org.joml.Matrix4f;
 
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -15,24 +13,6 @@ import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
 
-import voltaic.Voltaic;
-import voltaic.api.gas.IGasHandlerItem;
-import voltaic.api.electricity.formatting.ChatFormatter;
-import voltaic.api.electricity.formatting.DisplayUnits;
-import voltaic.api.gas.GasAction;
-import voltaic.api.gas.GasStack;
-import voltaic.api.gas.PropertyGasTank;
-import voltaic.api.gas.utils.IGasTank;
-import voltaic.api.screen.ITexture;
-import voltaic.client.VoltaicClientRegister;
-import voltaic.common.packet.types.server.PacketUpdateCarriedItemServer;
-import voltaic.prefab.inventory.container.types.GenericContainerBlockEntity;
-import voltaic.prefab.screen.GenericScreen;
-import voltaic.prefab.screen.component.ScreenComponentGeneric;
-import voltaic.prefab.tile.GenericTile;
-import voltaic.prefab.utilities.VoltaicTextUtils;
-import voltaic.prefab.utilities.RenderingUtils;
-import voltaic.registers.VoltaicCapabilities;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -44,6 +24,26 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.PacketDistributor;
+import voltaic.Voltaic;
+import voltaic.api.electricity.formatting.ChatFormatter;
+import voltaic.api.electricity.formatting.DisplayUnits;
+import voltaic.api.gas.GasAction;
+import voltaic.api.gas.GasStack;
+import voltaic.api.gas.IGasHandlerItem;
+import voltaic.api.gas.PropertyGasTank;
+import voltaic.api.gas.utils.IGasTank;
+import voltaic.api.screen.ITexture;
+import voltaic.client.VoltaicClientRegister;
+import voltaic.common.packet.types.server.PacketUpdateCarriedItemServer;
+import voltaic.prefab.inventory.container.types.GenericContainerBlockEntity;
+import voltaic.prefab.screen.GenericScreen;
+import voltaic.prefab.screen.component.ScreenComponentGeneric;
+import voltaic.prefab.tile.GenericTile;
+import voltaic.prefab.utilities.RenderingUtils;
+import voltaic.prefab.utilities.VoltaicTextUtils;
+import voltaic.registers.VoltaicCapabilities;
+import voltaic.registers.VoltaicDataComponentTypes;
+import voltaic.registers.VoltaicSounds;
 
 public class ScreenComponentGasGauge extends ScreenComponentGeneric {
 

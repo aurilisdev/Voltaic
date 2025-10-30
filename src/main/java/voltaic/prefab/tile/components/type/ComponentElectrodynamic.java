@@ -9,18 +9,6 @@ import java.util.function.Supplier;
 
 import org.jetbrains.annotations.Nullable;
 
-import voltaic.api.electricity.ICapabilityElectrodynamic;
-import voltaic.api.item.IItemElectric;
-import voltaic.common.block.states.VoltaicBlockStates;
-import voltaic.prefab.properties.variant.SingleProperty;
-import voltaic.prefab.properties.types.PropertyTypes;
-import voltaic.prefab.tile.GenericTile;
-import voltaic.prefab.tile.components.CapabilityInputType;
-import voltaic.prefab.tile.components.IComponent;
-import voltaic.prefab.tile.components.IComponentType;
-import voltaic.prefab.utilities.BlockEntityUtils;
-import voltaic.prefab.utilities.object.TransferPack;
-import voltaic.registers.VoltaicCapabilities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
@@ -28,6 +16,18 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.Level.ExplosionInteraction;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import voltaic.api.electricity.ICapabilityElectrodynamic;
+import voltaic.api.item.IItemElectric;
+import voltaic.common.block.states.VoltaicBlockStates;
+import voltaic.prefab.properties.types.PropertyTypes;
+import voltaic.prefab.properties.variant.SingleProperty;
+import voltaic.prefab.tile.GenericTile;
+import voltaic.prefab.tile.components.CapabilityInputType;
+import voltaic.prefab.tile.components.IComponent;
+import voltaic.prefab.tile.components.IComponentType;
+import voltaic.prefab.utilities.BlockEntityUtils;
+import voltaic.prefab.utilities.object.TransferPack;
+import voltaic.registers.VoltaicCapabilities;
 
 public class ComponentElectrodynamic implements IComponent, ICapabilityElectrodynamic {
 

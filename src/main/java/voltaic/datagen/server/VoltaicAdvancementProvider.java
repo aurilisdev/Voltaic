@@ -1,16 +1,16 @@
 package voltaic.datagen.server;
 
-import voltaic.Voltaic;
-import voltaic.common.condition.ConfigCondition;
-import voltaic.datagen.utils.server.advancement.BaseAdvancementProvider;
+import java.util.concurrent.CompletableFuture;
+
 import net.minecraft.advancements.AdvancementRewards;
 import net.minecraft.advancements.critereon.PlayerTrigger;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceKey;
-
-import java.util.concurrent.CompletableFuture;
+import voltaic.Voltaic;
+import voltaic.common.condition.ConfigCondition;
+import voltaic.datagen.utils.server.advancement.BaseAdvancementProvider;
 
 public class VoltaicAdvancementProvider extends BaseAdvancementProvider {
 

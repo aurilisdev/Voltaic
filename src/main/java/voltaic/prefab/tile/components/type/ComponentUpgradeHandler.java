@@ -1,14 +1,14 @@
 package voltaic.prefab.tile.components.type;
 
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.ItemStack;
 import voltaic.common.item.ItemUpgrade;
 import voltaic.common.item.subtype.SubtypeItemUpgrade;
-import voltaic.prefab.properties.variant.SingleProperty;
 import voltaic.prefab.properties.types.PropertyTypes;
+import voltaic.prefab.properties.variant.SingleProperty;
 import voltaic.prefab.tile.GenericTile;
 import voltaic.prefab.tile.components.IComponent;
 import voltaic.prefab.tile.components.IComponentType;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.item.ItemStack;
 
 @SuppressWarnings("unused")
 public class ComponentUpgradeHandler implements IComponent {

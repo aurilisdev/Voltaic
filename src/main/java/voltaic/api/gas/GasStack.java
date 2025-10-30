@@ -10,7 +10,6 @@ import org.jetbrains.annotations.Nullable;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import voltaic.registers.VoltaicGases;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.nbt.CompoundTag;
@@ -20,6 +19,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.ExtraCodecs;
+import voltaic.registers.VoltaicGases;
 
 /**
  * An implementation of a FluidStack-like object for gases

@@ -1,11 +1,11 @@
 package voltaic.client.misc;
 
-import voltaic.common.fluid.SimpleWaterBasedFluidType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.material.FluidState;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
+import voltaic.common.fluid.SimpleWaterBasedFluidType;
 
 public class SWBFClientExtensions implements IClientFluidTypeExtensions {
 

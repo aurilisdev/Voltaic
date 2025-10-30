@@ -1,8 +1,9 @@
 package voltaic.prefab.tile.components.type;
 
+import org.jetbrains.annotations.Nullable;
+
 import net.minecraft.core.Direction;
 import net.neoforged.neoforge.energy.IEnergyStorage;
-import org.jetbrains.annotations.Nullable;
 import voltaic.Voltaic;
 import voltaic.api.electricity.ICapabilityElectrodynamic;
 import voltaic.prefab.tile.GenericTile;

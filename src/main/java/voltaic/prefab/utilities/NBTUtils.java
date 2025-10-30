@@ -3,7 +3,6 @@ package voltaic.prefab.utilities;
 import java.util.Collections;
 import java.util.List;
 
-import voltaic.registers.VoltaicDataComponentTypes;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
@@ -11,6 +10,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import voltaic.registers.VoltaicDataComponentTypes;
 
 public class NBTUtils {
 

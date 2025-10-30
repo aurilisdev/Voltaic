@@ -7,10 +7,6 @@ import java.util.function.Predicate;
 
 import javax.annotation.Nullable;
 
-import voltaic.Voltaic;
-import voltaic.api.screen.ITexture;
-import voltaic.prefab.screen.component.ScreenComponentGeneric;
-import voltaic.prefab.utilities.math.Color;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -24,6 +20,10 @@ import net.minecraft.util.Mth;
 import net.minecraft.util.StringUtil;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import voltaic.Voltaic;
+import voltaic.api.screen.ITexture;
+import voltaic.prefab.screen.component.ScreenComponentGeneric;
+import voltaic.prefab.utilities.math.Color;
 
 @OnlyIn(Dist.CLIENT)
 /**

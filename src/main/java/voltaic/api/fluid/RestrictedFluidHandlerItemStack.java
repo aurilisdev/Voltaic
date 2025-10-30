@@ -4,10 +4,10 @@ import java.util.function.Predicate;
 
 import org.jetbrains.annotations.NotNull;
 
-import voltaic.registers.VoltaicDataComponentTypes;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
+import voltaic.registers.VoltaicDataComponentTypes;
 
 /**
  * Almost carbon copy of Forge's FluidHandlerItemStack capability, except the way you validate fluids actually makes

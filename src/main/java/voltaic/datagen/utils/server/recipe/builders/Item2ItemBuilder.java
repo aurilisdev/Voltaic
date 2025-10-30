@@ -5,12 +5,12 @@ import java.util.List;
 
 import com.mojang.datafixers.util.Pair;
 
-import voltaic.common.recipe.categories.item2item.Item2ItemRecipe;
-import voltaic.common.recipe.recipeutils.CountableIngredient;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
+import voltaic.common.recipe.categories.item2item.Item2ItemRecipe;
+import voltaic.common.recipe.recipeutils.CountableIngredient;
 
 public class Item2ItemBuilder<T extends Item2ItemRecipe> extends BaseRecipeBuilder<T, Item2ItemBuilder<T>> {
 

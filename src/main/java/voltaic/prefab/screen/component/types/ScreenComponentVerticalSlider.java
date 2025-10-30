@@ -2,11 +2,11 @@ package voltaic.prefab.screen.component.types;
 
 import java.util.function.Consumer;
 
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.resources.ResourceLocation;
 import voltaic.Voltaic;
 import voltaic.api.screen.ITexture;
 import voltaic.prefab.screen.component.ScreenComponentGeneric;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.resources.ResourceLocation;
 
 public class ScreenComponentVerticalSlider extends ScreenComponentGeneric {
     private int sliderYOffset = 0;

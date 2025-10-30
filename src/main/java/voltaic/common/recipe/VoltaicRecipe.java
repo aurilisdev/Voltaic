@@ -9,15 +9,6 @@ import javax.annotation.Nullable;
 
 import com.mojang.datafixers.util.Pair;
 
-import voltaic.api.gas.GasStack;
-import voltaic.api.gas.GasTank;
-import voltaic.common.recipe.recipeutils.CountableIngredient;
-import voltaic.common.recipe.recipeutils.FluidIngredient;
-import voltaic.common.recipe.recipeutils.GasIngredient;
-import voltaic.common.recipe.recipeutils.ProbableFluid;
-import voltaic.common.recipe.recipeutils.ProbableGas;
-import voltaic.common.recipe.recipeutils.ProbableItem;
-import voltaic.prefab.tile.components.type.ComponentProcessor;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -28,6 +19,15 @@ import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
+import voltaic.api.gas.GasStack;
+import voltaic.api.gas.GasTank;
+import voltaic.common.recipe.recipeutils.CountableIngredient;
+import voltaic.common.recipe.recipeutils.FluidIngredient;
+import voltaic.common.recipe.recipeutils.GasIngredient;
+import voltaic.common.recipe.recipeutils.ProbableFluid;
+import voltaic.common.recipe.recipeutils.ProbableGas;
+import voltaic.common.recipe.recipeutils.ProbableItem;
+import voltaic.prefab.tile.components.type.ComponentProcessor;
 
 public abstract class VoltaicRecipe implements Recipe<VoltaicRecipe>, RecipeInput {
 

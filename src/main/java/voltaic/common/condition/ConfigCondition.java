@@ -2,8 +2,8 @@ package voltaic.common.condition;
 
 import com.mojang.serialization.MapCodec;
 
-import voltaic.common.settings.VoltaicConstants;
 import net.neoforged.neoforge.common.conditions.ICondition;
+import voltaic.common.settings.VoltaicConstants;
 
 public class ConfigCondition implements ICondition {
 

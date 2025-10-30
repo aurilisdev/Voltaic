@@ -4,6 +4,9 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import voltaic.api.gas.GasStack;
 import voltaic.common.recipe.VoltaicRecipeSerializer;
 import voltaic.common.recipe.recipeutils.FluidIngredient;
@@ -11,9 +14,6 @@ import voltaic.common.recipe.recipeutils.ProbableFluid;
 import voltaic.common.recipe.recipeutils.ProbableGas;
 import voltaic.common.recipe.recipeutils.ProbableItem;
 import voltaic.prefab.utilities.CodecUtils;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
 
 public class Fluid2GasRecipeSerializer<T extends Fluid2GasRecipe> extends VoltaicRecipeSerializer<T> {
     @SuppressWarnings("unused") 

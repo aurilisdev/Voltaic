@@ -2,10 +2,10 @@ package voltaic.client.guidebook;
 
 import org.jetbrains.annotations.NotNull;
 
-import voltaic.Voltaic;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
+import voltaic.Voltaic;
 
 /**
  * Avert your eyes kids

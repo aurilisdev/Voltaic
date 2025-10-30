@@ -3,12 +3,12 @@ package voltaic.api.network.util;
 import java.util.HashSet;
 import java.util.List;
 
-import voltaic.prefab.network.AbstractNetwork;
-import voltaic.prefab.tile.types.GenericRefreshingConnectTile;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import voltaic.prefab.network.AbstractNetwork;
+import voltaic.prefab.tile.types.GenericRefreshingConnectTile;
 
 public class AbstractNetworkFinder<C extends GenericRefreshingConnectTile<T, C, ?>, T, P> {
 	private final Level level;

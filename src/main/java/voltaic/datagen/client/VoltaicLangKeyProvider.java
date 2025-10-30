@@ -1,11 +1,13 @@
 package voltaic.datagen.client;
 
+import net.minecraft.data.PackOutput;
+import net.minecraft.world.level.Level;
 import voltaic.Voltaic;
 import voltaic.common.item.subtype.SubtypeItemUpgrade;
 import voltaic.datagen.utils.client.BaseLangKeyProvider;
-import voltaic.registers.*;
-import net.minecraft.data.PackOutput;
-import net.minecraft.world.level.Level;
+import voltaic.registers.VoltaicGases;
+import voltaic.registers.VoltaicItems;
+import voltaic.registers.VoltaicSounds;
 
 public class VoltaicLangKeyProvider extends BaseLangKeyProvider {
 

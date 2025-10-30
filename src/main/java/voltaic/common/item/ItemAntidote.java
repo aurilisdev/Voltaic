@@ -1,6 +1,5 @@
 package voltaic.common.item;
 
-import voltaic.api.radiation.EffectRadiation;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.Holder;
 import net.minecraft.server.level.ServerPlayer;

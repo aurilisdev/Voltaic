@@ -3,9 +3,9 @@ package voltaic.api.electricity.formatting;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 
-import voltaic.prefab.utilities.VoltaicTextUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import voltaic.prefab.utilities.VoltaicTextUtils;
 
 public class ChatFormatter {
 

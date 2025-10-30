@@ -1,10 +1,10 @@
 package voltaic.prefab.utilities;
 
-import voltaic.common.block.states.VoltaicBlockStates;
-import voltaic.prefab.tile.GenericTile;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
+import voltaic.common.block.states.VoltaicBlockStates;
+import voltaic.prefab.tile.GenericTile;
 
 public class BlockEntityUtils {
 

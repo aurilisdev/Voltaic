@@ -1,7 +1,7 @@
 package voltaic.client.texture.atlas;
 
-import voltaic.Voltaic;
 import net.minecraft.resources.ResourceLocation;
+import voltaic.Voltaic;
 
 public class VoltaicTextureAtlases {
 

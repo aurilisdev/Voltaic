@@ -4,13 +4,13 @@ import java.util.function.Predicate;
 
 import org.jetbrains.annotations.NotNull;
 
-import voltaic.prefab.properties.variant.SingleProperty;
-import voltaic.prefab.properties.types.PropertyTypes;
-import voltaic.prefab.tile.GenericTile;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
+import voltaic.prefab.properties.types.PropertyTypes;
+import voltaic.prefab.properties.variant.SingleProperty;
+import voltaic.prefab.tile.GenericTile;
 
 /**
  * Modification of the FluidTank class incorporating the property system. The protected constructor should remain protected

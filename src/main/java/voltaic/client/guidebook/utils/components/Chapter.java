@@ -3,13 +3,13 @@ package voltaic.client.guidebook.utils.components;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.network.chat.MutableComponent;
 import voltaic.client.guidebook.utils.pagedata.AbstractWrapperObject;
 import voltaic.client.guidebook.utils.pagedata.OnClick;
 import voltaic.client.guidebook.utils.pagedata.OnKeyPress;
 import voltaic.client.guidebook.utils.pagedata.OnTooltip;
 import voltaic.client.guidebook.utils.pagedata.graphics.AbstractGraphicWrapper;
 import voltaic.client.guidebook.utils.pagedata.text.TextWrapperObject;
-import net.minecraft.network.chat.MutableComponent;
 
 /**
  * A simple data-wrapping class that contains a logo, a name, and the content associated with it

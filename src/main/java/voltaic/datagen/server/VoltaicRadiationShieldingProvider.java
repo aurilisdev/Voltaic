@@ -1,6 +1,7 @@
 package voltaic.datagen.server;
 
 import com.google.gson.JsonObject;
+
 import net.minecraft.data.PackOutput;
 import net.minecraft.world.level.block.Blocks;
 import voltaic.Voltaic;

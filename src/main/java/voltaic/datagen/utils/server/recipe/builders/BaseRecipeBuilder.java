@@ -6,15 +6,15 @@ import java.util.Locale;
 
 import javax.annotation.Nullable;
 
-import voltaic.common.recipe.VoltaicRecipe;
-import voltaic.common.recipe.recipeutils.ProbableFluid;
-import voltaic.common.recipe.recipeutils.ProbableGas;
-import voltaic.common.recipe.recipeutils.ProbableItem;
 import net.minecraft.advancements.Criterion;
 import net.minecraft.data.recipes.RecipeBuilder;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.common.conditions.ICondition;
+import voltaic.common.recipe.VoltaicRecipe;
+import voltaic.common.recipe.recipeutils.ProbableFluid;
+import voltaic.common.recipe.recipeutils.ProbableGas;
+import voltaic.common.recipe.recipeutils.ProbableItem;
 
 public abstract class BaseRecipeBuilder<T extends VoltaicRecipe, A extends BaseRecipeBuilder<?, ?>> implements RecipeBuilder {
 

@@ -4,14 +4,14 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import voltaic.prefab.utilities.CodecUtils;
-import voltaic.registers.VoltaicParticles;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import voltaic.prefab.utilities.CodecUtils;
+import voltaic.registers.VoltaicParticles;
 
 public class ParticleOptionPlasmaBall extends ParticleType<ParticleOptionPlasmaBall> implements ParticleOptions {
 

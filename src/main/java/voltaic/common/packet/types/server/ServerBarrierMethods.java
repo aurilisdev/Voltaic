@@ -2,9 +2,6 @@ package voltaic.common.packet.types.server;
 
 import java.util.UUID;
 
-import voltaic.api.item.IItemElectric;
-import voltaic.prefab.tile.GenericTile;
-import voltaic.prefab.tile.IPropertyHolderTile;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
@@ -13,6 +10,9 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import voltaic.api.item.IItemElectric;
+import voltaic.prefab.tile.GenericTile;
+import voltaic.prefab.tile.IPropertyHolderTile;
 
 public class ServerBarrierMethods {
 

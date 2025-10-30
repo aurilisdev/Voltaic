@@ -9,11 +9,16 @@ import javax.annotation.Nullable;
 
 import org.jetbrains.annotations.NotNull;
 
-import voltaic.api.gas.IGasHandler;
+import net.minecraft.core.Direction;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.level.block.state.BlockState;
 import voltaic.api.gas.Gas;
 import voltaic.api.gas.GasAction;
 import voltaic.api.gas.GasStack;
 import voltaic.api.gas.GasTank;
+import voltaic.api.gas.IGasHandler;
 import voltaic.api.gas.PropertyGasTank;
 import voltaic.common.block.states.VoltaicBlockStates;
 import voltaic.common.recipe.VoltaicRecipe;
@@ -26,11 +31,6 @@ import voltaic.prefab.tile.components.utils.IComponentGasHandler;
 import voltaic.prefab.utilities.BlockEntityUtils;
 import voltaic.prefab.utilities.math.MathUtils;
 import voltaic.registers.VoltaicGases;
-import net.minecraft.core.Direction;
-import net.minecraft.tags.TagKey;
-import net.minecraft.world.item.crafting.RecipeHolder;
-import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraft.world.level.block.state.BlockState;
 
 public class ComponentGasHandlerMulti implements IComponentGasHandler {
 

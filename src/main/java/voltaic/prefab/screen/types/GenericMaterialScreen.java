@@ -3,13 +3,13 @@ package voltaic.prefab.screen.types;
 import java.util.HashSet;
 import java.util.Set;
 
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Inventory;
 import voltaic.prefab.inventory.container.GenericContainer;
 import voltaic.prefab.screen.GenericScreen;
 import voltaic.prefab.screen.component.types.gauges.ScreenComponentFluidGauge;
 import voltaic.prefab.screen.component.types.gauges.ScreenComponentGasGauge;
 import voltaic.prefab.screen.component.utils.AbstractScreenComponent;
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.entity.player.Inventory;
 
 /**
  * 

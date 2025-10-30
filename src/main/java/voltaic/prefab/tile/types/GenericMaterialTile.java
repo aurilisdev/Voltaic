@@ -1,15 +1,5 @@
 package voltaic.prefab.tile.types;
 
-import voltaic.api.gas.IGasHandlerItem;
-import voltaic.api.gas.GasAction;
-import voltaic.api.gas.GasStack;
-import voltaic.api.gas.GasTank;
-import voltaic.prefab.tile.GenericTile;
-import voltaic.prefab.tile.components.IComponentType;
-import voltaic.prefab.tile.components.utils.IComponentFluidHandler;
-import voltaic.prefab.tile.components.utils.IComponentGasHandler;
-import voltaic.registers.VoltaicCapabilities;
-import voltaic.registers.VoltaicSounds;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -26,6 +16,16 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
 import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
 import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
+import voltaic.api.gas.GasAction;
+import voltaic.api.gas.GasStack;
+import voltaic.api.gas.GasTank;
+import voltaic.api.gas.IGasHandlerItem;
+import voltaic.prefab.tile.GenericTile;
+import voltaic.prefab.tile.components.IComponentType;
+import voltaic.prefab.tile.components.utils.IComponentFluidHandler;
+import voltaic.prefab.tile.components.utils.IComponentGasHandler;
+import voltaic.registers.VoltaicCapabilities;
+import voltaic.registers.VoltaicSounds;
 
 //You come up with a better name :D
 public class GenericMaterialTile extends GenericTile {

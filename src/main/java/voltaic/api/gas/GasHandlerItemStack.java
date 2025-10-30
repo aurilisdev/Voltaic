@@ -2,8 +2,8 @@ package voltaic.api.gas;
 
 import java.util.function.Predicate;
 
-import voltaic.registers.VoltaicDataComponentTypes;
 import net.minecraft.world.item.ItemStack;
+import voltaic.registers.VoltaicDataComponentTypes;
 
 /**
  * Default implementation of IGasHandlerItem to be bound to an item's capability
