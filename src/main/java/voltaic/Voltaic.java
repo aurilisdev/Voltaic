@@ -3,8 +3,6 @@ package voltaic;
 import java.util.Random;
 import java.util.function.Consumer;
 
-import javax.annotation.Nullable;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -14,11 +12,15 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.neoforge.client.gui.ConfigurationScreen;
+import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -30,9 +32,8 @@ import voltaic.common.reloadlistener.RadioactiveBlockRegister;
 import voltaic.common.reloadlistener.RadioactiveFluidRegister;
 import voltaic.common.reloadlistener.RadioactiveGasRegister;
 import voltaic.common.reloadlistener.RadioactiveItemRegister;
-import voltaic.common.settings.VoltaicConstants;
+import voltaic.common.settings.VoltaicConfig;
 import voltaic.common.tags.VoltaicTags;
-import voltaic.prefab.configuration.ConfigurationHandler;
 import voltaic.registers.UnifiedVoltaicRegister;
 
 @Mod(Voltaic.ID)
@@ -51,19 +52,15 @@ public final class Voltaic {
     private static final String ELECTRODYNAMICS_MOD_ID = "electrodynamics";
 
     public Voltaic(IEventBus bus, ModContainer container) {
-        var config = new VoltaicConfig();
-        ConfigurationHandler.load(VoltaicConstants.class);
         // MUST GO BEFORE BLOCKS!!!!
         VoltaicBlockStates.init();
         UnifiedVoltaicRegister.register(bus);
 
-        bus.addListener((FMLLoadCompleteEvent event) -> {
-            ConfigurationHandler.fillFromLegacyConfig(config);
-        });
 
-        container.registerConfig(ModConfig.Type.COMMON, config.SPEC);
+        container.registerConfig(ModConfig.Type.COMMON, new VoltaicConfig().SPEC);
         container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
     }
+    
 
     @SubscribeEvent
     public static void onCommonSetup(FMLCommonSetupEvent event) {

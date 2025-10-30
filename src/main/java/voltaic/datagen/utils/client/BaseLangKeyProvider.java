@@ -116,6 +116,11 @@ public abstract class BaseLangKeyProvider extends LanguageProvider {
 	public void addCreativeTab(String key, String translation) {
 		add("creativetab." + modID + "." + key, translation);
 	}
+	
+	public void addConfiguration(String key, String translation) {
+		add(modID +".configuration." + key, translation);
+	}
+
 
 	public static enum Locale {
 		EN_US;
