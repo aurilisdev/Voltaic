@@ -41,106 +41,105 @@ public enum SubtypeItemUpgrade implements ISubtype {
     // box.currentVoltageMultiplier.set(Math.min(box.currentVoltageMultiplier.get()
     // * 4, 4));
 
-    advancedspeed(3, VoltaicTextUtils.tooltip("upgrade.advancedspeed"), "electrodynamics", "assemblyline", "blastcraft"),
+    advancedspeed(3, VoltaicTextUtils.tooltip("upgrade.advancedspeed"), "electrodynamics", "assemblyline",
+	    "blastcraft"),
     // processor.operatingSpeed.set(Math.min(processor.operatingSpeed.get() * 2.25,
     // Math.pow(2.25, 3)));
 
     // the only way to optimize this one further is to increase the tick delay.
     // Currently, it's set to every 4 ticks
-    iteminput((holder, upgrade, procNumber) -> {
-        ComponentInventory inv = holder.getComponent(IComponentType.Inventory);
+    iteminput((holder, upgrade, index) -> {
 
-        if (!inv.hasInputRoom()) {
-            return;
-        }
+	ComponentInventory inv = holder.getComponent(IComponentType.Inventory);
+	if (!inv.hasItemsInOutput()) {
+	    return;
+	}
 
-        int tickNumber = upgrade.getOrDefault(VoltaicDataComponentTypes.TIMER, 0);
+	int tickNumber = upgrade.getOrDefault(VoltaicDataComponentTypes.TIMER, 0);
 
-        if (tickNumber < 4) {
-            upgrade.set(VoltaicDataComponentTypes.TIMER, tickNumber + 1);
-            return;
-        }
+	if (tickNumber < 4) {
+	    upgrade.set(VoltaicDataComponentTypes.TIMER, tickNumber + 1);
+	    return;
+	}
 
-        upgrade.set(VoltaicDataComponentTypes.TIMER, 0);
-        List<Direction> dirs = NBTUtils.readDirectionList(upgrade);
+	upgrade.set(VoltaicDataComponentTypes.TIMER, 0);
 
-        if (dirs.size() == 0) {
-            return;
-        }
+	List<Direction> dirs = NBTUtils.readDirectionList(upgrade);
 
-        if (upgrade.getOrDefault(VoltaicDataComponentTypes.SMART, false)) {
+	if (dirs.size() <= 0) {
+	    return;
+	}
 
-            int index = 0;
-            Direction dir = Direction.DOWN;
-            for (int slot : inv.getInputSlotsForProcessor(procNumber)) {
-                if (index < dirs.size()) {
-                    dir = dirs.get(index);
-                }
-                inputSmartMode(getBlockEntity(holder, dir), inv, slot, procNumber, dir);
-                index++;
-            }
-        } else {
-            for (Direction dir : dirs) {
-                inputDefaultMode(getBlockEntity(holder, dir), inv, dir, procNumber);
-            }
-        }
+	if (upgrade.getOrDefault(VoltaicDataComponentTypes.SMART, false)) {
 
+	    int size = 0;
+	    Direction dir = Direction.DOWN;
+
+	    for (int i = 0; i < inv.outputs(); i++) {
+
+		if (size < dirs.size()) {
+		    dir = dirs.get(size);
+		}
+
+		outputSmartMode(getBlockEntity(holder, dir), inv, i + inv.getOutputStartIndex(), dir);
+
+		size++;
+	    }
+
+	    for (int i = 0; i < inv.biproducts(); i++) {
+
+		if (size < dirs.size()) {
+		    dir = dirs.get(size);
+		}
+
+		outputSmartMode(getBlockEntity(holder, dir), inv, i + inv.getItemBiproductStartIndex(), dir);
+
+		size++;
+	    }
+
+	} else {
+	    for (Direction dir : dirs) {
+		outputDefaultMode(getBlockEntity(holder, dir), inv, dir);
+	    }
+	}
     }, 1, VoltaicTextUtils.tooltip("upgrade.iteminput"), "electrodynamics", "assemblyline", "blastcraft"),
     // I can't really optimize this one any more than it is
-    itemoutput((holder, upgrade, index) -> {
-        ComponentInventory inv = holder.getComponent(IComponentType.Inventory);
-        if (!inv.hasItemsInOutput()) {
-            return;
-        }
+    itemoutput((holder, upgrade, procNumber) -> {
+	ComponentInventory inv = holder.getComponent(IComponentType.Inventory);
+	if (!inv.hasInputRoom()) {
+	    return;
+	}
 
-        int tickNumber = upgrade.getOrDefault(VoltaicDataComponentTypes.TIMER, 0);
+	int tickNumber = upgrade.getOrDefault(VoltaicDataComponentTypes.TIMER, 0);
 
-        if (tickNumber < 4) {
-            upgrade.set(VoltaicDataComponentTypes.TIMER, tickNumber + 1);
-            return;
-        }
+	if (tickNumber < 4) {
+	    upgrade.set(VoltaicDataComponentTypes.TIMER, tickNumber + 1);
+	    return;
+	}
 
-        upgrade.set(VoltaicDataComponentTypes.TIMER, 0);
+	upgrade.set(VoltaicDataComponentTypes.TIMER, 0);
+	List<Direction> dirs = NBTUtils.readDirectionList(upgrade);
 
-        List<Direction> dirs = NBTUtils.readDirectionList(upgrade);
+	if (dirs.size() == 0) {
+	    return;
+	}
 
-        if (dirs.size() <= 0) {
-            return;
-        }
+	if (upgrade.getOrDefault(VoltaicDataComponentTypes.SMART, false)) {
 
-        if (upgrade.getOrDefault(VoltaicDataComponentTypes.SMART, false)) {
-
-            int size = 0;
-            Direction dir = Direction.DOWN;
-
-            for (int i = 0; i < inv.outputs(); i++) {
-
-                if (size < dirs.size()) {
-                    dir = dirs.get(size);
-                }
-
-                outputSmartMode(getBlockEntity(holder, dir), inv, i + inv.getOutputStartIndex(), dir);
-
-                size++;
-            }
-
-            for (int i = 0; i < inv.biproducts(); i++) {
-
-                if (size < dirs.size()) {
-                    dir = dirs.get(size);
-                }
-
-                outputSmartMode(getBlockEntity(holder, dir), inv, i + inv.getItemBiproductStartIndex(), dir);
-
-                size++;
-            }
-
-        } else {
-            for (Direction dir : dirs) {
-                outputDefaultMode(getBlockEntity(holder, dir), inv, dir);
-            }
-        }
-
+	    int index = 0;
+	    Direction dir = Direction.DOWN;
+	    for (int slot : inv.getInputSlotsForProcessor(procNumber)) {
+		if (index < dirs.size()) {
+		    dir = dirs.get(index);
+		}
+		inputSmartMode(getBlockEntity(holder, dir), inv, slot, procNumber, dir);
+		index++;
+	    }
+	} else {
+	    for (Direction dir : dirs) {
+		inputDefaultMode(getBlockEntity(holder, dir), inv, dir, procNumber);
+	    }
+	}
     }, 1, VoltaicTextUtils.tooltip("upgrade.itemoutput"), "electrodynamics", "assemblyline", "blastcraft"),
     improvedsolarcell(1, VoltaicTextUtils.tooltip("upgrade.improvedsolarcell"), "electrodynamics"),
     // generator.setMultiplier(2.25);
@@ -161,144 +160,149 @@ public enum SubtypeItemUpgrade implements ISubtype {
     public final MutableComponent name;
     public final String[] modIds;
 
-    SubtypeItemUpgrade(TriConsumer<GenericTile, ItemStack, Integer> applyUpgrade, int maxSize, MutableComponent name, String... modIds) {
-        this.applyUpgrade = applyUpgrade;
-        this.maxSize = maxSize;
-        isEmpty = false;
-        this.name = name;
-        this.modIds = modIds;
+    SubtypeItemUpgrade(TriConsumer<GenericTile, ItemStack, Integer> applyUpgrade, int maxSize, MutableComponent name,
+	    String... modIds) {
+	this.applyUpgrade = applyUpgrade;
+	this.maxSize = maxSize;
+	isEmpty = false;
+	this.name = name;
+	this.modIds = modIds;
     }
 
     SubtypeItemUpgrade(int maxStackSize, MutableComponent name, String... modIds) {
-        applyUpgrade = (holder, upgrade, index) -> {
-        };
-        maxSize = maxStackSize;
-        isEmpty = true;
-        this.name = name;
-        this.modIds = modIds;
+	applyUpgrade = (holder, upgrade, index) -> {
+	};
+	maxSize = maxStackSize;
+	isEmpty = true;
+	this.name = name;
+	this.modIds = modIds;
     }
 
     @Override
     public String tag() {
-        return "upgrade" + name();
+	return "upgrade" + name();
     }
 
     @Override
     public String forgeTag() {
-        return "upgrade/" + name();
+	return "upgrade/" + name();
     }
 
     @Override
     public boolean isItem() {
-        return true;
+	return true;
     }
 
-    private static void inputSmartMode(BlockEntity entity, ComponentInventory inv, int slot, int procNumber, Direction dir) {
+    private static void inputSmartMode(BlockEntity entity, ComponentInventory inv, int slot, int procNumber,
+	    Direction dir) {
 
-        if (entity == null) {
-            return;
-        }
+	if (entity == null) {
+	    return;
+	}
 
-        IItemHandler item = entity.getLevel().getCapability(Capabilities.ItemHandler.BLOCK, entity.getBlockPos(), entity.getBlockState(), entity, dir.getOpposite());
+	IItemHandler item = entity.getLevel().getCapability(Capabilities.ItemHandler.BLOCK, entity.getBlockPos(),
+		entity.getBlockState(), entity, dir.getOpposite());
 
-        if (item == null) {
-            return;
-        }
+	if (item == null) {
+	    return;
+	}
 
-        removeItemFromHandler(item, inv, slot);
+	removeItemFromHandler(item, inv, slot);
 
     }
 
     private static void inputDefaultMode(BlockEntity entity, ComponentInventory inv, Direction dir, int procNumber) {
 
-        if (entity == null) {
-            return;
-        }
+	if (entity == null) {
+	    return;
+	}
 
-        IItemHandler item = entity.getLevel().getCapability(Capabilities.ItemHandler.BLOCK, entity.getBlockPos(), entity.getBlockState(), entity, dir.getOpposite());
+	IItemHandler item = entity.getLevel().getCapability(Capabilities.ItemHandler.BLOCK, entity.getBlockPos(),
+		entity.getBlockState(), entity, dir.getOpposite());
 
-        if (item == null) {
-            return;
-        }
+	if (item == null) {
+	    return;
+	}
 
-        for (int slot : inv.getInputSlotsForProcessor(procNumber)) {
-            removeItemFromHandler(item, inv, slot);
-        }
+	for (int slot : inv.getInputSlotsForProcessor(procNumber)) {
+	    removeItemFromHandler(item, inv, slot);
+	}
 
     }
 
     public static void removeItemFromHandler(IItemHandler handler, ComponentInventory inv, int slot) {
-        for (int i = 0; i < handler.getSlots(); i++) {
-            ItemStack stack = handler.getStackInSlot(i);
-            if (!stack.isEmpty()) {
-                ItemStack slotItem = inv.getItem(slot);
-                boolean canPlace = inv.canPlaceItem(i, stack);
-                if (slotItem.isEmpty() && canPlace) {
-                    int taken = stack.getCount() < inv.getMaxStackSize() ? stack.getCount() : inv.getMaxStackSize();
-                    ItemStack removed = handler.extractItem(i, taken, false);
-                    inv.setItem(slot, removed.copy());
-                    inv.setChanged(slot);
-                } else if (ItemUtils.testItems(stack.getItem(), slotItem.getItem()) && canPlace) {
-                    int cap = slotItem.getMaxStackSize() < inv.getMaxStackSize() ? slotItem.getMaxStackSize() : inv.getMaxStackSize();
-                    int canTake = cap - slotItem.getCount();
-                    inv.getItem(slot).grow(handler.extractItem(i, canTake, false).getCount());
-                    inv.setChanged(slot);
-                }
-
-            }
-
-        }
+	for (int i = 0; i < handler.getSlots(); i++) {
+	    ItemStack stack = handler.getStackInSlot(i);
+	    if (!stack.isEmpty()) {
+		ItemStack slotItem = inv.getItem(slot);
+		boolean canPlace = inv.canPlaceItem(slot, stack);
+		if (slotItem.isEmpty() && canPlace) {
+		    int taken = stack.getCount() < inv.getMaxStackSize() ? stack.getCount() : inv.getMaxStackSize();
+		    ItemStack removed = handler.extractItem(i, taken, false);
+		    inv.setItem(slot, removed.copy());
+		    inv.setChanged(slot);
+		} else if (ItemUtils.testItems(stack.getItem(), slotItem.getItem()) && canPlace) {
+		    int cap = slotItem.getMaxStackSize() < inv.getMaxStackSize() ? slotItem.getMaxStackSize()
+			    : inv.getMaxStackSize();
+		    int canTake = cap - slotItem.getCount();
+		    inv.getItem(slot).grow(handler.extractItem(i, canTake, false).getCount());
+		    inv.setChanged(slot);
+		}
+	    }
+	}
     }
 
     private static void outputSmartMode(BlockEntity entity, ComponentInventory inv, int index, Direction dir) {
-        if (entity == null) {
-            return;
-        }
-        IItemHandler item = entity.getLevel().getCapability(Capabilities.ItemHandler.BLOCK, entity.getBlockPos(), entity.getBlockState(), entity, dir.getOpposite());
+	if (entity == null) {
+	    return;
+	}
+	IItemHandler item = entity.getLevel().getCapability(Capabilities.ItemHandler.BLOCK, entity.getBlockPos(),
+		entity.getBlockState(), entity, dir.getOpposite());
 
-        if (item == null) {
-            return;
-        }
-        addItemToHandler(item, inv, index);
+	if (item == null) {
+	    return;
+	}
+	addItemToHandler(item, inv, index);
     }
 
     private static void outputDefaultMode(BlockEntity entity, ComponentInventory inv, Direction dir) {
-        if (entity == null) {
-            return;
-        }
-        IItemHandler item = entity.getLevel().getCapability(Capabilities.ItemHandler.BLOCK, entity.getBlockPos(), entity.getBlockState(), entity, dir.getOpposite());
+	if (entity == null) {
+	    return;
+	}
+	IItemHandler item = entity.getLevel().getCapability(Capabilities.ItemHandler.BLOCK, entity.getBlockPos(),
+		entity.getBlockState(), entity, dir.getOpposite());
 
-        if (item == null) {
-            return;
-        }
-        for (int i = 0; i < inv.outputs(); i++) {
-            addItemToHandler(item, inv, i + inv.getOutputStartIndex());
-        }
-        for (int i = 0; i < inv.biproducts(); i++) {
-            addItemToHandler(item, inv, i + inv.getItemBiproductStartIndex());
-        }
+	if (item == null) {
+	    return;
+	}
+	for (int i = 0; i < inv.outputs(); i++) {
+	    addItemToHandler(item, inv, i + inv.getOutputStartIndex());
+	}
+	for (int i = 0; i < inv.biproducts(); i++) {
+	    addItemToHandler(item, inv, i + inv.getItemBiproductStartIndex());
+	}
     }
 
     // returns if the itemstack changed or not
     private static void addItemToHandler(IItemHandler handler, ComponentInventory inv, int index) {
-        for (int i = 0; i < handler.getSlots(); i++) {
-            ItemStack used = handler.insertItem(i, inv.getItem(index), false);
-            inv.setItem(index, used);
-            inv.setChanged(index);
-            if (used.isEmpty()) {
-                break;
-            }
-        }
+	for (int i = 0; i < handler.getSlots(); i++) {
+	    ItemStack used = handler.insertItem(i, inv.getItem(index), false);
+	    inv.setItem(index, used);
+	    inv.setChanged(index);
+	    if (used.isEmpty()) {
+		break;
+	    }
+	}
 
     }
 
     @Nullable
     private static BlockEntity getBlockEntity(GenericTile holder, Direction dir) {
-        BlockPos pos = holder.getBlockPos().relative(dir);
-        BlockState state = holder.getLevel().getBlockState(pos);
-        if (state.hasBlockEntity()) {
-            return holder.getLevel().getBlockEntity(holder.getBlockPos().relative(dir));
-        }
-        return null;
+	BlockPos pos = holder.getBlockPos().relative(dir);
+	BlockState state = holder.getLevel().getBlockState(pos);
+	if (state.hasBlockEntity()) {
+	    return holder.getLevel().getBlockEntity(holder.getBlockPos().relative(dir));
+	}
+	return null;
     }
 }

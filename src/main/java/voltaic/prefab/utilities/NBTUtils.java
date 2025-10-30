@@ -1,6 +1,6 @@
 package voltaic.prefab.utilities;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.core.Direction;
@@ -34,7 +34,7 @@ public class NBTUtils {
 	public static final String SPEED_ENCHANT = "speedenchant";
 
 	public static List<Direction> readDirectionList(ItemStack item) {
-		return item.getOrDefault(VoltaicDataComponentTypes.DIRECTIONS, Collections.emptyList());
+		return item.getOrDefault(VoltaicDataComponentTypes.DIRECTIONS, new ArrayList<Direction>());
 	}
 
 	public static void writeDirectionList(List<Direction> dirs, ItemStack item) {
