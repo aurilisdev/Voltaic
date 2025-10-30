@@ -177,5 +177,14 @@
   "tooltip.voltaic.upgrade.silktouch": "Silk Touch",
   "tooltip.voltaic.upgrade.stator": "Improved Stator",
   "tooltip.voltaic.upgrade.unbreaking": "Unbreaking",
-  "tooltip.voltaic.validupgrades": "Valid Upgrades:"
+  "tooltip.voltaic.validupgrades": "Valid Upgrades:",
+  "voltaic.configuration.backgroundRadiationDissipation": "Background Radiation Dissipation",
+  "voltaic.configuration.common": "Common",
+  "voltaic.configuration.dispenseGuidebook": "Dispense Guidebook",
+  "voltaic.configuration.iodineRadreduction": "Iodine Rad Reduction",
+  "voltaic.configuration.iodineResistanceThreshold": "Iodine Resistance Threshold",
+  "voltaic.configuration.oreRadiationEmitRate": "Ore Radiation",
+  "voltaic.configuration.oresEmitRadiation": "Ores Emit Radiation",
+  "voltaic.configuration.radiation": "Radiation",
+  "voltaic.configuration.radiationSystemEnabled": "Enable Radiation System"
 }

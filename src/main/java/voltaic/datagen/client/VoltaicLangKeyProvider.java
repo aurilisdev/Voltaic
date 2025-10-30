@@ -229,7 +229,18 @@ public class VoltaicLangKeyProvider extends BaseLangKeyProvider {
                 addGuidebook("selectall", "All");
                 addGuidebook("selectnone", "None");
                 addGuidebook("casesensitive", "Case-Sensitive");
-
+                
+                addConfiguration("common", "Common");
+                addConfiguration("dispenseGuidebook", "Dispense Guidebook");
+                
+                addConfiguration("radiation", "Radiation");
+                addConfiguration("backgroundRadiationDissipation", "Background Radiation Dissipation");
+                addConfiguration("iodineResistanceThreshold", "Iodine Resistance Threshold");
+                addConfiguration("iodineRadreduction", "Iodine Rad Reduction");
+                addConfiguration("radiationSystemEnabled", "Enable Radiation System");
+                addConfiguration("oresEmitRadiation", "Ores Emit Radiation");
+                addConfiguration("oreRadiationEmitRate", "Ore Radiation");
+                
         }
     }
 
