@@ -2,15 +2,15 @@ package voltaic.datagen.server.tags.types;
 
 import java.util.concurrent.CompletableFuture;
 
-import voltaic.Voltaic;
 import org.jetbrains.annotations.Nullable;
 
-import voltaic.common.tags.VoltaicTags;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.EnchantmentTagsProvider;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import voltaic.Voltaic;
+import voltaic.common.tags.VoltaicTags;
 
 public class VoltaicEnchantmentTagsProvider extends EnchantmentTagsProvider {
 

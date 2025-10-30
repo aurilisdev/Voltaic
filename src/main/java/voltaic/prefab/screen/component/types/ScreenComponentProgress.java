@@ -2,13 +2,13 @@ package voltaic.prefab.screen.component.types;
 
 import java.util.function.DoubleSupplier;
 
-import voltaic.Voltaic;
-import voltaic.api.screen.ITexture;
-import voltaic.prefab.screen.component.ScreenComponentGeneric;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import voltaic.Voltaic;
+import voltaic.api.screen.ITexture;
+import voltaic.prefab.screen.component.ScreenComponentGeneric;
 
 @OnlyIn(Dist.CLIENT)
 public class ScreenComponentProgress extends ScreenComponentGeneric {

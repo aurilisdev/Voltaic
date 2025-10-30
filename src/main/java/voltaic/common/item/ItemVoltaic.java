@@ -2,15 +2,15 @@ package voltaic.common.item;
 
 import java.util.List;
 
+import net.minecraft.core.Holder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.level.Level;
-import voltaic.api.creativetab.CreativeTabSupplier;
-import net.minecraft.core.Holder;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import voltaic.api.creativetab.CreativeTabSupplier;
 import voltaic.api.radiation.RadiationSystem;
 import voltaic.api.radiation.SimpleRadiationSource;
 import voltaic.api.radiation.util.IRadiationRecipient;

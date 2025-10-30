@@ -1,12 +1,12 @@
 package voltaic.prefab.screen.component.button.type;
 
-import voltaic.client.guidebook.utils.pagedata.text.TextWrapperObject;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.util.FormattedCharSequence;
+import voltaic.client.guidebook.utils.pagedata.text.TextWrapperObject;
 
 //height was 20
 public class ButtonSearchedText extends ButtonSpecificPage {

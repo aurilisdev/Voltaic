@@ -1,7 +1,7 @@
 package voltaic.compatibility.jei.utils.gui.types.gasgauge;
 
-import voltaic.Voltaic;
 import net.minecraft.resources.ResourceLocation;
+import voltaic.Voltaic;
 
 public enum JeiGasGaugeTextures implements IGasGaugeTexture {
 

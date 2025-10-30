@@ -4,7 +4,6 @@ import java.util.Locale;
 
 import javax.annotation.Nullable;
 
-import voltaic.client.VoltaicClientRegister;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
@@ -17,6 +16,7 @@ import net.neoforged.neoforge.client.model.generators.ModelFile.ExistingModelFil
 import net.neoforged.neoforge.client.model.generators.loaders.DynamicFluidContainerModelBuilder;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.registries.DeferredHolder;
+import voltaic.client.VoltaicClientRegister;
 
 public abstract class BaseItemModelsProvider extends ItemModelProvider {
 

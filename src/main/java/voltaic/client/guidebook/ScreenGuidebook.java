@@ -7,6 +7,16 @@ import java.util.Locale;
 
 import com.mojang.blaze3d.platform.InputConstants;
 
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.locale.Language;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.FormattedText;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.player.Inventory;
 import voltaic.Voltaic;
 import voltaic.client.guidebook.utils.components.Chapter;
 import voltaic.client.guidebook.utils.components.Module;
@@ -37,16 +47,6 @@ import voltaic.prefab.screen.component.types.ScreenComponentGuidebookArrow;
 import voltaic.prefab.screen.component.types.ScreenComponentGuidebookArrow.ArrowTextures;
 import voltaic.prefab.utilities.VoltaicTextUtils;
 import voltaic.prefab.utilities.math.Color;
-import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.locale.Language;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.FormattedText;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.Style;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Mth;
-import net.minecraft.world.entity.player.Inventory;
 
 /**
  * A basic implementation of a Guidebook that allows for variable length text and images along with some basic formatting options.

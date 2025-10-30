@@ -2,7 +2,6 @@ package voltaic.common.fluid;
 
 import org.jetbrains.annotations.Nullable;
 
-import voltaic.prefab.utilities.math.Color;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
@@ -12,6 +11,7 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.pathfinder.PathType;
 import net.neoforged.neoforge.common.SoundActions;
 import net.neoforged.neoforge.fluids.FluidType;
+import voltaic.prefab.utilities.math.Color;
 
 public class SimpleWaterBasedFluidType extends FluidType {
 

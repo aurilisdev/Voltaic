@@ -1,8 +1,8 @@
 package voltaic.api.tile;
 
+import net.minecraft.world.level.block.RenderShape;
 import voltaic.api.multiblock.subnodebased.parent.IMultiblockParentBlock;
 import voltaic.common.block.voxelshapes.VoxelShapeProvider;
-import net.minecraft.world.level.block.RenderShape;
 
 public class MachineProperties {
 

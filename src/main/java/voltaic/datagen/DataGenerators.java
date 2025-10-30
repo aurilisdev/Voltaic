@@ -3,17 +3,6 @@ package voltaic.datagen;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
-import voltaic.Voltaic;
-import voltaic.datagen.client.VoltaicBlockStateProvider;
-import voltaic.datagen.client.VoltaicItemModelsProvider;
-import voltaic.datagen.client.VoltaicLangKeyProvider;
-import voltaic.datagen.client.VoltaicSoundProvider;
-import voltaic.datagen.server.VoltaicAdvancementProvider;
-import voltaic.datagen.server.VoltaicRadiationShieldingProvider;
-import voltaic.datagen.server.recipe.VoltaicRecipeProvider;
-import voltaic.datagen.utils.client.BaseLangKeyProvider.Locale;
-import voltaic.datagen.server.tags.VoltaicTagsProvider;
-import voltaic.registers.VoltaicDamageTypes;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.registries.Registries;
@@ -24,6 +13,17 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
+import voltaic.Voltaic;
+import voltaic.datagen.client.VoltaicBlockStateProvider;
+import voltaic.datagen.client.VoltaicItemModelsProvider;
+import voltaic.datagen.client.VoltaicLangKeyProvider;
+import voltaic.datagen.client.VoltaicSoundProvider;
+import voltaic.datagen.server.VoltaicAdvancementProvider;
+import voltaic.datagen.server.VoltaicRadiationShieldingProvider;
+import voltaic.datagen.server.recipe.VoltaicRecipeProvider;
+import voltaic.datagen.server.tags.VoltaicTagsProvider;
+import voltaic.datagen.utils.client.BaseLangKeyProvider.Locale;
+import voltaic.registers.VoltaicDamageTypes;
 
 @EventBusSubscriber(modid = Voltaic.ID, bus = EventBusSubscriber.Bus.MOD)
 public class DataGenerators {

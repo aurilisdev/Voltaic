@@ -1,7 +1,11 @@
 package voltaic.datagen.utils.server.radiation;
 
+import java.nio.file.Path;
+import java.util.concurrent.CompletableFuture;
+
 import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
+
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataProvider;
@@ -11,9 +15,6 @@ import net.minecraft.world.level.block.Block;
 import voltaic.Voltaic;
 import voltaic.api.radiation.util.RadioactiveObject;
 import voltaic.common.reloadlistener.RadioactiveBlockRegister;
-
-import java.nio.file.Path;
-import java.util.concurrent.CompletableFuture;
 
 public abstract class BaseRadioactiveBlocksProvider implements DataProvider {
 

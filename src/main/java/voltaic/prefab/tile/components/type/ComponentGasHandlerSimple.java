@@ -6,11 +6,14 @@ import java.util.function.Predicate;
 
 import javax.annotation.Nullable;
 
-import voltaic.api.gas.IGasHandler;
+import net.minecraft.core.Direction;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.level.block.state.BlockState;
 import voltaic.api.gas.Gas;
 import voltaic.api.gas.GasAction;
 import voltaic.api.gas.GasStack;
 import voltaic.api.gas.GasTank;
+import voltaic.api.gas.IGasHandler;
 import voltaic.api.gas.PropertyGasTank;
 import voltaic.common.block.states.VoltaicBlockStates;
 import voltaic.prefab.tile.GenericTile;
@@ -19,9 +22,6 @@ import voltaic.prefab.tile.components.IComponentType;
 import voltaic.prefab.tile.components.utils.IComponentGasHandler;
 import voltaic.prefab.utilities.BlockEntityUtils;
 import voltaic.registers.VoltaicGases;
-import net.minecraft.core.Direction;
-import net.minecraft.tags.TagKey;
-import net.minecraft.world.level.block.state.BlockState;
 
 /**
  * Extension of the PropertyGasTank making it usable as a ComponentGasHandler

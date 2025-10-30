@@ -1,12 +1,12 @@
 package voltaic.registers;
 
-import voltaic.Voltaic;
-import voltaic.api.radiation.EffectRadiation;
-import voltaic.api.radiation.EffectRadiationResistance;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.effect.MobEffect;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import voltaic.Voltaic;
+import voltaic.api.radiation.EffectRadiation;
+import voltaic.api.radiation.EffectRadiationResistance;
 
 public class VoltaicEffects {
 

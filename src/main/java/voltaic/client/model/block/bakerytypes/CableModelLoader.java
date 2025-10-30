@@ -14,11 +14,6 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
-import voltaic.Voltaic;
-import voltaic.client.model.block.ModelStateRotation;
-import voltaic.client.model.block.modelproperties.ModelPropertyConnections;
-import voltaic.common.block.connect.EnumConnectType;
-import voltaic.prefab.tile.types.IConnectTile;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.BlockModel;
@@ -42,6 +37,11 @@ import net.neoforged.neoforge.client.model.data.ModelData;
 import net.neoforged.neoforge.client.model.geometry.IGeometryBakingContext;
 import net.neoforged.neoforge.client.model.geometry.IGeometryLoader;
 import net.neoforged.neoforge.client.model.geometry.IUnbakedGeometry;
+import voltaic.Voltaic;
+import voltaic.client.model.block.ModelStateRotation;
+import voltaic.client.model.block.modelproperties.ModelPropertyConnections;
+import voltaic.common.block.connect.EnumConnectType;
+import voltaic.prefab.tile.types.IConnectTile;
 
 public class CableModelLoader implements IGeometryLoader<CableModelLoader.WirePartGeometry> {
 

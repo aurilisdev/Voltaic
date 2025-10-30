@@ -1,16 +1,17 @@
 package voltaic.prefab.properties.variant;
 
+import java.util.Arrays;
+import java.util.function.Consumer;
+
+import org.apache.commons.lang3.function.TriConsumer;
+
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.Block;
-import org.apache.commons.lang3.function.TriConsumer;
 import voltaic.Voltaic;
 import voltaic.prefab.properties.PropertyManager;
 import voltaic.prefab.properties.types.ArrayPropertyType;
 import voltaic.prefab.properties.types.IPropertyType;
-
-import java.util.Arrays;
-import java.util.function.Consumer;
 
 public class ArrayProperty<T> extends AbstractProperty<T[], ArrayPropertyType<T, ?>> {
 

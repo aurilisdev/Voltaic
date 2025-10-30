@@ -5,8 +5,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.neoforged.neoforge.network.PacketDistributor;
 import voltaic.Voltaic;
 import voltaic.common.packet.types.server.PacketSendUpdatePropertiesServer;
-import voltaic.prefab.properties.types.IPropertyType;
 import voltaic.prefab.properties.PropertyManager;
+import voltaic.prefab.properties.types.IPropertyType;
 
 public abstract class AbstractProperty<T, PROPERTYTYPE extends IPropertyType> {
 

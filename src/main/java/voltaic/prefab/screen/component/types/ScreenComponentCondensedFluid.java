@@ -2,13 +2,6 @@ package voltaic.prefab.screen.component.types;
 
 import java.util.function.Supplier;
 
-import voltaic.common.packet.types.server.PacketUpdateCarriedItemServer;
-import voltaic.prefab.inventory.container.types.GenericContainerBlockEntity;
-import voltaic.prefab.properties.variant.SingleProperty;
-import voltaic.prefab.screen.GenericScreen;
-import voltaic.prefab.screen.component.ScreenComponentGeneric;
-import voltaic.prefab.screen.component.types.ScreenComponentSlot.IconType;
-import voltaic.prefab.tile.GenericTile;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
@@ -19,6 +12,13 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
 import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
 import net.neoforged.neoforge.network.PacketDistributor;
+import voltaic.common.packet.types.server.PacketUpdateCarriedItemServer;
+import voltaic.prefab.inventory.container.types.GenericContainerBlockEntity;
+import voltaic.prefab.properties.variant.SingleProperty;
+import voltaic.prefab.screen.GenericScreen;
+import voltaic.prefab.screen.component.ScreenComponentGeneric;
+import voltaic.prefab.screen.component.types.ScreenComponentSlot.IconType;
+import voltaic.prefab.tile.GenericTile;
 
 public class ScreenComponentCondensedFluid extends ScreenComponentGeneric {
 

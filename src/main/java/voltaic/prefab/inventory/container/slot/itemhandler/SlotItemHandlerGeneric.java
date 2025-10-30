@@ -1,12 +1,12 @@
 package voltaic.prefab.inventory.container.slot.itemhandler;
 
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemHandlerCopySlot;
 import voltaic.api.screen.ITexture;
 import voltaic.api.screen.component.ISlotTexture;
 import voltaic.prefab.screen.component.types.ScreenComponentSlot.IconType;
 import voltaic.prefab.screen.component.types.ScreenComponentSlot.SlotType;
 import voltaic.prefab.screen.component.utils.SlotTextureProvider;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemHandlerCopySlot;
 
 public class SlotItemHandlerGeneric extends ItemHandlerCopySlot implements SlotTextureProvider {
 

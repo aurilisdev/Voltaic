@@ -3,14 +3,6 @@ package voltaic.prefab.screen.component.types;
 import java.util.ArrayList;
 import java.util.List;
 
-import voltaic.Voltaic;
-import voltaic.api.screen.ITexture;
-import voltaic.api.screen.component.ISlotTexture;
-import voltaic.api.screen.component.TextSupplier;
-import voltaic.common.item.subtype.SubtypeItemUpgrade;
-import voltaic.prefab.inventory.container.slot.utils.IUpgradeSlot;
-import voltaic.prefab.screen.component.ScreenComponentGeneric;
-import voltaic.prefab.utilities.VoltaicTextUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -20,6 +12,14 @@ import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.inventory.Slot;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import voltaic.Voltaic;
+import voltaic.api.screen.ITexture;
+import voltaic.api.screen.component.ISlotTexture;
+import voltaic.api.screen.component.TextSupplier;
+import voltaic.common.item.subtype.SubtypeItemUpgrade;
+import voltaic.prefab.inventory.container.slot.utils.IUpgradeSlot;
+import voltaic.prefab.screen.component.ScreenComponentGeneric;
+import voltaic.prefab.utilities.VoltaicTextUtils;
 
 @OnlyIn(Dist.CLIENT)
 public class ScreenComponentSlot extends ScreenComponentGeneric {

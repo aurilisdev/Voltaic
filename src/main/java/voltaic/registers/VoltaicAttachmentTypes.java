@@ -1,28 +1,30 @@
 package voltaic.registers;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.jetbrains.annotations.Nullable;
+
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.Dynamic;
-import net.minecraft.world.phys.AABB;
-import voltaic.Voltaic;
-import voltaic.api.radiation.RadiationManager;
-import voltaic.api.radiation.SimpleRadiationSource;
-import voltaic.api.radiation.util.IRadiationManager;
-import voltaic.common.settings.VoltaicConstants;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.attachment.IAttachmentHolder;
 import net.neoforged.neoforge.attachment.IAttachmentSerializer;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
-import org.jetbrains.annotations.Nullable;
+import voltaic.Voltaic;
+import voltaic.api.radiation.RadiationManager;
+import voltaic.api.radiation.SimpleRadiationSource;
+import voltaic.api.radiation.util.IRadiationManager;
+import voltaic.common.settings.VoltaicConstants;
 import voltaic.prefab.utilities.CodecUtils;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class VoltaicAttachmentTypes {
 

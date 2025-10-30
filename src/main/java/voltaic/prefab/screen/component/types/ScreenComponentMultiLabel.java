@@ -2,8 +2,8 @@ package voltaic.prefab.screen.component.types;
 
 import java.util.function.Consumer;
 
-import voltaic.prefab.screen.component.utils.AbstractScreenComponent;
 import net.minecraft.client.gui.GuiGraphics;
+import voltaic.prefab.screen.component.utils.AbstractScreenComponent;
 
 public class ScreenComponentMultiLabel extends AbstractScreenComponent {
 

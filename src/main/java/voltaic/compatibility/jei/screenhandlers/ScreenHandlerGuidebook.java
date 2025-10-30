@@ -4,6 +4,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import mezz.jei.api.gui.handlers.IGuiContainerHandler;
+import mezz.jei.api.runtime.IClickableIngredient;
+import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.fluids.FluidStack;
 import voltaic.api.gas.GasStack;
 import voltaic.client.guidebook.ScreenGuidebook;
 import voltaic.client.guidebook.utils.components.Page;
@@ -14,11 +19,6 @@ import voltaic.client.guidebook.utils.pagedata.graphics.AbstractGraphicWrapper.G
 import voltaic.compatibility.jei.screenhandlers.cliableingredients.ClickableFluidIngredient;
 import voltaic.compatibility.jei.screenhandlers.cliableingredients.ClickableGasIngredient;
 import voltaic.compatibility.jei.screenhandlers.cliableingredients.ClickableItemIngredient;
-import mezz.jei.api.gui.handlers.IGuiContainerHandler;
-import mezz.jei.api.runtime.IClickableIngredient;
-import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.fluids.FluidStack;
 
 public class ScreenHandlerGuidebook implements IGuiContainerHandler<ScreenGuidebook> {
 

@@ -1,7 +1,5 @@
 package voltaic.datagen.utils.client;
 
-import voltaic.api.gas.Gas;
-import voltaic.registers.VoltaicGases;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
@@ -13,6 +11,8 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.common.data.LanguageProvider;
 import net.neoforged.neoforge.registries.DeferredHolder;
+import voltaic.api.gas.Gas;
+import voltaic.registers.VoltaicGases;
 
 public abstract class BaseLangKeyProvider extends LanguageProvider {
 

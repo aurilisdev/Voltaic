@@ -2,7 +2,6 @@ package voltaic.prefab.screen.component.utils;
 
 import javax.annotation.Nullable;
 
-import voltaic.api.screen.IScreenWrapper;
 import net.minecraft.client.gui.ComponentPath;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Renderable;
@@ -12,6 +11,7 @@ import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.navigation.FocusNavigationEvent;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
+import voltaic.api.screen.IScreenWrapper;
 
 /**
  * 

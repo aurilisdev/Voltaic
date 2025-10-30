@@ -1,8 +1,8 @@
 package voltaic.compatibility.jei.utils.ingredients;
 
+import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import voltaic.api.gas.Gas;
 import voltaic.api.gas.GasStack;
-import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 
 public class VoltaicJeiTypes {
 

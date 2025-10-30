@@ -4,9 +4,16 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.network.chat.MutableComponent;
 import org.apache.logging.log4j.util.TriConsumer;
 
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.items.IItemHandler;
 import voltaic.api.ISubtype;
 import voltaic.prefab.tile.GenericTile;
 import voltaic.prefab.tile.components.IComponentType;
@@ -15,13 +22,6 @@ import voltaic.prefab.utilities.ItemUtils;
 import voltaic.prefab.utilities.NBTUtils;
 import voltaic.prefab.utilities.VoltaicTextUtils;
 import voltaic.registers.VoltaicDataComponentTypes;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.items.IItemHandler;
 
 public enum SubtypeItemUpgrade implements ISubtype {
 

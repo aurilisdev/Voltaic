@@ -1,8 +1,8 @@
 package voltaic.client.guidebook.utils.pagedata.graphics;
 
-import voltaic.client.guidebook.utils.components.Page;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
+import voltaic.client.guidebook.utils.components.Page;
 
 /**
  * A simple wrapper class that contains render data for an image on the Guidebook screen. The class is capable of displaying images as well as text descriptors for said image.

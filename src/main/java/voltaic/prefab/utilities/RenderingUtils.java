@@ -17,10 +17,6 @@ import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.VertexFormat;
 
-import voltaic.Voltaic;
-import voltaic.common.block.states.VoltaicBlockStates;
-import voltaic.prefab.utilities.math.Color;
-import voltaic.prefab.utilities.math.MathUtils;
 import net.minecraft.CrashReport;
 import net.minecraft.CrashReportCategory;
 import net.minecraft.ReportedException;
@@ -50,6 +46,10 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.neoforged.neoforge.fluids.FluidStack;
+import voltaic.Voltaic;
+import voltaic.common.block.states.VoltaicBlockStates;
+import voltaic.prefab.utilities.math.Color;
+import voltaic.prefab.utilities.math.MathUtils;
 
 public class RenderingUtils {
 

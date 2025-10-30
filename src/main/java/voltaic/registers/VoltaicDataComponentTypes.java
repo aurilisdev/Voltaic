@@ -4,13 +4,6 @@ import java.util.List;
 
 import com.mojang.serialization.Codec;
 
-import net.minecraft.core.component.DataComponents;
-import voltaic.Voltaic;
-import voltaic.api.fluid.FluidStackComponent;
-import voltaic.api.gas.GasStack;
-import voltaic.api.item.IItemElectric;
-import voltaic.prefab.utilities.NBTUtils;
-import voltaic.prefab.utilities.object.Location;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponentType;
@@ -20,6 +13,12 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import voltaic.Voltaic;
+import voltaic.api.fluid.FluidStackComponent;
+import voltaic.api.gas.GasStack;
+import voltaic.api.item.IItemElectric;
+import voltaic.prefab.utilities.NBTUtils;
+import voltaic.prefab.utilities.object.Location;
 
 public class VoltaicDataComponentTypes {
 

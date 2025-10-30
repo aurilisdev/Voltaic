@@ -2,10 +2,6 @@ package voltaic.datagen.utils.client;
 
 import javax.annotation.Nullable;
 
-import voltaic.Voltaic;
-import voltaic.common.block.states.VoltaicBlockStates;
-import voltaic.datagen.utils.client.model.SlaveNodeModelBuilder;
-import voltaic.datagen.utils.client.model.WireModelBuilder;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
@@ -22,6 +18,10 @@ import net.neoforged.neoforge.client.model.generators.ModelFile.ExistingModelFil
 import net.neoforged.neoforge.client.model.generators.loaders.ObjModelBuilder;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.registries.DeferredHolder;
+import voltaic.Voltaic;
+import voltaic.common.block.states.VoltaicBlockStates;
+import voltaic.datagen.utils.client.model.SlaveNodeModelBuilder;
+import voltaic.datagen.utils.client.model.WireModelBuilder;
 import voltaic.registers.VoltaicBlocks;
 
 public abstract class BaseBlockstateProvider extends BlockStateProvider {

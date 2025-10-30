@@ -2,11 +2,6 @@ package voltaic.common.block;
 
 import com.mojang.serialization.MapCodec;
 
-import voltaic.api.multiblock.subnodebased.parent.IMultiblockParentBlock;
-import voltaic.api.multiblock.subnodebased.parent.IMultiblockParentTile;
-import voltaic.api.tile.IMachine;
-import voltaic.common.block.states.VoltaicBlockStates;
-import voltaic.prefab.block.GenericMachineBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.LivingEntity;
@@ -23,6 +18,11 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition.Builder;
 import net.minecraft.world.phys.HitResult;
+import voltaic.api.multiblock.subnodebased.parent.IMultiblockParentBlock;
+import voltaic.api.multiblock.subnodebased.parent.IMultiblockParentTile;
+import voltaic.api.tile.IMachine;
+import voltaic.common.block.states.VoltaicBlockStates;
+import voltaic.prefab.block.GenericMachineBlock;
 
 public class BlockMachine extends GenericMachineBlock implements IMultiblockParentBlock {
 

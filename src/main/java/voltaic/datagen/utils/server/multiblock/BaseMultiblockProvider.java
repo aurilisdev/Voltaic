@@ -5,10 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import voltaic.Voltaic;
-import voltaic.api.multiblock.assemblybased.Multiblock;
-import voltaic.api.multiblock.assemblybased.MultiblockSlaveNode;
-import voltaic.common.block.states.VoltaicBlockStates;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Vec3i;
@@ -22,6 +18,10 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.common.conditions.WithConditions;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.common.data.JsonCodecProvider;
+import voltaic.Voltaic;
+import voltaic.api.multiblock.assemblybased.Multiblock;
+import voltaic.api.multiblock.assemblybased.MultiblockSlaveNode;
+import voltaic.common.block.states.VoltaicBlockStates;
 
 public abstract class BaseMultiblockProvider extends JsonCodecProvider<Multiblock> {
 

@@ -5,13 +5,13 @@ import java.util.List;
 
 import com.mojang.datafixers.util.Pair;
 
-import voltaic.common.recipe.categories.fluid2item.Fluid2ItemRecipe;
-import voltaic.common.recipe.recipeutils.FluidIngredient;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidStack;
+import voltaic.common.recipe.categories.fluid2item.Fluid2ItemRecipe;
+import voltaic.common.recipe.recipeutils.FluidIngredient;
 
 public class Fluid2ItemBuilder<T extends Fluid2ItemRecipe> extends BaseRecipeBuilder<T, Fluid2ItemBuilder<T>> {
 

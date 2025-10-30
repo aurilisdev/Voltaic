@@ -1,5 +1,10 @@
 package voltaic.prefab.properties.variant;
 
+import java.util.HashSet;
+import java.util.Set;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.Block;
@@ -7,11 +12,6 @@ import voltaic.Voltaic;
 import voltaic.prefab.properties.PropertyManager;
 import voltaic.prefab.properties.types.IPropertyType;
 import voltaic.prefab.properties.types.SetPropertyType;
-
-import java.util.HashSet;
-import java.util.Set;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 public class SetProperty<T> extends AbstractProperty<HashSet<T>, SetPropertyType<T, ?>> {
 

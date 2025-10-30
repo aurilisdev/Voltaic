@@ -8,6 +8,13 @@ import java.util.function.BiPredicate;
 import javax.annotation.Nullable;
 
 import org.apache.logging.log4j.util.TriConsumer;
+
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.RecipeType;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
+import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
 import voltaic.api.gas.GasAction;
 import voltaic.api.gas.GasStack;
 import voltaic.api.gas.GasTank;
@@ -28,21 +35,15 @@ import voltaic.common.recipe.recipeutils.FluidIngredient;
 import voltaic.common.recipe.recipeutils.ProbableFluid;
 import voltaic.common.recipe.recipeutils.ProbableGas;
 import voltaic.common.recipe.recipeutils.ProbableItem;
+import voltaic.prefab.properties.types.PropertyTypes;
 import voltaic.prefab.properties.variant.ArrayProperty;
 import voltaic.prefab.properties.variant.SingleProperty;
-import voltaic.prefab.properties.types.PropertyTypes;
 import voltaic.prefab.tile.GenericTile;
 import voltaic.prefab.tile.components.IComponent;
 import voltaic.prefab.tile.components.IComponentType;
 import voltaic.prefab.utilities.ItemUtils;
 import voltaic.prefab.utilities.math.MathUtils;
 import voltaic.registers.VoltaicDataComponentTypes;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.RecipeHolder;
-import net.minecraft.world.item.crafting.RecipeType;
-import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
-import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
 
 public class ComponentProcessor implements IComponent {
 

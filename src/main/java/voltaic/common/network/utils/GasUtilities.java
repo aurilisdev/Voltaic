@@ -1,20 +1,20 @@
 package voltaic.common.network.utils;
 
-import voltaic.api.gas.IGasHandler;
-import voltaic.api.gas.IGasHandlerItem;
-import voltaic.api.gas.GasAction;
-import voltaic.api.gas.GasStack;
-import voltaic.api.gas.GasTank;
-import voltaic.prefab.tile.GenericTile;
-import voltaic.prefab.tile.components.IComponentType;
-import voltaic.prefab.tile.components.type.ComponentInventory;
-import voltaic.prefab.utilities.BlockEntityUtils;
-import voltaic.registers.VoltaicCapabilities;
 import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import voltaic.api.gas.GasAction;
+import voltaic.api.gas.GasStack;
+import voltaic.api.gas.GasTank;
+import voltaic.api.gas.IGasHandler;
+import voltaic.api.gas.IGasHandlerItem;
+import voltaic.prefab.tile.GenericTile;
+import voltaic.prefab.tile.components.IComponentType;
+import voltaic.prefab.tile.components.type.ComponentInventory;
+import voltaic.prefab.utilities.BlockEntityUtils;
+import voltaic.registers.VoltaicCapabilities;
 
 public class GasUtilities {
 

@@ -5,10 +5,6 @@ import java.util.List;
 
 import com.mojang.datafixers.util.Pair;
 
-import voltaic.api.gas.GasStack;
-import voltaic.common.recipe.categories.fluiditem2gas.FluidItem2GasRecipe;
-import voltaic.common.recipe.recipeutils.CountableIngredient;
-import voltaic.common.recipe.recipeutils.FluidIngredient;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -16,6 +12,10 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidStack;
+import voltaic.api.gas.GasStack;
+import voltaic.common.recipe.categories.fluiditem2gas.FluidItem2GasRecipe;
+import voltaic.common.recipe.recipeutils.CountableIngredient;
+import voltaic.common.recipe.recipeutils.FluidIngredient;
 
 public class FluidItem2GasBuilder<T extends FluidItem2GasRecipe> extends BaseRecipeBuilder<T, FluidItem2GasBuilder<T>> {
 

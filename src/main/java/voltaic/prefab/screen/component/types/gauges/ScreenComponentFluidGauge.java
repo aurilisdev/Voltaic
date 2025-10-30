@@ -3,16 +3,6 @@ package voltaic.prefab.screen.component.types.gauges;
 import java.util.ArrayList;
 import java.util.List;
 
-import voltaic.api.electricity.formatting.ChatFormatter;
-import voltaic.api.fluid.PropertyFluidTank;
-import voltaic.api.screen.component.FluidTankSupplier;
-import voltaic.common.packet.types.server.PacketUpdateCarriedItemServer;
-import voltaic.prefab.inventory.container.types.GenericContainerBlockEntity;
-import voltaic.prefab.screen.GenericScreen;
-import voltaic.prefab.tile.GenericTile;
-import voltaic.prefab.utilities.VoltaicTextUtils;
-import voltaic.prefab.utilities.RenderingUtils;
-import voltaic.prefab.utilities.math.Color;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
@@ -30,6 +20,16 @@ import net.neoforged.neoforge.fluids.IFluidTank;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
 import net.neoforged.neoforge.network.PacketDistributor;
+import voltaic.api.electricity.formatting.ChatFormatter;
+import voltaic.api.fluid.PropertyFluidTank;
+import voltaic.api.screen.component.FluidTankSupplier;
+import voltaic.common.packet.types.server.PacketUpdateCarriedItemServer;
+import voltaic.prefab.inventory.container.types.GenericContainerBlockEntity;
+import voltaic.prefab.screen.GenericScreen;
+import voltaic.prefab.tile.GenericTile;
+import voltaic.prefab.utilities.RenderingUtils;
+import voltaic.prefab.utilities.VoltaicTextUtils;
+import voltaic.prefab.utilities.math.Color;
 import voltaic.registers.VoltaicDataComponentTypes;
 
 @OnlyIn(Dist.CLIENT)

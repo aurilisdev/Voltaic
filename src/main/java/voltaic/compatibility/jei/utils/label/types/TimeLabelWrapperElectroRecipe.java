@@ -1,12 +1,12 @@
 package voltaic.compatibility.jei.utils.label.types;
 
+import net.minecraft.network.chat.Component;
 import voltaic.api.electricity.formatting.ChatFormatter;
 import voltaic.api.electricity.formatting.DisplayUnits;
 import voltaic.common.recipe.VoltaicRecipe;
 import voltaic.compatibility.jei.recipecategories.AbstractRecipeCategory;
 import voltaic.compatibility.jei.utils.label.AbstractLabelWrapper;
 import voltaic.prefab.utilities.math.Color;
-import net.minecraft.network.chat.Component;
 
 public class TimeLabelWrapperElectroRecipe extends AbstractLabelWrapper {
 

@@ -4,9 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import voltaic.api.electricity.formatting.ChatFormatter;
-import voltaic.api.electricity.formatting.DisplayUnits;
-import voltaic.prefab.utilities.VoltaicTextUtils;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
@@ -15,6 +12,9 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.block.Block;
+import voltaic.api.electricity.formatting.ChatFormatter;
+import voltaic.api.electricity.formatting.DisplayUnits;
+import voltaic.prefab.utilities.VoltaicTextUtils;
 
 public class BlockItemDescriptable extends BlockItemVoltaic {
 

@@ -8,16 +8,6 @@ import javax.annotation.Nullable;
 
 import org.jetbrains.annotations.NotNull;
 
-import voltaic.api.fluid.PropertyFluidTank;
-import voltaic.common.block.states.VoltaicBlockStates;
-import voltaic.common.recipe.VoltaicRecipe;
-import voltaic.common.recipe.recipeutils.AbstractMaterialRecipe;
-import voltaic.common.recipe.recipeutils.FluidIngredient;
-import voltaic.prefab.tile.GenericTile;
-import voltaic.prefab.tile.components.CapabilityInputType;
-import voltaic.prefab.tile.components.IComponentType;
-import voltaic.prefab.tile.components.utils.IComponentFluidHandler;
-import voltaic.prefab.utilities.BlockEntityUtils;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.tags.TagKey;
@@ -28,6 +18,16 @@ import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
+import voltaic.api.fluid.PropertyFluidTank;
+import voltaic.common.block.states.VoltaicBlockStates;
+import voltaic.common.recipe.VoltaicRecipe;
+import voltaic.common.recipe.recipeutils.AbstractMaterialRecipe;
+import voltaic.common.recipe.recipeutils.FluidIngredient;
+import voltaic.prefab.tile.GenericTile;
+import voltaic.prefab.tile.components.CapabilityInputType;
+import voltaic.prefab.tile.components.IComponentType;
+import voltaic.prefab.tile.components.utils.IComponentFluidHandler;
+import voltaic.prefab.utilities.BlockEntityUtils;
 
 /**
  * This class is separate from ComponentFluidHandlerSimple as it has segregated input and output tanks. These tanks are

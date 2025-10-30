@@ -2,14 +2,15 @@ package voltaic.api.radiation;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+
 import io.netty.buffer.ByteBuf;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.phys.AABB;
 import voltaic.api.radiation.util.IRadiationSource;
 import voltaic.prefab.utilities.BlockEntityUtils;
-import net.minecraft.core.BlockPos;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
 
 public class SimpleRadiationSource implements IRadiationSource {
 

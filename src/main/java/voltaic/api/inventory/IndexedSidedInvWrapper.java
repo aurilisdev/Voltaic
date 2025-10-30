@@ -4,11 +4,11 @@ import java.util.function.IntUnaryOperator;
 
 import org.jetbrains.annotations.Nullable;
 
-import voltaic.prefab.tile.components.type.ComponentInventory;
 import net.minecraft.core.Direction;
 import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
+import voltaic.prefab.tile.components.type.ComponentInventory;
 
 public class IndexedSidedInvWrapper implements IItemHandlerModifiable {
 

@@ -1,7 +1,7 @@
 package voltaic.prefab.tile;
 
-import voltaic.prefab.properties.PropertyManager;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import voltaic.prefab.properties.PropertyManager;
 
 public interface IPropertyHolderTile {
 	PropertyManager getPropertyManager();

@@ -1,18 +1,24 @@
 package voltaic.api.radiation;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
-import voltaic.api.radiation.util.*;
-import voltaic.common.reloadlistener.RadiationShieldingRegister;
-import voltaic.registers.VoltaicAttachmentTypes;
-import voltaic.registers.VoltaicCapabilities;
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.phys.AABB;
-
-import java.util.*;
+import voltaic.api.radiation.util.IRadiationManager;
+import voltaic.api.radiation.util.IRadiationRecipient;
+import voltaic.api.radiation.util.RadiationShielding;
+import voltaic.common.reloadlistener.RadiationShieldingRegister;
+import voltaic.registers.VoltaicAttachmentTypes;
+import voltaic.registers.VoltaicCapabilities;
 
 public class RadiationManager implements IRadiationManager {
 

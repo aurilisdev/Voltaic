@@ -3,18 +3,6 @@ package voltaic.compatibility.jei.recipecategories;
 import java.util.ArrayList;
 import java.util.List;
 
-import voltaic.api.gas.GasStack;
-import voltaic.api.screen.ITexture;
-import voltaic.compatibility.jei.utils.gui.ScreenObject;
-import voltaic.compatibility.jei.utils.gui.types.ArrowAnimatedObject;
-import voltaic.compatibility.jei.utils.gui.types.BackgroundObject;
-import voltaic.compatibility.jei.utils.gui.types.ItemSlotObject;
-import voltaic.compatibility.jei.utils.gui.types.fluidgauge.AbstractFluidGaugeObject;
-import voltaic.compatibility.jei.utils.gui.types.gasgauge.AbstractGasGaugeObject;
-import voltaic.compatibility.jei.utils.ingredients.VoltaicJeiTypes;
-import voltaic.compatibility.jei.utils.ingredients.IngredientRendererGasStack;
-import voltaic.compatibility.jei.utils.label.AbstractLabelWrapper;
-import voltaic.prefab.utilities.math.MathUtils;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
@@ -33,6 +21,18 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
+import voltaic.api.gas.GasStack;
+import voltaic.api.screen.ITexture;
+import voltaic.compatibility.jei.utils.gui.ScreenObject;
+import voltaic.compatibility.jei.utils.gui.types.ArrowAnimatedObject;
+import voltaic.compatibility.jei.utils.gui.types.BackgroundObject;
+import voltaic.compatibility.jei.utils.gui.types.ItemSlotObject;
+import voltaic.compatibility.jei.utils.gui.types.fluidgauge.AbstractFluidGaugeObject;
+import voltaic.compatibility.jei.utils.gui.types.gasgauge.AbstractGasGaugeObject;
+import voltaic.compatibility.jei.utils.ingredients.IngredientRendererGasStack;
+import voltaic.compatibility.jei.utils.ingredients.VoltaicJeiTypes;
+import voltaic.compatibility.jei.utils.label.AbstractLabelWrapper;
+import voltaic.prefab.utilities.math.MathUtils;
 
 public abstract class AbstractRecipeCategory<T> implements IRecipeCategory<T> {
 

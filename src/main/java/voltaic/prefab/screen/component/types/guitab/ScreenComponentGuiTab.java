@@ -4,14 +4,14 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FormattedCharSequence;
 import voltaic.Voltaic;
 import voltaic.api.screen.ITexture;
 import voltaic.api.screen.component.TextPropertySupplier;
 import voltaic.prefab.screen.component.types.ScreenComponentSlot.IconType;
 import voltaic.prefab.screen.component.utils.AbstractScreenComponentInfo;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.FormattedCharSequence;
 
 public class ScreenComponentGuiTab extends AbstractScreenComponentInfo {
 

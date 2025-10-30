@@ -1,9 +1,5 @@
 package voltaic.common.network.utils;
 
-import voltaic.prefab.tile.GenericTile;
-import voltaic.prefab.tile.components.IComponentType;
-import voltaic.prefab.tile.components.type.ComponentInventory;
-import voltaic.prefab.utilities.BlockEntityUtils;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.ItemStack;
@@ -15,6 +11,10 @@ import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
 import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
 import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
+import voltaic.prefab.tile.GenericTile;
+import voltaic.prefab.tile.components.IComponentType;
+import voltaic.prefab.tile.components.type.ComponentInventory;
+import voltaic.prefab.utilities.BlockEntityUtils;
 
 public class FluidUtilities {
 

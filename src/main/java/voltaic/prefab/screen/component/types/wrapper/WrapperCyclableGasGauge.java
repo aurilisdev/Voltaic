@@ -3,6 +3,7 @@ package voltaic.prefab.screen.component.types.wrapper;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.network.chat.Component;
 import voltaic.prefab.inventory.container.types.GenericContainerBlockEntity;
 import voltaic.prefab.screen.GenericScreen;
 import voltaic.prefab.screen.component.button.type.ButtonTankSlider;
@@ -13,7 +14,6 @@ import voltaic.prefab.tile.GenericTile;
 import voltaic.prefab.tile.components.IComponentType;
 import voltaic.prefab.tile.components.utils.IComponentGasHandler;
 import voltaic.prefab.utilities.math.Color;
-import net.minecraft.network.chat.Component;
 
 public class WrapperCyclableGasGauge {
 

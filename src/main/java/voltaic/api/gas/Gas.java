@@ -2,13 +2,13 @@ package voltaic.api.gas;
 
 import javax.annotation.Nullable;
 
-import voltaic.prefab.utilities.math.Color;
-import voltaic.registers.VoltaicGases;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
+import voltaic.prefab.utilities.math.Color;
+import voltaic.registers.VoltaicGases;
 
 /**
  * Basic implementation of a Gas mirroring certain aspects of fluids

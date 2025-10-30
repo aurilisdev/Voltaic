@@ -1,9 +1,9 @@
 package voltaic.client.guidebook.utils.pagedata.graphics;
 
-import voltaic.client.guidebook.utils.components.Page;
-import voltaic.prefab.utilities.RenderingUtils;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.item.Item;
+import voltaic.client.guidebook.utils.components.Page;
+import voltaic.prefab.utilities.RenderingUtils;
 
 /**
  * A simple wrapper class that contains render data for an item or block on the Guidebook screen The class is capable of displaying items/blocks as well as text descriptors for said items/blocks

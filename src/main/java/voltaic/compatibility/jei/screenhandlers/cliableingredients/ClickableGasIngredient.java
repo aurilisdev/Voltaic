@@ -1,10 +1,10 @@
 package voltaic.compatibility.jei.screenhandlers.cliableingredients;
 
-import voltaic.api.gas.GasStack;
-import voltaic.compatibility.jei.utils.ingredients.VoltaicJeiTypes;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import net.minecraft.client.renderer.Rect2i;
+import voltaic.api.gas.GasStack;
+import voltaic.compatibility.jei.utils.ingredients.VoltaicJeiTypes;
 
 public class ClickableGasIngredient extends AbstractClickableIngredient<GasStack> {
 

@@ -1,5 +1,10 @@
 package voltaic.api.radiation;
 
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import voltaic.Voltaic;
 import voltaic.api.radiation.util.IHazmatSuit;
 import voltaic.api.radiation.util.IRadiationRecipient;
@@ -7,11 +12,6 @@ import voltaic.api.radiation.util.RadioactiveObject;
 import voltaic.common.settings.VoltaicConstants;
 import voltaic.registers.VoltaicAttachmentTypes;
 import voltaic.registers.VoltaicEffects;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 
 public class CapabilityRadiationRecipient implements IRadiationRecipient {
 

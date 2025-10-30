@@ -2,9 +2,6 @@ package voltaic.registers;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-import voltaic.Voltaic;
-import voltaic.api.gas.Gas;
-import voltaic.prefab.utilities.VoltaicTextUtils;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
@@ -13,6 +10,9 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import voltaic.Voltaic;
+import voltaic.api.gas.Gas;
+import voltaic.prefab.utilities.VoltaicTextUtils;
 import voltaic.prefab.utilities.math.Color;
 
 public class VoltaicGases {

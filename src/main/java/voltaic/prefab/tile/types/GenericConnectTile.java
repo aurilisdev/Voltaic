@@ -2,18 +2,18 @@ package voltaic.prefab.tile.types;
 
 import org.jetbrains.annotations.NotNull;
 
-import voltaic.client.model.block.modelproperties.ModelPropertyConnections;
-import voltaic.common.block.connect.EnumConnectType;
-import voltaic.prefab.properties.variant.SingleProperty;
-import voltaic.prefab.properties.types.PropertyTypes;
-import voltaic.prefab.tile.GenericTile;
-import voltaic.prefab.tile.components.type.ComponentPacketHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.client.model.data.ModelData;
+import voltaic.client.model.block.modelproperties.ModelPropertyConnections;
+import voltaic.common.block.connect.EnumConnectType;
+import voltaic.prefab.properties.types.PropertyTypes;
+import voltaic.prefab.properties.variant.SingleProperty;
+import voltaic.prefab.tile.GenericTile;
+import voltaic.prefab.tile.components.type.ComponentPacketHandler;
 
 public abstract class GenericConnectTile extends GenericTile implements IConnectTile {
 

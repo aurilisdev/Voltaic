@@ -1,9 +1,10 @@
 package voltaic.prefab.utilities.math;
 
+import java.util.Arrays;
+
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
-import voltaic.prefab.utilities.object.Location;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
@@ -16,8 +17,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.EntityCollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-
-import java.util.Arrays;
+import voltaic.prefab.utilities.object.Location;
 
 public class MathUtils {
 

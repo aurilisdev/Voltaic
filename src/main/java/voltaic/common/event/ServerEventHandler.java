@@ -1,14 +1,18 @@
 package voltaic.common.event;
 
-import voltaic.Voltaic;
-import voltaic.api.multiblock.assemblybased.CommandScanMultiblock;
-import voltaic.common.command.CommandWipeRadiationSources;
-import voltaic.common.reloadlistener.*;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
+import voltaic.Voltaic;
+import voltaic.api.multiblock.assemblybased.CommandScanMultiblock;
+import voltaic.common.command.CommandWipeRadiationSources;
+import voltaic.common.reloadlistener.RadiationShieldingRegister;
+import voltaic.common.reloadlistener.RadioactiveBlockRegister;
+import voltaic.common.reloadlistener.RadioactiveFluidRegister;
+import voltaic.common.reloadlistener.RadioactiveGasRegister;
+import voltaic.common.reloadlistener.RadioactiveItemRegister;
 
 @EventBusSubscriber(modid = Voltaic.ID, bus = EventBusSubscriber.Bus.GAME)
 public class ServerEventHandler {

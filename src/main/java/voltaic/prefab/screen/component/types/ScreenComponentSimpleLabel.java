@@ -2,10 +2,10 @@ package voltaic.prefab.screen.component.types;
 
 import java.util.function.Supplier;
 
-import voltaic.prefab.screen.component.utils.AbstractScreenComponent;
-import voltaic.prefab.utilities.math.Color;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
+import voltaic.prefab.screen.component.utils.AbstractScreenComponent;
+import voltaic.prefab.utilities.math.Color;
 
 public class ScreenComponentSimpleLabel extends AbstractScreenComponent {
 

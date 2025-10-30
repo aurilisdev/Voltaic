@@ -12,11 +12,6 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
-import voltaic.Voltaic;
-import voltaic.api.multiblock.assemblybased.MultiblockSlaveNode;
-import voltaic.api.multiblock.assemblybased.TileMultiblockSlave;
-import voltaic.client.VoltaicClientRegister;
-import voltaic.client.model.block.modelproperties.ModelPropertySlaveNode;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
@@ -39,6 +34,11 @@ import net.neoforged.neoforge.client.model.data.ModelData;
 import net.neoforged.neoforge.client.model.geometry.IGeometryBakingContext;
 import net.neoforged.neoforge.client.model.geometry.IGeometryLoader;
 import net.neoforged.neoforge.client.model.geometry.IUnbakedGeometry;
+import voltaic.Voltaic;
+import voltaic.api.multiblock.assemblybased.MultiblockSlaveNode;
+import voltaic.api.multiblock.assemblybased.TileMultiblockSlave;
+import voltaic.client.VoltaicClientRegister;
+import voltaic.client.model.block.modelproperties.ModelPropertySlaveNode;
 
 /**
  * @author skip999

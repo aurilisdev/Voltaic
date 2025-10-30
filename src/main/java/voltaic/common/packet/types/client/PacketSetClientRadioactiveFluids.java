@@ -1,7 +1,7 @@
 package voltaic.common.packet.types.client;
 
-import voltaic.api.radiation.util.RadioactiveObject;
-import voltaic.common.packet.NetworkHandler;
+import java.util.HashMap;
+
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -9,8 +9,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
-
-import java.util.HashMap;
+import voltaic.api.radiation.util.RadioactiveObject;
+import voltaic.common.packet.NetworkHandler;
 
 public class PacketSetClientRadioactiveFluids implements CustomPacketPayload {
 

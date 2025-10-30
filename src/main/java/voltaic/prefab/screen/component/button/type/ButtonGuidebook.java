@@ -1,11 +1,11 @@
 package voltaic.prefab.screen.component.button.type;
 
-import voltaic.Voltaic;
-import voltaic.api.screen.ITexture;
-import voltaic.prefab.screen.component.button.ScreenComponentButton;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
+import voltaic.Voltaic;
+import voltaic.api.screen.ITexture;
+import voltaic.prefab.screen.component.button.ScreenComponentButton;
 
 public class ButtonGuidebook extends ScreenComponentButton<ButtonGuidebook> {
 

@@ -2,9 +2,9 @@ package voltaic.prefab.tile.components;
 
 import javax.annotation.Nullable;
 
-import voltaic.prefab.tile.GenericTile;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.state.BlockState;
+import voltaic.prefab.tile.GenericTile;
 
 //renamed ever so slightly so it's not confused with the Vanilla class constantly when importing 
 public interface IComponent {

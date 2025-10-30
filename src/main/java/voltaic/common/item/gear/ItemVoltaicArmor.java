@@ -2,7 +2,6 @@ package voltaic.common.item.gear;
 
 import java.util.List;
 
-import voltaic.api.creativetab.CreativeTabSupplier;
 import net.minecraft.core.Holder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -11,6 +10,7 @@ import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import voltaic.api.creativetab.CreativeTabSupplier;
 
 public class ItemVoltaicArmor extends ArmorItem implements CreativeTabSupplier {
 

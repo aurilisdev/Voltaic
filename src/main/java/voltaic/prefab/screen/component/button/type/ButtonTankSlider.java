@@ -1,11 +1,11 @@
 package voltaic.prefab.screen.component.button.type;
 
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.resources.ResourceLocation;
 import voltaic.Voltaic;
 import voltaic.api.screen.ITexture;
 import voltaic.prefab.screen.component.button.ScreenComponentButton;
 import voltaic.prefab.utilities.RenderingUtils;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.resources.ResourceLocation;
 
 public class ButtonTankSlider extends ScreenComponentButton<ButtonTankSlider> {
 

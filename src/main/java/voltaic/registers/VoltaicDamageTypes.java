@@ -1,12 +1,12 @@
 package voltaic.registers;
 
-import voltaic.Voltaic;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.damagesource.DamageEffects;
 import net.minecraft.world.damagesource.DamageScaling;
 import net.minecraft.world.damagesource.DamageType;
+import voltaic.Voltaic;
 
 public class VoltaicDamageTypes {
 

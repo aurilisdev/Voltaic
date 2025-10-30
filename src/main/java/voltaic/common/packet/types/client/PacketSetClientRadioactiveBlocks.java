@@ -1,5 +1,7 @@
 package voltaic.common.packet.types.client;
 
+import java.util.HashMap;
+
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -10,8 +12,6 @@ import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import voltaic.api.radiation.util.RadioactiveObject;
 import voltaic.common.packet.NetworkHandler;
-
-import java.util.HashMap;
 
 public class PacketSetClientRadioactiveBlocks implements CustomPacketPayload {
 

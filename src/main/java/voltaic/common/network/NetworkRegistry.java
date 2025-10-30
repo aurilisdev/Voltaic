@@ -5,12 +5,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.UUID;
 
-import voltaic.Voltaic;
-import voltaic.api.network.ITickableNetwork;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.server.ServerStoppedEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
+import voltaic.Voltaic;
+import voltaic.api.network.ITickableNetwork;
 
 @EventBusSubscriber(modid = Voltaic.ID, bus = EventBusSubscriber.Bus.GAME)
 public class NetworkRegistry {
