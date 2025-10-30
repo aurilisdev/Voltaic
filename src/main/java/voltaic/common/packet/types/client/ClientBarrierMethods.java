@@ -67,7 +67,6 @@ public class ClientBarrierMethods {
 
     public static void handleUpdateCarriedItemClient(ItemStack carriedItem, BlockPos tilePos, UUID playerId) {
         Player player = Minecraft.getInstance().player;
-        Level level = Minecraft.getInstance().level;
 
         if(player == null || !player.getUUID().equals(playerId)) {
             return;

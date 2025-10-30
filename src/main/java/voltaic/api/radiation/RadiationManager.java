@@ -136,7 +136,6 @@ public class RadiationManager implements IRadiationManager {
         Entity entity;
 
         BlockPos position;
-        AABB sourceBB;
         IRadiationRecipient capability;
 
         HashMap<BlockPos, SimpleRadiationSource> permanentSources = world.getData(VoltaicAttachmentTypes.PERMANENT_RADIATION_SOURCES);
@@ -256,7 +255,6 @@ public class RadiationManager implements IRadiationManager {
 
         double defaultRadiationDisipation = world.getData(VoltaicAttachmentTypes.DEFAULT_DISSIPATION);
         HashMap<AABB, Double> localizedDissipations = world.getData(VoltaicAttachmentTypes.LOCALIZED_DISSIPATIONS);
-        boolean hit = false;
 
         while (iteratorFading.hasNext()) {
 
