@@ -15,7 +15,7 @@ import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import voltaic.Voltaic;
 import voltaic.api.radiation.util.IRadiationManager;
 import voltaic.api.radiation.util.IRadiationRecipient;
-import voltaic.common.settings.VoltaicConstants;
+import voltaic.common.settings.VoltaicConfig;
 import voltaic.registers.VoltaicAttachmentTypes;
 import voltaic.registers.VoltaicCapabilities;
 
@@ -31,7 +31,7 @@ public class RadiationSystem {
 			return;
 		}
 
-		if(!VoltaicConstants.RADIATION_SYSTEM_ENABLED) {
+		if(VoltaicConfig.INSTANCE.RADIATION_SYSTEM_ENABLED.isFalse()) {
 			wipeAllSources(level);
 			return;
 		}
@@ -45,7 +45,7 @@ public class RadiationSystem {
 
 	@SubscribeEvent
 	public static void entityTick(EntityTickEvent.Post event) {
-		if(!VoltaicConstants.RADIATION_SYSTEM_ENABLED || event.getEntity().level().isClientSide() || !(event.getEntity() instanceof LivingEntity)) {
+		if(VoltaicConfig.INSTANCE.RADIATION_SYSTEM_ENABLED.isFalse() || event.getEntity().level().isClientSide() || !(event.getEntity() instanceof LivingEntity)) {
 			return;
 		}
 		IRadiationRecipient capability = event.getEntity().getCapability(VoltaicCapabilities.CAPABILITY_RADIATIONRECIPIENT);
@@ -57,7 +57,7 @@ public class RadiationSystem {
 	}
 
 	public static void addRadiationSource(Level world, SimpleRadiationSource source) {
-		if(!VoltaicConstants.RADIATION_SYSTEM_ENABLED) {
+		if(VoltaicConfig.INSTANCE.RADIATION_SYSTEM_ENABLED.isFalse()) {
 			return;
 		}
 		if(source == null) {
@@ -69,7 +69,7 @@ public class RadiationSystem {
 	}
 
 	public static void removeRadiationSource(Level world, BlockPos pos, boolean shouldLinger) {
-		if(!VoltaicConstants.RADIATION_SYSTEM_ENABLED) {
+		if(VoltaicConfig.INSTANCE.RADIATION_SYSTEM_ENABLED.isFalse()) {
 			return;
 		}
 		if(pos == null) {
@@ -89,7 +89,7 @@ public class RadiationSystem {
 	}
 
 	public static void addDisipation(Level world, double amount, AABB volume) {
-		if(!VoltaicConstants.RADIATION_SYSTEM_ENABLED) {
+		if(VoltaicConfig.INSTANCE.RADIATION_SYSTEM_ENABLED.isFalse()) {
 			return;
 		}
 		IRadiationManager manager = world.getData(VoltaicAttachmentTypes.RADIATION_MANAGER);

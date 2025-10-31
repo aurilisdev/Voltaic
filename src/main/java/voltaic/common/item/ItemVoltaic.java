@@ -16,7 +16,7 @@ import voltaic.api.radiation.SimpleRadiationSource;
 import voltaic.api.radiation.util.IRadiationRecipient;
 import voltaic.api.radiation.util.RadioactiveObject;
 import voltaic.common.reloadlistener.RadioactiveItemRegister;
-import voltaic.common.settings.VoltaicConstants;
+import voltaic.common.settings.VoltaicConfig;
 import voltaic.registers.VoltaicCapabilities;
 
 public class ItemVoltaic extends Item implements CreativeTabSupplier {
@@ -49,7 +49,7 @@ public class ItemVoltaic extends Item implements CreativeTabSupplier {
 
 		Level world = entity.level();
 
-		if(world.isClientSide || !VoltaicConstants.RADIATION_SYSTEM_ENABLED) {
+		if(world.isClientSide || VoltaicConfig.INSTANCE.RADIATION_SYSTEM_ENABLED.isFalse()) {
 			return super.onEntityItemUpdate(stack, entity);
 		}
 
@@ -67,7 +67,7 @@ public class ItemVoltaic extends Item implements CreativeTabSupplier {
 	public void inventoryTick(ItemStack stack, Level world, Entity entity, int itemSlot, boolean isSelected) {
 		super.inventoryTick(stack, world, entity, itemSlot, isSelected);
 
-		if(!VoltaicConstants.RADIATION_SYSTEM_ENABLED) {
+		if(VoltaicConfig.INSTANCE.RADIATION_SYSTEM_ENABLED.isFalse()) {
 			return;
 		}
 

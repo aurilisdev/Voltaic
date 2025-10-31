@@ -9,7 +9,7 @@ import voltaic.Voltaic;
 import voltaic.api.radiation.util.IHazmatSuit;
 import voltaic.api.radiation.util.IRadiationRecipient;
 import voltaic.api.radiation.util.RadioactiveObject;
-import voltaic.common.settings.VoltaicConstants;
+import voltaic.common.settings.VoltaicConfig;
 import voltaic.registers.VoltaicAttachmentTypes;
 import voltaic.registers.VoltaicEffects;
 
@@ -31,12 +31,12 @@ public class CapabilityRadiationRecipient implements IRadiationRecipient {
         }
 
         if(entity.hasEffect(VoltaicEffects.RADIATION_RESISTANCE)) {
-            if(rads <= VoltaicConstants.IODINE_RESISTANCE_THRESHHOLD) {
+            if(rads <= VoltaicConfig.INSTANCE.IODINE_RESISTANCE_THRESHOLD.get()) {
                 entity.setData(VoltaicAttachmentTypes.RECIEVED_RADIATIONAMOUNT, entity.getData(VoltaicAttachmentTypes.RECIEVED_RADIATIONAMOUNT) + rads);
                 entity.setData(VoltaicAttachmentTypes.RECIEVED_RADIATIONSTRENGTH, strength);
                 return;
             }
-	    rads *= VoltaicConstants.IODINE_RAD_REDUCTION;
+	    rads *= VoltaicConfig.INSTANCE.IODINE_RAD_REDUCTION.get();
         }
 
         int count = 0;

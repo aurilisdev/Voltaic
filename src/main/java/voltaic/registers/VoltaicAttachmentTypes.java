@@ -23,7 +23,7 @@ import voltaic.Voltaic;
 import voltaic.api.radiation.RadiationManager;
 import voltaic.api.radiation.SimpleRadiationSource;
 import voltaic.api.radiation.util.IRadiationManager;
-import voltaic.common.settings.VoltaicConstants;
+import voltaic.common.settings.VoltaicConfig;
 import voltaic.prefab.utilities.CodecUtils;
 
 public class VoltaicAttachmentTypes {
@@ -162,7 +162,7 @@ public class VoltaicAttachmentTypes {
         }
     }).build());
 
-    public static final DeferredHolder<AttachmentType<?>, AttachmentType<Double>> DEFAULT_DISSIPATION = ATTACHMENT_TYPES.register("defaultdissipation", () -> AttachmentType.builder(() -> VoltaicConstants.BACKROUND_RADIATION_DISSIPATION).serialize(Codec.DOUBLE).build());
+    public static final DeferredHolder<AttachmentType<?>, AttachmentType<Double>> DEFAULT_DISSIPATION = ATTACHMENT_TYPES.register("defaultdissipation", () -> AttachmentType.builder(() -> VoltaicConfig.INSTANCE.BACKGROUND_RADIATION_DISSIPATION.get()).serialize(Codec.DOUBLE).build());
 
     public static final DeferredHolder<AttachmentType<?>, AttachmentType<RadiationManager>> RADIATION_MANAGER = ATTACHMENT_TYPES.register("radiationmanager", () -> AttachmentType.builder(RadiationManager::new).build());
     public static final DeferredHolder<AttachmentType<?>, AttachmentType<Double>> RECIEVED_RADIATIONAMOUNT = ATTACHMENT_TYPES.register("recievedradiationamount", () -> AttachmentType.builder(() -> Double.valueOf(0.0)).serialize(Codec.DOUBLE).build());

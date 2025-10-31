@@ -50,14 +50,14 @@ public final class Voltaic {
     public static final String MEKANISM_ID = "mekanism";
 
     private static final String ELECTRODYNAMICS_MOD_ID = "electrodynamics";
-
+    
     public Voltaic(IEventBus bus, ModContainer container) {
         // MUST GO BEFORE BLOCKS!!!!
         VoltaicBlockStates.init();
         UnifiedVoltaicRegister.register(bus);
 
-
-        container.registerConfig(ModConfig.Type.COMMON, new VoltaicConfig().SPEC);
+        VoltaicConfig.INSTANCE = new VoltaicConfig();
+        container.registerConfig(ModConfig.Type.COMMON, VoltaicConfig.INSTANCE.SPEC);
         container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
     }
     

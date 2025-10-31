@@ -3,6 +3,7 @@ package voltaic.common.settings;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
 public class VoltaicConfig {
+    public static VoltaicConfig INSTANCE;
     public ModConfigSpec.BooleanValue DISPENSE_GUIDEBOOK;
     public ModConfigSpec.DoubleValue BACKGROUND_RADIATION_DISSIPATION;
     public ModConfigSpec.DoubleValue IODINE_RESISTANCE_THRESHOLD;
