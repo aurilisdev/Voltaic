@@ -177,9 +177,11 @@ public class RadiationManager implements IRadiationManager {
                 if(!living.getBoundingBox().intersects(permanentSource.getBoundingBox())) {
                     continue;
                 }
-                
-                for (int i = 0; i < (int) Math.ceil(living.getBbHeight()); i++) {
-                    capability.recieveRadiation(living, getAppliedRadiation(world, position, living.getOnPos().above(i + 1), permanentSource.getRadiationAmount(), permanentSource.getRadiationStrength()), permanentSource.getRadiationStrength());
+
+		int splitTargets = (int) Math.ceil(living.getBbHeight());
+	
+                for (int i = 0; i < splitTargets; i++) {
+                    capability.recieveRadiation(living, getAppliedRadiation(world, position, living.getOnPos().above(i + 1), permanentSource.getRadiationAmount() / splitTargets, permanentSource.getRadiationStrength()), permanentSource.getRadiationStrength());
                 }
 
             }
@@ -195,9 +197,15 @@ public class RadiationManager implements IRadiationManager {
                     continue;
                 }
 
-                for (int i = 0; i < (int) Math.ceil(living.getBbHeight()); i++) {
-                    capability.recieveRadiation(living, getAppliedRadiation(world, position, living.getOnPos().above(i + 1), temporarySource.radiation, temporarySource.strength), temporarySource.strength);
-                }
+		int splitTargets = (int) Math.ceil(living.getBbHeight());
+		
+		for (int i = 0; i < splitTargets; i++) {
+		    capability
+			    .recieveRadiation(living,
+				    getAppliedRadiation(world, position, living.getOnPos().above(i + 1),
+					    temporarySource.radiation /splitTargets, temporarySource.strength),
+				    temporarySource.strength);
+		}
                 
                 
             }
@@ -213,8 +221,10 @@ public class RadiationManager implements IRadiationManager {
                     continue;
                 }
 
+		int splitTargets = (int) Math.ceil(living.getBbHeight());
+	
                 for (int i = 0; i < (int) Math.ceil(living.getBbHeight()); i++) {
-                    capability.recieveRadiation(living, getAppliedRadiation(world, position, living.getOnPos().above(i + 1), fadingSource.radiation, fadingSource.strength), fadingSource.strength);
+                    capability.recieveRadiation(living, getAppliedRadiation(world, position, living.getOnPos().above(i + 1), fadingSource.radiation / splitTargets, fadingSource.strength), fadingSource.strength);
                 }
 
             }
