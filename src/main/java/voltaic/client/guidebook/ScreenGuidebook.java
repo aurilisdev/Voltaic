@@ -689,14 +689,14 @@ public class ScreenGuidebook extends GenericScreen<ContainerGuidebook> {
 		if (currPageNumber >= PAGES.size()) {
 			currPageNumber = PAGES.size() - 2;
 		}
-		return PAGES.get(currPageNumber);
+		return PAGES.get(Math.max(0, currPageNumber));
 	}
 
 	public Page getNextPage() {
 		if (currPageNumber >= PAGES.size()) {
 			currPageNumber = PAGES.size() - 2;
 		}
-		return PAGES.get(currPageNumber + 1);
+		return PAGES.get(Math.max(0, currPageNumber+1));
 	}
 
 	protected void pageForward() {
