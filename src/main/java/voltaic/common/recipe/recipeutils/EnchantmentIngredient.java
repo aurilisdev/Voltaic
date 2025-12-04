@@ -127,7 +127,6 @@ public class EnchantmentIngredient implements ICustomIngredient {
 
     @Override
     public Stream<ItemStack> getItems() {
-
         return Stream.of(ingredient.getItems());
     }
 

@@ -90,7 +90,7 @@ public class CountableIngredient implements ICustomIngredient {
     @Override
     public Stream<ItemStack> getItems() {
         if (countedItems == null) {
-            ItemStack[] items = ingredient.getItems();
+            ItemStack[] items = ingredient.getItems().clone();
             for (ItemStack item : items) {
                 item.setCount(stackSize);
             }
@@ -101,7 +101,7 @@ public class CountableIngredient implements ICustomIngredient {
 
     public ItemStack[] getItemsArray() {
         if (countedItems == null) {
-            ItemStack[] items = ingredient.getItems();
+            ItemStack[] items = ingredient.getItems().clone();
             for (ItemStack item : items) {
                 item.setCount(stackSize);
             }
