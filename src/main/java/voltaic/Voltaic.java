@@ -19,6 +19,7 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.common.NeoForge;
@@ -50,33 +51,35 @@ public final class Voltaic {
     public static final String MEKANISM_ID = "mekanism";
 
     private static final String ELECTRODYNAMICS_MOD_ID = "electrodynamics";
-    
-    public Voltaic(IEventBus bus, ModContainer container) {
-        // MUST GO BEFORE BLOCKS!!!!
-        VoltaicBlockStates.init();
-        UnifiedVoltaicRegister.register(bus);
 
-        VoltaicConfig.INSTANCE = new VoltaicConfig();
-        container.registerConfig(ModConfig.Type.COMMON, VoltaicConfig.INSTANCE.SPEC);
-        container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
+    public Voltaic(IEventBus bus, ModContainer container) {
+	// MUST GO BEFORE BLOCKS!!!!
+	VoltaicBlockStates.init();
+	UnifiedVoltaicRegister.register(bus);
+
+	VoltaicConfig.INSTANCE = new VoltaicConfig();
+	container.registerConfig(ModConfig.Type.COMMON, VoltaicConfig.INSTANCE.SPEC);
+	if (FMLEnvironment.dist == Dist.CLIENT) {
+	    container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
+	}
     }
-    
 
     @SubscribeEvent
     public static void onCommonSetup(FMLCommonSetupEvent event) {
-        NeoForge.EVENT_BUS.addListener(getGuidebookListener());
-        VoltaicTags.init();
-        RadioactiveItemRegister.INSTANCE = new RadioactiveItemRegister().subscribeAsSyncable();
-        RadioactiveFluidRegister.INSTANCE = new RadioactiveFluidRegister().subscribeAsSyncable();
-        RadioactiveGasRegister.INSTANCE = new RadioactiveGasRegister().subscribeAsSyncable();
-        RadiationShieldingRegister.INSTANCE = new RadiationShieldingRegister().subscribeAsSyncable();
-        RadioactiveBlockRegister.INSTANCE = new RadioactiveBlockRegister().subscribeAsSyncable();
-        // CraftingHelper.register(ConfigCondition.Serializer.INSTANCE); // Probably wrong location after update from 1.18.2 to
-        // 1.19.2
+	NeoForge.EVENT_BUS.addListener(getGuidebookListener());
+	VoltaicTags.init();
+	RadioactiveItemRegister.INSTANCE = new RadioactiveItemRegister().subscribeAsSyncable();
+	RadioactiveFluidRegister.INSTANCE = new RadioactiveFluidRegister().subscribeAsSyncable();
+	RadioactiveGasRegister.INSTANCE = new RadioactiveGasRegister().subscribeAsSyncable();
+	RadiationShieldingRegister.INSTANCE = new RadiationShieldingRegister().subscribeAsSyncable();
+	RadioactiveBlockRegister.INSTANCE = new RadioactiveBlockRegister().subscribeAsSyncable();
+	// CraftingHelper.register(ConfigCondition.Serializer.INSTANCE); // Probably
+	// wrong location after update from 1.18.2 to
+	// 1.19.2
 
-        // RegisterFluidToGasMapEvent map = new RegisterFluidToGasMapEvent();
-        // MinecraftForge.EVENT_BUS.post(map);
-        // ElectrodynamicsGases.MAPPED_GASSES.putAll(map.fluidToGasMap);
+	// RegisterFluidToGasMapEvent map = new RegisterFluidToGasMapEvent();
+	// MinecraftForge.EVENT_BUS.post(map);
+	// ElectrodynamicsGases.MAPPED_GASSES.putAll(map.fluidToGasMap);
 
     }
 
@@ -84,38 +87,38 @@ public final class Voltaic {
     @SubscribeEvent
     @OnlyIn(Dist.CLIENT)
     public static void onClientSetup(FMLClientSetupEvent event) {
-        event.enqueueWork(VoltaicClientRegister::setup);
+	event.enqueueWork(VoltaicClientRegister::setup);
     }
 
     // Don't really have a better place to put this for now
     private static Consumer<OnDatapackSyncEvent> getGuidebookListener() {
-        return event -> {
-            ServerPlayer player = event.getPlayer();
-            if (player == null) {
-                PacketDistributor.sendToAllPlayers(PacketResetGuidebookPages.PACKET);
-            } else {
-                PacketDistributor.sendToPlayer(player, PacketResetGuidebookPages.PACKET);
-            }
-        };
+	return event -> {
+	    ServerPlayer player = event.getPlayer();
+	    if (player == null) {
+		PacketDistributor.sendToAllPlayers(PacketResetGuidebookPages.PACKET);
+	    } else {
+		PacketDistributor.sendToPlayer(player, PacketResetGuidebookPages.PACKET);
+	    }
+	};
     }
 
     public static ResourceLocation rl(String path) {
-        return ResourceLocation.fromNamespaceAndPath(ID, path);
+	return ResourceLocation.fromNamespaceAndPath(ID, path);
     }
 
     public static ResourceLocation vanillarl(String path) {
-        return ResourceLocation.withDefaultNamespace(path);
+	return ResourceLocation.withDefaultNamespace(path);
     }
 
     public static ResourceLocation forgerl(String path) {
-        return ResourceLocation.fromNamespaceAndPath("neoforge", path);
+	return ResourceLocation.fromNamespaceAndPath("neoforge", path);
     }
 
     public static ResourceLocation commonrl(String path) {
-        return ResourceLocation.fromNamespaceAndPath("c", path);
+	return ResourceLocation.fromNamespaceAndPath("c", path);
     }
 
     public static boolean isElectroLoaded() {
-        return ModList.get().isLoaded(ELECTRODYNAMICS_MOD_ID);
+	return ModList.get().isLoaded(ELECTRODYNAMICS_MOD_ID);
     }
 }
