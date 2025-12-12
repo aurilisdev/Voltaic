@@ -13,38 +13,39 @@ import voltaic.registers.VoltaicDamageTypes;
 
 public class EffectRadiation extends MobEffect {
 
-	public static final Color COLOR = new Color(78, 174, 49, 255);
+    public static final Color COLOR = new Color(78, 174, 49, 255);
 
-	public static final EffectCure CURE = EffectCure.get("radiationcure");
+    public static final EffectCure CURE = EffectCure.get("radiationcure");
 
-	public EffectRadiation(MobEffectCategory typeIn, int liquidColorIn) {
-		super(typeIn, liquidColorIn);
+    public EffectRadiation(MobEffectCategory typeIn, int liquidColorIn) {
+	super(typeIn, liquidColorIn);
+    }
+
+    public EffectRadiation() {
+	this(MobEffectCategory.HARMFUL, COLOR.color());
+    }
+
+    @Override
+    public boolean applyEffectTick(LivingEntity entity, int amplifier) {
+	if (entity.level().random.nextFloat() < 0.033) {
+	    entity.hurt(entity.damageSources().source(VoltaicDamageTypes.RADIATION),
+		    (float) (Math.pow(amplifier, 1.3) + 1));
+	    if (entity instanceof Player pl) {
+		pl.causeFoodExhaustion(0.05F * (amplifier + 1));
+	    }
 	}
+	return true;
+    }
 
-	public EffectRadiation() {
-		this(MobEffectCategory.HARMFUL, COLOR.color());
-	}
+    @Override
+    public void fillEffectCures(Set<EffectCure> cures, MobEffectInstance effectInstance) {
+	cures.clear();
+	cures.add(CURE);
+    }
 
-	@Override
-	public boolean applyEffectTick(LivingEntity entity, int amplifier) {
-		if (entity.level().random.nextFloat() < 0.033) {
-			entity.hurt(entity.damageSources().source(VoltaicDamageTypes.RADIATION, null), (float) (Math.pow(amplifier, 1.3) + 1));
-			if (entity instanceof Player pl) {
-				pl.causeFoodExhaustion(0.05F * (amplifier + 1));
-			}
-		}
-		return true;
-	}
-
-	@Override
-	public void fillEffectCures(Set<EffectCure> cures, MobEffectInstance effectInstance) {
-		cures.clear();
-		cures.add(CURE);
-	}
-
-	@Override
-	public boolean shouldApplyEffectTickThisTick(int duration, int amplifier) {
-		return true;
-	}
+    @Override
+    public boolean shouldApplyEffectTickThisTick(int duration, int amplifier) {
+	return true;
+    }
 
 }
