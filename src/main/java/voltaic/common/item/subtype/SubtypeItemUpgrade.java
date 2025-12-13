@@ -48,7 +48,7 @@ public enum SubtypeItemUpgrade implements ISubtype {
 
     // the only way to optimize this one further is to increase the tick delay.
     // Currently, it's set to every 4 ticks
-    iteminput((holder, upgrade, procNumber) -> {
+    itemoutput((holder, upgrade, procNumber) -> {
         ComponentInventory inv = holder.getComponent(IComponentType.Inventory);
 
         if (!inv.hasInputRoom()) {
@@ -89,7 +89,7 @@ public enum SubtypeItemUpgrade implements ISubtype {
 
     }, 1, VoltaicTextUtils.tooltip("upgrade.iteminput"), "electrodynamics", "assemblyline", "blastcraft"),
     // I can't really optimize this one any more than it is
-    itemoutput((holder, upgrade, index) -> {
+    iteminput((holder, upgrade, index) -> {
         ComponentInventory inv = holder.getComponent(IComponentType.Inventory);
         if (!inv.hasItemsInOutput()) {
             return;

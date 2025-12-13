@@ -1,18 +1,15 @@
 package voltaic.common.item;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.item.CreativeModeTab;
 import org.apache.commons.lang3.StringUtils;
 
-import voltaic.common.item.subtype.SubtypeItemUpgrade;
-import voltaic.prefab.utilities.VoltaicTextUtils;
-import voltaic.prefab.utilities.NBTUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
@@ -20,10 +17,14 @@ import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import voltaic.common.item.subtype.SubtypeItemUpgrade;
+import voltaic.prefab.utilities.NBTUtils;
+import voltaic.prefab.utilities.VoltaicTextUtils;
 
 public class ItemUpgrade extends ItemVoltaic {
 	public final SubtypeItemUpgrade subtype;
@@ -92,8 +93,10 @@ public class ItemUpgrade extends ItemVoltaic {
 				if (player.isShiftKeyDown()) {
 					Vec3 look = player.getLookAngle();
 					Direction lookingDir = Direction.getNearest(look.x, look.y, look.z);
-					List<Direction> dirs = NBTUtils.readDirectionList(handStack);
-					dirs.add(lookingDir);
+					List<Direction> dirs = new ArrayList<Direction>( NBTUtils.readDirectionList(handStack));
+					if(!dirs.contains(lookingDir)) {
+					    dirs.add(lookingDir);
+					}
 					NBTUtils.clearDirectionList(handStack);
 					NBTUtils.writeDirectionList(dirs, handStack);
 				} else {
