@@ -16,7 +16,6 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.Fluid;
 
@@ -66,17 +65,16 @@ public class ClientBarrierMethods {
     }
     
     public static void handleUpdateCarriedItemClient(ItemStack carriedItem, BlockPos tilePos, UUID playerId) {
-		Player player = Minecraft.getInstance().player;
-		Level level = Minecraft.getInstance().level;
-		
-		if(player == null || !player.getUUID().equals(playerId)) {
-			return;
-		}
-		
-		player.containerMenu.setCarried(carriedItem);
-		
-	}
-    
+        Player player = Minecraft.getInstance().player;
+
+        if(player == null || !player.getUUID().equals(playerId)) {
+            return;
+        }
+
+        player.containerMenu.setCarried(carriedItem);
+
+    }
+
     public static void handleSetClientRadioactiveBlocks(HashMap<Block, RadioactiveObject> blocks) {
         RadioactiveBlockRegister.INSTANCE.setClientValues(blocks);
     }
