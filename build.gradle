@@ -1,5 +1,7 @@
 plugins {
 	id 'eclipse'
+    id 'idea'
+	id 'java-library'
 	id 'maven-publish'
 	id 'net.minecraftforge.gradle' version "${forge_gradle_version}"
 	id 'org.parchmentmc.librarian.forgegradle' version "${parchent_librarian_version}.+"
@@ -10,6 +12,10 @@ distsDirName = "../output"
 
 group = voltaic_group
 version = "${minecraft_version}-" + voltaic_version
+
+repositories {
+    mavenLocal()
+}
 
 base {
 
@@ -78,29 +84,17 @@ minecraft {
 
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
+configurations {
+    runtimeClasspath.extendsFrom localRuntime
+}
+
 dependencies {
 	minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
     compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}-common-api:${jei_version}")
     compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}-forge-api:${jei_version}")
     runtimeOnly fg.deobf("mezz.jei:jei-${minecraft_version}-forge:${jei_version}")
 }
-repositories {
-	mavenCentral()
-	maven {
-	    // location of the maven that hosts JEI files since January 2023
-	    name = "Jared's maven"
-	    url = "https://maven.blamejared.com/"
-	}
-	maven {
-   		// location of a maven mirror for JEI files, as a fallback
-    	name = "ModMaven"
-    	url = "https://modmaven.dev"
-  	}
-    maven {
-        url = "https://api.modrinth.com/maven"
-    }
 
-}
 
 tasks.named('jar', Jar).configure {
 	
@@ -135,24 +129,16 @@ tasks.named('publish').configure {
 	dependsOn 'reobfJar'
 }
 
-/*
-task sourcesJar(type: Jar, dependsOn: classes) {
-	from sourceSets.main.allSource
-	classifier = 'sources'
-}
-task deobfJar(type: Jar) {
-	from sourceSets.main.output
-	classifier = 'deobf'
-}
-*/
 artifacts {
 	archives sourcesJar
 	archives deobfJar
 }
+
 publishing {
     publications {
-        mavenJava(MavenPublication) {
-            artifact jar
+        register('mavenJava', MavenPublication) {
+            from components.java
+            artifact(tasks.named('deobfJar')) // publishes :deobf
         }
     }
     repositories {
@@ -160,4 +146,33 @@ publishing {
             url "file:///${project.projectDir}/mcmodsrepo"
         }
     }
+}
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
+}
+idea {
+    module {
+        downloadSources = true
+        downloadJavadoc = true
+    }
+}
+java {
+  withSourcesJar()   // <- generates sources JAR
+}
+
+repositories {
+	maven {
+	    // location of the maven that hosts JEI files since January 2023
+	    name = "Jared's maven"
+	    url = "https://maven.blamejared.com/"
+	}
+	maven {
+   		// location of a maven mirror for JEI files, as a fallback
+    	name = "ModMaven"
+    	url = "https://modmaven.dev"
+  	}
+    maven {
+        url = "https://api.modrinth.com/maven"
+    }
+
 }
