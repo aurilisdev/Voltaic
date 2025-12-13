@@ -1,9 +1,8 @@
 plugins {
 	id 'eclipse'
 	id 'maven-publish'
-	id 'net.minecraftforge.gradle' version '[6.0,6.2)'
+	id 'net.minecraftforge.gradle' version "${forge_gradle_version}"
 	id 'org.parchmentmc.librarian.forgegradle' version "${parchent_librarian_version}.+"
-    id 'com.matthewprenger.cursegradle' version "${cursegradle_version}"
 }
 
 libsDirName = "../output"
@@ -85,7 +84,6 @@ dependencies {
     compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}-forge-api:${jei_version}")
     runtimeOnly fg.deobf("mezz.jei:jei-${minecraft_version}-forge:${jei_version}")
 }
-
 repositories {
 	mavenCentral()
 	maven {
