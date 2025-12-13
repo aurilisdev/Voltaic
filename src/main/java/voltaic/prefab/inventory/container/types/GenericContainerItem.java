@@ -33,10 +33,9 @@ public abstract class GenericContainerItem extends GenericContainerSlotData<Capa
         Inventory playerinv = pl.getInventory();
 
         ItemStack owner = getOwnerItem();
-
-        if (owner.isEmpty() || (slot >= 0 && slot <= pl.getInventory().getContainerSize() - 1 && ItemStack.isSameItem(playerinv.getItem(slot), owner))) {
-            return;
-        }
+	if (owner.isEmpty() || (slot >= 0 && slot <= playerinv.getContainerSize() - 1 && ItemStack.isSameItem(getSlot(slot).getItem(), owner))) {
+	    return;
+	}
 
         super.clicked(slot, button, type, pl);
     }
