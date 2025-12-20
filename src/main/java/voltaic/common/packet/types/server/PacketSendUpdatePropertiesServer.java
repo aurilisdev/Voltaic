@@ -20,7 +20,7 @@ public class PacketSendUpdatePropertiesServer {
             //buf.writeResourceLocation(packet.wrapper.type().getId());
             //packet.wrapper.type().getPacketCodec().encode(buf, packet.wrapper.value());
 
-            buf.writeNbt(packet.data);
+            buf.writeNbt(packet.data == null ? new CompoundTag() : packet.data);
             buf.writeInt(packet.index);
             buf.writeBlockPos(packet.tilePos);
 
