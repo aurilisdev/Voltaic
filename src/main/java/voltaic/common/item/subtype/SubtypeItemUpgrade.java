@@ -48,7 +48,45 @@ public enum SubtypeItemUpgrade implements ISubtype {
 
     // the only way to optimize this one further is to increase the tick delay.
     // Currently, it's set to every 4 ticks
-    iteminput((holder, upgrade, index) -> {
+    // I can't really optimize this one any more than it is
+    iteminput((holder, upgrade, procNumber) -> {
+	ComponentInventory inv = holder.getComponent(IComponentType.Inventory);
+	if (!inv.hasInputRoom()) {
+	    return;
+	}
+
+	int tickNumber = upgrade.getOrDefault(VoltaicDataComponentTypes.TIMER, 0);
+
+	if (tickNumber < 4) {
+	    upgrade.set(VoltaicDataComponentTypes.TIMER, tickNumber + 1);
+	    return;
+	}
+
+	upgrade.set(VoltaicDataComponentTypes.TIMER, 0);
+	List<Direction> dirs = NBTUtils.readDirectionList(upgrade);
+
+	if (dirs.size() == 0) {
+	    return;
+	}
+
+	if (upgrade.getOrDefault(VoltaicDataComponentTypes.SMART, false)) {
+
+	    int index = 0;
+	    Direction dir = Direction.DOWN;
+	    for (int slot : inv.getInputSlotsForProcessor(procNumber)) {
+		if (index < dirs.size()) {
+		    dir = dirs.get(index);
+		}
+		inputSmartMode(getBlockEntity(holder, dir), inv, slot, procNumber, dir);
+		index++;
+	    }
+	} else {
+	    for (Direction dir : dirs) {
+		inputDefaultMode(getBlockEntity(holder, dir), inv, dir, procNumber);
+	    }
+	}
+    }, 1, VoltaicTextUtils.tooltip("upgrade.itemoutput"), "electrodynamics", "assemblyline", "blastcraft"),
+    itemoutput((holder, upgrade, index) -> {
 
 	ComponentInventory inv = holder.getComponent(IComponentType.Inventory);
 	if (!inv.hasItemsInOutput()) {
@@ -103,44 +141,6 @@ public enum SubtypeItemUpgrade implements ISubtype {
 	    }
 	}
     }, 1, VoltaicTextUtils.tooltip("upgrade.iteminput"), "electrodynamics", "assemblyline", "blastcraft"),
-    // I can't really optimize this one any more than it is
-    itemoutput((holder, upgrade, procNumber) -> {
-	ComponentInventory inv = holder.getComponent(IComponentType.Inventory);
-	if (!inv.hasInputRoom()) {
-	    return;
-	}
-
-	int tickNumber = upgrade.getOrDefault(VoltaicDataComponentTypes.TIMER, 0);
-
-	if (tickNumber < 4) {
-	    upgrade.set(VoltaicDataComponentTypes.TIMER, tickNumber + 1);
-	    return;
-	}
-
-	upgrade.set(VoltaicDataComponentTypes.TIMER, 0);
-	List<Direction> dirs = NBTUtils.readDirectionList(upgrade);
-
-	if (dirs.size() == 0) {
-	    return;
-	}
-
-	if (upgrade.getOrDefault(VoltaicDataComponentTypes.SMART, false)) {
-
-	    int index = 0;
-	    Direction dir = Direction.DOWN;
-	    for (int slot : inv.getInputSlotsForProcessor(procNumber)) {
-		if (index < dirs.size()) {
-		    dir = dirs.get(index);
-		}
-		inputSmartMode(getBlockEntity(holder, dir), inv, slot, procNumber, dir);
-		index++;
-	    }
-	} else {
-	    for (Direction dir : dirs) {
-		inputDefaultMode(getBlockEntity(holder, dir), inv, dir, procNumber);
-	    }
-	}
-    }, 1, VoltaicTextUtils.tooltip("upgrade.itemoutput"), "electrodynamics", "assemblyline", "blastcraft"),
     improvedsolarcell(1, VoltaicTextUtils.tooltip("upgrade.improvedsolarcell"), "electrodynamics"),
     // generator.setMultiplier(2.25);
     stator(1, VoltaicTextUtils.tooltip("upgrade.stator"), "electrodynamics"),
