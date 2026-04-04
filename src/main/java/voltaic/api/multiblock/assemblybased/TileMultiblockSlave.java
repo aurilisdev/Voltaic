@@ -44,9 +44,9 @@ public class TileMultiblockSlave extends TileReplaceable {
 		if(!getLevel().isClientSide()) {
 			return;
 		}
-		if(!(getLevel().getBlockEntity(prop.getValue()) instanceof TileMultiblockController)) {
-			Scheduler.schedule(1, () -> level.setBlockAndUpdate(getBlockPos(), getDisguise()));
-		}
+		if (!(getLevel().getBlockEntity(prop.getValue()) instanceof TileMultiblockController)) {
+            Minecraft.getInstance().execute(() -> level.setBlockAndUpdate(getBlockPos(), getDisguise()));
+        }
 	});
 	public final SingleProperty<Integer> index = property(new SingleProperty<>(PropertyTypes.INTEGER, "nodeindex", -1));
 	public final SingleProperty<ResourceLocation> renderModel = property(new SingleProperty<>(PropertyTypes.RESOURCE_LOCATION, "model", MultiblockSlaveNode.NOMODEL));
