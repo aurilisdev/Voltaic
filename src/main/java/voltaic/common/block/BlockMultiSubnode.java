@@ -22,13 +22,14 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import voltaic.api.multiblock.subnodebased.TileMultiSubnode;
 import voltaic.api.multiblock.subnodebased.child.IMultiblockChildBlock;
+import voltaic.common.block.states.VoltaicMaterials;
 import voltaic.prefab.block.GenericEntityBlock;
 import voltaic.prefab.tile.GenericTile;
 
 public class BlockMultiSubnode extends GenericEntityBlock implements IMultiblockChildBlock {
 
     public BlockMultiSubnode() {
-        super(Blocks.GLASS.properties().strength(3.5F).sound(SoundType.METAL).isRedstoneConductor((a, b, c) -> false).noOcclusion());
+        super(VoltaicMaterials.glass().strength(3.5F).sound(SoundType.METAL).isRedstoneConductor((a, b, c) -> false).noOcclusion());
     }
 
     @Override

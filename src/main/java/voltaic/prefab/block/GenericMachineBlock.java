@@ -24,6 +24,7 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import voltaic.common.block.states.VoltaicBlockStates;
+import voltaic.common.block.states.VoltaicMaterials;
 import voltaic.common.block.voxelshapes.VoxelShapeProvider;
 
 public class GenericMachineBlock extends GenericEntityBlockWaterloggable {
@@ -34,7 +35,7 @@ public class GenericMachineBlock extends GenericEntityBlockWaterloggable {
     public static HashMap<BlockPos, LivingEntity> IPLAYERSTORABLE_MAP = new HashMap<>();
 
     public GenericMachineBlock(BlockEntitySupplier<BlockEntity> blockEntitySupplier, VoxelShapeProvider provider) {
-        super(Blocks.IRON_BLOCK.properties().strength(3.5F).sound(SoundType.METAL).noOcclusion().requiresCorrectToolForDrops());
+        super(VoltaicMaterials.metal().strength(3.5F).sound(SoundType.METAL).noOcclusion().requiresCorrectToolForDrops());
         registerDefaultState(stateDefinition.any().setValue(VoltaicBlockStates.FACING, Direction.NORTH));
         this.blockEntitySupplier = blockEntitySupplier;
         this.shapeProvider = provider;
