@@ -106,7 +106,7 @@ public class CapabilityRadiationRecipient implements IRadiationRecipient {
     }
 
     public static int getDurationFromRadiation(double radiation) {
-        return (int) Math.max(20.0, radiation / 100.0 * 20.0);
+        return (int) Math.max(1, radiation / 100.0 * 20.0);
     }
 
     public static int getAmplitudeFromRadiation(double radiation, double strength) {
