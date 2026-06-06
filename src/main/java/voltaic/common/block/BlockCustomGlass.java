@@ -17,7 +17,7 @@ import net.neoforged.api.distmarker.OnlyIn;
 public class BlockCustomGlass extends Block {
 
     public BlockCustomGlass(float hardness, float resistance) {
-        super(Blocks.GLASS.properties().requiresCorrectToolForDrops().strength(hardness, resistance).isRedstoneConductor((x, y, z) -> false).noOcclusion());
+        super(Properties.ofFullCopy(Blocks.GLASS).requiresCorrectToolForDrops().strength(hardness, resistance).isRedstoneConductor((x, y, z) -> false).noOcclusion());
     }
 
     @Override

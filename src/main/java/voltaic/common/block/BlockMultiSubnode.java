@@ -28,7 +28,7 @@ import voltaic.prefab.tile.GenericTile;
 public class BlockMultiSubnode extends GenericEntityBlock implements IMultiblockChildBlock {
 
     public BlockMultiSubnode() {
-        super(Blocks.GLASS.properties().strength(3.5F).sound(SoundType.METAL).isRedstoneConductor((a, b, c) -> false).noOcclusion());
+        super(Properties.ofFullCopy(Blocks.GLASS).strength(3.5F).sound(SoundType.METAL).isRedstoneConductor((a, b, c) -> false).noOcclusion());
     }
 
     @Override
