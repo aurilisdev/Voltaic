@@ -68,13 +68,13 @@ public class ArrayProperty<T> extends AbstractProperty<T[], ArrayPropertyType<T,
         PropertyManager manager = getPropertyManager();
         if (isDirty() && manager.getOwner().getLevel() != null) {
             if (!manager.getOwner().getLevel().isClientSide()) {
+                manager.setDirty(this);
                 if (shouldUpdateOnChange()) {
                     alreadySynced = true;
                     manager.getOwner().getLevel().sendBlockUpdated(manager.getOwner().getBlockPos(), manager.getOwner().getBlockState(), manager.getOwner().getBlockState(), Block.UPDATE_CLIENTS);
                     manager.getOwner().setChanged();
                     alreadySynced = false;
                 }
-                manager.setDirty(this);
             } else if(shouldUpdateServer()) {
                 updateServer();
             }
@@ -99,13 +99,13 @@ public class ArrayProperty<T> extends AbstractProperty<T[], ArrayPropertyType<T,
         PropertyManager manager = getPropertyManager();
         if (isDirty() && manager.getOwner().getLevel() != null) {
             if (!manager.getOwner().getLevel().isClientSide()) {
+                manager.setDirty(this);
                 if (shouldUpdateOnChange()) {
                     alreadySynced = true;
                     manager.getOwner().getLevel().sendBlockUpdated(manager.getOwner().getBlockPos(), manager.getOwner().getBlockState(), manager.getOwner().getBlockState(), Block.UPDATE_CLIENTS);
                     manager.getOwner().setChanged();
                     alreadySynced = false;
                 }
-                manager.setDirty(this);
             } else if(shouldUpdateServer()) {
                 updateServer();
             }

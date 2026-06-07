@@ -84,7 +84,13 @@ public class SetPropertyType<TYPE, BUFFERTYPE extends ByteBuf> implements IPrope
 
                 final int indx = index;
 
-                singleNbtCodec.encode(val, NbtOps.INSTANCE, NbtOps.INSTANCE.empty()).ifSuccess(nbt -> tag.put("" + indx, nbt));
+                if (val != null) {
+                    singleNbtCodec.encode(val, NbtOps.INSTANCE, NbtOps.INSTANCE.empty()).ifSuccess(nbt -> {
+                        if (nbt != null) {
+                            tag.put("" + indx, nbt);
+                        }
+                    });
+                }
 
                 index++;
 

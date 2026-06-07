@@ -1,7 +1,6 @@
 package voltaic.prefab.properties.types;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
@@ -52,23 +51,21 @@ public class ListPropertyType <TYPE, BUFFERTYPE extends ByteBuf> implements IPro
 
         packetCodec = new StreamCodec<>() {
 
-            @Override
-            public List<TYPE> decode(BUFFERTYPE buffer) {
+        	@Override
+        	public List<TYPE> decode(BUFFERTYPE buffer) {
 
-                int size = buffer.readInt();
+        	    int size = buffer.readInt();
 
-                List<TYPE> list = new ArrayList<>(size);
+        	    List<TYPE> list = new ArrayList<>(size);
 
-                Collections.fill(list, defaultValue);
+        	    for (int i = 0; i < size; i++) {
 
-                for (int i = 0; i < size; i++) {
+        	        list.add(singlePacketCodec.decode(buffer));
 
-                    list.set(i, singlePacketCodec.decode(buffer));
+        	    }
 
-                }
-
-                return list;
-            }
+        	    return list;
+        	}
 
             @Override
             public void encode(BUFFERTYPE buffer, List<TYPE> value) {
@@ -96,8 +93,15 @@ public class ListPropertyType <TYPE, BUFFERTYPE extends ByteBuf> implements IPro
 
                 final int index = i;
 
-                singleNbtCodec.encode(list.get(i), NbtOps.INSTANCE, NbtOps.INSTANCE.empty()).ifSuccess(nbt -> tag.put("" + index, nbt));
+                TYPE value = list.get(i);
 
+                if (value != null) {
+                    singleNbtCodec.encode(value, NbtOps.INSTANCE, NbtOps.INSTANCE.empty()).ifSuccess(nbt -> {
+                        if (nbt != null) {
+                            tag.put("" + index, nbt);
+                        }
+                    });
+                }
             }
 
             writer.tag().put(writer.prop().getName(), tag);

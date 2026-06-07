@@ -32,7 +32,11 @@ public class SinglePropertyType<TYPE, BUFFERTYPE> implements IPropertyType<TYPE,
                 //
                 packetCodec,
                 //
-                writer -> nbtCodec.encode(writer.prop().getValue(), NbtOps.INSTANCE, NbtOps.INSTANCE.empty()).ifSuccess(tag -> writer.tag().put(writer.prop().getName(), tag)),
+                writer -> nbtCodec.encode(writer.prop().getValue(), NbtOps.INSTANCE, NbtOps.INSTANCE.empty()).ifSuccess(tag -> {
+                    if (tag != null) {
+                        writer.tag().put(writer.prop().getName(), tag);
+                    }
+                }),
                 //
                 reader -> {
                     DataResult<Pair<TYPE, Tag>> result = nbtCodec.decode(NbtOps.INSTANCE, reader.tag().get(reader.prop().getName()));

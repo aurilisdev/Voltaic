@@ -65,7 +65,7 @@ public class PropertyFluidTank extends FluidTank {
 
 	@Override
 	public FluidTank readFromNBT(HolderLookup.Provider lookupProvider, CompoundTag nbt) {
-		CompoundTag tag = nbt.getCompound(fluidStackProperty.getName() + "name");
+		CompoundTag tag = nbt.getCompound(fluidStackProperty.getName() + "tank");
 		setFluid(FluidStack.parseOptional(lookupProvider, tag.getCompound("fluid")));
 		setCapacity(tag.getInt("capacity"));
 		return this;

@@ -47,7 +47,7 @@ public class PropertyManager {
 
 	public void saveDirtyPropsToTag(CompoundTag tag, HolderLookup.Provider registries) {
 		for(AbstractProperty prop : dirtyPropertiesDirect){
-			prop.saveToTag(tag, owner.getLevel().registryAccess());
+			prop.saveToTag(tag, registries);
 		}
 	}
 
