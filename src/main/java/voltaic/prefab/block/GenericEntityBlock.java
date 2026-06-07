@@ -92,7 +92,6 @@ public abstract class GenericEntityBlock extends BaseEntityBlock implements IWre
 		world.destroyBlock(pos, true, player);
 	}
 
-	// TODO get this to work
 	@Override
 	public List<ItemStack> getDrops(BlockState state, Builder builder) {
 		BlockEntity tile = builder.getOptionalParameter(LootContextParams.BLOCK_ENTITY);
@@ -120,8 +119,6 @@ public abstract class GenericEntityBlock extends BaseEntityBlock implements IWre
 		return super.getDrops(state, builder);
 	}
 
-	// TODO get this to work
-
 	@Override
 	public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
 		if (level.getBlockEntity(pos) instanceof GenericTile generic) {
@@ -134,6 +131,8 @@ public abstract class GenericEntityBlock extends BaseEntityBlock implements IWre
 		super.onRemove(state, level, pos, newState, isMoving);
 	}
 
+	
+	
 	/**
 	 * Fired when a neighboring tile changes
 	 */
@@ -185,7 +184,19 @@ public abstract class GenericEntityBlock extends BaseEntityBlock implements IWre
 		}
 		return super.useWithoutItem(state, level, pos, player, hitResult);
 	}
+	@Override
+	public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
+	    if (!level.isClientSide && player.isCreative()) {
+	        if (level.getBlockEntity(pos) instanceof GenericTile machine) {
+	            ComponentInventory inv = machine.getComponent(IComponentType.Inventory);
+	            if (inv != null) {
+	                Containers.dropContents(level, pos, inv.getItems());
+	            }
+	        }
+	    }
 
+	    return super.playerWillDestroy(level, pos, state, player);
+	}
 	@Override
 	protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
 		if (level.getBlockEntity(pos) instanceof GenericTile generic) {
