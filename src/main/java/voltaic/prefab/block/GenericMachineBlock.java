@@ -87,7 +87,10 @@ public class GenericMachineBlock extends GenericEntityBlockWaterloggable {
     public boolean isIPlayerStorable() {
         return false;
     }
-
+    @Override
+    public boolean canConnectRedstone(BlockState state, BlockGetter level, BlockPos pos, @Nullable Direction direction) {
+        return true;
+    }
     @Override
     protected MapCodec<? extends BaseEntityBlock> codec() {
         throw new UnsupportedOperationException("Need to implement CODEC");
