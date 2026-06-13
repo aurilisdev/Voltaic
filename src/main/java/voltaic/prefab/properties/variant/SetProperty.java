@@ -129,6 +129,7 @@ public class SetProperty<T> extends AbstractProperty<HashSet<T>, SetPropertyType
 
 		if (manager.getOwner().getLevel() != null) {
 			if (!manager.getOwner().getLevel().isClientSide()) {
+				manager.setDirty(this);
 				if (shouldUpdateOnChange()) {
 					alreadySynced = true;
 					manager.getOwner().getLevel().sendBlockUpdated(manager.getOwner().getBlockPos(),
@@ -137,7 +138,6 @@ public class SetProperty<T> extends AbstractProperty<HashSet<T>, SetPropertyType
 					manager.getOwner().setChanged();
 					alreadySynced = false;
 				}
-				manager.setDirty(this);
 			} else if (shouldUpdateServer()) {
 				updateServer();
 			}
