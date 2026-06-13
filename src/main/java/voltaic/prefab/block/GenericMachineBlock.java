@@ -85,4 +85,8 @@ public class GenericMachineBlock extends GenericEntityBlockWaterloggable {
         return false;
     }
 
+    @Override
+    public boolean canConnectRedstone(BlockState state, BlockGetter level, BlockPos pos, @Nullable Direction direction) {
+        return true;
+    }
 }
