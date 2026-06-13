@@ -88,12 +88,18 @@ public class ArrayPropertyType<TYPE, BUFFERTYPE extends ByteBuf> implements IPro
 
             tag.putInt("size", arr.length);
 
-            for(int i = 0; i < arr.length; i++) {
+            for (int i = 0; i < arr.length; i++) {
 
                 final int index = i;
 
-                singleNbtCodec.encode(arr[i], NbtOps.INSTANCE, NbtOps.INSTANCE.empty()).result().ifPresent(nbt -> tag.put("" + index, nbt));
+                TYPE value = arr[i];
 
+                if (value != null) {
+                    singleNbtCodec
+                            .encode(value, NbtOps.INSTANCE, NbtOps.INSTANCE.empty())
+                            .result()
+                            .ifPresent(nbt -> tag.put("" + index, nbt.copy()));
+                }
             }
 
             writer.tag().put(writer.prop().getName(), tag);

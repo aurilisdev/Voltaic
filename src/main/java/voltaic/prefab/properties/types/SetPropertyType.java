@@ -1,16 +1,20 @@
 package voltaic.prefab.properties.types;
 
-import com.mojang.serialization.Codec;
-import io.netty.buffer.ByteBuf;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtOps;
-import voltaic.api.codec.StreamCodec;
-
-import javax.annotation.Nonnull;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Function;
+
+import javax.annotation.Nonnull;
+
+import com.mojang.serialization.Codec;
+
+import io.netty.buffer.ByteBuf;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
+import voltaic.api.codec.StreamCodec;
 
 public class SetPropertyType<TYPE, BUFFERTYPE extends ByteBuf> implements IPropertyType<HashSet<TYPE>, BUFFERTYPE> {
 
@@ -82,10 +86,14 @@ public class SetPropertyType<TYPE, BUFFERTYPE extends ByteBuf> implements IPrope
 
                 final int indx = index;
 
-                singleNbtCodec.encode(val, NbtOps.INSTANCE, NbtOps.INSTANCE.empty()).result().ifPresent(nbt -> tag.put("" + indx, nbt));
+                if (val != null) {
+                    singleNbtCodec
+                            .encode(val, NbtOps.INSTANCE, NbtOps.INSTANCE.empty())
+                            .result()
+                            .ifPresent(nbt -> tag.put("" + indx, nbt.copy()));
+                }
 
                 index++;
-
             }
 
             writer.tag().put(writer.prop().getName(), tag);

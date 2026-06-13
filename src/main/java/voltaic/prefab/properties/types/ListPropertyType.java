@@ -1,163 +1,168 @@
 package voltaic.prefab.properties.types;
 
-import com.mojang.serialization.Codec;
-import io.netty.buffer.ByteBuf;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtOps;
-import voltaic.api.codec.StreamCodec;
-
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-public class ListPropertyType <TYPE, BUFFERTYPE extends ByteBuf> implements IPropertyType<List<TYPE>, BUFFERTYPE> {
+import javax.annotation.Nonnull;
 
-    private final BiPredicate<TYPE, TYPE> singleComparison;
-    private final BiPredicate<List<TYPE>, List<TYPE>> comparison;
-    private final StreamCodec<BUFFERTYPE, List<TYPE>> packetCodec;
-    private final Consumer<TagWriter<List<TYPE>>> writeToNbt;
-    private final Function<TagReader<List<TYPE>>, List<TYPE>> readFromNbt;
+import com.mojang.serialization.Codec;
 
-    public ListPropertyType(@Nonnull BiPredicate<TYPE, TYPE> singleComparison, StreamCodec<BUFFERTYPE, TYPE> singlePacketCodec, Codec<TYPE> singleNbtCodec, TYPE defaultValue) {
+import io.netty.buffer.ByteBuf;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
+import voltaic.api.codec.StreamCodec;
 
-        this.singleComparison = singleComparison;
+public class ListPropertyType<TYPE, BUFFERTYPE extends ByteBuf> implements IPropertyType<List<TYPE>, BUFFERTYPE> {
 
-        this.comparison = (list1, list2) -> {
+	private final BiPredicate<TYPE, TYPE> singleComparison;
+	private final BiPredicate<List<TYPE>, List<TYPE>> comparison;
+	private final StreamCodec<BUFFERTYPE, List<TYPE>> packetCodec;
+	private final Consumer<TagWriter<List<TYPE>>> writeToNbt;
+	private final Function<TagReader<List<TYPE>>, List<TYPE>> readFromNbt;
 
-            if (list1 == null || list2 == null) {
-                return false;
-            }
+	public ListPropertyType(@Nonnull BiPredicate<TYPE, TYPE> singleComparison,
+			StreamCodec<BUFFERTYPE, TYPE> singlePacketCodec, Codec<TYPE> singleNbtCodec, TYPE defaultValue) {
 
-            if (list1.size() != list2.size()) {
-                return false;
-            }
+		this.singleComparison = singleComparison;
 
-            for (int i = 0; i < list1.size(); i++) {
+		this.comparison = (list1, list2) -> {
 
-                if (!singleComparison.test(list1.get(i), list2.get(i))) {
-                    return false;
-                }
+			if (list1 == null || list2 == null) {
+				return false;
+			}
 
-            }
+			if (list1.size() != list2.size()) {
+				return false;
+			}
 
-            return true;
+			for (int i = 0; i < list1.size(); i++) {
 
-        };
+				if (!singleComparison.test(list1.get(i), list2.get(i))) {
+					return false;
+				}
 
-        packetCodec = new StreamCodec<>() {
+			}
 
-            @Override
-            public List<TYPE> decode(BUFFERTYPE buffer) {
+			return true;
 
-                int size = buffer.readInt();
+		};
 
-                List<TYPE> list = new ArrayList<>(size);
+		packetCodec = new StreamCodec<>() {
 
-                Collections.fill(list, defaultValue);
+			@Override
+			public List<TYPE> decode(BUFFERTYPE buffer) {
 
-                for (int i = 0; i < size; i++) {
+				int size = buffer.readInt();
 
-                    list.set(i, singlePacketCodec.decode(buffer));
+				List<TYPE> list = new ArrayList<>(size);
 
-                }
+				for (int i = 0; i < size; i++) {
 
-                return list;
-            }
+					list.add(singlePacketCodec.decode(buffer));
 
-            @Override
-            public void encode(BUFFERTYPE buffer, List<TYPE> value) {
+				}
 
-                buffer.writeInt(value.size());
+				return list;
+			}
 
-                for (int i = 0; i < value.size(); i++) {
+			@Override
+			public void encode(BUFFERTYPE buffer, List<TYPE> value) {
 
-                    singlePacketCodec.encode(buffer, value.get(i));
+				buffer.writeInt(value.size());
 
-                }
+				for (int i = 0; i < value.size(); i++) {
 
-            }
-        };
+					singlePacketCodec.encode(buffer, value.get(i));
 
-        writeToNbt = writer -> {
+				}
 
-            CompoundTag tag = new CompoundTag();
+			}
+		};
 
-            List<TYPE> list = writer.prop().getValue();
+		writeToNbt = writer -> {
 
-            tag.putInt("size", list.size());
+			CompoundTag tag = new CompoundTag();
 
-            for (int i = 0; i < list.size(); i++) {
+			List<TYPE> list = writer.prop().getValue();
 
-                final int index = i;
+			tag.putInt("size", list.size());
 
-                singleNbtCodec.encode(list.get(i), NbtOps.INSTANCE, NbtOps.INSTANCE.empty()).result().ifPresent(nbt -> tag.put("" + index, nbt));
+			for (int i = 0; i < list.size(); i++) {
 
-            }
+				final int index = i;
 
-            writer.tag().put(writer.prop().getName(), tag);
+				TYPE value = list.get(i);
 
-        };
+				if (value != null) {
+					singleNbtCodec.encode(value, NbtOps.INSTANCE, NbtOps.INSTANCE.empty()).result()
+							.ifPresent(nbt -> tag.put("" + index, nbt.copy()));
+				}
+			}
 
-        readFromNbt = reader -> {
+			writer.tag().put(writer.prop().getName(), tag);
 
-            CompoundTag data = reader.tag().getCompound(reader.prop().getName());
+		};
 
-            if(!data.contains("size")) {
-               return reader.prop().getValue();
-            }
+		readFromNbt = reader -> {
 
-            int size = data.getInt("size");
+			CompoundTag data = reader.tag().getCompound(reader.prop().getName());
 
-            if(size <= 0) {
-            	return new ArrayList<>();
-            }
+			if (!data.contains("size")) {
+				return reader.prop().getValue();
+			}
 
-            List<TYPE> list = new ArrayList<>(size);
+			int size = data.getInt("size");
 
-            for(int i = 0; i < size; i++) {
-                list.add(defaultValue);
-            }
+			if (size <= 0) {
+				return new ArrayList<>();
+			}
 
-            for (int i = 0; i < size; i++) {
+			List<TYPE> list = new ArrayList<>(size);
 
-                final int index = i;
+			for (int i = 0; i < size; i++) {
+				list.add(defaultValue);
+			}
 
-                singleNbtCodec.decode(NbtOps.INSTANCE, data.get("" + i)).result().ifPresent(pair -> list.set(index, pair.getFirst()));
+			for (int i = 0; i < size; i++) {
 
-            }
+				final int index = i;
 
-            return list;
+				singleNbtCodec.decode(NbtOps.INSTANCE, data.get("" + i)).result()
+						.ifPresent(pair -> list.set(index, pair.getFirst()));
 
-        };
+			}
 
-    }
+			return list;
 
-    @Override
-    public StreamCodec<BUFFERTYPE, List<TYPE>> getPacketCodec() {
-        return packetCodec;
-    }
+		};
 
-    @Override
-    public void writeToTag(TagWriter<List<TYPE>> writer) {
-        writeToNbt.accept(writer);
-    }
+	}
 
-    @Override
-    public List<TYPE> readFromTag(TagReader<List<TYPE>> reader) {
-        return readFromNbt.apply(reader);
-    }
+	@Override
+	public StreamCodec<BUFFERTYPE, List<TYPE>> getPacketCodec() {
+		return packetCodec;
+	}
 
-    @Override
-    public boolean isEqual(List<TYPE> currentValue, List<TYPE> newValue) {
-        return comparison.test(currentValue, newValue);
-    }
+	@Override
+	public void writeToTag(TagWriter<List<TYPE>> writer) {
+		writeToNbt.accept(writer);
+	}
 
-    public boolean isSingleEqual(TYPE val1, TYPE val2) {
-        return singleComparison.test(val1, val2);
-    }
+	@Override
+	public List<TYPE> readFromTag(TagReader<List<TYPE>> reader) {
+		return readFromNbt.apply(reader);
+	}
 
-}    
+	@Override
+	public boolean isEqual(List<TYPE> currentValue, List<TYPE> newValue) {
+		return comparison.test(currentValue, newValue);
+	}
+
+	public boolean isSingleEqual(TYPE val1, TYPE val2) {
+		return singleComparison.test(val1, val2);
+	}
+
+}
