@@ -24,50 +24,52 @@ public class BlockItemDescriptable extends BlockItemVoltaic {
     private static boolean initialized = false;
 
     public BlockItemDescriptable(Block block, Properties properties, Holder<CreativeModeTab> creativeTab) {
-        super(block, properties, creativeTab);
+	super(block, properties, creativeTab);
     }
 
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flagIn) {
-        super.appendHoverText(stack, context, tooltip, flagIn);
-        if (!initialized) {
-            BlockItemDescriptable.initialized = true;
+	super.appendHoverText(stack, context, tooltip, flagIn);
+	if (!initialized) {
+	    BlockItemDescriptable.initialized = true;
 
-            DESCRIPTION_MAPPINGS.forEach((supplier, set) -> {
+	    DESCRIPTION_MAPPINGS.forEach((supplier, set) -> {
 
-                PROCESSED_DESCRIPTION_MAPPINGS.put(supplier.value(), set);
+		PROCESSED_DESCRIPTION_MAPPINGS.put(supplier.value(), set);
 
-            });
+	    });
 
-        }
-        ArrayList<MutableComponent> gotten = PROCESSED_DESCRIPTION_MAPPINGS.get(getBlock());
-        if (gotten != null) {
-            tooltip.addAll(gotten);
-        }
+	}
+	ArrayList<MutableComponent> gotten = PROCESSED_DESCRIPTION_MAPPINGS.get(getBlock());
+	if (gotten != null) {
+	    tooltip.addAll(gotten);
+	}
 
-        if (stack.has(DataComponents.BLOCK_ENTITY_DATA)) {
-            double joules = stack.get(DataComponents.BLOCK_ENTITY_DATA).copyTag().getDouble("joules");
-            if (joules > 0) {
-                tooltip.add(VoltaicTextUtils.gui("machine.stored", ChatFormatter.getChatDisplayShort(joules, DisplayUnits.JOULES)));
-            }
-        }
+	if (stack.has(DataComponents.BLOCK_ENTITY_DATA)) {
+	    double joules = stack.get(DataComponents.BLOCK_ENTITY_DATA).copyTag().getDouble("joules");
+	    if (joules > 0) {
+		tooltip.add(VoltaicTextUtils.gui("machine.stored",
+			ChatFormatter.getChatDisplayShort(joules, DisplayUnits.JOULES)));
+	    }
+	}
     }
 
     @Override
     public int getMaxStackSize(ItemStack stack) {
-        if (stack.has(DataComponents.BLOCK_ENTITY_DATA) && stack.get(DataComponents.BLOCK_ENTITY_DATA).copyTag().getDouble("joules") > 0) {
-            return 1;
-        }
-        return super.getMaxStackSize(stack);
+	if (stack.has(DataComponents.BLOCK_ENTITY_DATA)
+		&& stack.get(DataComponents.BLOCK_ENTITY_DATA).copyTag().getDouble("joules") > 0) {
+	    return 1;
+	}
+	return super.getMaxStackSize(stack);
     }
 
     public static void addDescription(Holder<Block> block, MutableComponent description) {
 
-        ArrayList<MutableComponent> set = DESCRIPTION_MAPPINGS.getOrDefault(block, new ArrayList<>());
+	ArrayList<MutableComponent> set = DESCRIPTION_MAPPINGS.getOrDefault(block, new ArrayList<>());
 
-        set.add(description);
+	set.add(description);
 
-        DESCRIPTION_MAPPINGS.put(block, set);
+	DESCRIPTION_MAPPINGS.put(block, set);
 
     }
 

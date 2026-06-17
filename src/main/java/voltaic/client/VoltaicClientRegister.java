@@ -38,9 +38,8 @@ import voltaic.registers.VoltaicMenuTypes;
 import voltaic.registers.VoltaicParticles;
 
 @OnlyIn(Dist.CLIENT)
-@EventBusSubscriber(modid = Voltaic.ID, bus = EventBusSubscriber.Bus.MOD, value = {Dist.CLIENT})
+@EventBusSubscriber(modid = Voltaic.ID, bus = EventBusSubscriber.Bus.MOD, value = { Dist.CLIENT })
 public class VoltaicClientRegister {
-
 
     public static final ResourceLocation ON = Voltaic.vanillarl("on");
 
@@ -54,7 +53,9 @@ public class VoltaicClientRegister {
 
     private static final HashMap<ResourceLocation, TextureAtlasSprite> CACHED_TEXTUREATLASSPRITES = new HashMap<>();
     // for registration purposes only!
-    private static final List<ResourceLocation> CUSTOM_TEXTURES = List.of(VoltaicClientRegister.TEXTURE_WHITE, VoltaicClientRegister.TEXTURE_MERCURY, VoltaicClientRegister.TEXTURE_GAS, VoltaicClientRegister.TEXTURE_MULTISUBNODE);
+    private static final List<ResourceLocation> CUSTOM_TEXTURES = List.of(VoltaicClientRegister.TEXTURE_WHITE,
+	    VoltaicClientRegister.TEXTURE_MERCURY, VoltaicClientRegister.TEXTURE_GAS,
+	    VoltaicClientRegister.TEXTURE_MULTISUBNODE);
 
     public static void setup() {
 
@@ -63,56 +64,58 @@ public class VoltaicClientRegister {
     @SubscribeEvent
     public static void onModelEvent(RegisterAdditional event) {
 
-        ResourceManager manager = Minecraft.getInstance().getResourceManager();
-        FileToIdConverter converter = FileToIdConverter.json("models/" + MULTIBLOCK_API_MODEL_FOLDER);
-        converter.listMatchingResources(manager).forEach((location, resource) -> event.register(ModelResourceLocation.standalone(converter.fileToId(location).withPrefix(MULTIBLOCK_API_MODEL_FOLDER + "/"))));
+	ResourceManager manager = Minecraft.getInstance().getResourceManager();
+	FileToIdConverter converter = FileToIdConverter.json("models/" + MULTIBLOCK_API_MODEL_FOLDER);
+	converter.listMatchingResources(manager).forEach((location, resource) -> event.register(ModelResourceLocation
+		.standalone(converter.fileToId(location).withPrefix(MULTIBLOCK_API_MODEL_FOLDER + "/"))));
     }
 
     @SubscribeEvent
     public static void registerMenus(RegisterMenuScreensEvent event) {
-        event.register(VoltaicMenuTypes.CONTAINER_GUIDEBOOK.get(), ScreenGuidebook::new);
-        event.register(VoltaicMenuTypes.CONTAINER_O2OPROCESSOR.get(), ScreenO2OProcessor::new);
-        event.register(VoltaicMenuTypes.CONTAINER_O2OPROCESSORDOUBLE.get(), ScreenO2OProcessorDouble::new);
-        event.register(VoltaicMenuTypes.CONTAINER_O2OPROCESSORTRIPLE.get(), ScreenO2OProcessorTriple::new);
-        event.register(VoltaicMenuTypes.CONTAINER_DO2OPROCESSOR.get(), ScreenDO2OProcessor::new);
+	event.register(VoltaicMenuTypes.CONTAINER_GUIDEBOOK.get(), ScreenGuidebook::new);
+	event.register(VoltaicMenuTypes.CONTAINER_O2OPROCESSOR.get(), ScreenO2OProcessor::new);
+	event.register(VoltaicMenuTypes.CONTAINER_O2OPROCESSORDOUBLE.get(), ScreenO2OProcessorDouble::new);
+	event.register(VoltaicMenuTypes.CONTAINER_O2OPROCESSORTRIPLE.get(), ScreenO2OProcessorTriple::new);
+	event.register(VoltaicMenuTypes.CONTAINER_DO2OPROCESSOR.get(), ScreenDO2OProcessor::new);
     }
 
     @SubscribeEvent
     public static void cacheCustomTextureAtlases(TextureAtlasStitchedEvent event) {
-        if (event.getAtlas().location().equals(TextureAtlas.LOCATION_BLOCKS)) {
-            CACHED_TEXTUREATLASSPRITES.clear();
-            for (ResourceLocation loc : CUSTOM_TEXTURES) {
-                VoltaicClientRegister.CACHED_TEXTUREATLASSPRITES.put(loc, event.getAtlas().getSprite(loc));
-            }
-        }
+	if (event.getAtlas().location().equals(TextureAtlas.LOCATION_BLOCKS)) {
+	    CACHED_TEXTUREATLASSPRITES.clear();
+	    for (ResourceLocation loc : CUSTOM_TEXTURES) {
+		VoltaicClientRegister.CACHED_TEXTUREATLASSPRITES.put(loc, event.getAtlas().getSprite(loc));
+	    }
+	}
     }
 
     @SubscribeEvent
     public static void registerParticles(RegisterParticleProvidersEvent event) {
-        event.registerSpriteSet(VoltaicParticles.PARTICLE_PLASMA_BALL.get(), ParticlePlasmaBall.Factory::new);
-        event.registerSpriteSet(VoltaicParticles.PARTICLE_LAVAWITHPHYSICS.get(), ParticleLavaWithPhysics.Factory::new);
-        event.registerSpriteSet(VoltaicParticles.PARTICLE_FLUIDDROP.get(), ParticleFluidDrop.Factory::new);
+	event.registerSpriteSet(VoltaicParticles.PARTICLE_PLASMA_BALL.get(), ParticlePlasmaBall.Factory::new);
+	event.registerSpriteSet(VoltaicParticles.PARTICLE_LAVAWITHPHYSICS.get(), ParticleLavaWithPhysics.Factory::new);
+	event.registerSpriteSet(VoltaicParticles.PARTICLE_FLUIDDROP.get(), ParticleFluidDrop.Factory::new);
     }
 
     @SubscribeEvent
     public static void registerClientReloadListeners(RegisterClientReloadListenersEvent event) {
-        event.registerReloadListener(AtlasHolderVoltaicCustom.INSTANCE = new AtlasHolderVoltaicCustom(Minecraft.getInstance().getTextureManager()));
-        event.registerReloadListener(new ReloadListenerResetGuidebook());
+	event.registerReloadListener(AtlasHolderVoltaicCustom.INSTANCE = new AtlasHolderVoltaicCustom(
+		Minecraft.getInstance().getTextureManager()));
+	event.registerReloadListener(new ReloadListenerResetGuidebook());
     }
 
     @SubscribeEvent
     public static void registerGeometryLoaders(final ModelEvent.RegisterGeometryLoaders event) {
-        event.register(CableModelLoader.ID, CableModelLoader.INSTANCE);
-        event.register(SlaveNodeModelLoader.ID, SlaveNodeModelLoader.INSTANCE);
-        event.register(MultiblockModelLoader.ID, MultiblockModelLoader.INSTANCE);
+	event.register(CableModelLoader.ID, CableModelLoader.INSTANCE);
+	event.register(SlaveNodeModelLoader.ID, SlaveNodeModelLoader.INSTANCE);
+	event.register(MultiblockModelLoader.ID, MultiblockModelLoader.INSTANCE);
     }
 
     public static TextureAtlasSprite getSprite(ResourceLocation sprite) {
-        return CACHED_TEXTUREATLASSPRITES.getOrDefault(sprite, CACHED_TEXTUREATLASSPRITES.get(TEXTURE_WHITE));
+	return CACHED_TEXTUREATLASSPRITES.getOrDefault(sprite, CACHED_TEXTUREATLASSPRITES.get(TEXTURE_WHITE));
     }
 
     public static final TextureAtlasSprite whiteSprite() {
-        return CACHED_TEXTUREATLASSPRITES.get(TEXTURE_WHITE);
+	return CACHED_TEXTUREATLASSPRITES.get(TEXTURE_WHITE);
     }
 
 }

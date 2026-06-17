@@ -9,18 +9,18 @@ import voltaic.prefab.utilities.math.Color;
 
 public class TimeLabelWrapperConstant extends AbstractLabelWrapper {
 
-	private final int ticks;
+    private final int ticks;
 
-	public TimeLabelWrapperConstant(int xPos, int yPos, int processingTicks) {
-		super(Color.JEI_TEXT_GRAY, yPos, xPos, true);
-		ticks = processingTicks;
-	}
+    public TimeLabelWrapperConstant(int xPos, int yPos, int processingTicks) {
+	super(Color.JEI_TEXT_GRAY, yPos, xPos, true);
+	ticks = processingTicks;
+    }
 
-	@Override
-	public Component getComponent(AbstractRecipeCategory<?> category, Object recipe) {
+    @Override
+    public Component getComponent(AbstractRecipeCategory<?> category, Object recipe) {
 
-		return ChatFormatter.getChatDisplayShort(ticks / 20.0, DisplayUnits.TIME_SECONDS);
+	return ChatFormatter.getChatDisplayShort(ticks / 20.0, DisplayUnits.TIME_SECONDS);
 
-	}
+    }
 
 }

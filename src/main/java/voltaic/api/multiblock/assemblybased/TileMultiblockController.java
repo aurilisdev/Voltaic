@@ -43,256 +43,261 @@ import voltaic.prefab.utilities.Scheduler;
  */
 public abstract class TileMultiblockController extends TileReplaceable {
 
-	public final List<TileMultiblockSlave> slaveList = new ArrayList<>();
+    public final List<TileMultiblockSlave> slaveList = new ArrayList<>();
 
-	public final ListProperty<BlockPos> slavePositions = property(new ListProperty<>(PropertyTypes.BLOCK_POS_LIST, "slavepositions", new ArrayList<>())).onTileLoaded((prop) -> {
+    public final ListProperty<BlockPos> slavePositions = property(
+	    new ListProperty<>(PropertyTypes.BLOCK_POS_LIST, "slavepositions", new ArrayList<>()))
+	    .onTileLoaded(prop -> {
 
 		if (level.isClientSide()) {
-			return;
+		    return;
 		}
 
 		Scheduler.schedule(2, () -> {
-			slaveList.clear();
-			prop.getValue().forEach(blockPos -> {
-				slaveList.add((TileMultiblockSlave) level.getBlockEntity(worldPosition.offset(blockPos)));
-			});
+		    slaveList.clear();
+		    prop.getValue().forEach(blockPos -> {
+			slaveList.add((TileMultiblockSlave) level.getBlockEntity(worldPosition.offset(blockPos)));
+		    });
 		});
 
-	});
+	    });
 
-	public final SingleProperty<Boolean> isFormed = property(new SingleProperty<>(PropertyTypes.BOOLEAN, "isformed", false));
+    public final SingleProperty<Boolean> isFormed = property(
+	    new SingleProperty<>(PropertyTypes.BOOLEAN, "isformed", false));
 
-	private boolean isDestroyed = false;
+    private boolean isDestroyed = false;
 
-	public TileMultiblockController(BlockEntityType<?> tileEntityTypeIn, BlockPos worldPos, BlockState blockState) {
-		super(tileEntityTypeIn, worldPos, blockState);
+    public TileMultiblockController(BlockEntityType<?> tileEntityTypeIn, BlockPos worldPos, BlockState blockState) {
+	super(tileEntityTypeIn, worldPos, blockState);
 
-		addComponent(new ComponentPacketHandler(this));
-		addComponent(new ComponentTickable(this).tickServer(this::tickServer).tickCommon(this::tickCommon).tickClient(this::tickClient));
+	addComponent(new ComponentPacketHandler(this));
+	addComponent(new ComponentTickable(this).tickServer(this::tickServer).tickCommon(this::tickCommon)
+		.tickClient(this::tickClient));
 
-	}
+    }
 
-	public void tickServer(ComponentTickable tickable) {
+    public void tickServer(ComponentTickable tickable) {
 
-	}
+    }
 
-	public void tickCommon(ComponentTickable tickable) {
+    public void tickCommon(ComponentTickable tickable) {
 
-	}
+    }
 
-	public void tickClient(ComponentTickable tickable) {
+    public void tickClient(ComponentTickable tickable) {
 
-	}
+    }
 
-	public void checkFormed() {
+    public void checkFormed() {
 
-		Direction facing = getFacing().getOpposite();
+	Direction facing = getFacing().getOpposite();
 
-		List<MultiblockSlaveNode> nodes = Multiblock.getNodes(level, getResourceKey(), facing);
+	List<MultiblockSlaveNode> nodes = Multiblock.getNodes(level, getResourceKey(), facing);
 
-		BlockPos nodePos;
-		BlockState nodeState;
+	BlockPos nodePos;
+	BlockState nodeState;
 
-		boolean formed = true;
+	boolean formed = true;
 
-		for (MultiblockSlaveNode node : nodes) {
+	for (MultiblockSlaveNode node : nodes) {
 
-			nodePos = getBlockPos().offset(node.offset());
+	    nodePos = getBlockPos().offset(node.offset());
 
-			nodeState = level.getBlockState(nodePos);
+	    nodeState = level.getBlockState(nodePos);
 
-			if (node.hasBlockTag() && !nodeState.is(node.taggedBlocks()) || !nodeState.is(node.replaceState().getBlock())) {
+	    if (node.hasBlockTag() && !nodeState.is(node.taggedBlocks())
+		    || !nodeState.is(node.replaceState().getBlock())) {
 
-				formed = false;
-				break;
-			}
-			/*
-
-			if (node.hasBlockTag()) {
-
-				for (net.minecraft.world.level.block.state.properties.Property<?> prop : node.placeState().getProperties()) {
-
-					if (!nodeState.hasProperty(prop)) {
-
-						formed = false;
-						break;
-					}
-
-				}
-
-				if (!formed) {
-					break;
-				}
-
-			}
-
-			 */
-
-		}
-
-		isFormed.setValue(formed);
+		formed = false;
+		break;
+	    }
+	    /*
+	     * 
+	     * if (node.hasBlockTag()) {
+	     * 
+	     * for (net.minecraft.world.level.block.state.properties.Property<?> prop :
+	     * node.placeState().getProperties()) {
+	     * 
+	     * if (!nodeState.hasProperty(prop)) {
+	     * 
+	     * formed = false; break; }
+	     * 
+	     * }
+	     * 
+	     * if (!formed) { break; }
+	     * 
+	     * }
+	     * 
+	     */
 
 	}
 
-	public void formMultiblock() {
+	isFormed.setValue(formed);
 
-		Direction facing = getFacing().getOpposite();
+    }
 
-		List<MultiblockSlaveNode> nodes = Multiblock.getNodes(level, getResourceKey(), facing);
+    public void formMultiblock() {
 
-		BlockPos nodePos;
+	Direction facing = getFacing().getOpposite();
 
-		TileMultiblockSlave slave;
+	List<MultiblockSlaveNode> nodes = Multiblock.getNodes(level, getResourceKey(), facing);
 
-		int index = 0;
+	BlockPos nodePos;
 
-		for (MultiblockSlaveNode node : nodes) {
+	TileMultiblockSlave slave;
 
-			nodePos = getBlockPos().offset(node.offset());
+	int index = 0;
 
-			slavePositions.addValue(nodePos, index);
+	for (MultiblockSlaveNode node : nodes) {
 
-			level.setBlockAndUpdate(nodePos, node.placeState().setValue(VoltaicBlockStates.FACING, getFacing()));
+	    nodePos = getBlockPos().offset(node.offset());
 
-			slave = (TileMultiblockSlave) level.getBlockEntity(nodePos);
+	    slavePositions.addValue(nodePos, index);
 
-			slaveList.add(slave);
+	    level.setBlockAndUpdate(nodePos, node.placeState().setValue(VoltaicBlockStates.FACING, getFacing()));
 
-			slave.setDisguise(node.replaceState());
+	    slave = (TileMultiblockSlave) level.getBlockEntity(nodePos);
 
-			slave.controller.setValue(getBlockPos());
+	    slaveList.add(slave);
 
-			slave.index.setValue(index);
+	    slave.setDisguise(node.replaceState());
 
-			slave.renderModel.setValue(node.model());
+	    slave.controller.setValue(getBlockPos());
 
-			index++;
+	    slave.index.setValue(index);
 
-		}
+	    slave.renderModel.setValue(node.model());
 
-		level.playSound(null, getBlockPos(), SoundEvents.ANVIL_PLACE, SoundSource.BLOCKS, 1.0F, 1.0F);
-
-	}
-
-	public void destroyMultiblock() {
-
-		isDestroyed = true;
-
-		for (BlockPos pos : slavePositions.getValue()) {
-
-			if(level.getBlockEntity(pos) instanceof TileMultiblockSlave slave) {
-				slave.onBlockDestroyed();
-			}
-
-		}
-
-		isFormed.setValue(false);
-
-		slavePositions.wipeList();
-		
-		slaveList.clear();
-		
-		isDestroyed = false;
-
-		level.playSound(null, getBlockPos(), SoundEvents.ANVIL_BREAK, SoundSource.BLOCKS, 1.0F, 1.0F);
+	    index++;
 
 	}
 
-	public @Nullable ICapabilityElectrodynamic getSlaveCapabilityElectrodynamic(TileMultiblockSlave slave, @Nullable Direction side) {
-		return null;
-	}
+	level.playSound(null, getBlockPos(), SoundEvents.ANVIL_PLACE, SoundSource.BLOCKS, 1.0F, 1.0F);
 
-	public @Nullable IItemHandler getSlaveItemHandlerCapability(TileMultiblockSlave slave, @Nullable Direction side) {
-		return null;
-	}
+    }
 
-	public @Nullable IFluidHandler getSlaveFluidHandlerCapability(TileMultiblockSlave slave, @Nullable Direction side) {
-		return null;
-	}
+    public void destroyMultiblock() {
 
-	public @Nullable IGasHandler getSlaveGasHandlerCapability(TileMultiblockSlave slave, @Nullable Direction side) {
-		return null;
-	}
+	isDestroyed = true;
 
-	public int getSlaveComparatorSignal(TileMultiblockSlave slave) {
-		return getComparatorSignal();
-	}
+	for (BlockPos pos : slavePositions.getValue()) {
 
-	public int getSlaveDirectSignal(TileMultiblockSlave slave, Direction slaveDir) {
-		return getDirectSignal(slaveDir);
-	}
-
-	public int getSlaveSignal(TileMultiblockSlave slave, Direction slaveDir) {
-		return getSignal(slaveDir);
-	}
-
-	public boolean isSlavePoweredByRedstone(TileMultiblockSlave slave) {
-		return isPoweredByRedstone();
-	}
-
-	@Override
-	public void onBlockDestroyed() {
-		super.onBlockDestroyed();
-		if (!level.isClientSide()) {
-			destroyMultiblock();
-		}
-	}
-
-	public void onSlaveBlockStateUpdate(TileMultiblockSlave slave, BlockState slaveOldState, BlockState slaveNewState) {
+	    if (level.getBlockEntity(pos) instanceof TileMultiblockSlave slave) {
+		slave.onBlockDestroyed();
+	    }
 
 	}
 
-	public void onSlaveEnergyChange(TileMultiblockSlave slave, ComponentElectrodynamic slaveCap) {
+	isFormed.setValue(false);
 
+	slavePositions.wipeList();
+
+	slaveList.clear();
+
+	isDestroyed = false;
+
+	level.playSound(null, getBlockPos(), SoundEvents.ANVIL_BREAK, SoundSource.BLOCKS, 1.0F, 1.0F);
+
+    }
+
+    public @Nullable ICapabilityElectrodynamic getSlaveCapabilityElectrodynamic(TileMultiblockSlave slave,
+	    @Nullable Direction side) {
+	return null;
+    }
+
+    public @Nullable IItemHandler getSlaveItemHandlerCapability(TileMultiblockSlave slave, @Nullable Direction side) {
+	return null;
+    }
+
+    public @Nullable IFluidHandler getSlaveFluidHandlerCapability(TileMultiblockSlave slave, @Nullable Direction side) {
+	return null;
+    }
+
+    public @Nullable IGasHandler getSlaveGasHandlerCapability(TileMultiblockSlave slave, @Nullable Direction side) {
+	return null;
+    }
+
+    public int getSlaveComparatorSignal(TileMultiblockSlave slave) {
+	return getComparatorSignal();
+    }
+
+    public int getSlaveDirectSignal(TileMultiblockSlave slave, Direction slaveDir) {
+	return getDirectSignal(slaveDir);
+    }
+
+    public int getSlaveSignal(TileMultiblockSlave slave, Direction slaveDir) {
+	return getSignal(slaveDir);
+    }
+
+    public boolean isSlavePoweredByRedstone(TileMultiblockSlave slave) {
+	return isPoweredByRedstone();
+    }
+
+    @Override
+    public void onBlockDestroyed() {
+	super.onBlockDestroyed();
+	if (!level.isClientSide()) {
+	    destroyMultiblock();
 	}
+    }
 
-	public void onSlaveEntityInside(TileMultiblockSlave slave, BlockState slaveState, Level level, BlockPos slavePos, Entity slaveEntity) {
+    public void onSlaveBlockStateUpdate(TileMultiblockSlave slave, BlockState slaveOldState, BlockState slaveNewState) {
 
+    }
+
+    public void onSlaveEnergyChange(TileMultiblockSlave slave, ComponentElectrodynamic slaveCap) {
+
+    }
+
+    public void onSlaveEntityInside(TileMultiblockSlave slave, BlockState slaveState, Level level, BlockPos slavePos,
+	    Entity slaveEntity) {
+
+    }
+
+    public void onSlaveFluidTankChange(TileMultiblockSlave slave, FluidTank slaveTank) {
+
+    }
+
+    public void onSlaveGasTankChange(TileMultiblockSlave slave, GasTank slaveTank) {
+
+    }
+
+    public void onSlaveInventoryChange(TileMultiblockSlave slave, ComponentInventory slaveInv, int slaveSlot) {
+
+    }
+
+    public InteractionResult slaveUseWithoutItem(TileMultiblockSlave slave, Player player, BlockHitResult hitResult) {
+	return useWithoutItem(player, hitResult);
+    }
+
+    public ItemInteractionResult slaveUseWithItem(TileMultiblockSlave slave, ItemStack used, Player player,
+	    InteractionHand hand, BlockHitResult hit) {
+	return useWithItem(used, player, hand, hit);
+    }
+
+    public void onSlaveNeightborChanged(TileMultiblockSlave slave, BlockPos slaveNeighbor, boolean blockStateTrigger) {
+
+    }
+
+    public void onSlavePlace(TileMultiblockSlave slave, BlockState slaveOldState, boolean isMoving) {
+
+    }
+
+    public void onSlaveDestroyed(TileMultiblockSlave slave) {
+	if (isDestroyed) {
+	    return;
 	}
-
-	public void onSlaveFluidTankChange(TileMultiblockSlave slave, FluidTank slaveTank) {
-
+	if (!level.isClientSide) {
+	    destroyMultiblock();
 	}
+    }
 
-	public void onSlaveGasTankChange(TileMultiblockSlave slave, GasTank slaveTank) {
+    public VoxelShape getSlaveShape(TileMultiblockSlave slave) {
+	return Multiblock.getNodes(level, getResourceKey(), getFacing()).get(slave.index.getValue()).renderShape();
+    }
 
-	}
+    public abstract ResourceLocation getMultiblockId();
 
-	public void onSlaveInventoryChange(TileMultiblockSlave slave, ComponentInventory slaveInv, int slaveSlot) {
-
-	}
-
-	public InteractionResult slaveUseWithoutItem(TileMultiblockSlave slave, Player player, BlockHitResult hitResult) {
-		return useWithoutItem(player, hitResult);
-	}
-
-	public ItemInteractionResult slaveUseWithItem(TileMultiblockSlave slave, ItemStack used, Player player, InteractionHand hand, BlockHitResult hit) {
-		return useWithItem(used, player, hand, hit);
-	}
-
-	public void onSlaveNeightborChanged(TileMultiblockSlave slave, BlockPos slaveNeighbor, boolean blockStateTrigger) {
-
-	}
-
-	public void onSlavePlace(TileMultiblockSlave slave, BlockState slaveOldState, boolean isMoving) {
-
-	}
-
-	public void onSlaveDestroyed(TileMultiblockSlave slave) {
-		if (isDestroyed) {
-			return;
-		}
-		if (!level.isClientSide) {
-			destroyMultiblock();
-		}
-	}
-
-	public VoxelShape getSlaveShape(TileMultiblockSlave slave) {
-		return Multiblock.getNodes(level, getResourceKey(), getFacing()).get(slave.index.getValue()).renderShape();
-	}
-
-	public abstract ResourceLocation getMultiblockId();
-
-	public abstract ResourceKey<Multiblock> getResourceKey();
+    public abstract ResourceKey<Multiblock> getResourceKey();
 
 }

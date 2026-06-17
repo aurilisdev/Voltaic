@@ -19,129 +19,131 @@ import voltaic.prefab.tile.GenericTile;
  */
 public class PropertyManager {
 
-	public static final String NBT_KEY = "propertydata";
+    public static final String NBT_KEY = "propertydata";
 
-	private final GenericTile owner;
+    private final GenericTile owner;
 
-	private ArrayList<AbstractProperty> properties = new ArrayList<>();
+    private ArrayList<AbstractProperty> properties = new ArrayList<>();
 
-	//private HashSet<PropertyWrapper> dirtyProperties = new HashSet<>();
-	private HashSet<AbstractProperty> dirtyPropertiesDirect = new HashSet<>();
+    // private HashSet<PropertyWrapper> dirtyProperties = new HashSet<>();
+    private HashSet<AbstractProperty> dirtyPropertiesDirect = new HashSet<>();
 
-	private boolean isDirty = false;
+    private boolean isDirty = false;
 
-	public PropertyManager(GenericTile owner) {
-		this.owner = owner;
+    public PropertyManager(GenericTile owner) {
+	this.owner = owner;
+    }
+
+    public <T extends AbstractProperty> T addProperty(T prop) {
+	properties.add(prop);
+	prop.setManager(this);
+	prop.setIndex(properties.size() - 1);
+	return prop;
+    }
+
+    public ArrayList<AbstractProperty> getProperties() {
+	return properties;
+    }
+
+    public void saveDirtyPropsToTag(CompoundTag tag, HolderLookup.Provider registries) {
+	for (AbstractProperty prop : dirtyPropertiesDirect) {
+	    prop.saveToTag(tag, registries);
 	}
+    }
 
-	public <T extends AbstractProperty> T addProperty(T prop) {
-		properties.add(prop);
-		prop.setManager(this);
-		prop.setIndex(properties.size() - 1);
-		return prop;
+    public void saveAllPropsForClientSync(CompoundTag tag, HolderLookup.Provider registries) {
+	for (AbstractProperty prop : properties) {
+	    if (prop.shouldUpdateClient()) {
+		prop.saveToTag(tag, registries);
+	    }
 	}
+    }
 
-	public ArrayList<AbstractProperty> getProperties() {
-		return properties;
-	}
-
-	public void saveDirtyPropsToTag(CompoundTag tag, HolderLookup.Provider registries) {
-		for(AbstractProperty prop : dirtyPropertiesDirect){
-			prop.saveToTag(tag, registries);
-		}
-	}
-
-	public void saveAllPropsForClientSync(CompoundTag tag, HolderLookup.Provider registries) {
-		for(AbstractProperty prop : properties){
-			if(prop.shouldUpdateClient()) {
-				prop.saveToTag(tag, registries);
-			}
-		}
-	}
-
-	public void clean() {
-		isDirty = false;
-		/*
-		dirtyProperties.forEach(wrapper -> {
-			wrapper.property.clean();
-		});
-		 */
-		for (AbstractProperty property : dirtyPropertiesDirect) {
-			property.clean();
-		}
-		//dirtyProperties.clear();
-		dirtyPropertiesDirect.clear();
-	}
-
-	public boolean isDirty() {
-		return isDirty;
-	}
-
-	public void setDirty(AbstractProperty dirtyProp) {
-		isDirty = true;
-		if (dirtyProp.shouldUpdateClient()) {
-			dirtyPropertiesDirect.add(dirtyProp);
-		}
-	}
-
-	@Override
-	public String toString() {
-		String string = "";
-		for (int i = 0; i < properties.size(); i++) {
-			string = string + i + ": " + properties.get(i).toString() + "\n";
-		}
-		return string;
-	}
-
-	public GenericTile getOwner() {
-		return owner;
-	}
-
-	public void saveToTag(CompoundTag tag, HolderLookup.Provider registries) {
-		for (AbstractProperty prop : getProperties()) {
-			if (prop.shouldSave()) {
-				prop.saveToTag(tag, registries);
-			}
-		}
-	}
-
-	public void loadFromTag(CompoundTag tag, HolderLookup.Provider registries) {
-		for (AbstractProperty prop : getProperties()) {
-			if (prop.shouldSave() && tag.contains(prop.getName())) {
-				prop.loadFromTag(tag, registries);
-
-				tag.remove(prop.getName());
-			}
-		}
-	}
-
-	public void loadDataFromClient(int index, CompoundTag data) {
-		if(index >= properties.size()) {
-			Voltaic.LOGGER.error("The tile at " + owner.getBlockPos() + " has a differently sized property list than what was declared by the packet");
-			return;
-		}
-		AbstractProperty prop = properties.get(index);
-		if(owner == null) {
-			Voltaic.LOGGER.info("The property " + prop.getName() + " is sending data to a null tile");
-			return;
-		}
-		if(owner.getLevel() == null){
-			Voltaic.LOGGER.info("The property " + prop.getName() + " that sent data to the tile at " + owner.getBlockPos() + " encountered a null level. The data was not loaded");
-			return;
-		}
-		prop.setValue(prop.getType().readFromTag(new IPropertyType.TagReader(prop, data, owner.getLevel().registryAccess())));
-	}
-
-	public void onTileLoaded() {
-		for (AbstractProperty property : properties) {
-			property.onTileLoaded();
-		}
-	}
-
+    public void clean() {
+	isDirty = false;
 	/*
-	public static record PropertyWrapper(int index, IPropertyType type, Object value, @Nullable Property<?> property) {
-
-	}
-
+	 * dirtyProperties.forEach(wrapper -> { wrapper.property.clean(); });
 	 */
+	for (AbstractProperty property : dirtyPropertiesDirect) {
+	    property.clean();
+	}
+	// dirtyProperties.clear();
+	dirtyPropertiesDirect.clear();
+    }
+
+    public boolean isDirty() {
+	return isDirty;
+    }
+
+    public void setDirty(AbstractProperty dirtyProp) {
+	isDirty = true;
+	if (dirtyProp.shouldUpdateClient()) {
+	    dirtyPropertiesDirect.add(dirtyProp);
+	}
+    }
+
+    @Override
+    public String toString() {
+	String string = "";
+	for (int i = 0; i < properties.size(); i++) {
+	    string = string + i + ": " + properties.get(i).toString() + "\n";
+	}
+	return string;
+    }
+
+    public GenericTile getOwner() {
+	return owner;
+    }
+
+    public void saveToTag(CompoundTag tag, HolderLookup.Provider registries) {
+	for (AbstractProperty prop : getProperties()) {
+	    if (prop.shouldSave()) {
+		prop.saveToTag(tag, registries);
+	    }
+	}
+    }
+
+    public void loadFromTag(CompoundTag tag, HolderLookup.Provider registries) {
+	for (AbstractProperty prop : getProperties()) {
+	    if (prop.shouldSave() && tag.contains(prop.getName())) {
+		prop.loadFromTag(tag, registries);
+
+		tag.remove(prop.getName());
+	    }
+	}
+    }
+
+    public void loadDataFromClient(int index, CompoundTag data) {
+	if (index >= properties.size()) {
+	    Voltaic.LOGGER.error("The tile at " + owner.getBlockPos()
+		    + " has a differently sized property list than what was declared by the packet");
+	    return;
+	}
+	AbstractProperty prop = properties.get(index);
+	if (owner == null) {
+	    Voltaic.LOGGER.info("The property " + prop.getName() + " is sending data to a null tile");
+	    return;
+	}
+	if (owner.getLevel() == null) {
+	    Voltaic.LOGGER.info("The property " + prop.getName() + " that sent data to the tile at "
+		    + owner.getBlockPos() + " encountered a null level. The data was not loaded");
+	    return;
+	}
+	prop.setValue(
+		prop.getType().readFromTag(new IPropertyType.TagReader(prop, data, owner.getLevel().registryAccess())));
+    }
+
+    public void onTileLoaded() {
+	for (AbstractProperty property : properties) {
+	    property.onTileLoaded();
+	}
+    }
+
+    /*
+     * public static record PropertyWrapper(int index, IPropertyType type, Object
+     * value, @Nullable Property<?> property) {
+     * 
+     * }
+     * 
+     */
 }

@@ -9,14 +9,15 @@ public abstract class GenericContainerSlotData<CONTAINERTYPE> extends GenericCon
 
     private final ContainerData data;
 
-    public GenericContainerSlotData(MenuType<?> type, int id, Inventory playerinv, CONTAINERTYPE inventory, ContainerData data) {
-        super(type, id, playerinv, inventory);
-        checkContainerDataCount(data, data.getCount());
-        this.data = data;
-        addDataSlots(this.data);
+    public GenericContainerSlotData(MenuType<?> type, int id, Inventory playerinv, CONTAINERTYPE inventory,
+	    ContainerData data) {
+	super(type, id, playerinv, inventory);
+	checkContainerDataCount(data, data.getCount());
+	this.data = data;
+	addDataSlots(this.data);
     }
 
     public ContainerData getData() {
-        return data;
+	return data;
     }
 }

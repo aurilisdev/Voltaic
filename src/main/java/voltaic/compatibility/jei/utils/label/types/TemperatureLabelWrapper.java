@@ -7,14 +7,14 @@ import voltaic.prefab.utilities.math.Color;
 
 public class TemperatureLabelWrapper extends AbstractLabelWrapper {
 
-	public TemperatureLabelWrapper(Color color, int yPos, int xPos, boolean xIsEnd) {
-		super(color, yPos, xPos, xIsEnd);
-	}
+    public TemperatureLabelWrapper(Color color, int yPos, int xPos, boolean xIsEnd) {
+	super(color, yPos, xPos, xIsEnd);
+    }
 
-	@Override
-	public Component getComponent(AbstractRecipeCategory<?> category, Object recipe) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public Component getComponent(AbstractRecipeCategory<?> category, Object recipe) {
+	// TODO Auto-generated method stub
+	return null;
+    }
 
 }

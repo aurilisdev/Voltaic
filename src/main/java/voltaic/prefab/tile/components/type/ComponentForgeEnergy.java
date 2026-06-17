@@ -20,81 +20,82 @@ public class ComponentForgeEnergy implements IComponent {
     private final ComponentElectrodynamic electro;
 
     public ComponentForgeEnergy(GenericTile holder) {
-        this.holder = holder;
-        if(!holder.hasComponent(IComponentType.Electrodynamic)) {
-            throw new RuntimeException("You must define a ComponentElectrodynamic before defining a ComponentForgeEnergy!");
-        }
-        electro = holder.getComponent(IComponentType.Electrodynamic);
-        electroLoaded = Voltaic.isElectroLoaded();
+	this.holder = holder;
+	if (!holder.hasComponent(IComponentType.Electrodynamic)) {
+	    throw new RuntimeException(
+		    "You must define a ComponentElectrodynamic before defining a ComponentForgeEnergy!");
+	}
+	electro = holder.getComponent(IComponentType.Electrodynamic);
+	electroLoaded = Voltaic.isElectroLoaded();
     }
 
     @Override
     public IComponentType getType() {
-        return IComponentType.ForgeEnergy;
+	return IComponentType.ForgeEnergy;
     }
 
     @Override
     public void holder(GenericTile holder) {
-        this.holder = holder;
+	this.holder = holder;
     }
 
     @Nullable
     @Override
     public GenericTile getHolder() {
-        return holder;
+	return holder;
     }
 
     public IEnergyStorage getCap(Direction side, CapabilityInputType type) {
 
-        if(electroLoaded || side == null) {
-            return null;
-        }
+	if (electroLoaded || side == null) {
+	    return null;
+	}
 
-        ICapabilityElectrodynamic electrodynamic = electro.getCapability(side, type);
+	ICapabilityElectrodynamic electrodynamic = electro.getCapability(side, type);
 
-        return electrodynamic == null ? null : new ElectrodynamicWrapper(electrodynamic);
-
+	return electrodynamic == null ? null : new ElectrodynamicWrapper(electrodynamic);
 
     }
 
     private static final class ElectrodynamicWrapper implements IEnergyStorage {
 
-        private final ICapabilityElectrodynamic electro;
+	private final ICapabilityElectrodynamic electro;
 
-        private ElectrodynamicWrapper(ICapabilityElectrodynamic electro) {
-            this.electro = electro;
-        }
+	private ElectrodynamicWrapper(ICapabilityElectrodynamic electro) {
+	    this.electro = electro;
+	}
 
+	@Override
+	public int receiveEnergy(int toReceive, boolean simulate) {
+	    return (int) Math.ceil(electro
+		    .receivePower(TransferPack.joulesVoltage(toReceive, electro.getVoltage()), simulate).getJoules());
+	}
 
-        @Override
-        public int receiveEnergy(int toReceive, boolean simulate) {
-            return (int) Math.ceil(electro.receivePower(TransferPack.joulesVoltage(toReceive, electro.getVoltage()), simulate).getJoules());
-        }
+	@Override
+	public int extractEnergy(int toExtract, boolean simulate) {
+	    return (int) electro.extractPower(TransferPack.joulesVoltage(toExtract, electro.getVoltage()), simulate)
+		    .getJoules();
+	}
 
-        @Override
-        public int extractEnergy(int toExtract, boolean simulate) {
-            return (int) electro.extractPower(TransferPack.joulesVoltage(toExtract, electro.getVoltage()), simulate).getJoules();
-        }
+	@Override
+	public int getEnergyStored() {
+	    return (int) electro.getJoulesStored();
+	}
 
-        @Override
-        public int getEnergyStored() {
-            return (int) electro.getJoulesStored();
-        }
+	@Override
+	public int getMaxEnergyStored() {
+	    return (int) electro.getMaxJoulesStored();
+	}
 
-        @Override
-        public int getMaxEnergyStored() {
-            return (int) electro.getMaxJoulesStored();
-        }
+	@Override
+	public boolean canExtract() {
+	    return electro.isEnergyProducer();
+	}
 
-        @Override
-        public boolean canExtract() {
-            return electro.isEnergyProducer();
-        }
-
-        @Override
-        public boolean canReceive() {
-            return electro.isEnergyReceiver();
-        }
+	@Override
+	public boolean canReceive() {
+	    return electro.isEnergyReceiver();
+	}
     }
 
 }

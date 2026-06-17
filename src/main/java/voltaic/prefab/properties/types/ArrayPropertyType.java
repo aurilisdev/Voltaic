@@ -22,148 +22,147 @@ public class ArrayPropertyType<TYPE, BUFFERTYPE extends ByteBuf> implements IPro
     private final Consumer<TagWriter<TYPE[]>> writeToNbt;
     private final Function<TagReader<TYPE[]>, TYPE[]> readFromNbt;
 
-    public ArrayPropertyType(@Nonnull BiPredicate<TYPE, TYPE> singleComparison, StreamCodec<BUFFERTYPE, TYPE> singlePacketCodec, Codec<TYPE> singleNbtCodec, TYPE[] defaultArr, TYPE defaultValue) {
+    public ArrayPropertyType(@Nonnull BiPredicate<TYPE, TYPE> singleComparison,
+	    StreamCodec<BUFFERTYPE, TYPE> singlePacketCodec, Codec<TYPE> singleNbtCodec, TYPE[] defaultArr,
+	    TYPE defaultValue) {
 
-        this.singleComparison = singleComparison;
+	this.singleComparison = singleComparison;
 
-        this.comparison = (arr1, arr2) -> {
+	this.comparison = (arr1, arr2) -> {
 
-            if(arr1 == null || arr2 == null) {
-                return false;
-            }
+	    if (arr1 == null || arr2 == null || (arr1.length != arr2.length)) {
+		return false;
+	    }
 
-            if(arr1.length != arr2.length) {
-                return false;
-            }
+	    for (int i = 0; i < arr1.length; i++) {
 
-            for(int i = 0; i < arr1.length; i++) {
+		if (!singleComparison.test(arr1[i], arr2[i])) {
+		    return false;
+		}
 
-                if(!singleComparison.test(arr1[i], arr2[i])) {
-                    return false;
-                }
+	    }
 
-            }
+	    return true;
 
-            return true;
+	};
 
-        };
+	packetCodec = new StreamCodec<>() {
 
-        packetCodec = new StreamCodec<BUFFERTYPE, TYPE[]>() {
+	    @Override
+	    public TYPE[] decode(BUFFERTYPE buffer) {
 
-            @Override
-            public TYPE[] decode(BUFFERTYPE buffer) {
+		int size = buffer.readInt();
 
-                int size = buffer.readInt();
+		TYPE[] newArr = Arrays.copyOf(defaultArr, size);
 
-                TYPE[] newArr = Arrays.copyOf(defaultArr, size);
+		Arrays.fill(newArr, defaultValue);
 
-                Arrays.fill(newArr, defaultValue);
+		for (int i = 0; i < size; i++) {
 
-                for(int i = 0; i < size; i++) {
+		    newArr[i] = singlePacketCodec.decode(buffer);
 
-                    newArr[i] = singlePacketCodec.decode(buffer);
+		}
 
-                }
+		return newArr;
+	    }
 
-                return newArr;
-            }
+	    @Override
+	    public void encode(BUFFERTYPE buffer, TYPE[] value) {
 
-            @Override
-            public void encode(BUFFERTYPE buffer, TYPE[] value) {
+		buffer.writeInt(value.length);
 
-                buffer.writeInt(value.length);
+		for (int i = 0; i < value.length; i++) {
 
-                for(int i = 0; i < value.length; i++) {
+		    singlePacketCodec.encode(buffer, value[i]);
 
-                    singlePacketCodec.encode(buffer, value[i]);
+		}
 
-                }
+	    }
+	};
 
-            }
-        };
+	writeToNbt = writer -> {
 
-        writeToNbt = writer -> {
+	    CompoundTag tag = new CompoundTag();
 
-            CompoundTag tag = new CompoundTag();
+	    TYPE[] arr = writer.prop().getValue();
 
-            TYPE[] arr = writer.prop().getValue();
+	    tag.putInt("size", arr.length);
 
-            tag.putInt("size", arr.length);
+	    for (int i = 0; i < arr.length; i++) {
 
-            for (int i = 0; i < arr.length; i++) {
+		final int index = i;
 
-                final int index = i;
+		TYPE value = arr[i];
 
-                TYPE value = arr[i];
+		if (value != null) {
+		    singleNbtCodec.encode(value, NbtOps.INSTANCE, NbtOps.INSTANCE.empty()).ifSuccess(nbt -> {
+			if (nbt != null) {
+			    tag.put("" + index, nbt);
+			}
+		    });
+		}
 
-                if (value != null) {
-                    singleNbtCodec.encode(value, NbtOps.INSTANCE, NbtOps.INSTANCE.empty()).ifSuccess(nbt -> {
-                        if (nbt != null) {
-                            tag.put("" + index, nbt);
-                        }
-                    });
-                }
+	    }
 
-            }
+	    writer.tag().put(writer.prop().getName(), tag);
 
-            writer.tag().put(writer.prop().getName(), tag);
+	};
 
-        };
+	readFromNbt = reader -> {
 
-        readFromNbt = reader -> {
+	    CompoundTag data = reader.tag().getCompound(reader.prop().getName());
 
-            CompoundTag data = reader.tag().getCompound(reader.prop().getName());
+	    if (!data.contains("size")) {
+		return reader.prop().getValue();
+	    }
 
-            if(!data.contains("size")) {
-                return reader.prop().getValue();
-            }
+	    int size = data.getInt("size");
 
-            int size = data.getInt("size");
+	    if (size <= 0) {
+		return Arrays.copyOf(defaultArr, defaultArr.length);
+	    }
 
-            if(size <= 0) {
-                return Arrays.copyOf(defaultArr, defaultArr.length);
-            }
+	    TYPE[] newArr = Arrays.copyOf(defaultArr, size);
 
-            TYPE[] newArr = Arrays.copyOf(defaultArr, size);
+	    Arrays.fill(newArr, defaultValue);
 
-            Arrays.fill(newArr, defaultValue);
+	    for (int i = 0; i < size; i++) {
 
-            for(int i = 0; i < size; i++) {
+		final int index = i;
 
-                final int index = i;
+		singleNbtCodec.decode(NbtOps.INSTANCE, data.get("" + i))
+			.ifSuccess(pair -> newArr[index] = pair.getFirst());
 
-                singleNbtCodec.decode(NbtOps.INSTANCE, data.get("" + i)).ifSuccess(pair -> newArr[index] = pair.getFirst());
+	    }
 
-            }
+	    return newArr;
 
-            return newArr;
-
-        };
+	};
 
     }
 
     @Override
     public StreamCodec<BUFFERTYPE, TYPE[]> getPacketCodec() {
-        return packetCodec;
+	return packetCodec;
     }
 
     @Override
     public void writeToTag(TagWriter<TYPE[]> writer) {
-        writeToNbt.accept(writer);
+	writeToNbt.accept(writer);
     }
 
     @Override
     public TYPE[] readFromTag(TagReader<TYPE[]> reader) {
-        return readFromNbt.apply(reader);
+	return readFromNbt.apply(reader);
     }
 
     @Override
     public boolean isEqual(TYPE[] currentValue, TYPE[] newValue) {
-        return comparison.test(currentValue, newValue);
+	return comparison.test(currentValue, newValue);
     }
 
     public boolean isSingleEqual(TYPE val1, TYPE val2) {
-        return singleComparison.test(val1, val2);
+	return singleComparison.test(val1, val2);
     }
 
 }

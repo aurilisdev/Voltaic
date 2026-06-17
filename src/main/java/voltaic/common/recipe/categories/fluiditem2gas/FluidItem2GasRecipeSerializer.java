@@ -17,66 +17,61 @@ import voltaic.common.recipe.recipeutils.ProbableItem;
 import voltaic.prefab.utilities.CodecUtils;
 
 public class FluidItem2GasRecipeSerializer<T extends FluidItem2GasRecipe> extends VoltaicRecipeSerializer<T> {
-    @SuppressWarnings("unused") 
+    @SuppressWarnings("unused")
     private final FluidItem2GasRecipe.Factory<T> factory;
     private final MapCodec<T> codec;
 
     private final StreamCodec<RegistryFriendlyByteBuf, T> streamCodec;
 
     public FluidItem2GasRecipeSerializer(FluidItem2GasRecipe.Factory<T> factory) {
-        this.factory = factory;
-        codec = RecordCodecBuilder.mapCodec(instance -> instance.group(
-                                //
-                                Codec.STRING.fieldOf(GROUP).forGetter(T::getGroup),
-                                //
-                                CountableIngredient.LIST_CODEC.fieldOf(ITEM_INPUTS).forGetter(T::getCountedIngredients),
-                                //
-                                FluidIngredient.LIST_CODEC.fieldOf(FLUID_INPUTS).forGetter(T::getFluidIngredients),
-                                //
-                                GasStack.CODEC.fieldOf(OUTPUT).forGetter(T::getGasRecipeOutput),
-                                //
-                                Codec.DOUBLE.optionalFieldOf(EXPERIENCE, 0.0).forGetter(T::getXp),
-                                //
-                                Codec.INT.fieldOf(TICKS).forGetter(T::getTicks),
-                                //
-                                Codec.DOUBLE.fieldOf(USAGE_PER_TICK).forGetter(T::getUsagePerTick),
-                                //
-                                ProbableItem.LIST_CODEC.optionalFieldOf(ITEM_BIPRODUCTS, ProbableItem.NONE).forGetter(T::getItemBiproducts),
-                                //
-                                ProbableFluid.LIST_CODEC.optionalFieldOf(FLUID_BIPRODUCTS, ProbableFluid.NONE).forGetter(T::getFluidBiproducts),
-                                //
-                                ProbableGas.LIST_CODEC.optionalFieldOf(GAS_BIPRODUCTS, ProbableGas.NONE).forGetter(T::getGasBiproducts)
-                                //
+	this.factory = factory;
+	codec = RecordCodecBuilder.mapCodec(instance -> instance.group(
+		//
+		Codec.STRING.fieldOf(GROUP).forGetter(T::getGroup),
+		//
+		CountableIngredient.LIST_CODEC.fieldOf(ITEM_INPUTS).forGetter(T::getCountedIngredients),
+		//
+		FluidIngredient.LIST_CODEC.fieldOf(FLUID_INPUTS).forGetter(T::getFluidIngredients),
+		//
+		GasStack.CODEC.fieldOf(OUTPUT).forGetter(T::getGasRecipeOutput),
+		//
+		Codec.DOUBLE.optionalFieldOf(EXPERIENCE, 0.0).forGetter(T::getXp),
+		//
+		Codec.INT.fieldOf(TICKS).forGetter(T::getTicks),
+		//
+		Codec.DOUBLE.fieldOf(USAGE_PER_TICK).forGetter(T::getUsagePerTick),
+		//
+		ProbableItem.LIST_CODEC.optionalFieldOf(ITEM_BIPRODUCTS, ProbableItem.NONE)
+			.forGetter(T::getItemBiproducts),
+		//
+		ProbableFluid.LIST_CODEC.optionalFieldOf(FLUID_BIPRODUCTS, ProbableFluid.NONE)
+			.forGetter(T::getFluidBiproducts),
+		//
+		ProbableGas.LIST_CODEC.optionalFieldOf(GAS_BIPRODUCTS, ProbableGas.NONE).forGetter(T::getGasBiproducts)
+	//
 
-                        )
-                        //
-                        .apply(instance, factory::create)
+	)
+		//
+		.apply(instance, factory::create)
 
-        );
+	);
 
-        streamCodec = CodecUtils.composite(
-                ByteBufCodecs.STRING_UTF8, T::getGroup,
-                CountableIngredient.LIST_STREAM_CODEC, T::getCountedIngredients,
-                FluidIngredient.LIST_STREAM_CODEC, T::getFluidIngredients,
-                GasStack.STREAM_CODEC, T::getGasRecipeOutput,
-                ByteBufCodecs.DOUBLE, T::getXp,
-                ByteBufCodecs.INT, T::getTicks,
-                ByteBufCodecs.DOUBLE, T::getUsagePerTick,
-                ProbableItem.LIST_STREAM_CODEC, T::getItemBiproducts,
-                ProbableFluid.LIST_STREAM_CODEC, T::getFluidBiproducts,
-                ProbableGas.LIST_STREAM_CODEC, T::getGasBiproducts,
-                factory::create
-        );
+	streamCodec = CodecUtils.composite(ByteBufCodecs.STRING_UTF8, T::getGroup,
+		CountableIngredient.LIST_STREAM_CODEC, T::getCountedIngredients, FluidIngredient.LIST_STREAM_CODEC,
+		T::getFluidIngredients, GasStack.STREAM_CODEC, T::getGasRecipeOutput, ByteBufCodecs.DOUBLE, T::getXp,
+		ByteBufCodecs.INT, T::getTicks, ByteBufCodecs.DOUBLE, T::getUsagePerTick,
+		ProbableItem.LIST_STREAM_CODEC, T::getItemBiproducts, ProbableFluid.LIST_STREAM_CODEC,
+		T::getFluidBiproducts, ProbableGas.LIST_STREAM_CODEC, T::getGasBiproducts, factory::create);
     }
 
     @Override
     public MapCodec<T> codec() {
-        return codec;
+	return codec;
     }
 
     @Override
     public StreamCodec<RegistryFriendlyByteBuf, T> streamCodec() {
-        return streamCodec;
+	return streamCodec;
     }
 
     /*

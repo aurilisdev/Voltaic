@@ -17,34 +17,35 @@ import net.neoforged.api.distmarker.OnlyIn;
 public class BlockCustomGlass extends Block {
 
     public BlockCustomGlass(float hardness, float resistance) {
-        super(Properties.ofFullCopy(Blocks.GLASS).requiresCorrectToolForDrops().strength(hardness, resistance).isRedstoneConductor((x, y, z) -> false).noOcclusion());
+	super(Properties.ofFullCopy(Blocks.GLASS).requiresCorrectToolForDrops().strength(hardness, resistance)
+		.isRedstoneConductor((x, y, z) -> false).noOcclusion());
     }
 
     @Override
     public VoxelShape getVisualShape(BlockState state, BlockGetter reader, BlockPos pos, CollisionContext context) {
-        return Shapes.empty();
+	return Shapes.empty();
     }
 
     @Override
     @OnlyIn(Dist.CLIENT)
     public boolean skipRendering(BlockState state, BlockState adjacentBlockState, Direction side) {
-        return adjacentBlockState.is(this) || super.skipRendering(state, adjacentBlockState, side);
+	return adjacentBlockState.is(this) || super.skipRendering(state, adjacentBlockState, side);
     }
 
     @OnlyIn(Dist.CLIENT)
     @Override
     public float getShadeBrightness(BlockState state, BlockGetter worldIn, BlockPos pos) {
-        return 1.0F;
+	return 1.0F;
     }
 
     @Override
     public boolean propagatesSkylightDown(BlockState state, BlockGetter reader, BlockPos pos) {
-        return true;
+	return true;
     }
 
     @Override
     protected MapCodec<? extends Block> codec() {
-        throw new UnsupportedOperationException("Need to implement CODEC");
+	throw new UnsupportedOperationException("Need to implement CODEC");
     }
 
 }

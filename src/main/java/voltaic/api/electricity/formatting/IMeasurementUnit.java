@@ -4,22 +4,22 @@ import net.minecraft.network.chat.Component;
 
 public interface IMeasurementUnit {
 
-	default double process(double val) {
-		return val / getValue();
+    default double process(double val) {
+	return val / getValue();
+    }
+
+    default Component getName(boolean isSymbol) {
+	if (isSymbol) {
+	    return getSymbol();
 	}
 
-	default Component getName(boolean isSymbol) {
-		if (isSymbol) {
-			return getSymbol();
-		}
+	return getName();
+    }
 
-		return getName();
-	}
+    public double getValue();
 
-	public double getValue();
+    public Component getSymbol();
 
-	public Component getSymbol();
-
-	public Component getName();
+    public Component getName();
 
 }

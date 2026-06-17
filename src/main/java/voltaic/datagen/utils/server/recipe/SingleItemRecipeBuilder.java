@@ -15,7 +15,8 @@ import net.minecraft.world.item.crafting.StonecutterRecipe;
 import net.neoforged.neoforge.common.conditions.ICondition;
 
 /**
- * Imagine mojank providing a working data generator that didn't have the recipe book hard-coded into it
+ * Imagine mojank providing a working data generator that didn't have the recipe
+ * book hard-coded into it
  * 
  * @author skip999
  *
@@ -34,59 +35,60 @@ public class SingleItemRecipeBuilder implements RecipeBuilder {
     private final SingleItemRecipe.Factory<?> factory;
 
     public SingleItemRecipeBuilder(Factory<?> factory, Ingredient ing, Item result, int count) {
-        this.factory = factory;
-        this.ingredient = ing;
-        this.result = result;
-        this.count = count;
+	this.factory = factory;
+	this.ingredient = ing;
+	this.result = result;
+	this.count = count;
     }
 
     public static SingleItemRecipeBuilder stonecuttingRecipe(Ingredient input, Item output, int count) {
-        return new SingleItemRecipeBuilder(StonecutterRecipe::new, input, output, count);
+	return new SingleItemRecipeBuilder(StonecutterRecipe::new, input, output, count);
     }
 
     public SingleItemRecipeBuilder complete(String parent, String name) {
-        id = ResourceLocation.fromNamespaceAndPath(parent, name);
-        return this;
+	id = ResourceLocation.fromNamespaceAndPath(parent, name);
+	return this;
     }
 
     @Override
     public void save(RecipeOutput output) {
-        this.save(output, id);
+	this.save(output, id);
     }
 
     @Override
     public void save(RecipeOutput output, ResourceLocation altName) {
-        if (conditions != null) {
-            output.withConditions(conditions).accept(id, factory.create(group, ingredient, new ItemStack(result, count)), null);
-        } else {
-            output.accept(id, factory.create(group, ingredient, new ItemStack(result, count)), null);
-        }
+	if (conditions != null) {
+	    output.withConditions(conditions).accept(id,
+		    factory.create(group, ingredient, new ItemStack(result, count)), null);
+	} else {
+	    output.accept(id, factory.create(group, ingredient, new ItemStack(result, count)), null);
+	}
     }
 
     @Override
     public void save(RecipeOutput output, String name) {
-        this.save(output, id);
+	this.save(output, id);
     }
 
     @Override
     public RecipeBuilder unlockedBy(String pName, Criterion<?> pCriterion) {
-        return this;
+	return this;
     }
 
     @Override
     public SingleItemRecipeBuilder group(String group) {
-        this.group = group;
-        return this;
+	this.group = group;
+	return this;
     }
 
     public SingleItemRecipeBuilder conditions(ICondition... conditions) {
-        this.conditions = conditions;
-        return this;
+	this.conditions = conditions;
+	return this;
     }
 
     @Override
     public Item getResult() {
-        return result;
+	return result;
     }
 
 }

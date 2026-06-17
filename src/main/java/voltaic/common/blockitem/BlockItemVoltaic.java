@@ -22,65 +22,66 @@ import voltaic.registers.VoltaicCapabilities;
 
 public class BlockItemVoltaic extends BlockItem implements CreativeTabSupplier {
 
-	private final Holder<CreativeModeTab> creativeTab;
+    private final Holder<CreativeModeTab> creativeTab;
 
-	public BlockItemVoltaic(Block block, Properties properties, Holder<CreativeModeTab> creativeTab) {
-		super(block, properties);
-		this.creativeTab = creativeTab;
+    public BlockItemVoltaic(Block block, Properties properties, Holder<CreativeModeTab> creativeTab) {
+	super(block, properties);
+	this.creativeTab = creativeTab;
+    }
+
+    @Override
+    public void addCreativeModeItems(CreativeModeTab tab, List<ItemStack> items) {
+	items.add(new ItemStack(this));
+    }
+
+    @Override
+    public boolean isAllowedInCreativeTab(CreativeModeTab tab) {
+	return creativeTab.value() == tab;
+    }
+
+    @Override
+    public boolean hasCreativeTab() {
+	return creativeTab != null;
+    }
+
+    @Override
+    public boolean onEntityItemUpdate(ItemStack stack, ItemEntity entity) {
+	super.onEntityItemUpdate(stack, entity);
+
+	Level world = entity.level();
+
+	if (world.isClientSide || VoltaicConfig.INSTANCE.RADIATION_SYSTEM_ENABLED.isFalse()) {
+	    return super.onEntityItemUpdate(stack, entity);
 	}
 
-	@Override
-	public void addCreativeModeItems(CreativeModeTab tab, List<ItemStack> items) {
-		items.add(new ItemStack(this));
+	RadioactiveObject rad = RadioactiveItemRegister.getValue(stack.getItem());
+	if (rad.amount() <= 0) {
+	    return false;
+	}
+	double amount = stack.getCount() * rad.amount();
+	int range = (int) (Math.sqrt(amount) / (5 * Math.sqrt(2)) * 1.25);
+	RadiationSystem.addRadiationSource(world, new SimpleRadiationSource(amount, rad.strength(), range, true, 0,
+		entity.getOnPos().above(), false, false));
+	return super.onEntityItemUpdate(stack, entity);
+    }
+
+    @Override
+    public void inventoryTick(ItemStack stack, Level world, Entity entity, int itemSlot, boolean isSelected) {
+	super.inventoryTick(stack, world, entity, itemSlot, isSelected);
+
+	if (VoltaicConfig.INSTANCE.RADIATION_SYSTEM_ENABLED.isFalse()) {
+	    return;
 	}
 
-	@Override
-	public boolean isAllowedInCreativeTab(CreativeModeTab tab) {
-		return creativeTab.value() == tab;
+	RadioactiveObject rad = RadioactiveItemRegister.getValue(stack.getItem());
+
+	if (rad.amount() > 0 && entity instanceof LivingEntity living) {
+	    IRadiationRecipient cap = living.getCapability(VoltaicCapabilities.CAPABILITY_RADIATIONRECIPIENT);
+	    if (cap == null) {
+		return;
+	    }
+	    cap.recieveRadiation(living, stack.getCount() * rad.amount(), rad.strength());
 	}
-
-	@Override
-	public boolean hasCreativeTab() {
-		return creativeTab != null;
-	}
-
-	@Override
-	public boolean onEntityItemUpdate(ItemStack stack, ItemEntity entity) {
-		super.onEntityItemUpdate(stack, entity);
-
-		Level world = entity.level();
-
-		if(world.isClientSide || VoltaicConfig.INSTANCE.RADIATION_SYSTEM_ENABLED.isFalse()) {
-			return super.onEntityItemUpdate(stack, entity);
-		}
-
-		RadioactiveObject rad = RadioactiveItemRegister.getValue(stack.getItem());
-		if(rad.amount() <= 0) {
-			return false;
-		}
-		double amount = stack.getCount() * rad.amount();
-		int range = (int) (Math.sqrt(amount) / (5 * Math.sqrt(2)) * 1.25);
-		RadiationSystem.addRadiationSource(world, new SimpleRadiationSource(amount, rad.strength(), range, true, 0, entity.getOnPos().above(), false, false));
-		return super.onEntityItemUpdate(stack, entity);
-	}
-
-	@Override
-	public void inventoryTick(ItemStack stack, Level world, Entity entity, int itemSlot, boolean isSelected) {
-		super.inventoryTick(stack, world, entity, itemSlot, isSelected);
-
-		if(VoltaicConfig.INSTANCE.RADIATION_SYSTEM_ENABLED.isFalse()) {
-			return;
-		}
-
-		RadioactiveObject rad = RadioactiveItemRegister.getValue(stack.getItem());
-
-		if (rad.amount() > 0 && entity instanceof LivingEntity living) {
-			IRadiationRecipient cap = living.getCapability(VoltaicCapabilities.CAPABILITY_RADIATIONRECIPIENT);
-			if (cap == null) {
-				return;
-			}
-			cap.recieveRadiation(living, stack.getCount() * rad.amount(), rad.strength());
-		}
-	}
+    }
 
 }

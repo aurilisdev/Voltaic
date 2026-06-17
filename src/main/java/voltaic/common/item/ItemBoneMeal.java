@@ -10,27 +10,27 @@ import voltaic.api.creativetab.CreativeTabSupplier;
 
 public class ItemBoneMeal extends BoneMealItem implements CreativeTabSupplier {
 
-	private final Holder<CreativeModeTab> creativeTab;
+    private final Holder<CreativeModeTab> creativeTab;
 
-	public ItemBoneMeal(Properties properties, Holder<CreativeModeTab> creativeTab) {
-		super(properties);
-		this.creativeTab = creativeTab;
-	}
+    public ItemBoneMeal(Properties properties, Holder<CreativeModeTab> creativeTab) {
+	super(properties);
+	this.creativeTab = creativeTab;
+    }
 
-	@Override
-	public void addCreativeModeItems(CreativeModeTab tab, List<ItemStack> items) {
-		items.add(new ItemStack(this));
+    @Override
+    public void addCreativeModeItems(CreativeModeTab tab, List<ItemStack> items) {
+	items.add(new ItemStack(this));
 
-	}
+    }
 
-	@Override
-	public boolean isAllowedInCreativeTab(CreativeModeTab tab) {
-		return creativeTab.value() == tab;
-	}
+    @Override
+    public boolean isAllowedInCreativeTab(CreativeModeTab tab) {
+	return creativeTab.value() == tab;
+    }
 
-	@Override
-	public boolean hasCreativeTab() {
-		return creativeTab != null;
-	}
+    @Override
+    public boolean hasCreativeTab() {
+	return creativeTab != null;
+    }
 
 }

@@ -20,68 +20,72 @@ public class WrapperCyclableGasGauge {
     private int gauge = 0;
     private List<AbstractScreenComponent> components = new ArrayList<>();
 
-    public WrapperCyclableGasGauge(int x, int y, GenericContainerBlockEntity<? extends GenericTile> container, GenericScreen<?> screen, boolean inputTanks) {
+    public WrapperCyclableGasGauge(int x, int y, GenericContainerBlockEntity<? extends GenericTile> container,
+	    GenericScreen<?> screen, boolean inputTanks) {
 
-        int yOffset = 0;
+	int yOffset = 0;
 
-        components.add(screen.addComponent(new ScreenComponentSimpleLabel(x + 4, y + yOffset, 7, Color.WHITE, () -> Component.literal("" + (gauge + 1)))));
+	components.add(screen.addComponent(new ScreenComponentSimpleLabel(x + 4, y + yOffset, 7, Color.WHITE,
+		() -> Component.literal("" + (gauge + 1)))));
 
-        yOffset += 8;
+	yOffset += 8;
 
-        components.add(screen.addComponent(new ScreenComponentGasGauge(() -> {
-            GenericTile tile = container.getSafeHost();
-            if (tile == null) {
-                return null;
-            }
-            IComponentGasHandler handler = tile.getComponent(IComponentType.GasHandler);
-            if (handler == null) {
-                return null;
-            }
-            return inputTanks ? handler.getInputTanks()[gauge] : handler.getOutputTanks()[gauge];
-        }, x, y + yOffset)));
+	components.add(screen.addComponent(new ScreenComponentGasGauge(() -> {
+	    GenericTile tile = container.getSafeHost();
+	    if (tile == null) {
+		return null;
+	    }
+	    IComponentGasHandler handler = tile.getComponent(IComponentType.GasHandler);
+	    if (handler == null) {
+		return null;
+	    }
+	    return inputTanks ? handler.getInputTanks()[gauge] : handler.getOutputTanks()[gauge];
+	}, x, y + yOffset)));
 
-        yOffset += 50;
+	yOffset += 50;
 
-        components.add(screen.addComponent(new ButtonTankSlider(ButtonTankSlider.TankSliderPair.LEFT, x, y + yOffset).setOnPress(button -> {
-            GenericTile tile = container.getSafeHost();
-            if (tile == null) {
-                return;
-            }
-            IComponentGasHandler handler = tile.getComponent(IComponentType.GasHandler);
-            if (handler == null) {
-                return;
-            }
-            int size = inputTanks ? handler.getInputTanks().length : handler.getOutputTanks().length;
+	components.add(screen.addComponent(
+		new ButtonTankSlider(ButtonTankSlider.TankSliderPair.LEFT, x, y + yOffset).setOnPress(button -> {
+		    GenericTile tile = container.getSafeHost();
+		    if (tile == null) {
+			return;
+		    }
+		    IComponentGasHandler handler = tile.getComponent(IComponentType.GasHandler);
+		    if (handler == null) {
+			return;
+		    }
+		    int size = inputTanks ? handler.getInputTanks().length : handler.getOutputTanks().length;
 
-            gauge--;
+		    gauge--;
 
-            if (gauge < 0) {
-                gauge = size - 1;
-            }
-        })));
+		    if (gauge < 0) {
+			gauge = size - 1;
+		    }
+		})));
 
-        components.add(screen.addComponent(new ButtonTankSlider(ButtonTankSlider.TankSliderPair.RIGHT, x + 8, y + yOffset).setOnPress(button -> {
-            GenericTile tile = container.getSafeHost();
-            if (tile == null) {
-                return;
-            }
-            IComponentGasHandler handler = tile.getComponent(IComponentType.GasHandler);
-            if (handler == null) {
-                return;
-            }
-            int size = inputTanks ? handler.getInputTanks().length : handler.getOutputTanks().length;
+	components.add(screen.addComponent(
+		new ButtonTankSlider(ButtonTankSlider.TankSliderPair.RIGHT, x + 8, y + yOffset).setOnPress(button -> {
+		    GenericTile tile = container.getSafeHost();
+		    if (tile == null) {
+			return;
+		    }
+		    IComponentGasHandler handler = tile.getComponent(IComponentType.GasHandler);
+		    if (handler == null) {
+			return;
+		    }
+		    int size = inputTanks ? handler.getInputTanks().length : handler.getOutputTanks().length;
 
-            gauge++;
+		    gauge++;
 
-            if (size <= gauge) {
-                gauge = 0;
-            }
-        })));
+		    if (size <= gauge) {
+			gauge = 0;
+		    }
+		})));
 
     }
 
     public List<AbstractScreenComponent> getComponents() {
-        return components;
+	return components;
     }
 
 }

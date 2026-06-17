@@ -6,13 +6,12 @@ import voltaic.Voltaic;
 //@EventBusSubscriber(modid = References.ID, bus = Bus.MOD)
 public class VoltaicRegistries {
 
-	/* GAS */
-	
-	
-	//@SubscribeEvent
-	public static void registerRegistries(NewRegistryEvent event) {
-	    Voltaic.LOGGER.info("firing");
-	    
-	}
+    /* GAS */
+
+    // @SubscribeEvent
+    public static void registerRegistries(NewRegistryEvent event) {
+	Voltaic.LOGGER.info("firing");
+
+    }
 
 }

@@ -68,185 +68,188 @@ public abstract class GenericTile extends BlockEntity implements Nameable, IProp
     public boolean isChanged = false;
 
     public GenericTile(BlockEntityType<?> tileEntityTypeIn, BlockPos worldPos, BlockState blockState) {
-        super(tileEntityTypeIn, worldPos, blockState);
+	super(tileEntityTypeIn, worldPos, blockState);
     }
 
     public <T extends AbstractProperty> T property(T prop) {
-        for (AbstractProperty existing : propertyManager.getProperties()) {
-            if (existing.getName().equals(prop.getName())) {
-                throw new RuntimeException(prop.getName() + " is already being used by another property!");
-            }
-        }
+	for (AbstractProperty existing : propertyManager.getProperties()) {
+	    if (existing.getName().equals(prop.getName())) {
+		throw new RuntimeException(prop.getName() + " is already being used by another property!");
+	    }
+	}
 
-        return propertyManager.addProperty(prop);
+	return propertyManager.addProperty(prop);
     }
 
     @Override
     public PropertyManager getPropertyManager() {
-        return propertyManager;
+	return propertyManager;
     }
 
     public boolean hasComponent(IComponentType type) {
-        return components[type.ordinal()] != null;
+	return components[type.ordinal()] != null;
     }
 
     public <T extends IComponent> T getComponent(IComponentType type) {
-        return !hasComponent(type) ? null : (T) components[type.ordinal()];
+	return !hasComponent(type) ? null : (T) components[type.ordinal()];
     }
 
     public GenericTile addComponent(IComponent component) {
-        component.holder(this);
-        if (hasComponent(component.getType())) {
-            throw new ExceptionInInitializerError("Component of type: " + component.getType().name() + " already registered!");
-        }
-        components[component.getType().ordinal()] = component;
-        return this;
+	component.holder(this);
+	if (hasComponent(component.getType())) {
+	    throw new ExceptionInInitializerError(
+		    "Component of type: " + component.getType().name() + " already registered!");
+	}
+	components[component.getType().ordinal()] = component;
+	return this;
     }
 
     @Deprecated(since = "Try not using this method.")
     public GenericTile forceComponent(IComponent component) {
-        component.holder(this);
-        components[component.getType().ordinal()] = component;
-        return this;
+	component.holder(this);
+	components[component.getType().ordinal()] = component;
+	return this;
     }
-
 
     // called when tile is created/loaded from memory
     @Override
     protected void loadAdditional(CompoundTag compound, HolderLookup.Provider registries) {
-        super.loadAdditional(compound, registries);
-        if (propertyManager != null && compound.contains(PropertyManager.NBT_KEY)) {
-            CompoundTag propertyData = compound.getCompound(PropertyManager.NBT_KEY);
-            propertyManager.loadFromTag(propertyData, registries);
-            compound.remove(PropertyManager.NBT_KEY);
-        }
-        for (IComponent component : components) {
-            if (component != null) {
-                component.holder(this);
-                component.loadFromNBT(compound);
-            }
-        }
+	super.loadAdditional(compound, registries);
+	if (propertyManager != null && compound.contains(PropertyManager.NBT_KEY)) {
+	    CompoundTag propertyData = compound.getCompound(PropertyManager.NBT_KEY);
+	    propertyManager.loadFromTag(propertyData, registries);
+	    compound.remove(PropertyManager.NBT_KEY);
+	}
+	for (IComponent component : components) {
+	    if (component != null) {
+		component.holder(this);
+		component.loadFromNBT(compound);
+	    }
+	}
     }
 
     @Override
     protected void saveAdditional(CompoundTag compound, HolderLookup.Provider registries) {
-        if (propertyManager != null) {
-            CompoundTag propertyData = new CompoundTag();
-            propertyManager.saveToTag(propertyData, registries);
-            compound.put(PropertyManager.NBT_KEY, propertyData);
-        }
-        for (IComponent component : components) {
-            if (component != null) {
-                component.holder(this);
-                component.saveToNBT(compound);
-            }
-        }
-        super.saveAdditional(compound, registries);
+	if (propertyManager != null) {
+	    CompoundTag propertyData = new CompoundTag();
+	    propertyManager.saveToTag(propertyData, registries);
+	    compound.put(PropertyManager.NBT_KEY, propertyData);
+	}
+	for (IComponent component : components) {
+	    if (component != null) {
+		component.holder(this);
+		component.saveToNBT(compound);
+	    }
+	}
+	super.saveAdditional(compound, registries);
     }
 
-    //called either from initial client sync
+    // called either from initial client sync
     @Override
     public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
-        CompoundTag tag = super.getUpdateTag(registries);
-        if (propertyManager != null) {
-            CompoundTag propertyData = new CompoundTag();
-            propertyManager.saveAllPropsForClientSync(propertyData, registries);
-            tag.put(PropertyManager.NBT_KEY, propertyData);
-            propertyManager.clean();
-        }
+	CompoundTag tag = super.getUpdateTag(registries);
+	if (propertyManager != null) {
+	    CompoundTag propertyData = new CompoundTag();
+	    propertyManager.saveAllPropsForClientSync(propertyData, registries);
+	    tag.put(PropertyManager.NBT_KEY, propertyData);
+	    propertyManager.clean();
+	}
 
-        return tag;
+	return tag;
     }
 
-    //Called when Level#sendBlockUpdated is called
+    // Called when Level#sendBlockUpdated is called
     @Nullable
     @Override
     public Packet<ClientGamePacketListener> getUpdatePacket() {
-        return ClientboundBlockEntityDataPacket.create(this, (tile, registries) -> {
-            CompoundTag tag = new CompoundTag();
-            CompoundTag data = new CompoundTag();
-            propertyManager.saveDirtyPropsToTag(data, registries);
-            tag.put(PropertyManager.NBT_KEY, data);
-            return tag;
-        });
+	return ClientboundBlockEntityDataPacket.create(this, (tile, registries) -> {
+	    CompoundTag tag = new CompoundTag();
+	    CompoundTag data = new CompoundTag();
+	    propertyManager.saveDirtyPropsToTag(data, registries);
+	    tag.put(PropertyManager.NBT_KEY, data);
+	    return tag;
+	});
     }
 
-    //Only fires on server side
+    // Only fires on server side
     @Override
     public void onLoad() {
-        super.onLoad();
+	super.onLoad();
 
-        for (IComponent component : components) {
-            if (component != null) {
-                component.holder(this);
-                component.onLoad();
-            }
-        }
+	for (IComponent component : components) {
+	    if (component != null) {
+		component.holder(this);
+		component.onLoad();
+	    }
+	}
 
-        if (propertyManager != null) {
-            propertyManager.onTileLoaded();
-        }
+	if (propertyManager != null) {
+	    propertyManager.onTileLoaded();
+	}
     }
 
     @Override
     public net.minecraft.network.chat.@NotNull Component getName() {
-        return hasComponent(IComponentType.Name) ? this.<ComponentName>getComponent(IComponentType.Name).getName() : net.minecraft.network.chat.Component.literal(Voltaic.ID + ".default.tile.name");
+	return hasComponent(IComponentType.Name) ? this.<ComponentName>getComponent(IComponentType.Name).getName()
+		: net.minecraft.network.chat.Component.literal(Voltaic.ID + ".default.tile.name");
     }
 
-    /* Since you have to register it anyway, might as well make it somewhat faster */
+    /*
+     * Since you have to register it anyway, might as well make it somewhat faster
+     */
 
     @Nullable
     public ICapabilityElectrodynamic getElectrodynamicCapability(@Nullable Direction side) {
-        ComponentElectrodynamic electro = getComponent(IComponentType.Electrodynamic);
-        return electro == null ? null : electro.getCapability(side, CapabilityInputType.NONE);
+	ComponentElectrodynamic electro = getComponent(IComponentType.Electrodynamic);
+	return electro == null ? null : electro.getCapability(side, CapabilityInputType.NONE);
 
     }
 
     @Nullable
     public IFluidHandler getFluidHandlerCapability(@Nullable Direction side) {
-        IComponentFluidHandler fluid = getComponent(IComponentType.FluidHandler);
-        return fluid == null ? null : fluid.getCapability(side, CapabilityInputType.NONE);
+	IComponentFluidHandler fluid = getComponent(IComponentType.FluidHandler);
+	return fluid == null ? null : fluid.getCapability(side, CapabilityInputType.NONE);
     }
 
     @Nullable
     public IGasHandler getGasHandlerCapability(@Nullable Direction side) {
-        IComponentGasHandler gas = getComponent(IComponentType.GasHandler);
-        return gas == null ? null : gas.getCapability(side, CapabilityInputType.NONE);
+	IComponentGasHandler gas = getComponent(IComponentType.GasHandler);
+	return gas == null ? null : gas.getCapability(side, CapabilityInputType.NONE);
     }
 
     @Nullable
     public IItemHandler getItemHandlerCapability(@Nullable Direction side) {
-        ComponentInventory inv = getComponent(IComponentType.Inventory);
-        return inv == null ? null : inv.getCapability(side, CapabilityInputType.NONE);
+	ComponentInventory inv = getComponent(IComponentType.Inventory);
+	return inv == null ? null : inv.getCapability(side, CapabilityInputType.NONE);
     }
 
     @Nullable
     public IEnergyStorage getForgeEnergyCapability(@Nullable Direction side) {
-        ComponentForgeEnergy energy = getComponent(IComponentType.ForgeEnergy);
-        return energy == null ? null : energy.getCap(side, CapabilityInputType.NONE);
+	ComponentForgeEnergy energy = getComponent(IComponentType.ForgeEnergy);
+	return energy == null ? null : energy.getCap(side, CapabilityInputType.NONE);
     }
 
     @Override
     public void setRemoved() {
-        super.setRemoved();
-        for (IComponent component : components) {
-            if (component != null) {
-                component.holder(this);
-                component.remove();
-            }
-        }
+	super.setRemoved();
+	for (IComponent component : components) {
+	    if (component != null) {
+		component.holder(this);
+		component.remove();
+	    }
+	}
     }
 
     public SimpleContainerData getCoordsArray() {
-        SimpleContainerData array = new SimpleContainerData(3);
-        array.set(0, worldPosition.getX());
-        array.set(1, worldPosition.getY());
-        array.set(2, worldPosition.getZ());
-        return array;
+	SimpleContainerData array = new SimpleContainerData(3);
+	array.set(0, worldPosition.getX());
+	array.set(1, worldPosition.getY());
+	array.set(2, worldPosition.getZ());
+	return array;
     }
 
     public boolean isPoweredByRedstone() {
-        return level.getDirectSignalTo(worldPosition) > 0;
+	return level.getDirectSignalTo(worldPosition) > 0;
     }
 
     /**
@@ -255,23 +258,25 @@ public abstract class GenericTile extends BlockEntity implements Nameable, IProp
      * @return
      */
     public Direction getFacing() {
-        return getBlockState().hasProperty(VoltaicBlockStates.FACING) ? getBlockState().getValue(VoltaicBlockStates.FACING) : Direction.NORTH;
+	return getBlockState().hasProperty(VoltaicBlockStates.FACING)
+		? getBlockState().getValue(VoltaicBlockStates.FACING)
+		: Direction.NORTH;
     }
 
     public void onEnergyChange(ComponentElectrodynamic cap) {
-        // hook method for now
+	// hook method for now
     }
 
     // no more polling for upgrade effects :D
     public void onInventoryChange(ComponentInventory inv, int slot) {
-        // this can be moved to a seperate tile class in the future
-        if (hasComponent(IComponentType.Processor)) {
-            this.<ComponentProcessor>getComponent(IComponentType.Processor).onInventoryChange(inv, slot);
-        }
+	// this can be moved to a seperate tile class in the future
+	if (hasComponent(IComponentType.Processor)) {
+	    this.<ComponentProcessor>getComponent(IComponentType.Processor).onInventoryChange(inv, slot);
+	}
     }
 
     public void onFluidTankChange(FluidTank tank) {
-        // hook method for now
+	// hook method for now
     }
 
     public void onGasTankChange(GasTank tank) {
@@ -279,58 +284,58 @@ public abstract class GenericTile extends BlockEntity implements Nameable, IProp
     }
 
     public InteractionResult useWithoutItem(Player player, BlockHitResult hit) {
-        if (hasComponent(IComponentType.ContainerProvider)) {
+	if (hasComponent(IComponentType.ContainerProvider)) {
 
-            if (!level.isClientSide) {
+	    if (!level.isClientSide) {
 
-                player.openMenu(getComponent(IComponentType.ContainerProvider));
+		player.openMenu(getComponent(IComponentType.ContainerProvider));
 
-                player.awardStat(Stats.INTERACT_WITH_FURNACE);
+		player.awardStat(Stats.INTERACT_WITH_FURNACE);
 
-            }
+	    }
 
-            return InteractionResult.CONSUME;
+	    return InteractionResult.CONSUME;
 
-        }
-        return InteractionResult.PASS;
+	}
+	return InteractionResult.PASS;
     }
 
     public ItemInteractionResult useWithItem(ItemStack used, Player player, InteractionHand hand, BlockHitResult hit) {
-        if (used.getItem() instanceof ItemUpgrade upgrade && hasComponent(IComponentType.Inventory)) {
+	if (used.getItem() instanceof ItemUpgrade upgrade && hasComponent(IComponentType.Inventory)) {
 
-            ComponentInventory inv = getComponent(IComponentType.Inventory);
-            // null check for safety
-            if (inv != null && inv.upgrades() > 0) {
-                int upgradeIndex = inv.getUpgradeSlotStartIndex();
-                for (int i = 0; i < inv.upgrades(); i++) {
-                    if (inv.canPlaceItem(upgradeIndex + i, used)) {
-                        ItemStack upgradeStack = inv.getItem(upgradeIndex + i);
-                        if (upgradeStack.isEmpty()) {
-                            if (!level.isClientSide()) {
-                                inv.setItem(upgradeIndex + i, used.copy());
-                                used.shrink(used.getCount());
-                            }
-                            return ItemInteractionResult.CONSUME;
-                        }
-                        if (ItemUtils.testItems(upgrade, upgradeStack.getItem())) {
-                            int room = upgradeStack.getMaxStackSize() - upgradeStack.getCount();
-                            if (room > 0) {
-                                if (!level.isClientSide()) {
-                                    int accepted = room > used.getCount() ? used.getCount() : room;
-                                    upgradeStack.grow(accepted);
-                                    used.shrink(accepted);
-                                }
-                                return ItemInteractionResult.CONSUME;
-                            }
-                        }
-                    }
-                }
-            }
+	    ComponentInventory inv = getComponent(IComponentType.Inventory);
+	    // null check for safety
+	    if (inv != null && inv.upgrades() > 0) {
+		int upgradeIndex = inv.getUpgradeSlotStartIndex();
+		for (int i = 0; i < inv.upgrades(); i++) {
+		    if (inv.canPlaceItem(upgradeIndex + i, used)) {
+			ItemStack upgradeStack = inv.getItem(upgradeIndex + i);
+			if (upgradeStack.isEmpty()) {
+			    if (!level.isClientSide()) {
+				inv.setItem(upgradeIndex + i, used.copy());
+				used.shrink(used.getCount());
+			    }
+			    return ItemInteractionResult.CONSUME;
+			}
+			if (ItemUtils.testItems(upgrade, upgradeStack.getItem())) {
+			    int room = upgradeStack.getMaxStackSize() - upgradeStack.getCount();
+			    if (room > 0) {
+				if (!level.isClientSide()) {
+				    int accepted = room > used.getCount() ? used.getCount() : room;
+				    upgradeStack.grow(accepted);
+				    used.shrink(accepted);
+				}
+				return ItemInteractionResult.CONSUME;
+			    }
+			}
+		    }
+		}
+	    }
 
-        } else if (!(used.getItem() instanceof IWrenchItem)) {
+	} else if (!(used.getItem() instanceof IWrenchItem)) {
 
-        }
-        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+	}
+	return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
     }
 
     public void onBlockDestroyed() {
@@ -343,25 +348,25 @@ public abstract class GenericTile extends BlockEntity implements Nameable, IProp
 
     public void onPlace(BlockState oldState, boolean isMoving) {
 
-        for (IComponent component : components) {
-            if (component != null) {
-                component.holder(this);
-                component.onLoad();
-            }
-        }
+	for (IComponent component : components) {
+	    if (component != null) {
+		component.holder(this);
+		component.onLoad();
+	    }
+	}
 
     }
 
     public int getComparatorSignal() {
-        return 0;
+	return 0;
     }
 
     public int getDirectSignal(Direction dir) {
-        return 0;
+	return 0;
     }
 
     public int getSignal(Direction dir) {
-        return 0;
+	return 0;
     }
 
     public void onEntityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
@@ -369,43 +374,49 @@ public abstract class GenericTile extends BlockEntity implements Nameable, IProp
     }
 
     public void updateCarriedItemInContainer(ItemStack stack, UUID playerId) {
-        ServerPlayer player = (ServerPlayer) getLevel().getPlayerByUUID(playerId);
-        if (player.hasContainerOpen()) {
-            stack.set(VoltaicDataComponentTypes.HASCLICKEDONFLUIDGAUGE, false);
-            player.containerMenu.setCarried(stack);
-            PacketDistributor.sendToPlayer(player, new PacketUpdateCariedItemClient(stack, worldPosition, playerId));
-        }
+	ServerPlayer player = (ServerPlayer) getLevel().getPlayerByUUID(playerId);
+	if (player.hasContainerOpen()) {
+	    stack.set(VoltaicDataComponentTypes.HASCLICKEDONFLUIDGAUGE, false);
+	    player.containerMenu.setCarried(stack);
+	    PacketDistributor.sendToPlayer(player, new PacketUpdateCariedItemClient(stack, worldPosition, playerId));
+	}
     }
 
     protected static TriPredicate<Integer, ItemStack, ComponentInventory> machineValidator() {
-        return (x, y, i) ->
-                //
-                x < i.getOutputStartIndex() ||
-                        //
-                        x >= i.getInputBucketStartIndex() && x < i.getInputGasStartIndex() && y.getCapability(Capabilities.FluidHandler.ITEM) != null ||
-                        //
-                        x >= i.getInputGasStartIndex() && x < i.getUpgradeSlotStartIndex() && y.getCapability(VoltaicCapabilities.CAPABILITY_GASHANDLER_ITEM) != null ||
-                        //
-                        x >= i.getUpgradeSlotStartIndex() && y.getItem() instanceof ItemUpgrade upgrade && i.isUpgradeValid(upgrade.subtype);
-        //
+	return (x, y, i) ->
+	//
+	x < i.getOutputStartIndex() ||
+	//
+		x >= i.getInputBucketStartIndex() && x < i.getInputGasStartIndex()
+			&& y.getCapability(Capabilities.FluidHandler.ITEM) != null
+		||
+		//
+		x >= i.getInputGasStartIndex() && x < i.getUpgradeSlotStartIndex()
+			&& y.getCapability(VoltaicCapabilities.CAPABILITY_GASHANDLER_ITEM) != null
+		||
+		//
+		x >= i.getUpgradeSlotStartIndex() && y.getItem() instanceof ItemUpgrade upgrade
+			&& i.isUpgradeValid(upgrade.subtype);
+	//
     }
 
     public static final int[] arr(int... values) {
-        return values;
+	return values;
     }
 
     /**
-     * This method will never have air as the newState unless something has gone horribly horribly wrong!
+     * This method will never have air as the newState unless something has gone
+     * horribly horribly wrong!
      *
      * @param oldState
      * @param newState
      */
     public void onBlockStateUpdate(BlockState oldState, BlockState newState) {
-        for (IComponent component : components) {
-            if (component != null) {
-                component.refreshIfUpdate(oldState, newState);
-            }
-        }
+	for (IComponent component : components) {
+	    if (component != null) {
+		component.refreshIfUpdate(oldState, newState);
+	    }
+	}
     }
 
     public void setPlacedBy(LivingEntity player, ItemStack stack) {

@@ -9,11 +9,11 @@ import voltaic.datagen.utils.server.radiation.BaseRadiationShieldingProvider;
 
 public class VoltaicRadiationShieldingProvider extends BaseRadiationShieldingProvider {
     public VoltaicRadiationShieldingProvider(PackOutput output) {
-        super(output, Voltaic.ID);
+	super(output, Voltaic.ID);
     }
 
     @Override
     public void getRadiationShielding(JsonObject json) {
-        addBlock(Blocks.WATER, 5000, 1, json);
+	addBlock(Blocks.WATER, 5000, 1, json);
     }
 }

@@ -22,47 +22,45 @@ import voltaic.registers.VoltaicIngredients;
 public class CountableIngredient implements ICustomIngredient {
 
     public static final MapCodec<CountableIngredient> CODEC = RecordCodecBuilder.mapCodec(
-            //
-            instance -> instance.group(
-                            //
-                            Ingredient.CODEC_NONEMPTY.fieldOf("ingredient").forGetter(instance0 -> instance0.ingredient),
-                            //
-                            Codec.INT.fieldOf("count").forGetter(instance0 -> instance0.stackSize)
+	    //
+	    instance -> instance.group(
+		    //
+		    Ingredient.CODEC_NONEMPTY.fieldOf("ingredient").forGetter(instance0 -> instance0.ingredient),
+		    //
+		    Codec.INT.fieldOf("count").forGetter(instance0 -> instance0.stackSize)
 
-                    )
-                    //
-                    .apply(instance, (ing, count) -> new CountableIngredient(ing, count))
+	    )
+		    //
+		    .apply(instance, CountableIngredient::new)
 
-            //
+    //
     );
 
     public static final Codec<List<CountableIngredient>> LIST_CODEC = CODEC.codec().listOf();
 
     public static final StreamCodec<RegistryFriendlyByteBuf, CountableIngredient> STREAM_CODEC = StreamCodec.composite(
-            Ingredient.CONTENTS_STREAM_CODEC, instance -> instance.ingredient,
-            ByteBufCodecs.INT, instance -> instance.stackSize,
-            CountableIngredient::new
-    );
+	    Ingredient.CONTENTS_STREAM_CODEC, instance -> instance.ingredient, ByteBufCodecs.INT,
+	    instance -> instance.stackSize, CountableIngredient::new);
 
     public static final StreamCodec<RegistryFriendlyByteBuf, List<CountableIngredient>> LIST_STREAM_CODEC = new StreamCodec<>() {
 
-        @Override
-        public void encode(RegistryFriendlyByteBuf buf, List<CountableIngredient> ings) {
-            buf.writeInt(ings.size());
-            for (CountableIngredient ing : ings) {
-                STREAM_CODEC.encode(buf, ing);
-            }
-        }
+	@Override
+	public void encode(RegistryFriendlyByteBuf buf, List<CountableIngredient> ings) {
+	    buf.writeInt(ings.size());
+	    for (CountableIngredient ing : ings) {
+		STREAM_CODEC.encode(buf, ing);
+	    }
+	}
 
-        @Override
-        public List<CountableIngredient> decode(RegistryFriendlyByteBuf buf) {
-            int length = buf.readInt();
-            List<CountableIngredient> ings = new ArrayList<>();
-            for (int i = 0; i < length; i++) {
-                ings.add(STREAM_CODEC.decode(buf));
-            }
-            return ings;
-        }
+	@Override
+	public List<CountableIngredient> decode(RegistryFriendlyByteBuf buf) {
+	    int length = buf.readInt();
+	    List<CountableIngredient> ings = new ArrayList<>();
+	    for (int i = 0; i < length; i++) {
+		ings.add(STREAM_CODEC.decode(buf));
+	    }
+	    return ings;
+	}
     };
 
     private final int stackSize;
@@ -73,70 +71,70 @@ public class CountableIngredient implements ICustomIngredient {
     private ItemStack[] countedItems;
 
     public CountableIngredient(ItemStack stack) {
-        this(Ingredient.of(stack), stack.getCount());
+	this(Ingredient.of(stack), stack.getCount());
     }
 
     public CountableIngredient(Ingredient ingredient, int stackSize) {
-        this.ingredient = ingredient;
-        this.stackSize = stackSize;
+	this.ingredient = ingredient;
+	this.stackSize = stackSize;
 
     }
 
     @Override
     public boolean test(ItemStack stack) {
-        return ingredient.test(stack) && stackSize <= stack.getCount();
+	return ingredient.test(stack) && stackSize <= stack.getCount();
     }
 
     @Override
     public Stream<ItemStack> getItems() {
-        if (countedItems == null) {
-            ItemStack[] items = ingredient.getItems().clone();
-            for (ItemStack item : items) {
-                item.setCount(stackSize);
-            }
-            countedItems = items;
-        }
-        return Stream.of(countedItems);
+	if (countedItems == null) {
+	    ItemStack[] items = ingredient.getItems().clone();
+	    for (ItemStack item : items) {
+		item.setCount(stackSize);
+	    }
+	    countedItems = items;
+	}
+	return Stream.of(countedItems);
     }
 
     public ItemStack[] getItemsArray() {
-        if (countedItems == null) {
-            ItemStack[] items = ingredient.getItems().clone();
-            for (ItemStack item : items) {
-                item.setCount(stackSize);
-            }
-            countedItems = items;
-        }
-        return countedItems;
+	if (countedItems == null) {
+	    ItemStack[] items = ingredient.getItems().clone();
+	    for (ItemStack item : items) {
+		item.setCount(stackSize);
+	    }
+	    countedItems = items;
+	}
+	return countedItems;
     }
 
     @Override
     public boolean isSimple() {
-        return false;
+	return false;
     }
 
     @Override
     public IngredientType<?> getType() {
-        return VoltaicIngredients.COUNTABLE_INGREDIENT_TYPE.get();
+	return VoltaicIngredients.COUNTABLE_INGREDIENT_TYPE.get();
     }
 
     public int getStackSize() {
-        return stackSize;
+	return stackSize;
     }
 
     @Override
     public String toString() {
-        return getItemsArray().length == 0 ? "empty" : getItemsArray()[0].toString();
+	return getItemsArray().length == 0 ? "empty" : getItemsArray()[0].toString();
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof CountableIngredient otherIng) {
+	if (obj instanceof CountableIngredient otherIng) {
 
-            return otherIng.stackSize == stackSize && ingredient.equals(otherIng.ingredient);
+	    return otherIng.stackSize == stackSize && ingredient.equals(otherIng.ingredient);
 
-        }
-        return false;
+	}
+	return false;
     }
 
 }

@@ -50,128 +50,129 @@ public class MultiblockModelLoader implements IGeometryLoader<MultiblockModelLoa
     @Override
     public MultiblockModelGeometry read(JsonObject json, JsonDeserializationContext context) throws JsonParseException {
 
-        json.remove("loader");
-        if (json.has("modelloader")) {
-            json.addProperty("loader", json.get("modelloader").getAsString());
-            json.remove("modelloader");
-        }
+	json.remove("loader");
+	if (json.has("modelloader")) {
+	    json.addProperty("loader", json.get("modelloader").getAsString());
+	    json.remove("modelloader");
+	}
 
-        ResourceLocation loc = null;
+	ResourceLocation loc = null;
 
-        if(json.has("render_type")){
-             loc = ResourceLocation.parse(json.get("render_type").getAsString());
-        }
+	if (json.has("render_type")) {
+	    loc = ResourceLocation.parse(json.get("render_type").getAsString());
+	}
 
-        return new MultiblockModelGeometry(DESERIALIZER.deserialize(json, null, context), loc);
+	return new MultiblockModelGeometry(DESERIALIZER.deserialize(json, null, context), loc);
     }
 
     public static class MultiblockModelGeometry implements IUnbakedGeometry<MultiblockModelGeometry> {
 
-        private final BlockModel model;
-        @Nullable
-        private final ResourceLocation renderType;
+	private final BlockModel model;
+	@Nullable
+	private final ResourceLocation renderType;
 
-        public MultiblockModelGeometry(BlockModel model, @Nullable ResourceLocation renderType) {
-            this.model = model;
-            this.renderType = renderType;
-        }
+	public MultiblockModelGeometry(BlockModel model, @Nullable ResourceLocation renderType) {
+	    this.model = model;
+	    this.renderType = renderType;
+	}
 
-        @Override
-        public BakedModel bake(IGeometryBakingContext context, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, ItemOverrides overrides) {
+	@Override
+	public BakedModel bake(IGeometryBakingContext context, ModelBaker baker,
+		Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, ItemOverrides overrides) {
 
-            BakedModel[] models = new BakedModel[6];
+	    BakedModel[] models = new BakedModel[6];
 
-            for (Direction dir : Direction.values()) {
+	    for (Direction dir : Direction.values()) {
 
-                ModelState transform = ModelStateRotation.ROTATIONS.get(dir);
+		ModelState transform = ModelStateRotation.ROTATIONS.get(dir);
 
-                if(model.customData.getCustomGeometry() != null) {
-                    models[dir.ordinal()] = this.model.customData.getCustomGeometry().bake(context, baker, spriteGetter, transform, overrides);
-                } else {
-                    models[dir.ordinal()] = this.model.bake(baker, model, spriteGetter, transform, context.isGui3d());
-                }
+		if (model.customData.getCustomGeometry() != null) {
+		    models[dir.ordinal()] = this.model.customData.getCustomGeometry().bake(context, baker, spriteGetter,
+			    transform, overrides);
+		} else {
+		    models[dir.ordinal()] = this.model.bake(baker, model, spriteGetter, transform, context.isGui3d());
+		}
 
+	    }
 
+	    return new MultiblockModelLoader.MultiblockModel(models,
+		    renderType == null ? null : ChunkRenderTypeSet.of(NamedRenderTypeManager.get(renderType).block()));
+	}
 
-            }
+	@Override
+	public void resolveParents(Function<ResourceLocation, UnbakedModel> modelGetter,
+		IGeometryBakingContext context) {
+	    this.model.resolveParents(modelGetter);
+	}
 
-
-            return new MultiblockModelLoader.MultiblockModel(models, renderType == null ? null : ChunkRenderTypeSet.of(NamedRenderTypeManager.get(renderType).block()));
-        }
-
-        @Override
-        public void resolveParents(Function<ResourceLocation, UnbakedModel> modelGetter, IGeometryBakingContext context) {
-            this.model.resolveParents(modelGetter);
-        }
-
-
-        @Override
-        public Set<String> getConfigurableComponentNames() {
-            return IUnbakedGeometry.super.getConfigurableComponentNames();
-        }
+	@Override
+	public Set<String> getConfigurableComponentNames() {
+	    return IUnbakedGeometry.super.getConfigurableComponentNames();
+	}
 
     }
 
     public static class MultiblockModel implements IDynamicBakedModel {
 
-        private static final List<BakedQuad> NO_QUADS = ImmutableList.of();
+	private static final List<BakedQuad> NO_QUADS = ImmutableList.of();
 
-        private final BakedModel[] models;
-        @Nullable
-        private final ChunkRenderTypeSet renderType;
+	private final BakedModel[] models;
+	@Nullable
+	private final ChunkRenderTypeSet renderType;
 
-        public MultiblockModel(BakedModel[] models, @Nullable ChunkRenderTypeSet renderType) {
-            this.models = models;
-            this.renderType = renderType;
-        }
+	public MultiblockModel(BakedModel[] models, @Nullable ChunkRenderTypeSet renderType) {
+	    this.models = models;
+	    this.renderType = renderType;
+	}
 
-        @Override
-        public boolean useAmbientOcclusion() {
-            return models[0].useAmbientOcclusion();
-        }
+	@Override
+	public boolean useAmbientOcclusion() {
+	    return models[0].useAmbientOcclusion();
+	}
 
-        @Override
-        public boolean isGui3d() {
-            return models[0].isGui3d();
-        }
+	@Override
+	public boolean isGui3d() {
+	    return models[0].isGui3d();
+	}
 
-        @Override
-        public boolean usesBlockLight() {
-            return models[0].usesBlockLight();
-        }
+	@Override
+	public boolean usesBlockLight() {
+	    return models[0].usesBlockLight();
+	}
 
-        @Override
-        public boolean isCustomRenderer() {
-            return models[0].isCustomRenderer();
-        }
+	@Override
+	public boolean isCustomRenderer() {
+	    return models[0].isCustomRenderer();
+	}
 
-        @Override
-        public TextureAtlasSprite getParticleIcon() {
-            return models[0].getParticleIcon();
-        }
+	@Override
+	public TextureAtlasSprite getParticleIcon() {
+	    return models[0].getParticleIcon();
+	}
 
-        @Override
-        public ItemOverrides getOverrides() {
-            return models[0].getOverrides();
-        }
+	@Override
+	public ItemOverrides getOverrides() {
+	    return models[0].getOverrides();
+	}
 
-        @Override
-        public ChunkRenderTypeSet getRenderTypes(@NotNull BlockState state, @NotNull RandomSource rand, @NotNull ModelData data) {
-            return renderType == null ? models[0].getRenderTypes(state, rand, data) : renderType;
+	@Override
+	public ChunkRenderTypeSet getRenderTypes(@NotNull BlockState state, @NotNull RandomSource rand,
+		@NotNull ModelData data) {
+	    return renderType == null ? models[0].getRenderTypes(state, rand, data) : renderType;
 
-        }
+	}
 
-        @Override
-        public @NotNull List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @NotNull RandomSource rand, @NotNull ModelData extraData, @Nullable RenderType renderType) {
-            ModelPropertySlaveNode.SlaveNodeWrapper data = extraData.get(ModelPropertySlaveNode.INSTANCE);
+	@Override
+	public @NotNull List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side,
+		@NotNull RandomSource rand, @NotNull ModelData extraData, @Nullable RenderType renderType) {
+	    ModelPropertySlaveNode.SlaveNodeWrapper data = extraData.get(ModelPropertySlaveNode.INSTANCE);
 
-            if (data == null || !MultiblockSlaveNode.hasModel(data.id())) {
-                return NO_QUADS;
-            }
+	    if (data == null || !MultiblockSlaveNode.hasModel(data.id())) {
+		return NO_QUADS;
+	    }
 
-            return models[data.facing().ordinal()].getQuads(state, side, rand, extraData, renderType);
-        }
+	    return models[data.facing().ordinal()].getQuads(state, side, rand, extraData, renderType);
+	}
 
     }
 }
-

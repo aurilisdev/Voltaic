@@ -10,12 +10,12 @@ import voltaic.registers.VoltaicCapabilities;
 public class SlotGas extends SlotGeneric {
 
     public SlotGas(Container inventory, int index, int x, int y) {
-        super(SlotType.NORMAL, IconType.GAS_DARK, inventory, index, x, y);
+	super(SlotType.NORMAL, IconType.GAS_DARK, inventory, index, x, y);
     }
 
     @Override
     public boolean mayPlace(ItemStack stack) {
-        return super.mayPlace(stack) && stack.getCapability(VoltaicCapabilities.CAPABILITY_GASHANDLER_ITEM) != null;
+	return super.mayPlace(stack) && stack.getCapability(VoltaicCapabilities.CAPABILITY_GASHANDLER_ITEM) != null;
     }
 
 }

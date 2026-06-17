@@ -9,16 +9,16 @@ import voltaic.prefab.utilities.math.Color;
 
 public class BiproductPercentWrapperConstant extends AbstractLabelWrapper {
 
-	private final double percentage;
+    private final double percentage;
 
-	public BiproductPercentWrapperConstant(int xPos, int yPos, double percentage) {
-		super(Color.JEI_TEXT_GRAY, yPos, xPos, false);
-		this.percentage = percentage;
-	}
+    public BiproductPercentWrapperConstant(int xPos, int yPos, double percentage) {
+	super(Color.JEI_TEXT_GRAY, yPos, xPos, false);
+	this.percentage = percentage;
+    }
 
-	@Override
-	public Component getComponent(AbstractRecipeCategory<?> category, Object recipe) {
-		return ChatFormatter.getChatDisplayShort(percentage * 100, DisplayUnits.PERCENTAGE);
-	}
+    @Override
+    public Component getComponent(AbstractRecipeCategory<?> category, Object recipe) {
+	return ChatFormatter.getChatDisplayShort(percentage * 100, DisplayUnits.PERCENTAGE);
+    }
 
 }

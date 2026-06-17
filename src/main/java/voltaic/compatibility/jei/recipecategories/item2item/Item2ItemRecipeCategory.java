@@ -21,46 +21,48 @@ public abstract class Item2ItemRecipeCategory<T extends Item2ItemRecipe> extends
     /*
      * DOCUMENTATION NOTES:
      * 
-     * > Output items supercede buckets in position > All biproducts will be included with the outputSlots field > All fluid
-     * bucket output slots will be incled with the outputSlots field
+     * > Output items supercede buckets in position > All biproducts will be
+     * included with the outputSlots field > All fluid bucket output slots will be
+     * incled with the outputSlots field
      */
 
-    public Item2ItemRecipeCategory(IGuiHelper guiHelper, Component title, ItemStack inputMachine, BackgroundObject bWrap, RecipeType<T> recipeType, int animTime) {
-        super(guiHelper, title, inputMachine, bWrap, recipeType, animTime);
+    public Item2ItemRecipeCategory(IGuiHelper guiHelper, Component title, ItemStack inputMachine,
+	    BackgroundObject bWrap, RecipeType<T> recipeType, int animTime) {
+	super(guiHelper, title, inputMachine, bWrap, recipeType, animTime);
     }
 
     @Override
     public List<List<ItemStack>> getItemInputs(Item2ItemRecipe recipe) {
-        List<List<ItemStack>> inputs = new ArrayList<>();
-        recipe.getCountedIngredients().forEach(h -> inputs.add(Arrays.asList(h.getItemsArray())));
-        return inputs;
+	List<List<ItemStack>> inputs = new ArrayList<>();
+	recipe.getCountedIngredients().forEach(h -> inputs.add(Arrays.asList(h.getItemsArray())));
+	return inputs;
     }
 
     @Override
     public List<ItemStack> getItemOutputs(Item2ItemRecipe recipe) {
-        List<ItemStack> outputs = new ArrayList<>();
-        outputs.add(recipe.getItemRecipeOutput());
+	List<ItemStack> outputs = new ArrayList<>();
+	outputs.add(recipe.getItemRecipeOutput());
 
-        if (recipe.hasItemBiproducts()) {
-            outputs.addAll(Arrays.asList(recipe.getFullItemBiStacks()));
-        }
+	if (recipe.hasItemBiproducts()) {
+	    outputs.addAll(Arrays.asList(recipe.getFullItemBiStacks()));
+	}
 
-        if (recipe.hasFluidBiproducts()) {
-            for (ProbableFluid fluid : recipe.getFluidBiproducts()) {
-                ItemStack canister = new ItemStack(fluid.getFullStack().getFluid().getBucket(), 1);
-                IFluidHandlerItem handler = canister.getCapability(Capabilities.FluidHandler.ITEM);
+	if (recipe.hasFluidBiproducts()) {
+	    for (ProbableFluid fluid : recipe.getFluidBiproducts()) {
+		ItemStack canister = new ItemStack(fluid.getFullStack().getFluid().getBucket(), 1);
+		IFluidHandlerItem handler = canister.getCapability(Capabilities.FluidHandler.ITEM);
 
-                if (handler != null) {
+		if (handler != null) {
 
-                    handler.fill(fluid.getFullStack(), FluidAction.EXECUTE);
+		    handler.fill(fluid.getFullStack(), FluidAction.EXECUTE);
 
-                    canister = handler.getContainer();
+		    canister = handler.getContainer();
 
-                }
-                outputs.add(canister);
-            }
-        }
-        return outputs;
+		}
+		outputs.add(canister);
+	    }
+	}
+	return outputs;
     }
 
 }

@@ -11,9 +11,10 @@ import voltaic.datagen.server.tags.types.VoltaicEnchantmentTagsProvider;
 
 public class VoltaicTagsProvider {
 
-	public static void addTagProviders(DataGenerator generator, PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, ExistingFileHelper helper) {
-		generator.addProvider(true, new VoltaicDamageTagsProvider(output, lookupProvider, helper));
-		generator.addProvider(true, new VoltaicEnchantmentTagsProvider(output, lookupProvider, helper));
-	}
+    public static void addTagProviders(DataGenerator generator, PackOutput output,
+	    CompletableFuture<HolderLookup.Provider> lookupProvider, ExistingFileHelper helper) {
+	generator.addProvider(true, new VoltaicDamageTagsProvider(output, lookupProvider, helper));
+	generator.addProvider(true, new VoltaicEnchantmentTagsProvider(output, lookupProvider, helper));
+    }
 
 }

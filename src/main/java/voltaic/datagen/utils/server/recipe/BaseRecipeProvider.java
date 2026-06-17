@@ -12,14 +12,13 @@ import net.minecraft.data.recipes.RecipeProvider;
 public abstract class BaseRecipeProvider extends RecipeProvider {
 
     public final List<AbstractRecipeGenerator> generators = new ArrayList<>();
-    @SuppressWarnings("unused") 
+    @SuppressWarnings("unused")
     private final CompletableFuture<HolderLookup.Provider> lookupProvider;
 
-
     public BaseRecipeProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider) {
-        super(output, lookupProvider);
-        this.lookupProvider = lookupProvider;
-        addRecipes();
+	super(output, lookupProvider);
+	this.lookupProvider = lookupProvider;
+	addRecipes();
     }
 
     public abstract void addRecipes();
@@ -27,9 +26,9 @@ public abstract class BaseRecipeProvider extends RecipeProvider {
     @Override
     protected void buildRecipes(RecipeOutput output) {
 
-        for (AbstractRecipeGenerator generator : generators) {
-            generator.addRecipes(output);
-        }
+	for (AbstractRecipeGenerator generator : generators) {
+	    generator.addRecipes(output);
+	}
     }
 
 }

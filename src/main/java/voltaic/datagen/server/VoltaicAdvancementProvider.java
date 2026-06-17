@@ -15,20 +15,20 @@ import voltaic.datagen.utils.server.advancement.BaseAdvancementProvider;
 public class VoltaicAdvancementProvider extends BaseAdvancementProvider {
 
     public VoltaicAdvancementProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
-        super(output, registries, Voltaic.ID);
+	super(output, registries, Voltaic.ID);
     }
 
     @Override
     public void generate(HolderLookup.Provider registries) {
 
-        advancement("dispenseguidebook")
-                //
-                .addCriterion("SpawnIn", PlayerTrigger.TriggerInstance.tick())
-                //
-                .rewards(AdvancementRewards.Builder.loot(ResourceKey.create(Registries.LOOT_TABLE, Voltaic.vanillarl("advancement_reward/electroguidebook"))))
-                //
-                .condition(new ConfigCondition());
-
+	advancement("dispenseguidebook")
+		//
+		.addCriterion("SpawnIn", PlayerTrigger.TriggerInstance.tick())
+		//
+		.rewards(AdvancementRewards.Builder.loot(ResourceKey.create(Registries.LOOT_TABLE,
+			Voltaic.vanillarl("advancement_reward/electroguidebook"))))
+		//
+		.condition(new ConfigCondition());
 
     }
 }

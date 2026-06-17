@@ -15,20 +15,21 @@ import voltaic.Voltaic;
  */
 public class ReloadListenerResetGuidebook extends SimplePreparableReloadListener<Integer> {
 
-	@Override
-	protected @NotNull Integer prepare(@NotNull ResourceManager resourceManager, @NotNull ProfilerFiller profiler) {
-		return 0;
-	}
+    @Override
+    protected @NotNull Integer prepare(@NotNull ResourceManager resourceManager, @NotNull ProfilerFiller profiler) {
+	return 0;
+    }
 
-	@Override
-	protected void apply(@NotNull Integer number, @NotNull ResourceManager resourceManager, @NotNull ProfilerFiller profiler) {
-		Voltaic.LOGGER.info("Resetting from client");
-		ScreenGuidebook.setInitNotHappened();
-	}
+    @Override
+    protected void apply(@NotNull Integer number, @NotNull ResourceManager resourceManager,
+	    @NotNull ProfilerFiller profiler) {
+	Voltaic.LOGGER.info("Resetting from client");
+	ScreenGuidebook.setInitNotHappened();
+    }
 
-	@Override
-	public @NotNull String getName() {
-		return "Electrodynamics Guidebook Listener";
-	}
+    @Override
+    public @NotNull String getName() {
+	return "Electrodynamics Guidebook Listener";
+    }
 
 }

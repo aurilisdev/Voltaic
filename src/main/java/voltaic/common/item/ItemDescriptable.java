@@ -1,5 +1,6 @@
 package voltaic.common.item;
 
+import java.util.Collections;
 import java.util.List;
 
 import net.minecraft.core.Holder;
@@ -10,21 +11,19 @@ import net.minecraft.world.item.TooltipFlag;
 
 public class ItemDescriptable extends ItemVoltaic {
 
-	private Component[] tooltips;
+    private Component[] tooltips;
 
-	public ItemDescriptable(Properties properties, Holder<CreativeModeTab> creativeTab, Component... tooltips) {
-		super(properties, creativeTab);
-		this.tooltips = tooltips;
-	}
+    public ItemDescriptable(Properties properties, Holder<CreativeModeTab> creativeTab, Component... tooltips) {
+	super(properties, creativeTab);
+	this.tooltips = tooltips;
+    }
 
-	@Override
-	public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltips, TooltipFlag flag) {
-		super.appendHoverText(stack, context, tooltips, flag);
-		if (tooltips != null) {
-			for (Component tooltip : this.tooltips) {
-				tooltips.add(tooltip);
-			}
-		}
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltips, TooltipFlag flag) {
+	super.appendHoverText(stack, context, tooltips, flag);
+	if (tooltips != null) {
+	    Collections.addAll(tooltips, this.tooltips);
 	}
+    }
 
 }

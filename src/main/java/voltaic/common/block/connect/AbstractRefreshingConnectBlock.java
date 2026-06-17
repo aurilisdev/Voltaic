@@ -12,64 +12,68 @@ import voltaic.api.network.cable.IRefreshableCable;
 import voltaic.prefab.tile.types.GenericConnectTile;
 import voltaic.prefab.utilities.WorldUtils;
 
-public abstract class AbstractRefreshingConnectBlock<CONDUCTOR extends GenericConnectTile & IRefreshableCable> extends AbstractConnectBlock {
+public abstract class AbstractRefreshingConnectBlock<CONDUCTOR extends GenericConnectTile & IRefreshableCable>
+	extends AbstractConnectBlock {
 
     public AbstractRefreshingConnectBlock(Properties properties, double radius) {
-        super(properties, radius);
+	super(properties, radius);
     }
 
     @Override
     public void onPlace(BlockState state, Level worldIn, BlockPos pos, BlockState oldState, boolean isMoving) {
-        super.onPlace(state, worldIn, pos, oldState, isMoving);
-        if (worldIn.isClientSide()) {
-            return;
-        }
-        BlockEntity tile = worldIn.getBlockEntity(pos);
-        CONDUCTOR conductor = getCableIfValid(tile);
-        if (conductor == null || conductor.isRemoved()) {
-            return;
-        }
+	super.onPlace(state, worldIn, pos, oldState, isMoving);
+	if (worldIn.isClientSide()) {
+	    return;
+	}
+	BlockEntity tile = worldIn.getBlockEntity(pos);
+	CONDUCTOR conductor = getCableIfValid(tile);
+	if (conductor == null || conductor.isRemoved()) {
+	    return;
+	}
 
-        BlockPos relPos;
+	BlockPos relPos;
 
-        EnumConnectType[] connections = new EnumConnectType[6];
+	EnumConnectType[] connections = new EnumConnectType[6];
 
-        for (Direction dir : Direction.values()) {
-            relPos = pos.relative(dir);
-            connections[dir.ordinal()] = getConnection(worldIn.getBlockState(relPos), worldIn.getBlockEntity(relPos), conductor, dir);
-        }
+	for (Direction dir : Direction.values()) {
+	    relPos = pos.relative(dir);
+	    connections[dir.ordinal()] = getConnection(worldIn.getBlockState(relPos), worldIn.getBlockEntity(relPos),
+		    conductor, dir);
+	}
 
-        conductor.writeConnections(Direction.values(), connections);
+	conductor.writeConnections(Direction.values(), connections);
 
     }
 
     @Override
     public void onNeighborChange(BlockState state, LevelReader world, BlockPos pos, BlockPos neighbor) {
 
-        super.onNeighborChange(state, world, pos, neighbor);
+	super.onNeighborChange(state, world, pos, neighbor);
 
-        if (world.isClientSide()) {
-            return;
-        }
-        BlockEntity tile = world.getBlockEntity(pos);
-        CONDUCTOR conductor = getCableIfValid(tile);
-        if (conductor == null || conductor.isRemoved()) {
-            return;
-        }
+	if (world.isClientSide()) {
+	    return;
+	}
+	BlockEntity tile = world.getBlockEntity(pos);
+	CONDUCTOR conductor = getCableIfValid(tile);
+	if (conductor == null || conductor.isRemoved()) {
+	    return;
+	}
 
-        Direction facing = WorldUtils.getDirectionFromPosDelta(pos, neighbor);
+	Direction facing = WorldUtils.getDirectionFromPosDelta(pos, neighbor);
 
-        EnumConnectType currConnection = conductor.readConnections()[facing.ordinal()];
+	EnumConnectType currConnection = conductor.readConnections()[facing.ordinal()];
 
-        EnumConnectType connection = getConnection(world.getBlockState(neighbor), world.getBlockEntity(neighbor), conductor, facing);
+	EnumConnectType connection = getConnection(world.getBlockState(neighbor), world.getBlockEntity(neighbor),
+		conductor, facing);
 
-        if (currConnection != connection && conductor.writeConnection(facing, connection)) {
-            conductor.updateNetwork(facing);
-        }
+	if (currConnection != connection && conductor.writeConnection(facing, connection)) {
+	    conductor.updateNetwork(facing);
+	}
 
     }
 
-    public abstract EnumConnectType getConnection(BlockState otherState, BlockEntity otherTile, CONDUCTOR thisConductor, Direction dir);
+    public abstract EnumConnectType getConnection(BlockState otherState, BlockEntity otherTile, CONDUCTOR thisConductor,
+	    Direction dir);
 
     @Nullable
     public abstract CONDUCTOR getCableIfValid(BlockEntity tile);

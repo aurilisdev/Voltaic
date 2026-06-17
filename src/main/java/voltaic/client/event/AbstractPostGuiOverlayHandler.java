@@ -6,6 +6,6 @@ import net.minecraft.client.gui.GuiGraphics;
 
 public abstract class AbstractPostGuiOverlayHandler {
 
-	public abstract void renderToScreen(GuiGraphics graphics, DeltaTracker tracker, Minecraft minecraft);
+    public abstract void renderToScreen(GuiGraphics graphics, DeltaTracker tracker, Minecraft minecraft);
 
 }

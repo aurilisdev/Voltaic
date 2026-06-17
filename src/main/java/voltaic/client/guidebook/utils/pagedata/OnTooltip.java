@@ -5,6 +5,6 @@ import voltaic.client.guidebook.ScreenGuidebook;
 
 public interface OnTooltip {
 
-	public void onTooltip(GuiGraphics graphics, int xAxis, int yAxis, ScreenGuidebook screen);
+    public void onTooltip(GuiGraphics graphics, int xAxis, int yAxis, ScreenGuidebook screen);
 
 }

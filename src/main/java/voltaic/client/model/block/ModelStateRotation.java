@@ -22,32 +22,32 @@ public class ModelStateRotation implements ModelState {
     // DUNSWE
     public static final HashMap<Direction, ModelStateRotation> ROTATIONS = Util.make(() -> {
 
-        HashMap<Direction, ModelStateRotation> rotations = new HashMap<>();
-        rotations.put(Direction.UP, UP);
-        rotations.put(Direction.DOWN, DOWN);
-        rotations.put(Direction.NORTH, NORTH);
-        rotations.put(Direction.SOUTH, SOUTH);
-        rotations.put(Direction.WEST, WEST);
-        rotations.put(Direction.EAST, EAST);
+	HashMap<Direction, ModelStateRotation> rotations = new HashMap<>();
+	rotations.put(Direction.UP, UP);
+	rotations.put(Direction.DOWN, DOWN);
+	rotations.put(Direction.NORTH, NORTH);
+	rotations.put(Direction.SOUTH, SOUTH);
+	rotations.put(Direction.WEST, WEST);
+	rotations.put(Direction.EAST, EAST);
 
-        return rotations;
+	return rotations;
 
     });
 
     private final Transformation transformation;
 
     private ModelStateRotation(int x, int y, int z) {
-        float d2r = (float) (Math.PI / 180F);
-        Quaternionf q = new Quaternionf();
-        q.setAngleAxis(-z * d2r, 0F, 0F, 1F);
-        q.mul(new Quaternionf().setAngleAxis(-y * d2r, 0F, 1F, 0F));
-        q.mul(new Quaternionf().setAngleAxis(-x * d2r, 1F, 0F, 0F));
-        this.transformation = new Transformation(null, q, null, null);
+	float d2r = (float) (Math.PI / 180F);
+	Quaternionf q = new Quaternionf();
+	q.setAngleAxis(-z * d2r, 0F, 0F, 1F);
+	q.mul(new Quaternionf().setAngleAxis(-y * d2r, 0F, 1F, 0F));
+	q.mul(new Quaternionf().setAngleAxis(-x * d2r, 1F, 0F, 0F));
+	this.transformation = new Transformation(null, q, null, null);
     }
 
     @Override
     public Transformation getRotation() {
-        return transformation;
+	return transformation;
     }
 
 }

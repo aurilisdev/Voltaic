@@ -12,27 +12,27 @@ public class SWBFClientExtensions implements IClientFluidTypeExtensions {
     private final SimpleWaterBasedFluidType fluidType;
 
     public SWBFClientExtensions(SimpleWaterBasedFluidType fluidType) {
-        this.fluidType = fluidType;
+	this.fluidType = fluidType;
     }
 
     @Override
     public ResourceLocation getStillTexture() {
-        return fluidType.texture;
+	return fluidType.texture;
     }
 
     @Override
     public ResourceLocation getFlowingTexture() {
-        return fluidType.texture;
+	return fluidType.texture;
     }
 
     @Override
     public int getTintColor() {
-        return fluidType.color.color();
+	return fluidType.color.color();
     }
 
     @Override
     public int getTintColor(FluidState state, BlockAndTintGetter getter, BlockPos pos) {
-        return getTintColor();
+	return getTintColor();
     }
 
 }

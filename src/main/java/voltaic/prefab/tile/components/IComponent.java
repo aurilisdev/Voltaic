@@ -9,35 +9,35 @@ import voltaic.prefab.tile.GenericTile;
 //renamed ever so slightly so it's not confused with the Vanilla class constantly when importing 
 public interface IComponent {
 
-	IComponentType getType();
+    IComponentType getType();
 
-	default void holder(GenericTile holder) {
-	}
+    default void holder(GenericTile holder) {
+    }
 
-	@Nullable
-	default GenericTile getHolder() {
-		return null;
-	}
+    @Nullable
+    default GenericTile getHolder() {
+	return null;
+    }
 
-	default void loadFromNBT(CompoundTag nbt) {
-	}
+    default void loadFromNBT(CompoundTag nbt) {
+    }
 
-	default void saveToNBT(CompoundTag nbt) {
-	}
+    default void saveToNBT(CompoundTag nbt) {
+    }
 
-	default void remove() {
-	}
+    default void remove() {
+    }
 
-	default void onLoad() {
-		refresh();
-	}
+    default void onLoad() {
+	refresh();
+    }
 
-	default void refreshIfUpdate(BlockState oldState, BlockState newState) {
+    default void refreshIfUpdate(BlockState oldState, BlockState newState) {
 
-	}
+    }
 
-	default void refresh() {
+    default void refresh() {
 
-	}
+    }
 
 }

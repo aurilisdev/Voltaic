@@ -32,52 +32,56 @@ import voltaic.registers.VoltaicGases;
 @JeiPlugin
 public class VoltaicJEIPlugin implements IModPlugin {
 
-    public static final ResourceLocation ID = Voltaic.rl( "jei");
+    public static final ResourceLocation ID = Voltaic.rl("jei");
 
     private static final List<RecipeType<?>> O2O_CLICK_AREAS = new ArrayList<>();
     private static final List<RecipeType<?>> DO2O_CLICK_AREAS = new ArrayList<>();
 
     @Override
     public @NotNull ResourceLocation getPluginUid() {
-        return ID;
+	return ID;
     }
 
     @Override
     public void registerIngredients(IModIngredientRegistration registration) {
-        registration.register(VoltaicJeiTypes.GAS_STACK, new ArrayList<>(), new IngredientHelperGasStack(), IngredientRendererGasStack.LIST_RENDERER, GasStack.CODEC);
+	registration.register(VoltaicJeiTypes.GAS_STACK, new ArrayList<>(), new IngredientHelperGasStack(),
+		IngredientRendererGasStack.LIST_RENDERER, GasStack.CODEC);
     }
 
     @Override
     public void registerGuiHandlers(IGuiHandlerRegistration registry) {
-        registry.addGenericGuiContainerHandler(ScreenGuidebook.class, new ScreenHandlerGuidebook());
-        registry.addGenericGuiContainerHandler(GenericMaterialScreen.class, new ScreenHandlerMaterialScreen());
-        registry.addRecipeClickArea(ScreenO2OProcessor.class, 48, 35, 22, 15, O2O_CLICK_AREAS.toArray(new RecipeType[O2O_CLICK_AREAS.size()]));
-        registry.addRecipeClickArea(ScreenO2OProcessorDouble.class, 48, 25, 22, 35, O2O_CLICK_AREAS.toArray(new RecipeType[O2O_CLICK_AREAS.size()]));
-        registry.addRecipeClickArea(ScreenO2OProcessorTriple.class, 48, 25, 22, 55, O2O_CLICK_AREAS.toArray(new RecipeType[O2O_CLICK_AREAS.size()]));
-        registry.addRecipeClickArea(ScreenDO2OProcessor.class, 48, 35, 22, 15, DO2O_CLICK_AREAS.toArray(new RecipeType[DO2O_CLICK_AREAS.size()]));
+	registry.addGenericGuiContainerHandler(ScreenGuidebook.class, new ScreenHandlerGuidebook());
+	registry.addGenericGuiContainerHandler(GenericMaterialScreen.class, new ScreenHandlerMaterialScreen());
+	registry.addRecipeClickArea(ScreenO2OProcessor.class, 48, 35, 22, 15,
+		O2O_CLICK_AREAS.toArray(new RecipeType[O2O_CLICK_AREAS.size()]));
+	registry.addRecipeClickArea(ScreenO2OProcessorDouble.class, 48, 25, 22, 35,
+		O2O_CLICK_AREAS.toArray(new RecipeType[O2O_CLICK_AREAS.size()]));
+	registry.addRecipeClickArea(ScreenO2OProcessorTriple.class, 48, 25, 22, 55,
+		O2O_CLICK_AREAS.toArray(new RecipeType[O2O_CLICK_AREAS.size()]));
+	registry.addRecipeClickArea(ScreenDO2OProcessor.class, 48, 35, 22, 15,
+		DO2O_CLICK_AREAS.toArray(new RecipeType[DO2O_CLICK_AREAS.size()]));
     }
 
     @Override
     public void registerExtraIngredients(IExtraIngredientRegistration registration) {
 
-        List<GasStack> gases = new ArrayList<>();
-        for(DeferredHolder<Gas, ? extends Gas> gas : VoltaicGases.GASES.getEntries()) {
-            if(gas.get() == VoltaicGases.EMPTY.value()) {
-                continue;
-            }
+	List<GasStack> gases = new ArrayList<>();
+	for (DeferredHolder<Gas, ? extends Gas> gas : VoltaicGases.GASES.getEntries()) {
+	    if (gas.get() == VoltaicGases.EMPTY.value()) {
+		continue;
+	    }
 
-            gases.add(new GasStack(gas.get(), 1000, Gas.ROOM_TEMPERATURE, Gas.PRESSURE_AT_SEA_LEVEL));
-        }
-        registration.addExtraIngredients(VoltaicJeiTypes.GAS_STACK, gases);
+	    gases.add(new GasStack(gas.get(), 1000, Gas.ROOM_TEMPERATURE, Gas.PRESSURE_AT_SEA_LEVEL));
+	}
+	registration.addExtraIngredients(VoltaicJeiTypes.GAS_STACK, gases);
     }
 
     public static void addO2OCategory(RecipeType<?> category) {
-        O2O_CLICK_AREAS.add(category);
+	O2O_CLICK_AREAS.add(category);
     }
 
     public static void addDO2OCategory(RecipeType<?> category) {
-        DO2O_CLICK_AREAS.add(category);
+	DO2O_CLICK_AREAS.add(category);
     }
-
 
 }

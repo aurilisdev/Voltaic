@@ -11,8 +11,10 @@ import voltaic.common.condition.ConfigCondition;
 
 public class VoltaicConditions {
 
-    public static final DeferredRegister<MapCodec<? extends ICondition>> CONDITIONS = DeferredRegister.create(NeoForgeRegistries.CONDITION_SERIALIZERS, Voltaic.ID);
+    public static final DeferredRegister<MapCodec<? extends ICondition>> CONDITIONS = DeferredRegister
+	    .create(NeoForgeRegistries.CONDITION_SERIALIZERS, Voltaic.ID);
 
-    public static final DeferredHolder<MapCodec<? extends ICondition>, MapCodec<ConfigCondition>> GUIDEBOOK_DISPENSE_CONDITION = CONDITIONS.register("guidebookconfig", () -> ConfigCondition.CODEC);
+    public static final DeferredHolder<MapCodec<? extends ICondition>, MapCodec<ConfigCondition>> GUIDEBOOK_DISPENSE_CONDITION = CONDITIONS
+	    .register("guidebookconfig", () -> ConfigCondition.CODEC);
 
 }

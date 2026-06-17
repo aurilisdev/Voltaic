@@ -11,22 +11,22 @@ import voltaic.prefab.tile.GenericTile;
 
 public abstract class TileReplaceable extends GenericTile {
 
-	protected final SingleProperty<Integer> disguisedBlock = property(new SingleProperty<>(PropertyTypes.INTEGER, "disguisedblock", 0));
-	
-	public TileReplaceable(BlockEntityType<?> tileEntityTypeIn, BlockPos worldPos, BlockState blockState) {
-		super(tileEntityTypeIn, worldPos, blockState);
+    protected final SingleProperty<Integer> disguisedBlock = property(
+	    new SingleProperty<>(PropertyTypes.INTEGER, "disguisedblock", 0));
+
+    public TileReplaceable(BlockEntityType<?> tileEntityTypeIn, BlockPos worldPos, BlockState blockState) {
+	super(tileEntityTypeIn, worldPos, blockState);
+    }
+
+    public void setDisguise(BlockState state) {
+	if (state.isAir()) {
+	    Voltaic.LOGGER.info("air");
 	}
-	
-	public void setDisguise(BlockState state) {
-		if(state.isAir()){
-			Voltaic.LOGGER.info("air");
-		}
-		disguisedBlock.setValue(Block.BLOCK_STATE_REGISTRY.getId(state));
-	}
-	
-	public BlockState getDisguise() {
-		return Block.BLOCK_STATE_REGISTRY.byId(disguisedBlock.getValue());
-	}
-	
+	disguisedBlock.setValue(Block.BLOCK_STATE_REGISTRY.getId(state));
+    }
+
+    public BlockState getDisguise() {
+	return Block.BLOCK_STATE_REGISTRY.byId(disguisedBlock.getValue());
+    }
 
 }

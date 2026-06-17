@@ -8,32 +8,33 @@ import net.neoforged.neoforge.client.model.generators.ModelFile;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import voltaic.client.model.block.bakerytypes.SlaveNodeModelLoader;
 
-public class SlaveNodeModelBuilder <T extends ModelBuilder<T>> extends CustomLoaderBuilder<T> {
+public class SlaveNodeModelBuilder<T extends ModelBuilder<T>> extends CustomLoaderBuilder<T> {
 
-    public static <T extends ModelBuilder<T>> SlaveNodeModelBuilder<T> begin(T parent, ExistingFileHelper existingFileHelper) {
-        return new SlaveNodeModelBuilder<>(parent, existingFileHelper);
+    public static <T extends ModelBuilder<T>> SlaveNodeModelBuilder<T> begin(T parent,
+	    ExistingFileHelper existingFileHelper) {
+	return new SlaveNodeModelBuilder<>(parent, existingFileHelper);
     }
 
     private ModelFile model;
 
     protected SlaveNodeModelBuilder(T parent, ExistingFileHelper existingFileHelper) {
-        super(SlaveNodeModelLoader.ID, parent, existingFileHelper, false);
+	super(SlaveNodeModelLoader.ID, parent, existingFileHelper, false);
     }
 
     public SlaveNodeModelBuilder<T> model(ModelFile model) {
-        this.model = model;
+	this.model = model;
 
-        return this;
+	return this;
     }
 
     @Override
     public JsonObject toJson(JsonObject json) {
-        json = super.toJson(json);
+	json = super.toJson(json);
 
-        JsonObject modelElement = new JsonObject();
-        modelElement.addProperty("parent", model.getLocation().toString());
-        json.add("model", modelElement);
+	JsonObject modelElement = new JsonObject();
+	modelElement.addProperty("parent", model.getLocation().toString());
+	json.add("model", modelElement);
 
-        return json;
+	return json;
     }
 }

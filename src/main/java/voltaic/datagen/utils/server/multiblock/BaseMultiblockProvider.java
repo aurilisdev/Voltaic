@@ -25,91 +25,96 @@ import voltaic.common.block.states.VoltaicBlockStates;
 
 public abstract class BaseMultiblockProvider extends JsonCodecProvider<Multiblock> {
 
-    public BaseMultiblockProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, ExistingFileHelper existingFileHelper, String modid) {
-        super(output, PackOutput.Target.DATA_PACK, Voltaic.ID + "/" + Multiblock.FOLDER, PackType.SERVER_DATA, Multiblock.CODEC, lookupProvider, modid, existingFileHelper);
+    public BaseMultiblockProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider,
+	    ExistingFileHelper existingFileHelper, String modid) {
+	super(output, PackOutput.Target.DATA_PACK, Voltaic.ID + "/" + Multiblock.FOLDER, PackType.SERVER_DATA,
+		Multiblock.CODEC, lookupProvider, modid, existingFileHelper);
     }
 
     public void addMultiblock(ResourceLocation id, List<MultiblockSlaveNode> northFacingNodes) {
 
-        HashMap<Direction, List<MultiblockSlaveNode>> nodeMap = new HashMap<>();
+	HashMap<Direction, List<MultiblockSlaveNode>> nodeMap = new HashMap<>();
 
-        nodeMap.put(Direction.NORTH, northFacingNodes);
+	nodeMap.put(Direction.NORTH, northFacingNodes);
 
-        nodeMap.put(Direction.WEST, getRotatedNodes(northFacingNodes, Direction.WEST.get2DDataValue() - Direction.NORTH.get2DDataValue()));
+	nodeMap.put(Direction.WEST,
+		getRotatedNodes(northFacingNodes, Direction.WEST.get2DDataValue() - Direction.NORTH.get2DDataValue()));
 
-        nodeMap.put(Direction.SOUTH, getRotatedNodes(nodeMap.get(Direction.WEST), Direction.SOUTH.get2DDataValue() - Direction.WEST.get2DDataValue()));
+	nodeMap.put(Direction.SOUTH, getRotatedNodes(nodeMap.get(Direction.WEST),
+		Direction.SOUTH.get2DDataValue() - Direction.WEST.get2DDataValue()));
 
-        nodeMap.put(Direction.EAST, getRotatedNodes(nodeMap.get(Direction.SOUTH), Direction.EAST.get2DDataValue() - Direction.SOUTH.get2DDataValue()));
+	nodeMap.put(Direction.EAST, getRotatedNodes(nodeMap.get(Direction.SOUTH),
+		Direction.EAST.get2DDataValue() - Direction.SOUTH.get2DDataValue()));
 
-        if (conditions.containsKey(id)) {
-            throw new UnsupportedOperationException("Multiblock with id " + id.toString() + " already provided!");
-        }
+	if (conditions.containsKey(id)) {
+	    throw new UnsupportedOperationException("Multiblock with id " + id.toString() + " already provided!");
+	}
 
-        conditions.put(id, new WithConditions<>(List.of(), new Multiblock(nodeMap)));
+	conditions.put(id, new WithConditions<>(List.of(), new Multiblock(nodeMap)));
     }
 
     public static List<MultiblockSlaveNode> getRotatedNodes(List<MultiblockSlaveNode> slaveNodes, int delta2d) {
 
-        List<MultiblockSlaveNode> returner = new ArrayList<>();
-        BlockState placeState, replaceState;
+	List<MultiblockSlaveNode> returner = new ArrayList<>();
+	BlockState placeState, replaceState;
 
-        VoxelShape shape;
+	VoxelShape shape;
 
-        final VoxelShape[] buffer = {Shapes.empty(), Shapes.empty()};
+	final VoxelShape[] buffer = { Shapes.empty(), Shapes.empty() };
 
-        Vec3i offset;
+	Vec3i offset;
 
-        int times = (delta2d + 4) % 4;
+	int times = (delta2d + 4) % 4;
 
-        for (MultiblockSlaveNode slaveNode : slaveNodes) {
+	for (MultiblockSlaveNode slaveNode : slaveNodes) {
 
-            placeState = slaveNode.placeState();
+	    placeState = slaveNode.placeState();
 
-            if (placeState.hasProperty(VoltaicBlockStates.FACING)) {
-                placeState = placeState.setValue(VoltaicBlockStates.FACING, placeState.getValue(VoltaicBlockStates.FACING).getCounterClockWise());
-            }
+	    if (placeState.hasProperty(VoltaicBlockStates.FACING)) {
+		placeState = placeState.setValue(VoltaicBlockStates.FACING,
+			placeState.getValue(VoltaicBlockStates.FACING).getCounterClockWise());
+	    }
 
-            replaceState = slaveNode.replaceState();
+	    replaceState = slaveNode.replaceState();
 
-            if (replaceState.hasProperty(VoltaicBlockStates.FACING)) {
-                replaceState = replaceState.setValue(VoltaicBlockStates.FACING, replaceState.getValue(VoltaicBlockStates.FACING).getCounterClockWise());
-            }
+	    if (replaceState.hasProperty(VoltaicBlockStates.FACING)) {
+		replaceState = replaceState.setValue(VoltaicBlockStates.FACING,
+			replaceState.getValue(VoltaicBlockStates.FACING).getCounterClockWise());
+	    }
 
-            shape = slaveNode.renderShape();
+	    shape = slaveNode.renderShape();
 
-            buffer[0] = shape;
-            buffer[1] = Shapes.empty();
+	    buffer[0] = shape;
+	    buffer[1] = Shapes.empty();
 
-            for (int i = 0; i < times; i++) {
-                buffer[0].forAllBoxes((minX, minY, minZ, maxX, maxY, maxZ) -> buffer[1] = Shapes.or(buffer[1], Shapes.create(1 - maxZ, minY, minX, 1 - minZ, maxY, maxX)));
-                buffer[0] = buffer[1];
-                buffer[1] = Shapes.empty();
-            }
+	    for (int i = 0; i < times; i++) {
+		buffer[0].forAllBoxes((minX, minY, minZ, maxX, maxY, maxZ) -> buffer[1] = Shapes.or(buffer[1],
+			Shapes.create(1 - maxZ, minY, minX, 1 - minZ, maxY, maxX)));
+		buffer[0] = buffer[1];
+		buffer[1] = Shapes.empty();
+	    }
 
-            shape = buffer[0];
+	    shape = buffer[0];
 
-            offset = rotateVector(Rotation.COUNTERCLOCKWISE_90, slaveNode.offset());
+	    offset = rotateVector(Rotation.COUNTERCLOCKWISE_90, slaveNode.offset());
 
-            returner.add(new MultiblockSlaveNode(placeState, replaceState, slaveNode.taggedBlocks(), offset, shape, slaveNode.model()));
-        }
+	    returner.add(new MultiblockSlaveNode(placeState, replaceState, slaveNode.taggedBlocks(), offset, shape,
+		    slaveNode.model()));
+	}
 
-        return returner;
+	return returner;
 
     }
 
     public static Vec3i rotateVector(Rotation rot, Vec3i original) {
 
-        switch (rot) {
-            case NONE:
-            default:
-                return original;
-            case CLOCKWISE_90:
-                return new Vec3i(-original.getZ(), original.getY(), original.getX());
-            case CLOCKWISE_180:
-                return new Vec3i(-original.getX(), original.getY(), -original.getZ());
-            case COUNTERCLOCKWISE_90:
-                return new Vec3i(original.getZ(), original.getY(), -original.getX());
-        }
+	return switch (rot) {
+	case NONE -> original;
+	default -> original;
+	case CLOCKWISE_90 -> new Vec3i(-original.getZ(), original.getY(), original.getX());
+	case CLOCKWISE_180 -> new Vec3i(-original.getX(), original.getY(), -original.getZ());
+	case COUNTERCLOCKWISE_90 -> new Vec3i(original.getZ(), original.getY(), -original.getX());
+	};
 
     }
 

@@ -58,111 +58,115 @@ public class RadioactiveBlockRegister extends SimplePreparableReloadListener<Jso
 
     @Override
     protected JsonObject prepare(ResourceManager manager, ProfilerFiller profiler) {
-        JsonObject combined = new JsonObject();
+	JsonObject combined = new JsonObject();
 
-        List<Map.Entry<ResourceLocation, Resource>> resources = new ArrayList<>(manager.listResources(FOLDER, RadioactiveBlockRegister::isJson).entrySet());
-        Collections.reverse(resources);
+	List<Map.Entry<ResourceLocation, Resource>> resources = new ArrayList<>(
+		manager.listResources(FOLDER, RadioactiveBlockRegister::isJson).entrySet());
+	Collections.reverse(resources);
 
-        for (Map.Entry<ResourceLocation, Resource> entry : resources) {
-            ResourceLocation loc = entry.getKey();
-            final String namespace = loc.getNamespace();
-            final String filePath = loc.getPath();
-            final String dataPath = filePath.substring(FOLDER.length() + 1, filePath.length() - JSON_EXTENSION_LENGTH);
+	for (Map.Entry<ResourceLocation, Resource> entry : resources) {
+	    ResourceLocation loc = entry.getKey();
+	    final String namespace = loc.getNamespace();
+	    final String filePath = loc.getPath();
+	    final String dataPath = filePath.substring(FOLDER.length() + 1, filePath.length() - JSON_EXTENSION_LENGTH);
 
-            final ResourceLocation jsonFile = ResourceLocation.fromNamespaceAndPath(namespace, dataPath);
+	    final ResourceLocation jsonFile = ResourceLocation.fromNamespaceAndPath(namespace, dataPath);
 
-            Resource resource = entry.getValue();
-            try (final InputStream inputStream = resource.open(); final Reader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));) {
-                final JsonObject json = (JsonObject) GsonHelper.fromJson(GSON, reader, JsonElement.class);
+	    Resource resource = entry.getValue();
+	    try (final InputStream inputStream = resource.open();
+		    final Reader reader = new BufferedReader(
+			    new InputStreamReader(inputStream, StandardCharsets.UTF_8));) {
+		final JsonObject json = (JsonObject) GsonHelper.fromJson(GSON, reader, JsonElement.class);
 
-                json.entrySet().forEach(set -> {
+		json.entrySet().forEach(set -> {
 
-                    if (combined.has(set.getKey())) {
-                        combined.remove(set.getKey());
-                    }
+		    if (combined.has(set.getKey())) {
+			combined.remove(set.getKey());
+		    }
 
-                    combined.add(set.getKey(), set.getValue());
-                });
+		    combined.add(set.getKey(), set.getValue());
+		});
 
-            } catch (RuntimeException | IOException exception) {
-                logger.error("Data loader for {} could not read data {} from file {} in data pack {}", FOLDER, jsonFile, loc, resource.sourcePackId(), exception);
-            }
+	    } catch (RuntimeException | IOException exception) {
+		logger.error("Data loader for {} could not read data {} from file {} in data pack {}", FOLDER, jsonFile,
+			loc, resource.sourcePackId(), exception);
+	    }
 
-        }
-        return combined;
+	}
+	return combined;
     }
 
     @Override
     protected void apply(JsonObject json, ResourceManager manager, ProfilerFiller profiler) {
-        tags.clear();
+	tags.clear();
 
-        json.entrySet().forEach(set -> {
+	json.entrySet().forEach(set -> {
 
-            String key = set.getKey();
-            RadioactiveObject value = RadioactiveObject.CODEC.decode(JsonOps.INSTANCE, set.getValue()).getOrThrow().getFirst();
+	    String key = set.getKey();
+	    RadioactiveObject value = RadioactiveObject.CODEC.decode(JsonOps.INSTANCE, set.getValue()).getOrThrow()
+		    .getFirst();
 
-            if (key.contains("#")) {
+	    if (key.contains("#")) {
 
-                key = key.substring(1);
+		key = key.substring(1);
 
-                tags.put(BlockTags.create(ResourceLocation.parse(key)), value);
+		tags.put(BlockTags.create(ResourceLocation.parse(key)), value);
 
-            } else {
+	    } else {
 
-                radioactiveBlockMap.put(BuiltInRegistries.BLOCK.get(ResourceLocation.parse(key)), value);
+		radioactiveBlockMap.put(BuiltInRegistries.BLOCK.get(ResourceLocation.parse(key)), value);
 
+	    }
 
-            }
-
-        });
+	});
 
     }
 
     public void generateTagValues() {
 
-        tags.forEach((tag, value) -> {
-            BuiltInRegistries.BLOCK.getTag(tag).get().forEach(gas -> {
+	tags.forEach((tag, value) -> {
+	    BuiltInRegistries.BLOCK.getTag(tag).get().forEach(gas -> {
 
-                radioactiveBlockMap.put(gas.value(), value);
+		radioactiveBlockMap.put(gas.value(), value);
 
-            });
-        });
+	    });
+	});
 
-        tags.clear();
+	tags.clear();
     }
 
     public RadioactiveBlockRegister subscribeAsSyncable() {
-        NeoForge.EVENT_BUS.addListener(getDatapackSyncListener());
-        return this;
+	NeoForge.EVENT_BUS.addListener(getDatapackSyncListener());
+	return this;
     }
 
     private Consumer<OnDatapackSyncEvent> getDatapackSyncListener() {
-        return event -> {
-            generateTagValues();
-            ServerPlayer player = event.getPlayer();
-            PacketSetClientRadioactiveBlocks packet = new PacketSetClientRadioactiveBlocks(radioactiveBlockMap);
-            if(player == null) {
-                PacketDistributor.sendToAllPlayers(packet);
-            } else {
-                PacketDistributor.sendToPlayer(player, packet);
-            }
-        };
+	return event -> {
+	    generateTagValues();
+	    ServerPlayer player = event.getPlayer();
+	    PacketSetClientRadioactiveBlocks packet = new PacketSetClientRadioactiveBlocks(radioactiveBlockMap);
+	    if (player == null) {
+		PacketDistributor.sendToAllPlayers(packet);
+	    } else {
+		PacketDistributor.sendToPlayer(player, packet);
+	    }
+	};
     }
 
     public void setClientValues(HashMap<Block, RadioactiveObject> mappedValues) {
-        this.radioactiveBlockMap.clear();
-        this.radioactiveBlockMap.putAll(mappedValues);
+	this.radioactiveBlockMap.clear();
+	this.radioactiveBlockMap.putAll(mappedValues);
     }
 
     public static HashMap<Block, RadioactiveObject> getValues() {
-        return INSTANCE.radioactiveBlockMap;
+	return INSTANCE.radioactiveBlockMap;
     }
 
     public static RadioactiveObject getValue(Block block) {
-        return INSTANCE.radioactiveBlockMap.getOrDefault(block, RadioactiveObject.ZERO);
+	return INSTANCE.radioactiveBlockMap.getOrDefault(block, RadioactiveObject.ZERO);
     }
 
     private static boolean isJson(final ResourceLocation filename) {
-        return filename.getPath().contains(FILE_NAME + JSON_EXTENSION);
+	return filename.getPath().contains(FILE_NAME + JSON_EXTENSION);
     }
 }

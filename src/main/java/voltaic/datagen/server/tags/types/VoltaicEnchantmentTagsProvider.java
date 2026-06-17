@@ -14,14 +14,15 @@ import voltaic.common.tags.VoltaicTags;
 
 public class VoltaicEnchantmentTagsProvider extends EnchantmentTagsProvider {
 
-    public VoltaicEnchantmentTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registries, @Nullable ExistingFileHelper existingFileHelper) {
-        super(output, registries, Voltaic.ID, existingFileHelper);
+    public VoltaicEnchantmentTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registries,
+	    @Nullable ExistingFileHelper existingFileHelper) {
+	super(output, registries, Voltaic.ID, existingFileHelper);
     }
 
     @Override
     protected void addTags(HolderLookup.Provider provider) {
-        tag(VoltaicTags.Enchantments.EFFICIENCY).add(Enchantments.EFFICIENCY);
-        tag(VoltaicTags.Enchantments.UNBREAKING).add(Enchantments.UNBREAKING);
-        tag(VoltaicTags.Enchantments.SILK_TOUCH).add(Enchantments.SILK_TOUCH);
+	tag(VoltaicTags.Enchantments.EFFICIENCY).add(Enchantments.EFFICIENCY);
+	tag(VoltaicTags.Enchantments.UNBREAKING).add(Enchantments.UNBREAKING);
+	tag(VoltaicTags.Enchantments.SILK_TOUCH).add(Enchantments.SILK_TOUCH);
     }
 }

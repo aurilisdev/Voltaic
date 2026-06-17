@@ -23,35 +23,42 @@ public abstract class BaseRadioactiveBlocksProvider implements DataProvider {
     private final String loc;
 
     public BaseRadioactiveBlocksProvider(PackOutput output, String modID) {
-        this.output = output;
-        this.modID = modID;
-        loc = "data/" + Voltaic.ID + "/" + RadioactiveBlockRegister.FOLDER + "/" + modID + "_" + RadioactiveBlockRegister.FILE_NAME;
+	this.output = output;
+	this.modID = modID;
+	loc = "data/" + Voltaic.ID + "/" + RadioactiveBlockRegister.FOLDER + "/" + modID + "_"
+		+ RadioactiveBlockRegister.FILE_NAME;
     }
 
     @Override
     public CompletableFuture<?> run(CachedOutput cache) {
-        JsonObject json = new JsonObject();
-        getRadioactiveBlocks(json);
+	JsonObject json = new JsonObject();
+	getRadioactiveBlocks(json);
 
-        Path parent = output.getOutputFolder().resolve(loc + ".json");
+	Path parent = output.getOutputFolder().resolve(loc + ".json");
 
-        return CompletableFuture.allOf(DataProvider.saveStable(cache, json, parent));
+	return CompletableFuture.allOf(DataProvider.saveStable(cache, json, parent));
     }
 
     public abstract void getRadioactiveBlocks(JsonObject json);
 
     public void addBlock(Block block, double radiationAmount, double radiationStrength, JsonObject json) {
-        JsonObject data = new JsonObject();
-        json.add(BuiltInRegistries.BLOCK.getKey(block).toString(), RadioactiveObject.CODEC.encode(new RadioactiveObject(radiationStrength, radiationAmount), JsonOps.INSTANCE, data).getOrThrow());
+	JsonObject data = new JsonObject();
+	json.add(BuiltInRegistries.BLOCK.getKey(block).toString(),
+		RadioactiveObject.CODEC
+			.encode(new RadioactiveObject(radiationStrength, radiationAmount), JsonOps.INSTANCE, data)
+			.getOrThrow());
     }
 
     public void addTag(TagKey<Block> tag, double radiationAmount, double radiationStrength, JsonObject json) {
-        JsonObject data = new JsonObject();
-        json.add("#" + tag.location().toString(), RadioactiveObject.CODEC.encode(new RadioactiveObject(radiationStrength, radiationAmount), JsonOps.INSTANCE, data).getOrThrow());
+	JsonObject data = new JsonObject();
+	json.add("#" + tag.location().toString(),
+		RadioactiveObject.CODEC
+			.encode(new RadioactiveObject(radiationStrength, radiationAmount), JsonOps.INSTANCE, data)
+			.getOrThrow());
     }
 
     @Override
     public String getName() {
-        return modID + " Radioactive Blocks Provider";
+	return modID + " Radioactive Blocks Provider";
     }
 }

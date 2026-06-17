@@ -52,100 +52,107 @@ public class SlaveNodeModelLoader implements IGeometryLoader<SlaveNodeModelLoade
     @Override
     public SlaveNodeGeometry read(JsonObject json, JsonDeserializationContext context) throws JsonParseException {
 
-        return new SlaveNodeGeometry();
+	return new SlaveNodeGeometry();
     }
 
     public static class SlaveNodeGeometry implements IUnbakedGeometry<SlaveNodeGeometry> {
 
-        public SlaveNodeGeometry() {
-        }
+	public SlaveNodeGeometry() {
+	}
 
-        @Override
-        public BakedModel bake(IGeometryBakingContext context, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, ItemOverrides overrides) {
-            return new SlaveNodeModelLoader.SlaveNodeModel(context.useAmbientOcclusion(), context.isGui3d(), context.useBlockLight());
-        }
+	@Override
+	public BakedModel bake(IGeometryBakingContext context, ModelBaker baker,
+		Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, ItemOverrides overrides) {
+	    return new SlaveNodeModelLoader.SlaveNodeModel(context.useAmbientOcclusion(), context.isGui3d(),
+		    context.useBlockLight());
+	}
 
     }
 
     public static class SlaveNodeModel implements IDynamicBakedModel {
 
-        private static final List<BakedQuad> NO_QUADS = ImmutableList.of();
+	private static final List<BakedQuad> NO_QUADS = ImmutableList.of();
 
-        private final HashMap<ResourceLocation, BakedModel> modelMap = new HashMap<>();
+	private final HashMap<ResourceLocation, BakedModel> modelMap = new HashMap<>();
 
-        private final boolean useAmbientOcclusion;
-        private final boolean isGui3d;
-        private final boolean usesBlockLight;
+	private final boolean useAmbientOcclusion;
+	private final boolean isGui3d;
+	private final boolean usesBlockLight;
 
-        public SlaveNodeModel(boolean useAmbientOcclusion, boolean isGui3d, boolean usesBlockLight) {
-            this.useAmbientOcclusion = useAmbientOcclusion;
-            this.isGui3d = isGui3d;
-            this.usesBlockLight = usesBlockLight;
-        }
+	public SlaveNodeModel(boolean useAmbientOcclusion, boolean isGui3d, boolean usesBlockLight) {
+	    this.useAmbientOcclusion = useAmbientOcclusion;
+	    this.isGui3d = isGui3d;
+	    this.usesBlockLight = usesBlockLight;
+	}
 
-        @Override
-        public boolean useAmbientOcclusion() {
-            return useAmbientOcclusion;
-        }
+	@Override
+	public boolean useAmbientOcclusion() {
+	    return useAmbientOcclusion;
+	}
 
-        @Override
-        public boolean isGui3d() {
-            return isGui3d;
-        }
+	@Override
+	public boolean isGui3d() {
+	    return isGui3d;
+	}
 
-        @Override
-        public boolean usesBlockLight() {
-            return usesBlockLight;
-        }
+	@Override
+	public boolean usesBlockLight() {
+	    return usesBlockLight;
+	}
 
-        @Override
-        public boolean isCustomRenderer() {
-            return false;
-        }
+	@Override
+	public boolean isCustomRenderer() {
+	    return false;
+	}
 
-        @Override
-        public TextureAtlasSprite getParticleIcon() {
-            return VoltaicClientRegister.getSprite(VoltaicClientRegister.TEXTURE_MULTISUBNODE);
-        }
+	@Override
+	public TextureAtlasSprite getParticleIcon() {
+	    return VoltaicClientRegister.getSprite(VoltaicClientRegister.TEXTURE_MULTISUBNODE);
+	}
 
-        @Override
-        public ItemOverrides getOverrides() {
-            return ItemOverrides.EMPTY;
-        }
+	@Override
+	public ItemOverrides getOverrides() {
+	    return ItemOverrides.EMPTY;
+	}
 
-        @Override
-        public ChunkRenderTypeSet getRenderTypes(@NotNull BlockState state, @NotNull RandomSource rand, @NotNull ModelData data) {
-            if (data.has(ModelPropertySlaveNode.INSTANCE)) {
-                BakedModel model = modelMap.get(data.get(ModelPropertySlaveNode.INSTANCE).id());
-                return model == null ? ChunkRenderTypeSet.none() : model.getRenderTypes(state, rand, data);
-            }
-            return ChunkRenderTypeSet.none();
-        }
+	@Override
+	public ChunkRenderTypeSet getRenderTypes(@NotNull BlockState state, @NotNull RandomSource rand,
+		@NotNull ModelData data) {
+	    if (data.has(ModelPropertySlaveNode.INSTANCE)) {
+		BakedModel model = modelMap.get(data.get(ModelPropertySlaveNode.INSTANCE).id());
+		return model == null ? ChunkRenderTypeSet.none() : model.getRenderTypes(state, rand, data);
+	    }
+	    return ChunkRenderTypeSet.none();
+	}
 
-        @Override
-        public @NotNull List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @NotNull RandomSource rand, @NotNull ModelData extraData, @Nullable RenderType renderType) {
-            ModelPropertySlaveNode.SlaveNodeWrapper data = extraData.get(ModelPropertySlaveNode.INSTANCE);
-            if (data == null || !MultiblockSlaveNode.hasModel(data.id())) {
-                return NO_QUADS;
-            }
-            BakedModel model = modelMap.get(data.id());
-            if (model instanceof MultiblockModelLoader.MultiblockModel slave) {
-                return slave.getQuads(state, side, rand, extraData, renderType);
-            }
+	@Override
+	public @NotNull List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side,
+		@NotNull RandomSource rand, @NotNull ModelData extraData, @Nullable RenderType renderType) {
+	    ModelPropertySlaveNode.SlaveNodeWrapper data = extraData.get(ModelPropertySlaveNode.INSTANCE);
+	    if (data == null || !MultiblockSlaveNode.hasModel(data.id())) {
+		return NO_QUADS;
+	    }
+	    BakedModel model = modelMap.get(data.id());
+	    if (model instanceof MultiblockModelLoader.MultiblockModel slave) {
+		return slave.getQuads(state, side, rand, extraData, renderType);
+	    }
 
-            return NO_QUADS;
-        }
+	    return NO_QUADS;
+	}
 
-        @Override
-        public @NotNull ModelData getModelData(@NotNull BlockAndTintGetter level, @NotNull BlockPos pos, @NotNull BlockState state, @NotNull ModelData modelData) {
-            if (level.getBlockEntity(pos) instanceof TileMultiblockSlave slave && MultiblockSlaveNode.hasModel(slave.renderModel.getValue())) {
-                if (modelMap.get(slave.renderModel.getValue()) == null) {
-                    modelMap.put(slave.renderModel.getValue(), Minecraft.getInstance().getModelManager().getModel(ModelResourceLocation.standalone(slave.renderModel.getValue())));
-                }
-                return slave.getModelData();
-            }
-            return modelData;
-        }
+	@Override
+	public @NotNull ModelData getModelData(@NotNull BlockAndTintGetter level, @NotNull BlockPos pos,
+		@NotNull BlockState state, @NotNull ModelData modelData) {
+	    if (level.getBlockEntity(pos) instanceof TileMultiblockSlave slave
+		    && MultiblockSlaveNode.hasModel(slave.renderModel.getValue())) {
+		if (modelMap.get(slave.renderModel.getValue()) == null) {
+		    modelMap.put(slave.renderModel.getValue(), Minecraft.getInstance().getModelManager()
+			    .getModel(ModelResourceLocation.standalone(slave.renderModel.getValue())));
+		}
+		return slave.getModelData();
+	    }
+	    return modelData;
+	}
 
     }
 

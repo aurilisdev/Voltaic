@@ -19,45 +19,44 @@ public class CapabilityItemStackHandler extends ComponentItemHandler {
 
     private ContainerLevelAccess access = ContainerLevelAccess.NULL;
 
-    private Consumer<OnChangeWrapper> onChange = (onChange) -> {
+    private Consumer<OnChangeWrapper> onChange = onChange -> {
     };
 
     public CapabilityItemStackHandler(int size, ItemStack owner) {
-        super(owner, DataComponents.CONTAINER, size);
-        this.owner = owner;
+	super(owner, DataComponents.CONTAINER, size);
+	this.owner = owner;
     }
 
     public CapabilityItemStackHandler setOnChange(Consumer<OnChangeWrapper> onChange) {
-        this.onChange = onChange;
-        return this;
+	this.onChange = onChange;
+	return this;
     }
 
     public CapabilityItemStackHandler setValidator(BiPredicate<Integer, ItemStack> predicate) {
-        this.validator = predicate;
-        return this;
+	this.validator = predicate;
+	return this;
     }
 
     @Override
     protected void onContentsChanged(int slot, ItemStack oldStack, ItemStack newStack) {
-        onChange.accept(new OnChangeWrapper(owner, this, slot, access));
+	onChange.accept(new OnChangeWrapper(owner, this, slot, access));
     }
 
     @Override
     public boolean isItemValid(int slot, ItemStack stack) {
-        return validator.test(slot, stack);
+	return validator.test(slot, stack);
     }
 
     public List<ItemStack> getItems() {
-        return getContents().stream().toList();
+	return getContents().stream().toList();
     }
 
     public void setLevelAccess(Level level, BlockPos pos) {
-        access = ContainerLevelAccess.create(level, pos);
+	access = ContainerLevelAccess.create(level, pos);
     }
 
-
-
-    public static record OnChangeWrapper(ItemStack owner, CapabilityItemStackHandler capability, int slot, ContainerLevelAccess levelAccess) {
+    public static record OnChangeWrapper(ItemStack owner, CapabilityItemStackHandler capability, int slot,
+	    ContainerLevelAccess levelAccess) {
 
     }
 

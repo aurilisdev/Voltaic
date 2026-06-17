@@ -16,43 +16,44 @@ import voltaic.prefab.screen.types.GenericMaterialScreen;
 
 public class ScreenHandlerMaterialScreen implements IGuiContainerHandler<GenericMaterialScreen<?>> {
 
-	@Override
-	public Optional<IClickableIngredient<?>> getClickableIngredientUnderMouse(GenericMaterialScreen<?> screen, double mouseX, double mouseY) {
+    @Override
+    public Optional<IClickableIngredient<?>> getClickableIngredientUnderMouse(GenericMaterialScreen<?> screen,
+	    double mouseX, double mouseY) {
 
-		double xAxis = mouseX - screen.getGuiWidth();
-		double yAxis = mouseY - screen.getGuiHeight();
+	double xAxis = mouseX - screen.getGuiWidth();
+	double yAxis = mouseY - screen.getGuiHeight();
 
-		for (ScreenComponentFluidGauge gauge : screen.getFluidGauges()) {
+	for (ScreenComponentFluidGauge gauge : screen.getFluidGauges()) {
 
-			if (gauge.isMouseOver(xAxis, yAxis)) {
-				IFluidTank tank = gauge.fluidInfoHandler.getTank();
-				if (tank == null) {
-					continue;
-				}
-				FluidStack stack = tank.getFluid();
-
-				if (stack.isEmpty()) {
-					continue;
-				}
-				return Optional.of(new ClickableFluidIngredient(gauge.getClickArea(), stack));
-			}
+	    if (gauge.isMouseOver(xAxis, yAxis)) {
+		IFluidTank tank = gauge.fluidInfoHandler.getTank();
+		if (tank == null) {
+		    continue;
 		}
+		FluidStack stack = tank.getFluid();
 
-		for (ScreenComponentGasGauge gauge : screen.getGasGauges()) {
-			if (gauge.isMouseOver(xAxis, yAxis)) {
-				IGasTank tank = gauge.gasTank.get();
-				if (tank == null) {
-					continue;
-				}
-				GasStack stack = tank.getGas();
-				if (stack.isEmpty()) {
-					continue;
-				}
-				return Optional.of(new ClickableGasIngredient(gauge.getClickArea(), stack));
-			}
+		if (stack.isEmpty()) {
+		    continue;
 		}
-
-		return Optional.empty();
+		return Optional.of(new ClickableFluidIngredient(gauge.getClickArea(), stack));
+	    }
 	}
+
+	for (ScreenComponentGasGauge gauge : screen.getGasGauges()) {
+	    if (gauge.isMouseOver(xAxis, yAxis)) {
+		IGasTank tank = gauge.gasTank.get();
+		if (tank == null) {
+		    continue;
+		}
+		GasStack stack = tank.getGas();
+		if (stack.isEmpty()) {
+		    continue;
+		}
+		return Optional.of(new ClickableGasIngredient(gauge.getClickArea(), stack));
+	    }
+	}
+
+	return Optional.empty();
+    }
 
 }

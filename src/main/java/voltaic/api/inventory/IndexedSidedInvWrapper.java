@@ -23,110 +23,104 @@ public class IndexedSidedInvWrapper implements IItemHandlerModifiable {
     private final InsertLimit newStackInsertLimit;
 
     private interface InsertLimit {
-        int limitInsert(int wrapperSlot, int invSlot, ItemStack stack);
+	int limitInsert(int wrapperSlot, int invSlot, ItemStack stack);
     }
 
     public IndexedSidedInvWrapper(ComponentInventory inv, @Nullable Direction side) {
-        this.inv = inv;
-        this.side = side;
+	this.inv = inv;
+	this.side = side;
 
-        this.slotLimit = wrapperSlot -> inv.getMaxStackSize();
-        this.newStackInsertLimit = (wrapperSlot, invSlot, stack) -> Math.min(stack.getMaxStackSize(), getSlotLimit(wrapperSlot));
+	this.slotLimit = wrapperSlot -> inv.getMaxStackSize();
+	this.newStackInsertLimit = (wrapperSlot, invSlot, stack) -> Math.min(stack.getMaxStackSize(),
+		getSlotLimit(wrapperSlot));
 
     }
 
     public static IItemHandlerModifiable[] create(ComponentInventory inv, Direction... sides) {
-        IItemHandlerModifiable[] ret = new IItemHandlerModifiable[sides.length];
-        for (int x = 0; x < sides.length; x++) {
-            final Direction side = sides[x];
-            ret[x] = new IndexedSidedInvWrapper(inv, side);
-        }
-        return ret;
+	IItemHandlerModifiable[] ret = new IItemHandlerModifiable[sides.length];
+	for (int x = 0; x < sides.length; x++) {
+	    final Direction side = sides[x];
+	    ret[x] = new IndexedSidedInvWrapper(inv, side);
+	}
+	return ret;
     }
 
     public static int getSlot(WorldlyContainer inv, int slot, @Nullable Direction side) {
-        int[] slots = inv.getSlotsForFace(side);
-        if (slot < slots.length)
-            return slots[slot];
-        return -1;
+	int[] slots = inv.getSlotsForFace(side);
+	if (slot < slots.length)
+	    return slots[slot];
+	return -1;
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o)
-            return true;
-        if (o == null || getClass() != o.getClass())
-            return false;
+	if (this == o)
+	    return true;
+	if (o == null || getClass() != o.getClass())
+	    return false;
 
-        IndexedSidedInvWrapper that = (IndexedSidedInvWrapper) o;
+	IndexedSidedInvWrapper that = (IndexedSidedInvWrapper) o;
 
-        return inv.equals(that.inv) && side == that.side;
+	return inv.equals(that.inv) && side == that.side;
     }
 
     @Override
     public int hashCode() {
-        int result = inv.hashCode();
-        result = 31 * result + (side == null ? 0 : side.hashCode());
-        return result;
+	int result = inv.hashCode();
+	result = 31 * result + (side == null ? 0 : side.hashCode());
+	return result;
     }
 
     @Override
     public int getSlots() {
-        return inv.getSlotsForFace(side).length;
+	return inv.getSlotsForFace(side).length;
     }
-
 
     @Override
     public ItemStack getStackInSlot(int slot) {
-        int i = getSlot(inv, slot, side);
-        return i == -1 ? ItemStack.EMPTY : inv.getItem(i);
+	int i = getSlot(inv, slot, side);
+	return i == -1 ? ItemStack.EMPTY : inv.getItem(i);
     }
 
     @Override
     public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
-        if (stack.isEmpty())
-            return ItemStack.EMPTY;
+	if (stack.isEmpty())
+	    return ItemStack.EMPTY;
 
-        int slot1 = getSlot(inv, slot, side);
+	int slot1 = getSlot(inv, slot, side);
 
-        if (slot1 == -1)
-            return stack;
+	if (slot1 == -1)
+	    return stack;
 
-        ItemStack stackInSlot = inv.getItem(slot1);
+	ItemStack stackInSlot = inv.getItem(slot1);
 
-        int m;
-        if (!stackInSlot.isEmpty()) {
-            if (stackInSlot.getCount() >= Math.min(stackInSlot.getMaxStackSize(), getSlotLimit(slot)))
-                return stack;
+	int m;
+	if (!stackInSlot.isEmpty()) {
+	    if ((stackInSlot.getCount() >= Math.min(stackInSlot.getMaxStackSize(), getSlotLimit(slot))) || !ItemStack.isSameItemSameComponents(stack, stackInSlot) || !inv.canPlaceItemThroughFace(slot1, stack, side) || !inv.canPlaceItem(slot1, stack))
+		return stack;
 
-            if (!ItemStack.isSameItemSameComponents(stack, stackInSlot))
-                return stack;
+	    m = Math.min(stack.getMaxStackSize(), getSlotLimit(slot)) - stackInSlot.getCount();
 
-            if (!inv.canPlaceItemThroughFace(slot1, stack, side) || !inv.canPlaceItem(slot1, stack))
-                return stack;
+	    if (stack.getCount() <= m) {
+		if (!simulate) {
+		    ItemStack copy = stack.copy();
+		    copy.grow(stackInSlot.getCount());
+		    setInventorySlotContents(slot1, copy);
+		}
 
-            m = Math.min(stack.getMaxStackSize(), getSlotLimit(slot)) - stackInSlot.getCount();
-
-            if (stack.getCount() <= m) {
-                if (!simulate) {
-                    ItemStack copy = stack.copy();
-                    copy.grow(stackInSlot.getCount());
-                    setInventorySlotContents(slot1, copy);
-                }
-
-                return ItemStack.EMPTY;
-            }
+		return ItemStack.EMPTY;
+	    }
 	    // copy the stack to not modify the original one
 	    stack = stack.copy();
 	    if (!simulate) {
-	        ItemStack copy = stack.split(m);
-	        copy.grow(stackInSlot.getCount());
-	        setInventorySlotContents(slot1, copy);
-	        return stack;
+		ItemStack copy = stack.split(m);
+		copy.grow(stackInSlot.getCount());
+		setInventorySlotContents(slot1, copy);
+		return stack;
 	    }
 	    stack.shrink(m);
 	    return stack;
-        }
+	}
 	if (!inv.canPlaceItemThroughFace(slot1, stack, side) || !inv.canPlaceItem(slot1, stack))
 	    return stack;
 
@@ -136,8 +130,8 @@ public class IndexedSidedInvWrapper implements IItemHandlerModifiable {
 	    // copy the stack to not modify the original one
 	    stack = stack.copy();
 	    if (!simulate) {
-	        setInventorySlotContents(slot1, stack.split(m));
-	        return stack;
+		setInventorySlotContents(slot1, stack.split(m));
+		return stack;
 	    }
 	    stack.shrink(m);
 	    return stack;
@@ -149,42 +143,39 @@ public class IndexedSidedInvWrapper implements IItemHandlerModifiable {
 
     @Override
     public void setStackInSlot(int slot, ItemStack stack) {
-        int slot1 = getSlot(inv, slot, side);
+	int slot1 = getSlot(inv, slot, side);
 
-        if (slot1 != -1)
-            setInventorySlotContents(slot1, stack);
+	if (slot1 != -1)
+	    setInventorySlotContents(slot1, stack);
     }
 
     private void setInventorySlotContents(int slot, ItemStack stack) {
-        inv.setItem(slot, stack);
+	inv.setItem(slot, stack);
     }
 
     @Override
     public ItemStack extractItem(int slot, int amount, boolean simulate) {
-        if (amount == 0)
-            return ItemStack.EMPTY;
+	if (amount == 0)
+	    return ItemStack.EMPTY;
 
-        int slot1 = getSlot(inv, slot, side);
+	int slot1 = getSlot(inv, slot, side);
 
-        if (slot1 == -1)
-            return ItemStack.EMPTY;
+	if (slot1 == -1)
+	    return ItemStack.EMPTY;
 
-        ItemStack stackInSlot = inv.getItem(slot1);
+	ItemStack stackInSlot = inv.getItem(slot1);
 
-        if (stackInSlot.isEmpty())
-            return ItemStack.EMPTY;
+	if (stackInSlot.isEmpty() || !inv.canTakeItemThroughFace(slot1, stackInSlot, side))
+	    return ItemStack.EMPTY;
 
-        if (!inv.canTakeItemThroughFace(slot1, stackInSlot, side))
-            return ItemStack.EMPTY;
-
-        if (simulate) {
-            if (stackInSlot.getCount() < amount) {
-                return stackInSlot.copy();
-            }
+	if (simulate) {
+	    if (stackInSlot.getCount() < amount) {
+		return stackInSlot.copy();
+	    }
 	    ItemStack copy = stackInSlot.copy();
 	    copy.setCount(amount);
 	    return copy;
-        }
+	}
 	int m = Math.min(stackInSlot.getCount(), amount);
 	ItemStack ret = inv.removeItem(slot1, m);
 	inv.setChanged();
@@ -193,13 +184,13 @@ public class IndexedSidedInvWrapper implements IItemHandlerModifiable {
 
     @Override
     public int getSlotLimit(int slot) {
-        return slotLimit.applyAsInt(slot);
+	return slotLimit.applyAsInt(slot);
     }
 
     @Override
     public boolean isItemValid(int slot, ItemStack stack) {
-        int slot1 = getSlot(inv, slot, side);
-        return slot1 == -1 ? false : inv.canPlaceItem(slot1, stack);
+	int slot1 = getSlot(inv, slot, side);
+	return slot1 == -1 ? false : inv.canPlaceItem(slot1, stack);
     }
 
 }

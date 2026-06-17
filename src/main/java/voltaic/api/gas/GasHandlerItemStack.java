@@ -22,256 +22,253 @@ public class GasHandlerItemStack implements IGasHandlerItem {
     protected int maxPressure;
 
     public GasHandlerItemStack(ItemStack container, int capacity, int maxTemperature, int maxPressure) {
-        this.container = container;
-        this.capacity = capacity;
-        this.maxTemperature = maxTemperature;
-        this.maxPressure = maxPressure;
+	this.container = container;
+	this.capacity = capacity;
+	this.maxTemperature = maxTemperature;
+	this.maxPressure = maxPressure;
     }
 
     public GasHandlerItemStack setPredicate(Predicate<GasStack> predicate) {
-        isGasValid = predicate;
-        return this;
+	isGasValid = predicate;
+	return this;
     }
 
     @Override
     public int getTanks() {
-        return 1;
+	return 1;
     }
 
     public void setGas(GasStack gas) {
 
-        container.set(VoltaicDataComponentTypes.GAS_STACK, gas);
+	container.set(VoltaicDataComponentTypes.GAS_STACK, gas);
     }
 
     @Override
     public GasStack getGasInTank(int tank) {
 
-        return container.getOrDefault(VoltaicDataComponentTypes.GAS_STACK, GasStack.EMPTY);
+	return container.getOrDefault(VoltaicDataComponentTypes.GAS_STACK, GasStack.EMPTY);
     }
 
     @Override
     public int getTankCapacity(int tank) {
-        return capacity;
+	return capacity;
     }
 
     @Override
     public int getTankMaxTemperature(int tank) {
-        return maxTemperature;
+	return maxTemperature;
     }
 
     @Override
     public int getTankMaxPressure(int tank) {
-        return maxPressure;
+	return maxPressure;
     }
 
     @Override
     public boolean isGasValid(int tank, GasStack gas) {
-        return isGasValid.test(gas);
+	return isGasValid.test(gas);
     }
 
     @Override
     public int fill(GasStack resource, GasAction action) {
-        if (resource.isEmpty()) {
-            return 0;
-        }
+	if (resource.isEmpty() || !isGasValid(0, resource)) {
+	    return 0;
+	}
 
-        if (!isGasValid(0, resource)) {
-            return 0;
-        }
+	if (isEmpty()) {
 
-        if (isEmpty()) {
+	    int accepted = Math.min(resource.getAmount(), capacity);
 
-            int accepted = Math.min(resource.getAmount(), capacity);
+	    if (action == GasAction.EXECUTE) {
 
-            if (action == GasAction.EXECUTE) {
+		setGas(new GasStack(resource.getGas(), accepted, resource.getTemperature(), resource.getPressure()));
 
-                setGas(new GasStack(resource.getGas(), accepted, resource.getTemperature(), resource.getPressure()));
+		if (resource.getTemperature() > maxTemperature) {
 
-                if (resource.getTemperature() > maxTemperature) {
+		    onOverheat();
 
-                    onOverheat();
+		}
 
-                }
+		if (resource.getPressure() > maxPressure) {
 
-                if (resource.getPressure() > maxPressure) {
+		    onOverpressure();
 
-                    onOverpressure();
+		}
 
-                }
+	    }
 
-            }
+	    return accepted;
 
-            return accepted;
+	}
+	GasStack gas = getGasInTank(0);
 
-        }
-        GasStack gas = getGasInTank(0);
+	if (!gas.isSameGas(resource)) {
+	    return 0;
+	}
 
-        if (!gas.isSameGas(resource)) {
-            return 0;
-        }
+	int canTake = GasStack.getMaximumAcceptance(gas, resource, capacity);
 
-        int canTake = GasStack.getMaximumAcceptance(gas, resource, capacity);
+	if (canTake == 0) {
+	    return 0;
+	}
 
-        if (canTake == 0) {
-            return 0;
-        }
+	if (action == GasAction.EXECUTE) {
 
-        if (action == GasAction.EXECUTE) {
+	    GasStack accepted = resource.copy();
 
-            GasStack accepted = resource.copy();
+	    accepted.setAmount(canTake);
 
-            accepted.setAmount(canTake);
+	    GasStack equalized = GasStack.equalizePresrsureAndTemperature(gas, accepted);
 
-            GasStack equalized = GasStack.equalizePresrsureAndTemperature(gas, accepted);
+	    setGas(equalized);
 
-            setGas(equalized);
+	    if (gas.getTemperature() > maxTemperature) {
 
-            if (gas.getTemperature() > maxTemperature) {
+		onOverheat();
 
-                onOverheat();
+	    }
 
-            }
+	    if (gas.getPressure() > maxPressure) {
 
-            if (gas.getPressure() > maxPressure) {
+		onOverpressure();
 
-                onOverpressure();
+	    }
 
-            }
+	}
 
-        }
-
-        return canTake;
+	return canTake;
     }
 
     @Override
     public GasStack drain(GasStack resource, GasAction action) {
 
-        GasStack gas = getGasInTank(0);
+	GasStack gas = getGasInTank(0);
 
-        if (resource.isEmpty() || !gas.isSameGas(resource) || !gas.isSamePressure(resource) || !gas.isSameTemperature(resource)) {
-            return GasStack.EMPTY;
-        }
+	if (resource.isEmpty() || !gas.isSameGas(resource) || !gas.isSamePressure(resource)
+		|| !gas.isSameTemperature(resource)) {
+	    return GasStack.EMPTY;
+	}
 
-        return drain(resource.getAmount(), action);
+	return drain(resource.getAmount(), action);
 
     }
 
     @Override
     public GasStack drain(int amount, GasAction action) {
 
-        if (isEmpty() || amount == 0) {
-            return GasStack.EMPTY;
-        }
+	if (isEmpty() || amount == 0) {
+	    return GasStack.EMPTY;
+	}
 
-        GasStack gas = getGasInTank(0);
+	GasStack gas = getGasInTank(0);
 
-        int taken = Math.min(gas.getAmount(), amount);
+	int taken = Math.min(gas.getAmount(), amount);
 
-        GasStack takenStack = new GasStack(gas.getGas(), taken, gas.getTemperature(), gas.getPressure());
+	GasStack takenStack = new GasStack(gas.getGas(), taken, gas.getTemperature(), gas.getPressure());
 
-        if (action == GasAction.EXECUTE) {
+	if (action == GasAction.EXECUTE) {
 
-            gas.shrink(taken);
+	    gas.shrink(taken);
 
-            if (gas.getAmount() == 0) {
+	    if (gas.getAmount() == 0) {
 
-                setContainerToEmpty();
+		setContainerToEmpty();
 
-            } else {
+	    } else {
 
-                setGas(gas);
+		setGas(gas);
 
-            }
-        }
+	    }
+	}
 
-        return takenStack;
+	return takenStack;
     }
 
     @Override
     public int heat(int tank, int deltaTemperature, GasAction action) {
 
-        GasStack gas = getGasInTank(0);
+	GasStack gas = getGasInTank(0);
 
-        if (gas.isAbsoluteZero() && deltaTemperature < 0) {
-            return -1;
-        }
+	if (gas.isAbsoluteZero() && deltaTemperature < 0) {
+	    return -1;
+	}
 
-        GasStack updated = gas.copy();
+	GasStack updated = gas.copy();
 
-        updated.heat(deltaTemperature);
+	updated.heat(deltaTemperature);
 
-        if (updated.getAmount() > capacity) {
-            return -1;
-        }
+	if (updated.getAmount() > capacity) {
+	    return -1;
+	}
 
-        if (action == GasAction.EXECUTE) {
+	if (action == GasAction.EXECUTE) {
 
-            setGas(updated);
+	    setGas(updated);
 
-            if (gas.getTemperature() > maxTemperature) {
+	    if (gas.getTemperature() > maxTemperature) {
 
-                onOverheat();
+		onOverheat();
 
-            }
+	    }
 
-        }
+	}
 
-        return capacity - updated.getAmount();
+	return capacity - updated.getAmount();
     }
 
     @Override
     public int bringPressureTo(int tank, int atm, GasAction action) {
 
-        GasStack gas = getGasInTank(0);
+	GasStack gas = getGasInTank(0);
 
-        if (gas.isVacuum() && atm < GasStack.VACUUM) {
-            return -1;
-        }
+	if (gas.isVacuum() && atm < GasStack.VACUUM) {
+	    return -1;
+	}
 
-        GasStack updated = gas.copy();
+	GasStack updated = gas.copy();
 
-        updated.bringPressureTo(atm);
+	updated.bringPressureTo(atm);
 
-        if (updated.getAmount() > capacity) {
+	if (updated.getAmount() > capacity) {
 
-            return -1;
+	    return -1;
 
-        }
+	}
 
-        if (action == GasAction.EXECUTE) {
+	if (action == GasAction.EXECUTE) {
 
-            setGas(updated);
+	    setGas(updated);
 
-            if (gas.getPressure() > maxPressure) {
+	    if (gas.getPressure() > maxPressure) {
 
-                onOverpressure();
+		onOverpressure();
 
-            }
+	    }
 
-        }
+	}
 
-        return capacity - updated.getAmount();
+	return capacity - updated.getAmount();
     }
 
     @Override
     public ItemStack getContainer() {
-        return container;
+	return container;
     }
 
     public void onOverheat() {
-        container.shrink(1);
+	container.shrink(1);
     }
 
     public void onOverpressure() {
-        container.shrink(1);
+	container.shrink(1);
     }
 
     public boolean isEmpty() {
-        return getGasInTank(0).isEmpty();
+	return getGasInTank(0).isEmpty();
     }
 
     public void setContainerToEmpty() {
-        container.remove(VoltaicDataComponentTypes.GAS_STACK);
+	container.remove(VoltaicDataComponentTypes.GAS_STACK);
     }
 
     /**
@@ -279,15 +276,15 @@ public class GasHandlerItemStack implements IGasHandlerItem {
      */
     public static class Consumable extends GasHandlerItemStack {
 
-        public Consumable(ItemStack container, int capacity, int maxTemperature, int maxPressure) {
-            super(container, capacity, maxTemperature, maxPressure);
-        }
+	public Consumable(ItemStack container, int capacity, int maxTemperature, int maxPressure) {
+	    super(container, capacity, maxTemperature, maxPressure);
+	}
 
-        @Override
-        public void setContainerToEmpty() {
-            super.setContainerToEmpty();
-            container.shrink(1);
-        }
+	@Override
+	public void setContainerToEmpty() {
+	    super.setContainerToEmpty();
+	    container.shrink(1);
+	}
     }
 
     /**
@@ -295,18 +292,19 @@ public class GasHandlerItemStack implements IGasHandlerItem {
      */
     public static class SwapEmpty extends GasHandlerItemStack {
 
-        protected final ItemStack emptyContainer;
+	protected final ItemStack emptyContainer;
 
-        public SwapEmpty(ItemStack container, ItemStack emptyContainer, int capacity, int maxTemperature, int maxPressure) {
-            super(container, capacity, maxTemperature, maxPressure);
-            this.emptyContainer = emptyContainer;
-        }
+	public SwapEmpty(ItemStack container, ItemStack emptyContainer, int capacity, int maxTemperature,
+		int maxPressure) {
+	    super(container, capacity, maxTemperature, maxPressure);
+	    this.emptyContainer = emptyContainer;
+	}
 
-        @Override
-        public void setContainerToEmpty() {
-            super.setContainerToEmpty();
-            container = emptyContainer;
-        }
+	@Override
+	public void setContainerToEmpty() {
+	    super.setContainerToEmpty();
+	    container = emptyContainer;
+	}
     }
 
 }

@@ -6,19 +6,19 @@ import voltaic.prefab.tile.types.GenericRefreshingConnectTile;
 
 public interface IAbstractCable<CONDUCTORTYPE, T extends AbstractNetwork<? extends GenericRefreshingConnectTile<?, ?, ?>, ?, ?, ?>> {
 
-	void removeFromNetwork();
+    void removeFromNetwork();
 
-	T getNetwork();
+    T getNetwork();
 
-	void createNetworkFromThis();
+    void createNetworkFromThis();
 
-	void setNetwork(T aValueNetwork);
+    void setNetwork(T aValueNetwork);
 
-	BlockEntity[] getConectedRecievers();
+    BlockEntity[] getConectedRecievers();
 
-	BlockEntity[] getConnectedCables();
+    BlockEntity[] getConnectedCables();
 
-	CONDUCTORTYPE getCableType();
+    CONDUCTORTYPE getCableType();
 
-	double getMaxTransfer();
+    double getMaxTransfer();
 }

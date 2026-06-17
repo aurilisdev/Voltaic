@@ -28,30 +28,39 @@ public class NetworkHandler {
 
     @SubscribeEvent
     public static void registerPackets(final RegisterPayloadHandlersEvent event) {
-        final PayloadRegistrar registry = event.registrar(Voltaic.ID).versioned(PROTOCOL_VERSION).optional();
+	final PayloadRegistrar registry = event.registrar(Voltaic.ID).versioned(PROTOCOL_VERSION).optional();
 
-        // CLIENT
+	// CLIENT
 
-        registry.playToClient(PacketResetGuidebookPages.TYPE, PacketResetGuidebookPages.CODEC, PacketResetGuidebookPages::handle);
-        registry.playToClient(PacketSpawnSmokeParticle.TYPE, PacketSpawnSmokeParticle.CODEC, PacketSpawnSmokeParticle::handle);
-        registry.playToClient(PacketSetClientRadioactiveItems.TYPE, PacketSetClientRadioactiveItems.CODEC, PacketSetClientRadioactiveItems::handle);
-        registry.playToClient(PacketSetClientRadioactiveFluids.TYPE, PacketSetClientRadioactiveFluids.CODEC, PacketSetClientRadioactiveFluids::handle);
-        registry.playToClient(PacketSetClientRadioactiveGases.TYPE, PacketSetClientRadioactiveGases.CODEC, PacketSetClientRadioactiveGases::handle);
-        registry.playToClient(PacketSetClientRadiationShielding.TYPE, PacketSetClientRadiationShielding.CODEC, PacketSetClientRadiationShielding::handle);
-        registry.playToClient(PacketUpdateCariedItemClient.TYPE, PacketUpdateCariedItemClient.CODEC, PacketUpdateCariedItemClient::handle);
-        registry.playToClient(PacketSetClientRadioactiveBlocks.TYPE, PacketSetClientRadioactiveBlocks.CODEC, PacketSetClientRadioactiveBlocks::handle);
+	registry.playToClient(PacketResetGuidebookPages.TYPE, PacketResetGuidebookPages.CODEC,
+		PacketResetGuidebookPages::handle);
+	registry.playToClient(PacketSpawnSmokeParticle.TYPE, PacketSpawnSmokeParticle.CODEC,
+		PacketSpawnSmokeParticle::handle);
+	registry.playToClient(PacketSetClientRadioactiveItems.TYPE, PacketSetClientRadioactiveItems.CODEC,
+		PacketSetClientRadioactiveItems::handle);
+	registry.playToClient(PacketSetClientRadioactiveFluids.TYPE, PacketSetClientRadioactiveFluids.CODEC,
+		PacketSetClientRadioactiveFluids::handle);
+	registry.playToClient(PacketSetClientRadioactiveGases.TYPE, PacketSetClientRadioactiveGases.CODEC,
+		PacketSetClientRadioactiveGases::handle);
+	registry.playToClient(PacketSetClientRadiationShielding.TYPE, PacketSetClientRadiationShielding.CODEC,
+		PacketSetClientRadiationShielding::handle);
+	registry.playToClient(PacketUpdateCariedItemClient.TYPE, PacketUpdateCariedItemClient.CODEC,
+		PacketUpdateCariedItemClient::handle);
+	registry.playToClient(PacketSetClientRadioactiveBlocks.TYPE, PacketSetClientRadioactiveBlocks.CODEC,
+		PacketSetClientRadioactiveBlocks::handle);
 
-        // SERVER
+	// SERVER
 
-        registry.playToServer(PacketSendUpdatePropertiesServer.TYPE, PacketSendUpdatePropertiesServer.CODEC, PacketSendUpdatePropertiesServer::handle);
-        registry.playToServer(PacketSwapBattery.TYPE, PacketSwapBattery.CODEC, PacketSwapBattery::handle);
-        registry.playToServer(PacketUpdateCarriedItemServer.TYPE, PacketUpdateCarriedItemServer.CODEC, PacketUpdateCarriedItemServer::handle);
+	registry.playToServer(PacketSendUpdatePropertiesServer.TYPE, PacketSendUpdatePropertiesServer.CODEC,
+		PacketSendUpdatePropertiesServer::handle);
+	registry.playToServer(PacketSwapBattery.TYPE, PacketSwapBattery.CODEC, PacketSwapBattery::handle);
+	registry.playToServer(PacketUpdateCarriedItemServer.TYPE, PacketUpdateCarriedItemServer.CODEC,
+		PacketUpdateCarriedItemServer::handle);
 
     }
 
     public static ResourceLocation id(String name) {
-        return Voltaic.rl(name);
+	return Voltaic.rl(name);
     }
-
 
 }

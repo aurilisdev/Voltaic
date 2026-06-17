@@ -27,114 +27,137 @@ import voltaic.prefab.utilities.VoltaicTextUtils;
 import voltaic.registers.VoltaicDataComponentTypes;
 
 public class ItemUpgrade extends ItemVoltaic {
-	public final SubtypeItemUpgrade subtype;
+    public final SubtypeItemUpgrade subtype;
 
-	private static final DecimalFormat FORMATTER = new DecimalFormat("0.00");
+    private static final DecimalFormat FORMATTER = new DecimalFormat("0.00");
 
-	public ItemUpgrade(Properties properties, SubtypeItemUpgrade subtype, Holder<CreativeModeTab> creativeTab) {
-		super(properties.stacksTo(subtype.maxSize), creativeTab);
-		this.subtype = subtype;
+    public ItemUpgrade(Properties properties, SubtypeItemUpgrade subtype, Holder<CreativeModeTab> creativeTab) {
+	super(properties.stacksTo(subtype.maxSize), creativeTab);
+	this.subtype = subtype;
+    }
+
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flagIn) {
+	super.appendHoverText(stack, context, tooltip, flagIn);
+	if (subtype == SubtypeItemUpgrade.advancedcapacity || subtype == SubtypeItemUpgrade.basiccapacity) {
+	    double capacityMultiplier = subtype == SubtypeItemUpgrade.advancedcapacity ? 2.25 : 1.5;
+	    double voltageMultiplier = subtype == SubtypeItemUpgrade.advancedcapacity ? 4 : 2;
+	    tooltip.add(VoltaicTextUtils
+		    .tooltip("info.upgradecapacity",
+			    Component.literal(capacityMultiplier + "x").withStyle(ChatFormatting.GREEN))
+		    .withStyle(ChatFormatting.GRAY));
+	    tooltip.add(VoltaicTextUtils
+		    .tooltip("info.upgradeenergytransfer",
+			    Component.literal(capacityMultiplier + "x").withStyle(ChatFormatting.GREEN))
+		    .withStyle(ChatFormatting.GRAY));
+	    tooltip.add(VoltaicTextUtils
+		    .tooltip("info.upgradevoltage",
+			    Component.literal(voltageMultiplier + "x").withStyle(ChatFormatting.GREEN))
+		    .withStyle(ChatFormatting.GRAY));
 	}
-
-	@Override
-	public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flagIn) {
-		super.appendHoverText(stack, context, tooltip, flagIn);
-		if (subtype == SubtypeItemUpgrade.advancedcapacity || subtype == SubtypeItemUpgrade.basiccapacity) {
-			double capacityMultiplier = subtype == SubtypeItemUpgrade.advancedcapacity ? 2.25 : 1.5;
-			double voltageMultiplier = subtype == SubtypeItemUpgrade.advancedcapacity ? 4 : 2;
-			tooltip.add(VoltaicTextUtils.tooltip("info.upgradecapacity", Component.literal(capacityMultiplier + "x").withStyle(ChatFormatting.GREEN)).withStyle(ChatFormatting.GRAY));
-			tooltip.add(VoltaicTextUtils.tooltip("info.upgradeenergytransfer", Component.literal(capacityMultiplier + "x").withStyle(ChatFormatting.GREEN)).withStyle(ChatFormatting.GRAY));
-			tooltip.add(VoltaicTextUtils.tooltip("info.upgradevoltage", Component.literal(voltageMultiplier + "x").withStyle(ChatFormatting.GREEN)).withStyle(ChatFormatting.GRAY));
-		}
-		if (subtype == SubtypeItemUpgrade.advancedspeed || subtype == SubtypeItemUpgrade.basicspeed) {
-			double speedMultiplier = subtype == SubtypeItemUpgrade.advancedspeed ? 2.25 : 1.5;
-			tooltip.add(VoltaicTextUtils.tooltip("info.upgradespeed", Component.literal(speedMultiplier + "x").withStyle(ChatFormatting.GREEN)).withStyle(ChatFormatting.GRAY));
-			tooltip.add(VoltaicTextUtils.tooltip("info.upgradeenergyusage", Component.literal(speedMultiplier + "x").withStyle(ChatFormatting.RED)).withStyle(ChatFormatting.GRAY));
-		}
-		if (subtype == SubtypeItemUpgrade.itemoutput || subtype == SubtypeItemUpgrade.iteminput) {
-			if (subtype == SubtypeItemUpgrade.itemoutput) {
-				tooltip.add(VoltaicTextUtils.tooltip("info.itemoutputupgrade").withStyle(ChatFormatting.GRAY));
-			} else {
-				tooltip.add(VoltaicTextUtils.tooltip("info.iteminputupgrade").withStyle(ChatFormatting.GRAY));
-			}
-			if (stack.getOrDefault(VoltaicDataComponentTypes.SMART, false)) {
-				tooltip.add(VoltaicTextUtils.tooltip("info.insmartmode").withStyle(ChatFormatting.LIGHT_PURPLE));
-			}
-			List<Direction> dirs = NBTUtils.readDirectionList(stack);
-			if (!dirs.isEmpty()) {
-				tooltip.add(VoltaicTextUtils.tooltip("info.dirlist").withStyle(ChatFormatting.BLUE));
-				for (int i = 0; i < dirs.size(); i++) {
-					Direction dir = dirs.get(i);
-					tooltip.add(Component.literal(i + 1 + ". " + StringUtils.capitalize(dir.getName())).withStyle(ChatFormatting.BLUE));
-				}
-				tooltip.add(VoltaicTextUtils.tooltip("info.cleardirs").withStyle(ChatFormatting.GRAY));
-			} else {
-				tooltip.add(VoltaicTextUtils.tooltip("info.nodirs").withStyle(ChatFormatting.GRAY));
-			}
-			tooltip.add(VoltaicTextUtils.tooltip("info.togglesmart").withStyle(ChatFormatting.GRAY));
-		}
-		if (subtype == SubtypeItemUpgrade.experience) {
-			double storedXp = stack.getOrDefault(VoltaicDataComponentTypes.XP, 0.0);
-			tooltip.add(VoltaicTextUtils.tooltip("info.xpstored", Component.literal(FORMATTER.format(storedXp)).withStyle(ChatFormatting.LIGHT_PURPLE)).withStyle(ChatFormatting.GRAY));
-			tooltip.add(VoltaicTextUtils.tooltip("info.xpusage").withStyle(ChatFormatting.GRAY));
-
-		}
-		if (subtype == SubtypeItemUpgrade.range) {
-			tooltip.add(VoltaicTextUtils.tooltip("info.range").withStyle(ChatFormatting.GRAY));
-		}
+	if (subtype == SubtypeItemUpgrade.advancedspeed || subtype == SubtypeItemUpgrade.basicspeed) {
+	    double speedMultiplier = subtype == SubtypeItemUpgrade.advancedspeed ? 2.25 : 1.5;
+	    tooltip.add(VoltaicTextUtils
+		    .tooltip("info.upgradespeed",
+			    Component.literal(speedMultiplier + "x").withStyle(ChatFormatting.GREEN))
+		    .withStyle(ChatFormatting.GRAY));
+	    tooltip.add(VoltaicTextUtils
+		    .tooltip("info.upgradeenergyusage",
+			    Component.literal(speedMultiplier + "x").withStyle(ChatFormatting.RED))
+		    .withStyle(ChatFormatting.GRAY));
 	}
-
-	@Override
-	public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand) {
-		if (!world.isClientSide) {
-			ItemStack handStack = player.getItemInHand(hand);
-			SubtypeItemUpgrade localSubtype = ((ItemUpgrade) handStack.getItem()).subtype;
-			if (localSubtype == SubtypeItemUpgrade.iteminput || localSubtype == SubtypeItemUpgrade.itemoutput) {
-				if (player.isShiftKeyDown()) {
-					Vec3 look = player.getLookAngle();
-					Direction lookingDir = Direction.getNearest(look.x, look.y, look.z);
-					List<Direction> dirs = new ArrayList<Direction>( NBTUtils.readDirectionList(handStack));
-					if(!dirs.contains(lookingDir)) {
-					    dirs.add(lookingDir);
-					}
-					NBTUtils.clearDirectionList(handStack);
-					NBTUtils.writeDirectionList(dirs, handStack);
-				} else {
-					handStack.set(VoltaicDataComponentTypes.SMART, !handStack.getOrDefault(VoltaicDataComponentTypes.SMART, false));
-				}
-				return InteractionResultHolder.pass(player.getItemInHand(hand));
-			}
-			if (localSubtype == SubtypeItemUpgrade.experience) {
-				double storedXp = handStack.getOrDefault(VoltaicDataComponentTypes.XP, 0.0);
-				int takenXp = (int) storedXp;
-				// it uses a Vec3 for some reason don't ask me why
-				Vec3 playerPos = new Vec3(player.blockPosition().getX(), player.blockPosition().getY(), player.blockPosition().getZ());
-				ExperienceOrb.award((ServerLevel) world, playerPos, takenXp);
-				handStack.set(VoltaicDataComponentTypes.XP, storedXp - takenXp);
-				return InteractionResultHolder.pass(player.getItemInHand(hand));
-			}
+	if (subtype == SubtypeItemUpgrade.itemoutput || subtype == SubtypeItemUpgrade.iteminput) {
+	    if (subtype == SubtypeItemUpgrade.itemoutput) {
+		tooltip.add(VoltaicTextUtils.tooltip("info.itemoutputupgrade").withStyle(ChatFormatting.GRAY));
+	    } else {
+		tooltip.add(VoltaicTextUtils.tooltip("info.iteminputupgrade").withStyle(ChatFormatting.GRAY));
+	    }
+	    if (stack.getOrDefault(VoltaicDataComponentTypes.SMART, false)) {
+		tooltip.add(VoltaicTextUtils.tooltip("info.insmartmode").withStyle(ChatFormatting.LIGHT_PURPLE));
+	    }
+	    List<Direction> dirs = NBTUtils.readDirectionList(stack);
+	    if (!dirs.isEmpty()) {
+		tooltip.add(VoltaicTextUtils.tooltip("info.dirlist").withStyle(ChatFormatting.BLUE));
+		for (int i = 0; i < dirs.size(); i++) {
+		    Direction dir = dirs.get(i);
+		    tooltip.add(Component.literal(i + 1 + ". " + StringUtils.capitalize(dir.getName()))
+			    .withStyle(ChatFormatting.BLUE));
 		}
-		return super.use(world, player, hand);
+		tooltip.add(VoltaicTextUtils.tooltip("info.cleardirs").withStyle(ChatFormatting.GRAY));
+	    } else {
+		tooltip.add(VoltaicTextUtils.tooltip("info.nodirs").withStyle(ChatFormatting.GRAY));
+	    }
+	    tooltip.add(VoltaicTextUtils.tooltip("info.togglesmart").withStyle(ChatFormatting.GRAY));
 	}
+	if (subtype == SubtypeItemUpgrade.experience) {
+	    double storedXp = stack.getOrDefault(VoltaicDataComponentTypes.XP, 0.0);
+	    tooltip.add(VoltaicTextUtils
+		    .tooltip("info.xpstored",
+			    Component.literal(FORMATTER.format(storedXp)).withStyle(ChatFormatting.LIGHT_PURPLE))
+		    .withStyle(ChatFormatting.GRAY));
+	    tooltip.add(VoltaicTextUtils.tooltip("info.xpusage").withStyle(ChatFormatting.GRAY));
 
-	@SuppressWarnings("removal")
-	@Override
-	public boolean onEntitySwing(ItemStack stack, LivingEntity entity) {
-		if (!entity.level().isClientSide && entity.isShiftKeyDown()) {
-			if (!entity.getItemInHand(InteractionHand.MAIN_HAND).isEmpty() || !entity.getItemInHand(InteractionHand.OFF_HAND).isEmpty()) {
-				SubtypeItemUpgrade subtype = ((ItemUpgrade) stack.getItem()).subtype;
-				if (subtype == SubtypeItemUpgrade.iteminput || subtype == SubtypeItemUpgrade.itemoutput) {
-					NBTUtils.clearDirectionList(stack);
-				}
-			}
+	}
+	if (subtype == SubtypeItemUpgrade.range) {
+	    tooltip.add(VoltaicTextUtils.tooltip("info.range").withStyle(ChatFormatting.GRAY));
+	}
+    }
+
+    @Override
+    public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand) {
+	if (!world.isClientSide) {
+	    ItemStack handStack = player.getItemInHand(hand);
+	    SubtypeItemUpgrade localSubtype = ((ItemUpgrade) handStack.getItem()).subtype;
+	    if (localSubtype == SubtypeItemUpgrade.iteminput || localSubtype == SubtypeItemUpgrade.itemoutput) {
+		if (player.isShiftKeyDown()) {
+		    Vec3 look = player.getLookAngle();
+		    Direction lookingDir = Direction.getNearest(look.x, look.y, look.z);
+		    List<Direction> dirs = new ArrayList<>(NBTUtils.readDirectionList(handStack));
+		    if (!dirs.contains(lookingDir)) {
+			dirs.add(lookingDir);
+		    }
+		    NBTUtils.clearDirectionList(handStack);
+		    NBTUtils.writeDirectionList(dirs, handStack);
+		} else {
+		    handStack.set(VoltaicDataComponentTypes.SMART,
+			    !handStack.getOrDefault(VoltaicDataComponentTypes.SMART, false));
 		}
-		return super.onEntitySwing(stack, entity);
+		return InteractionResultHolder.pass(player.getItemInHand(hand));
+	    }
+	    if (localSubtype == SubtypeItemUpgrade.experience) {
+		double storedXp = handStack.getOrDefault(VoltaicDataComponentTypes.XP, 0.0);
+		int takenXp = (int) storedXp;
+		// it uses a Vec3 for some reason don't ask me why
+		Vec3 playerPos = new Vec3(player.blockPosition().getX(), player.blockPosition().getY(),
+			player.blockPosition().getZ());
+		ExperienceOrb.award((ServerLevel) world, playerPos, takenXp);
+		handStack.set(VoltaicDataComponentTypes.XP, storedXp - takenXp);
+		return InteractionResultHolder.pass(player.getItemInHand(hand));
+	    }
 	}
+	return super.use(world, player, hand);
+    }
 
-	@Override
-	public boolean isFoil(ItemStack stack) {
+    @SuppressWarnings("removal")
+    @Override
+    public boolean onEntitySwing(ItemStack stack, LivingEntity entity) {
+	if (!entity.level().isClientSide && entity.isShiftKeyDown()) {
+	    if (!entity.getItemInHand(InteractionHand.MAIN_HAND).isEmpty()
+		    || !entity.getItemInHand(InteractionHand.OFF_HAND).isEmpty()) {
 		SubtypeItemUpgrade subtype = ((ItemUpgrade) stack.getItem()).subtype;
-		return stack.getOrDefault(VoltaicDataComponentTypes.SMART, false) || subtype == SubtypeItemUpgrade.fortune || subtype == SubtypeItemUpgrade.unbreaking || subtype == SubtypeItemUpgrade.silktouch;
+		if (subtype == SubtypeItemUpgrade.iteminput || subtype == SubtypeItemUpgrade.itemoutput) {
+		    NBTUtils.clearDirectionList(stack);
+		}
+	    }
 	}
+	return super.onEntitySwing(stack, entity);
+    }
+
+    @Override
+    public boolean isFoil(ItemStack stack) {
+	SubtypeItemUpgrade subtype = ((ItemUpgrade) stack.getItem()).subtype;
+	return stack.getOrDefault(VoltaicDataComponentTypes.SMART, false) || subtype == SubtypeItemUpgrade.fortune
+		|| subtype == SubtypeItemUpgrade.unbreaking || subtype == SubtypeItemUpgrade.silktouch;
+    }
 
 }

@@ -6,6 +6,6 @@ import voltaic.common.item.subtype.SubtypeItemUpgrade;
 
 public interface IUpgradeSlot {
 
-	public List<SubtypeItemUpgrade> getUpgrades();
+    public List<SubtypeItemUpgrade> getUpgrades();
 
 }

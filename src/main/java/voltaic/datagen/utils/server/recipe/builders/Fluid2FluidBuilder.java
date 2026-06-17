@@ -16,43 +16,45 @@ import voltaic.common.recipe.recipeutils.FluidIngredient;
 public class Fluid2FluidBuilder<T extends Fluid2FluidRecipe> extends BaseRecipeBuilder<T, Fluid2FluidBuilder<T>> {
 
     private final Fluid2FluidRecipe.Factory<T> factory;
-    
+
     private final FluidStack output;
 
     private List<FluidStack> fluidIngredients = new ArrayList<>();
     private List<Pair<TagKey<Fluid>, Integer>> tagFluidIngredients = new ArrayList<>();
 
-    public Fluid2FluidBuilder(Fluid2FluidRecipe.Factory<T> factory, FluidStack output, RecipeCategory category, String parent, String name, String group, double experience, int processTime, double usagePerTick) {
-        super(category, parent, name, group, experience, processTime, usagePerTick);
-        this.factory = factory;
-        this.output = output;
+    public Fluid2FluidBuilder(Fluid2FluidRecipe.Factory<T> factory, FluidStack output, RecipeCategory category,
+	    String parent, String name, String group, double experience, int processTime, double usagePerTick) {
+	super(category, parent, name, group, experience, processTime, usagePerTick);
+	this.factory = factory;
+	this.output = output;
     }
 
     @Override
     public Item getResult() {
-        return Items.AIR;
+	return Items.AIR;
     }
 
     @Override
     public T makeRecipe() {
-        List<FluidIngredient> ings = new ArrayList<>();
-        for (FluidStack fluid : fluidIngredients) {
-            ings.add(new FluidIngredient(fluid));
-        }
-        for (Pair<TagKey<Fluid>, Integer> pair : tagFluidIngredients) {
-            ings.add(new FluidIngredient(pair.getFirst(), pair.getSecond()));
-        }
-        return factory.create(group, ings, output, experience, processTime, usagePerTick, itemBiproducts, fluidBiproducts, gasBiproducts);
+	List<FluidIngredient> ings = new ArrayList<>();
+	for (FluidStack fluid : fluidIngredients) {
+	    ings.add(new FluidIngredient(fluid));
+	}
+	for (Pair<TagKey<Fluid>, Integer> pair : tagFluidIngredients) {
+	    ings.add(new FluidIngredient(pair.getFirst(), pair.getSecond()));
+	}
+	return factory.create(group, ings, output, experience, processTime, usagePerTick, itemBiproducts,
+		fluidBiproducts, gasBiproducts);
     }
 
     public Fluid2FluidBuilder<T> addFluidStackInput(FluidStack stack) {
-        fluidIngredients.add(stack);
-        return this;
+	fluidIngredients.add(stack);
+	return this;
     }
 
     public Fluid2FluidBuilder<T> addFluidTagInput(TagKey<Fluid> tag, int count) {
-        tagFluidIngredients.add(Pair.of(tag, count));
-        return this;
+	tagFluidIngredients.add(Pair.of(tag, count));
+	return this;
     }
 
 }

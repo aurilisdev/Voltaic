@@ -10,16 +10,16 @@ import voltaic.Voltaic;
 
 public class VoltaicDamageTypes {
 
-	public static final ResourceKey<DamageType> ELECTRICITY = create("electricity");
-	public static final ResourceKey<DamageType> RADIATION = create("radiation");
+    public static final ResourceKey<DamageType> ELECTRICITY = create("electricity");
+    public static final ResourceKey<DamageType> RADIATION = create("radiation");
 
-	public static ResourceKey<DamageType> create(String name) {
-		return ResourceKey.create(Registries.DAMAGE_TYPE, Voltaic.rl(name));
-	}
+    public static ResourceKey<DamageType> create(String name) {
+	return ResourceKey.create(Registries.DAMAGE_TYPE, Voltaic.rl(name));
+    }
 
-	public static void registerTypes(BootstrapContext<DamageType> context) {
-		context.register(ELECTRICITY, new DamageType("electricity", DamageScaling.NEVER, 0, DamageEffects.HURT));
-		context.register(RADIATION, new DamageType("radiation", DamageScaling.NEVER, 0.1F, DamageEffects.HURT));
-	}
+    public static void registerTypes(BootstrapContext<DamageType> context) {
+	context.register(ELECTRICITY, new DamageType("electricity", DamageScaling.NEVER, 0, DamageEffects.HURT));
+	context.register(RADIATION, new DamageType("radiation", DamageScaling.NEVER, 0.1F, DamageEffects.HURT));
+    }
 
 }

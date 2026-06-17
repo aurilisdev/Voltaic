@@ -10,40 +10,38 @@ import voltaic.common.block.connect.EnumConnectType;
 
 public class GeneratedBlockStateCableModel implements IGeneratedBlockState {
 
-	private final ModelFile none;
-	private final ModelFile wire;
-	private final ModelFile inventory;
+    private final ModelFile none;
+    private final ModelFile wire;
+    private final ModelFile inventory;
 
-	public GeneratedBlockStateCableModel(ModelFile none, ModelFile wire, ModelFile inventory) {
+    public GeneratedBlockStateCableModel(ModelFile none, ModelFile wire, ModelFile inventory) {
 
-		this.none = none;
-		this.wire = wire;
-		this.inventory = inventory;
+	this.none = none;
+	this.wire = wire;
+	this.inventory = inventory;
 
-	}
+    }
 
-	@Override
-	public JsonObject toJson() {
-		JsonObject json = new JsonObject();
+    @Override
+    public JsonObject toJson() {
+	JsonObject json = new JsonObject();
 
-		json.addProperty("loader", Voltaic.ID + ":" + CableModelLoader.ID);
+	json.addProperty("loader", Voltaic.ID + ":" + CableModelLoader.ID);
 
-		JsonObject noneElement = new JsonObject();
-		noneElement.addProperty("parent", none.getLocation().toString());
-		
-		
-		
-		json.add(EnumConnectType.NONE.toString(), noneElement);
+	JsonObject noneElement = new JsonObject();
+	noneElement.addProperty("parent", none.getLocation().toString());
 
-		JsonObject wireElement = new JsonObject();
-		wireElement.addProperty("parent", wire.getLocation().toString());
-		json.add(EnumConnectType.WIRE.toString(), wireElement);
+	json.add(EnumConnectType.NONE.toString(), noneElement);
 
-		JsonObject inventoryElement = new JsonObject();
-		inventoryElement.addProperty("parent", inventory.getLocation().toString());
-		json.add(EnumConnectType.INVENTORY.toString(), inventoryElement);
+	JsonObject wireElement = new JsonObject();
+	wireElement.addProperty("parent", wire.getLocation().toString());
+	json.add(EnumConnectType.WIRE.toString(), wireElement);
 
-		return json;
-	}
+	JsonObject inventoryElement = new JsonObject();
+	inventoryElement.addProperty("parent", inventory.getLocation().toString());
+	json.add(EnumConnectType.INVENTORY.toString(), inventoryElement);
+
+	return json;
+    }
 
 }

@@ -9,16 +9,16 @@ import voltaic.prefab.screen.component.types.ScreenComponentSlot.SlotType;
 
 public class SlotCharging extends SlotGeneric {
 
-	public SlotCharging(Container inventory, int index, int x, int y) {
-		super(SlotType.NORMAL, IconType.ENERGY_DARK, inventory, index, x, y);
-	}
+    public SlotCharging(Container inventory, int index, int x, int y) {
+	super(SlotType.NORMAL, IconType.ENERGY_DARK, inventory, index, x, y);
+    }
 
-	@Override
-	public boolean mayPlace(ItemStack stack) {
-		if (super.mayPlace(stack) && stack.getItem() instanceof IItemElectric) {
-			return true;
-		}
-		return false;
+    @Override
+    public boolean mayPlace(ItemStack stack) {
+	if (super.mayPlace(stack) && stack.getItem() instanceof IItemElectric) {
+	    return true;
 	}
+	return false;
+    }
 
 }

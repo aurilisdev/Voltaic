@@ -22,7 +22,8 @@ import net.minecraft.world.phys.AABB;
 import voltaic.prefab.tile.GenericTile;
 
 /**
- * A basic abstract class for BlockEntityRenderer that allows for the storage of utility methods amongst other things
+ * A basic abstract class for BlockEntityRenderer that allows for the storage of
+ * utility methods amongst other things
  * 
  * @author skip999
  *
@@ -30,39 +31,42 @@ import voltaic.prefab.tile.GenericTile;
  */
 public abstract class AbstractTileRenderer<T extends GenericTile> implements BlockEntityRenderer<T> {
 
-	protected BlockEntityRendererProvider.Context context;
-	protected final Random random;
+    protected BlockEntityRendererProvider.Context context;
+    protected final Random random;
 
-	public AbstractTileRenderer(BlockEntityRendererProvider.Context context) {
-		this.context = context;
-		random = new Random();
-	}
+    public AbstractTileRenderer(BlockEntityRendererProvider.Context context) {
+	this.context = context;
+	random = new Random();
+    }
 
-	public long getGameTime() {
-		return minecraft().level.getGameTime();
-	}
+    public long getGameTime() {
+	return minecraft().level.getGameTime();
+    }
 
-	public Minecraft minecraft() {
-		return Minecraft.getInstance();
-	}
+    public Minecraft minecraft() {
+	return Minecraft.getInstance();
+    }
 
-	public ClientLevel level() {
-		return minecraft().level;
-	}
+    public ClientLevel level() {
+	return minecraft().level;
+    }
 
-	public BakedModel getModel(ModelResourceLocation model) {
-		return Minecraft.getInstance().getModelManager().getModel(model);
-	}
+    public BakedModel getModel(ModelResourceLocation model) {
+	return Minecraft.getInstance().getModelManager().getModel(model);
+    }
 
-	public void renderItem(ItemStack stack, ItemDisplayContext context, int light, int overlay, PoseStack poseStack, MultiBufferSource bufferSource, @Nullable Level world, int seed) {
-		Minecraft.getInstance().getItemRenderer().renderStatic(stack, context, light, overlay, poseStack, bufferSource, world, seed);
-	}
+    public void renderItem(ItemStack stack, ItemDisplayContext context, int light, int overlay, PoseStack poseStack,
+	    MultiBufferSource bufferSource, @Nullable Level world, int seed) {
+	Minecraft.getInstance().getItemRenderer().renderStatic(stack, context, light, overlay, poseStack, bufferSource,
+		world, seed);
+    }
 
-	@Override
-	public abstract void render(@NotNull T tile, float partialTick, @NotNull PoseStack poseStack, @NotNull MultiBufferSource bufferSource, int packedLight, int packedOverlay);
+    @Override
+    public abstract void render(@NotNull T tile, float partialTick, @NotNull PoseStack poseStack,
+	    @NotNull MultiBufferSource bufferSource, int packedLight, int packedOverlay);
 
-	public AABB aabb(double x0, double y0, double z0, double x1, double y1, double z1) {
-		return new AABB(x0 / 16.0F, y0 / 16.0F, z0 / 16.0F, x1 / 16.0F, y1 / 16.0F, z1 / 16.0F);
-	}
+    public AABB aabb(double x0, double y0, double z0, double x1, double y1, double z1) {
+	return new AABB(x0 / 16.0F, y0 / 16.0F, z0 / 16.0F, x1 / 16.0F, y1 / 16.0F, z1 / 16.0F);
+    }
 
 }

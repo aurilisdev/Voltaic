@@ -25,33 +25,35 @@ import voltaic.Voltaic;
 public record Multiblock(Map<Direction, List<MultiblockSlaveNode>> nodes) {
 
     public static final String FOLDER = "multiblock";
-    public static final ResourceKey<Registry<Multiblock>> REGISTRY_KEY = ResourceKey.createRegistryKey(Voltaic.rl(FOLDER));
+    public static final ResourceKey<Registry<Multiblock>> REGISTRY_KEY = ResourceKey
+	    .createRegistryKey(Voltaic.rl(FOLDER));
 
     public static final String MEMBER_FIELD = "members";
 
     public static final Codec<Multiblock> CODEC = RecordCodecBuilder.create(instance ->
 
-            instance.group(
+    instance.group(
 
-                    Codec.unboundedMap(Direction.CODEC, MultiblockSlaveNode.CODEC.listOf()).fieldOf(MEMBER_FIELD).forGetter(Multiblock::nodes)
+	    Codec.unboundedMap(Direction.CODEC, MultiblockSlaveNode.CODEC.listOf()).fieldOf(MEMBER_FIELD)
+		    .forGetter(Multiblock::nodes)
 
-            ).apply(instance, Multiblock::new));
+    ).apply(instance, Multiblock::new));
 
     public static List<MultiblockSlaveNode> getNodes(Level world, ResourceKey<Multiblock> id, Direction facing) {
-        return world.registryAccess().lookupOrThrow(Multiblock.REGISTRY_KEY).getOrThrow(id).value().nodes().get(facing);
+	return world.registryAccess().lookupOrThrow(Multiblock.REGISTRY_KEY).getOrThrow(id).value().nodes().get(facing);
     }
 
     public static ResourceKey makeKey(ResourceLocation id) {
-        return ResourceKey.create(REGISTRY_KEY, id);
+	return ResourceKey.create(REGISTRY_KEY, id);
     }
 
     @EventBusSubscriber(modid = Voltaic.ID, bus = EventBusSubscriber.Bus.MOD)
     private static final class MultiblockRegistry {
 
-        @SubscribeEvent
-        public static void registerMultiblocks(DataPackRegistryEvent.NewRegistry event) {
-            event.dataPackRegistry(REGISTRY_KEY, CODEC, CODEC);
-        }
+	@SubscribeEvent
+	public static void registerMultiblocks(DataPackRegistryEvent.NewRegistry event) {
+	    event.dataPackRegistry(REGISTRY_KEY, CODEC, CODEC);
+	}
 
     }
 

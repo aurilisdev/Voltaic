@@ -8,12 +8,12 @@ import voltaic.registers.VoltaicSounds;
 
 public class VoltaicSoundProvider extends BaseSoundProvider {
     public VoltaicSoundProvider(PackOutput output, ExistingFileHelper helper) {
-        super(output, helper, Voltaic.ID);
+	super(output, helper, Voltaic.ID);
     }
 
     @Override
     public void registerSounds() {
-        add(VoltaicSounds.SOUND_BATTERY_SWAP);
-        add(VoltaicSounds.SOUND_PRESSURERELEASE);
+	add(VoltaicSounds.SOUND_BATTERY_SWAP);
+	add(VoltaicSounds.SOUND_PRESSURERELEASE);
     }
 }

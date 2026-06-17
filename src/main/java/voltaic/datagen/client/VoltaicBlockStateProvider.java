@@ -9,12 +9,12 @@ import voltaic.registers.VoltaicBlocks;
 public class VoltaicBlockStateProvider extends BaseBlockstateProvider {
 
     public VoltaicBlockStateProvider(PackOutput output, ExistingFileHelper exFileHelper) {
-        super(output, exFileHelper, Voltaic.ID);
+	super(output, exFileHelper, Voltaic.ID);
     }
 
     @Override
     protected void registerStatesAndModels() {
-        airBlock(VoltaicBlocks.BLOCK_MULTISUBNODE, "block/multisubnode", false);
-        slaveNode(VoltaicBlocks.BLOCK_MULTIBLOCK_SLAVE.get(), "block/multisubnode");
+	airBlock(VoltaicBlocks.BLOCK_MULTISUBNODE, "block/multisubnode", false);
+	slaveNode(VoltaicBlocks.BLOCK_MULTIBLOCK_SLAVE.get(), "block/multisubnode");
     }
 }

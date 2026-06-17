@@ -17,7 +17,8 @@ import net.minecraft.world.item.crafting.SmeltingRecipe;
 import net.minecraft.world.item.crafting.SmokingRecipe;
 import net.neoforged.neoforge.common.conditions.ICondition;
 
-public abstract class CustomCookingRecipe<T extends CustomCookingRecipe<T, A>, A extends AbstractCookingRecipe> implements RecipeBuilder {
+public abstract class CustomCookingRecipe<T extends CustomCookingRecipe<T, A>, A extends AbstractCookingRecipe>
+	implements RecipeBuilder {
 
     private final String group;
     private final ResourceLocation id;
@@ -32,120 +33,126 @@ public abstract class CustomCookingRecipe<T extends CustomCookingRecipe<T, A>, A
     private ICondition[] conditions;
 
     private CustomCookingRecipe(ResourceLocation id, String group, Item result, float experience, int cookingTime) {
-        this.id = id;
-        this.group = group;
-        this.category = CookingBookCategory.MISC;
-        this.result = result;
-        this.experience = experience;
-        this.cookingTime = cookingTime;
+	this.id = id;
+	this.group = group;
+	this.category = CookingBookCategory.MISC;
+	this.result = result;
+	this.experience = experience;
+	this.cookingTime = cookingTime;
     }
 
     @Override
     public RecipeBuilder unlockedBy(String pName, Criterion<?> pCriterion) {
-        return this;
+	return this;
     }
 
     @Override
     public RecipeBuilder group(String pGroupName) {
-        return this;
+	return this;
     }
 
     @Override
     public Item getResult() {
-        return result;
+	return result;
     }
 
     @Override
     public void save(RecipeOutput output, ResourceLocation altName) {
-        if (conditions != null) {
-            output.withConditions(conditions).accept(id, makeRecipe(), null);
-        } else {
-            output.accept(id, makeRecipe(), null);
-        }
+	if (conditions != null) {
+	    output.withConditions(conditions).accept(id, makeRecipe(), null);
+	} else {
+	    output.accept(id, makeRecipe(), null);
+	}
     }
 
     @Override
     public void save(RecipeOutput output) {
-        this.save(output, id);
+	this.save(output, id);
     }
 
     @Override
     public void save(RecipeOutput output, String name) {
-        this.save(output, id);
+	this.save(output, id);
     }
 
     public T input(Item item) {
-        return input(new ItemStack(item));
+	return input(new ItemStack(item));
     }
 
     public T input(ItemStack item) {
-        return input(Ingredient.of(item));
+	return input(Ingredient.of(item));
     }
 
     public T input(TagKey<Item> tag) {
-        return input(Ingredient.of(tag));
+	return input(Ingredient.of(tag));
     }
 
     public T input(Ingredient item) {
-        ingredient = item;
-        return (T) this;
+	ingredient = item;
+	return (T) this;
     }
 
     public T addConditions(ICondition... conditions) {
-        this.conditions = conditions;
-        return (T) this;
+	this.conditions = conditions;
+	return (T) this;
     }
 
     public abstract A makeRecipe();
 
-    public static SmeltingBuilder smeltingRecipe(ResourceLocation id, String group, Item result, float experience, int smeltTime) {
-        return new SmeltingBuilder(id, group, result, experience, smeltTime);
+    public static SmeltingBuilder smeltingRecipe(ResourceLocation id, String group, Item result, float experience,
+	    int smeltTime) {
+	return new SmeltingBuilder(id, group, result, experience, smeltTime);
     }
 
-    public static SmokingBuilder smokingRecipe(ResourceLocation id, String group, Item result, float experience, int smeltTime) {
-        return new SmokingBuilder(id, group, result, experience, smeltTime);
+    public static SmokingBuilder smokingRecipe(ResourceLocation id, String group, Item result, float experience,
+	    int smeltTime) {
+	return new SmokingBuilder(id, group, result, experience, smeltTime);
     }
 
-    public static BlastingBuilder blastingRecipe(ResourceLocation id, String group, Item result, float experience, int smeltTime) {
-        return new BlastingBuilder(id, group, result, experience, smeltTime);
+    public static BlastingBuilder blastingRecipe(ResourceLocation id, String group, Item result, float experience,
+	    int smeltTime) {
+	return new BlastingBuilder(id, group, result, experience, smeltTime);
     }
 
     public static class SmeltingBuilder extends CustomCookingRecipe<SmeltingBuilder, SmeltingRecipe> {
 
-        private SmeltingBuilder(ResourceLocation id, String group, Item result, float experience, int smeltTime) {
-            super(id, group, result, experience, smeltTime);
-        }
+	private SmeltingBuilder(ResourceLocation id, String group, Item result, float experience, int smeltTime) {
+	    super(id, group, result, experience, smeltTime);
+	}
 
-        @Override
-        public SmeltingRecipe makeRecipe() {
-            return new SmeltingRecipe(super.group, super.category, super.ingredient, new ItemStack(super.result), super.experience, super.cookingTime);
-        }
+	@Override
+	public SmeltingRecipe makeRecipe() {
+	    return new SmeltingRecipe(super.group, super.category, super.ingredient, new ItemStack(super.result),
+		    super.experience, super.cookingTime);
+	}
 
     }
 
     public static class SmokingBuilder extends CustomCookingRecipe<SmokingBuilder, SmokingRecipe> {
 
-        private SmokingBuilder(ResourceLocation id, String group, Item result, float experience, int smeltTime) {
-            super(id, group, result, experience, smeltTime);
-        }
+	private SmokingBuilder(ResourceLocation id, String group, Item result, float experience, int smeltTime) {
+	    super(id, group, result, experience, smeltTime);
+	}
 
-        @Override
-        public SmokingRecipe makeRecipe() {
-            return new SmokingRecipe(super.group, super.category, super.ingredient, new ItemStack(super.result), super.experience, super.cookingTime);
-        }
+	@Override
+	public SmokingRecipe makeRecipe() {
+	    return new SmokingRecipe(super.group, super.category, super.ingredient, new ItemStack(super.result),
+		    super.experience, super.cookingTime);
+	}
 
     }
 
     public static class BlastingBuilder extends CustomCookingRecipe<BlastingBuilder, BlastingRecipe> {
 
-        private BlastingBuilder(ResourceLocation id, String group, Item result, float experience, int smeltTime) {
-            super(id, group, result, experience, smeltTime);
-        }
+	private BlastingBuilder(ResourceLocation id, String group, Item result, float experience, int smeltTime) {
+	    super(id, group, result, experience, smeltTime);
+	}
 
-        @Override
-        public BlastingRecipe makeRecipe() {
-            return new BlastingRecipe(super.group, super.category, super.ingredient, new ItemStack(super.result), super.experience, super.cookingTime);
-        }
+	@Override
+	public BlastingRecipe makeRecipe() {
+	    return new BlastingRecipe(super.group, super.category, super.ingredient, new ItemStack(super.result),
+		    super.experience, super.cookingTime);
+	}
 
     }
 

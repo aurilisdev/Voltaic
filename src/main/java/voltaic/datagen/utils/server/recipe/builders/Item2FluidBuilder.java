@@ -23,37 +23,39 @@ public class Item2FluidBuilder<T extends Item2FluidRecipe> extends BaseRecipeBui
     private List<ItemStack> itemIngredients = new ArrayList<>();
     private List<Pair<TagKey<Item>, Integer>> tagItemIngredients = new ArrayList<>();
 
-    public Item2FluidBuilder(Item2FluidRecipe.Factory<T> factory, FluidStack output, RecipeCategory category, String parent, String name, String group, double experience, int processTime, double usagePerTick) {
-        super(category, parent, name, group, experience, processTime, usagePerTick);
-        this.factory = factory;
-        this.output = output;
+    public Item2FluidBuilder(Item2FluidRecipe.Factory<T> factory, FluidStack output, RecipeCategory category,
+	    String parent, String name, String group, double experience, int processTime, double usagePerTick) {
+	super(category, parent, name, group, experience, processTime, usagePerTick);
+	this.factory = factory;
+	this.output = output;
     }
 
     @Override
     public Item getResult() {
-        return Items.AIR;
+	return Items.AIR;
     }
 
     @Override
     public T makeRecipe() {
-        List<CountableIngredient> itemIngs = new ArrayList<>();
-        for (ItemStack item : itemIngredients) {
-            itemIngs.add(new CountableIngredient(Ingredient.of(item), item.getCount()));
-        }
-        for (Pair<TagKey<Item>, Integer> pair : tagItemIngredients) {
-            itemIngs.add(new CountableIngredient(Ingredient.of(pair.getFirst()), pair.getSecond()));
-        }
-        return factory.create(group, itemIngs, output, experience, processTime, usagePerTick, itemBiproducts, fluidBiproducts, gasBiproducts);
+	List<CountableIngredient> itemIngs = new ArrayList<>();
+	for (ItemStack item : itemIngredients) {
+	    itemIngs.add(new CountableIngredient(Ingredient.of(item), item.getCount()));
+	}
+	for (Pair<TagKey<Item>, Integer> pair : tagItemIngredients) {
+	    itemIngs.add(new CountableIngredient(Ingredient.of(pair.getFirst()), pair.getSecond()));
+	}
+	return factory.create(group, itemIngs, output, experience, processTime, usagePerTick, itemBiproducts,
+		fluidBiproducts, gasBiproducts);
     }
 
     public Item2FluidBuilder<T> addItemStackInput(ItemStack stack) {
-        itemIngredients.add(stack);
-        return this;
+	itemIngredients.add(stack);
+	return this;
     }
 
     public Item2FluidBuilder<T> addItemTagInput(TagKey<Item> tag, int count) {
-        tagItemIngredients.add(Pair.of(tag, count));
-        return this;
+	tagItemIngredients.add(Pair.of(tag, count));
+	return this;
     }
 
 }

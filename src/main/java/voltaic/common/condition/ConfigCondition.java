@@ -8,25 +8,25 @@ import voltaic.common.settings.VoltaicConfig;
 public class ConfigCondition implements ICondition {
 
     public static final ConfigCondition INSTANCE = new ConfigCondition();
-	
-	public static final MapCodec<ConfigCondition> CODEC = MapCodec.unit(INSTANCE).stable();
 
-	public ConfigCondition() {
-	    
-	}
+    public static final MapCodec<ConfigCondition> CODEC = MapCodec.unit(INSTANCE).stable();
 
-	@Override
-	public boolean test(IContext context) {
-		return VoltaicConfig.INSTANCE.DISPENSE_GUIDEBOOK.isTrue();
-	}
+    public ConfigCondition() {
+
+    }
+
+    @Override
+    public boolean test(IContext context) {
+	return VoltaicConfig.INSTANCE.DISPENSE_GUIDEBOOK.isTrue();
+    }
 
     @Override
     public MapCodec<? extends ICondition> codec() {
-        return CODEC;
+	return CODEC;
     }
-    
+
     @Override
     public String toString() {
-        return "Guidebook toggle config";
+	return "Guidebook toggle config";
     }
 }

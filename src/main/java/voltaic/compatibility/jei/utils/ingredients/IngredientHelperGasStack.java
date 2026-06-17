@@ -11,34 +11,34 @@ import voltaic.registers.VoltaicGases;
 
 public class IngredientHelperGasStack implements IIngredientHelper<GasStack> {
 
-	@Override
-	public IIngredientType<GasStack> getIngredientType() {
-		return VoltaicJeiTypes.GAS_STACK;
-	}
+    @Override
+    public IIngredientType<GasStack> getIngredientType() {
+	return VoltaicJeiTypes.GAS_STACK;
+    }
 
-	@Override
-	public String getDisplayName(GasStack ingredient) {
-		return ingredient.getGas().getDescription().getString();
-	}
+    @Override
+    public String getDisplayName(GasStack ingredient) {
+	return ingredient.getGas().getDescription().getString();
+    }
 
-	@Override
-	public String getUniqueId(GasStack ingredient, UidContext context) {
-		return ingredient.getGas().getDescription().getString();
-	}
+    @Override
+    public String getUniqueId(GasStack ingredient, UidContext context) {
+	return ingredient.getGas().getDescription().getString();
+    }
 
-	@Override
-	public ResourceLocation getResourceLocation(GasStack ingredient) {
-		return VoltaicGases.GAS_REGISTRY.getKey(ingredient.getGas());
-	}
+    @Override
+    public ResourceLocation getResourceLocation(GasStack ingredient) {
+	return VoltaicGases.GAS_REGISTRY.getKey(ingredient.getGas());
+    }
 
-	@Override
-	public GasStack copyIngredient(GasStack ingredient) {
-		return ingredient.copy();
-	}
+    @Override
+    public GasStack copyIngredient(GasStack ingredient) {
+	return ingredient.copy();
+    }
 
-	@Override
-	public String getErrorInfo(@Nullable GasStack ingredient) {
-		return ingredient == null ? "null" : ingredient.toString();
-	}
+    @Override
+    public String getErrorInfo(@Nullable GasStack ingredient) {
+	return ingredient == null ? "null" : ingredient.toString();
+    }
 
 }

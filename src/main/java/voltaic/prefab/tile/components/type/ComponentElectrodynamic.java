@@ -35,7 +35,8 @@ public class ComponentElectrodynamic implements IComponent, ICapabilityElectrody
 
     protected BiFunction<TransferPack, Boolean, TransferPack> functionReceivePower = ICapabilityElectrodynamic.super::receivePower;
     protected BiFunction<TransferPack, Boolean, TransferPack> functionExtractPower = ICapabilityElectrodynamic.super::extractPower;
-    protected BiFunction<LoadProfile, Direction, TransferPack> connectedLoadFunction = (profile, dir) -> TransferPack.joulesVoltage(getMaxJoulesStored() - getJoulesStored(), getVoltage());
+    protected BiFunction<LoadProfile, Direction, TransferPack> connectedLoadFunction = (profile, dir) -> TransferPack
+	    .joulesVoltage(getMaxJoulesStored() - getJoulesStored(), getVoltage());
 
     protected Supplier<Double> ampacityFunction = ICapabilityElectrodynamic.super::getAmpacity;
 
@@ -56,7 +57,8 @@ public class ComponentElectrodynamic implements IComponent, ICapabilityElectrody
 
     private boolean isSided = false;
 
-    private ICapabilityElectrodynamic[] sidedOptionals = new ICapabilityElectrodynamic[6]; // Down Up North South West East
+    private ICapabilityElectrodynamic[] sidedOptionals = new ICapabilityElectrodynamic[6]; // Down Up North South West
+											   // East
 
     @Nullable
     private ICapabilityElectrodynamic inputOptional = null;
@@ -65,441 +67,447 @@ public class ComponentElectrodynamic implements IComponent, ICapabilityElectrody
 
     public ComponentElectrodynamic(GenericTile source, boolean isProducer, boolean isReceiver) {
 
-        producesEnergy = isProducer;
-        acceptsEnergy = isReceiver;
+	producesEnergy = isProducer;
+	acceptsEnergy = isReceiver;
 
-        holder(source);
-        voltage = source.property(new SingleProperty<>(PropertyTypes.DOUBLE, "voltage", VoltaicCapabilities.DEFAULT_VOLTAGE));
-        maxJoules = source.property(new SingleProperty<>(PropertyTypes.DOUBLE, "maxJoules", 0.0));
-        joules = source.property(new SingleProperty<>(PropertyTypes.DOUBLE, "joules", 0.0));
+	holder(source);
+	voltage = source
+		.property(new SingleProperty<>(PropertyTypes.DOUBLE, "voltage", VoltaicCapabilities.DEFAULT_VOLTAGE));
+	maxJoules = source.property(new SingleProperty<>(PropertyTypes.DOUBLE, "maxJoules", 0.0));
+	joules = source.property(new SingleProperty<>(PropertyTypes.DOUBLE, "joules", 0.0));
     }
 
     @Override
     public void holder(GenericTile holder) {
-        this.holder = holder;
+	this.holder = holder;
     }
 
     @Override
     public GenericTile getHolder() {
-        return holder;
+	return holder;
     }
 
     @Override
     public double getVoltage() {
-        return voltage.getValue();
+	return voltage.getValue();
     }
 
     @Override
     public double getMinimumVoltage() {
-        return minimumVoltageFunction.get();
+	return minimumVoltageFunction.get();
     }
 
     @Override
     public double getMaximumVoltage() {
-        return maximumVoltageFunction.get();
+	return maximumVoltageFunction.get();
     }
 
     @Override
     public boolean isEnergyProducer() {
-        return producesEnergy;
+	return producesEnergy;
     }
 
     @Override
     public boolean isEnergyReceiver() {
-        return acceptsEnergy;
+	return acceptsEnergy;
     }
 
     @Override
     @Deprecated(forRemoval = false, since = "This is only if you need to force the internal joules count and is overriden in classes where you can do this.")
     public void setJoulesStored(double joules) {
-        joules(joules);
+	joules(joules);
     }
 
     public ICapabilityElectrodynamic getCapability(Direction side, CapabilityInputType type) {
-        if (!isSided) {
-            return this;
-        }
-        if (side == null) {
-            return null;
-        }
+	if (!isSided) {
+	    return this;
+	}
+	if (side == null) {
+	    return null;
+	}
 
-        return sidedOptionals[side.ordinal()];
+	return sidedOptionals[side.ordinal()];
     }
 
     @Override
     public void refreshIfUpdate(BlockState oldState, BlockState newState) {
-        if (isSided && oldState.hasProperty(VoltaicBlockStates.FACING) && newState.hasProperty(VoltaicBlockStates.FACING) && oldState.getValue(VoltaicBlockStates.FACING) != newState.getValue(VoltaicBlockStates.FACING)) {
-            defineOptionals(newState.getValue(VoltaicBlockStates.FACING));
-        }
+	if (isSided && oldState.hasProperty(VoltaicBlockStates.FACING)
+		&& newState.hasProperty(VoltaicBlockStates.FACING)
+		&& oldState.getValue(VoltaicBlockStates.FACING) != newState.getValue(VoltaicBlockStates.FACING)) {
+	    defineOptionals(newState.getValue(VoltaicBlockStates.FACING));
+	}
     }
 
     @Override
     public void refresh() {
 
-        defineOptionals(holder.getFacing());
+	defineOptionals(holder.getFacing());
 
     }
 
     private void defineOptionals(Direction facing) {
 
-        holder.getLevel().invalidateCapabilities(holder.getBlockPos());
+	holder.getLevel().invalidateCapabilities(holder.getBlockPos());
 
-        sidedOptionals = new ICapabilityElectrodynamic[6];
-        
-        inputOptional = null;
-        
-        outputOptional = null;
+	sidedOptionals = new ICapabilityElectrodynamic[6];
 
-        if (isSided) {
+	inputOptional = null;
 
-            // Input
+	outputOptional = null;
 
-            if (!relativeInputDirections.isEmpty()) {
-                inputOptional = new InputCapabilityDispatcher(this);
+	if (isSided) {
 
-                for (Direction dir : relativeInputDirections) {
-                    sidedOptionals[BlockEntityUtils.getRelativeSide(facing, dir).ordinal()] = inputOptional;
-                }
-            }
+	    // Input
 
-            if (!relativeOutputDirections.isEmpty()) {
-                outputOptional = new OutputCapabilityDispatcher(this);
+	    if (!relativeInputDirections.isEmpty()) {
+		inputOptional = new InputCapabilityDispatcher(this);
 
-                for (Direction dir : relativeOutputDirections) {
-                    sidedOptionals[BlockEntityUtils.getRelativeSide(facing, dir).ordinal()] = outputOptional;
-                }
-            }
+		for (Direction dir : relativeInputDirections) {
+		    sidedOptionals[BlockEntityUtils.getRelativeSide(facing, dir).ordinal()] = inputOptional;
+		}
+	    }
 
-        }
+	    if (!relativeOutputDirections.isEmpty()) {
+		outputOptional = new OutputCapabilityDispatcher(this);
+
+		for (Direction dir : relativeOutputDirections) {
+		    sidedOptionals[BlockEntityUtils.getRelativeSide(facing, dir).ordinal()] = outputOptional;
+		}
+	    }
+
+	}
     }
 
     @Override
     public TransferPack extractPower(TransferPack transfer, boolean debug) {
-        if (isEnergyProducer()) {
-            return functionExtractPower.apply(transfer, debug);
-        }
-        return TransferPack.EMPTY;
+	if (isEnergyProducer()) {
+	    return functionExtractPower.apply(transfer, debug);
+	}
+	return TransferPack.EMPTY;
     }
 
     @Override
     public TransferPack receivePower(TransferPack transfer, boolean debug) {
-        if (isEnergyReceiver()) {
-            return functionReceivePower.apply(transfer, debug);
-        }
-        return TransferPack.EMPTY;
+	if (isEnergyReceiver()) {
+	    return functionReceivePower.apply(transfer, debug);
+	}
+	return TransferPack.EMPTY;
     }
 
     @Override
     public TransferPack getConnectedLoad(LoadProfile loadProfile, Direction dir) {
-        if (isEnergyReceiver()) {
-            return connectedLoadFunction.apply(loadProfile, dir);
-        }
-        return TransferPack.EMPTY;
+	if (isEnergyReceiver()) {
+	    return connectedLoadFunction.apply(loadProfile, dir);
+	}
+	return TransferPack.EMPTY;
     }
 
     public ComponentElectrodynamic joules(double joules) {
-        if (setJoules != null) {
-            setJoules.accept(joules);
-        } else {
-            this.joules.setValue(Math.max(0, Math.min(maxJoules.getValue(), joules)));
-        }
-        if (joules != 0) {
-            onChange();
-        }
-        return this;
+	if (setJoules != null) {
+	    setJoules.accept(joules);
+	} else {
+	    this.joules.setValue(Math.max(0, Math.min(maxJoules.getValue(), joules)));
+	}
+	if (joules != 0) {
+	    onChange();
+	}
+	return this;
     }
 
     public ComponentElectrodynamic maxJoules(double maxJoules) {
-        this.maxJoules.setValue(Math.max(maxJoules, 0));
-        if (joules.getValue() > maxJoules) {
-            joules.setValue(maxJoules);
-        }
-        return this;
+	this.maxJoules.setValue(Math.max(maxJoules, 0));
+	if (joules.getValue() > maxJoules) {
+	    joules.setValue(maxJoules);
+	}
+	return this;
     }
 
     public ComponentElectrodynamic setInputDirections(BlockEntityUtils.MachineDirection... dirs) {
-        isSided = true;
-        for (BlockEntityUtils.MachineDirection dir : dirs) {
-            relativeInputDirections.add(dir.mappedDir);
-        }
-        return this;
+	isSided = true;
+	for (BlockEntityUtils.MachineDirection dir : dirs) {
+	    relativeInputDirections.add(dir.mappedDir);
+	}
+	return this;
     }
 
     public ComponentElectrodynamic setOutputDirections(BlockEntityUtils.MachineDirection... dirs) {
-        isSided = true;
-        for (BlockEntityUtils.MachineDirection dir : dirs) {
-            relativeOutputDirections.add(dir.mappedDir);
-        }
-        return this;
+	isSided = true;
+	for (BlockEntityUtils.MachineDirection dir : dirs) {
+	    relativeOutputDirections.add(dir.mappedDir);
+	}
+	return this;
     }
 
     public ComponentElectrodynamic receivePower(BiFunction<TransferPack, Boolean, TransferPack> receivePower) {
-        functionReceivePower = receivePower;
-        return this;
+	functionReceivePower = receivePower;
+	return this;
     }
 
     public ComponentElectrodynamic extractPower(BiFunction<TransferPack, Boolean, TransferPack> extractPower) {
-        functionExtractPower = extractPower;
-        return this;
+	functionExtractPower = extractPower;
+	return this;
     }
 
     public ComponentElectrodynamic getConnectedLoad(BiFunction<LoadProfile, Direction, TransferPack> supplier) {
-        this.connectedLoadFunction = supplier;
-        return this;
+	this.connectedLoadFunction = supplier;
+	return this;
     }
 
     public ComponentElectrodynamic getAmpacity(Supplier<Double> supplier) {
-        ampacityFunction = supplier;
-        return this;
+	ampacityFunction = supplier;
+	return this;
     }
 
     public ComponentElectrodynamic getMinimumVoltage(Supplier<Double> supplier) {
-        minimumVoltageFunction = supplier;
-        return this;
+	minimumVoltageFunction = supplier;
+	return this;
     }
 
     public ComponentElectrodynamic getMaximumVoltage(Supplier<Double> supplier) {
-        maximumVoltageFunction = supplier;
-        return this;
+	maximumVoltageFunction = supplier;
+	return this;
     }
 
     public ComponentElectrodynamic setJoules(Consumer<Double> setJoules) {
-        this.setJoules = setJoules;
-        return this;
+	this.setJoules = setJoules;
+	return this;
     }
 
     public ComponentElectrodynamic getJoules(DoubleSupplier getJoules) {
-        this.getJoules = getJoules;
-        return this;
+	this.getJoules = getJoules;
+	return this;
     }
 
     public ComponentElectrodynamic voltage(double voltage) {
-        this.voltage.setValue(voltage);
-        return this;
+	this.voltage.setValue(voltage);
+	return this;
     }
 
     public ComponentElectrodynamic drainElectricItem(int slot) {
-        if (holder.hasComponent(IComponentType.Inventory)) {
-            ComponentInventory inventory = holder.getComponent(IComponentType.Inventory);
-            ItemStack stack = inventory.getItem(slot);
-            if (stack.getItem() instanceof IItemElectric electric) {
-                TransferPack pack = functionReceivePower.apply(electric.extractPower(stack, maxJoules.getValue() - joules.getValue(), false), false);
-                if (pack != TransferPack.EMPTY) {
-                    onChange();
-                }
-            }
-        }
-        return this;
+	if (holder.hasComponent(IComponentType.Inventory)) {
+	    ComponentInventory inventory = holder.getComponent(IComponentType.Inventory);
+	    ItemStack stack = inventory.getItem(slot);
+	    if (stack.getItem() instanceof IItemElectric electric) {
+		TransferPack pack = functionReceivePower
+			.apply(electric.extractPower(stack, maxJoules.getValue() - joules.getValue(), false), false);
+		if (pack != TransferPack.EMPTY) {
+		    onChange();
+		}
+	    }
+	}
+	return this;
     }
 
     public ComponentElectrodynamic fillElectricItem(int slot) {
-        if (holder.hasComponent(IComponentType.Inventory)) {
-            ComponentInventory inventory = holder.getComponent(IComponentType.Inventory);
-            ItemStack stack = inventory.getItem(slot);
-            if (stack.getItem() instanceof IItemElectric electric) {
-                functionExtractPower.apply(electric.receivePower(stack, TransferPack.joulesVoltage(joules.getValue(), voltage.getValue()), false), false);
-            }
-        }
-        return this;
+	if (holder.hasComponent(IComponentType.Inventory)) {
+	    ComponentInventory inventory = holder.getComponent(IComponentType.Inventory);
+	    ItemStack stack = inventory.getItem(slot);
+	    if (stack.getItem() instanceof IItemElectric electric) {
+		functionExtractPower.apply(electric.receivePower(stack,
+			TransferPack.joulesVoltage(joules.getValue(), voltage.getValue()), false), false);
+	    }
+	}
+	return this;
     }
 
     @Override
     public double getJoulesStored() {
-        return getJoules.getAsDouble();
+	return getJoules.getAsDouble();
     }
 
     @Override
     public double getMaxJoulesStored() {
-        return maxJoules.getValue();
+	return maxJoules.getValue();
     }
 
     @Override
     public double getAmpacity() {
-        return ampacityFunction.get();
+	return ampacityFunction.get();
     }
 
     @Override
     public void overVoltage(TransferPack transfer) {
-        Level world = holder.getLevel();
-        BlockPos pos = holder.getBlockPos();
-        world.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
-        world.explode(null, pos.getX(), pos.getY(), pos.getZ(), (float) Math.log10(10 + transfer.getVoltage() / getVoltage()), ExplosionInteraction.BLOCK);
+	Level world = holder.getLevel();
+	BlockPos pos = holder.getBlockPos();
+	world.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
+	world.explode(null, pos.getX(), pos.getY(), pos.getZ(),
+		(float) Math.log10(10 + transfer.getVoltage() / getVoltage()), ExplosionInteraction.BLOCK);
     }
 
     @Override
     public IComponentType getType() {
-        return IComponentType.Electrodynamic;
+	return IComponentType.Electrodynamic;
     }
 
     public ComponentElectrodynamic setCapabilityTest(BooleanSupplier test) {
-        hasCapability = test;
-        return this;
+	hasCapability = test;
+	return this;
     }
 
     @Override
     public void onChange() {
-        if (holder != null) {
-            holder.onEnergyChange(this);
-        }
+	if (holder != null) {
+	    holder.onEnergyChange(this);
+	}
     }
 
     private static class InputCapabilityDispatcher implements ICapabilityElectrodynamic {
 
-        private ComponentElectrodynamic parent;
+	private ComponentElectrodynamic parent;
 
-        public InputCapabilityDispatcher(ComponentElectrodynamic parent) {
-            this.parent = parent;
-        }
+	public InputCapabilityDispatcher(ComponentElectrodynamic parent) {
+	    this.parent = parent;
+	}
 
-        @Override
-        public double getJoulesStored() {
-            return parent.getJoulesStored();
-        }
+	@Override
+	public double getJoulesStored() {
+	    return parent.getJoulesStored();
+	}
 
-        @Override
-        public double getMaxJoulesStored() {
-            return parent.getMaxJoulesStored();
-        }
+	@Override
+	public double getMaxJoulesStored() {
+	    return parent.getMaxJoulesStored();
+	}
 
-        @Override
-        public void setJoulesStored(double joules) {
-            parent.setJoulesStored(joules);
-        }
+	@Override
+	public void setJoulesStored(double joules) {
+	    parent.setJoulesStored(joules);
+	}
 
-        @Override
-        public double getVoltage() {
-            return parent.getVoltage();
-        }
+	@Override
+	public double getVoltage() {
+	    return parent.getVoltage();
+	}
 
-        @Override
-        public double getMinimumVoltage() {
-            return parent.getMinimumVoltage();
-        }
+	@Override
+	public double getMinimumVoltage() {
+	    return parent.getMinimumVoltage();
+	}
 
-        @Override
-        public double getMaximumVoltage() {
-            return parent.getMaximumVoltage();
-        }
+	@Override
+	public double getMaximumVoltage() {
+	    return parent.getMaximumVoltage();
+	}
 
-        @Override
-        public double getAmpacity() {
-            return parent.getAmpacity();
-        }
+	@Override
+	public double getAmpacity() {
+	    return parent.getAmpacity();
+	}
 
-        @Override
-        public boolean isEnergyReceiver() {
-            return true;
-        }
+	@Override
+	public boolean isEnergyReceiver() {
+	    return true;
+	}
 
-        @Override
-        public boolean isEnergyProducer() {
-            return false;
-        }
+	@Override
+	public boolean isEnergyProducer() {
+	    return false;
+	}
 
-        @Override
-        public TransferPack extractPower(TransferPack transfer, boolean debug) {
-            return TransferPack.EMPTY;
-        }
+	@Override
+	public TransferPack extractPower(TransferPack transfer, boolean debug) {
+	    return TransferPack.EMPTY;
+	}
 
-        @Override
-        public TransferPack receivePower(TransferPack transfer, boolean debug) {
-            return parent.receivePower(transfer, debug);
-        }
+	@Override
+	public TransferPack receivePower(TransferPack transfer, boolean debug) {
+	    return parent.receivePower(transfer, debug);
+	}
 
-        @Override
-        public void overVoltage(TransferPack transfer) {
-            parent.overVoltage(transfer);
-        }
+	@Override
+	public void overVoltage(TransferPack transfer) {
+	    parent.overVoltage(transfer);
+	}
 
-        @Override
-        public void onChange() {
-            parent.onChange();
-        }
+	@Override
+	public void onChange() {
+	    parent.onChange();
+	}
 
-        @Override
-        public TransferPack getConnectedLoad(LoadProfile loadProfile, Direction dir) {
-            return parent.getConnectedLoad(loadProfile, dir);
-        }
+	@Override
+	public TransferPack getConnectedLoad(LoadProfile loadProfile, Direction dir) {
+	    return parent.getConnectedLoad(loadProfile, dir);
+	}
 
     }
 
     private static class OutputCapabilityDispatcher implements ICapabilityElectrodynamic {
 
-        private ComponentElectrodynamic parent;
+	private ComponentElectrodynamic parent;
 
-        public OutputCapabilityDispatcher(ComponentElectrodynamic parent) {
-            this.parent = parent;
-        }
+	public OutputCapabilityDispatcher(ComponentElectrodynamic parent) {
+	    this.parent = parent;
+	}
 
-        @Override
-        public double getJoulesStored() {
-            return parent.getJoulesStored();
-        }
+	@Override
+	public double getJoulesStored() {
+	    return parent.getJoulesStored();
+	}
 
-        @Override
-        public double getMaxJoulesStored() {
-            return parent.getMaxJoulesStored();
-        }
+	@Override
+	public double getMaxJoulesStored() {
+	    return parent.getMaxJoulesStored();
+	}
 
-        @Override
-        public void setJoulesStored(double joules) {
-            parent.setJoulesStored(joules);
-        }
+	@Override
+	public void setJoulesStored(double joules) {
+	    parent.setJoulesStored(joules);
+	}
 
-        @Override
-        public double getVoltage() {
-            return parent.getVoltage();
-        }
+	@Override
+	public double getVoltage() {
+	    return parent.getVoltage();
+	}
 
-        @Override
-        public double getMinimumVoltage() {
-            return parent.getMinimumVoltage();
-        }
+	@Override
+	public double getMinimumVoltage() {
+	    return parent.getMinimumVoltage();
+	}
 
-        @Override
-        public double getMaximumVoltage() {
-            return parent.getMaximumVoltage();
-        }
+	@Override
+	public double getMaximumVoltage() {
+	    return parent.getMaximumVoltage();
+	}
 
-        @Override
-        public double getAmpacity() {
-            return parent.getAmpacity();
-        }
+	@Override
+	public double getAmpacity() {
+	    return parent.getAmpacity();
+	}
 
-        @Override
-        public boolean isEnergyReceiver() {
-            return false;
-        }
+	@Override
+	public boolean isEnergyReceiver() {
+	    return false;
+	}
 
-        @Override
-        public boolean isEnergyProducer() {
-            return true;
-        }
+	@Override
+	public boolean isEnergyProducer() {
+	    return true;
+	}
 
-        @Override
-        public TransferPack extractPower(TransferPack transfer, boolean debug) {
-            return parent.extractPower(transfer, debug);
-        }
+	@Override
+	public TransferPack extractPower(TransferPack transfer, boolean debug) {
+	    return parent.extractPower(transfer, debug);
+	}
 
-        @Override
-        public TransferPack receivePower(TransferPack transfer, boolean debug) {
-            return TransferPack.EMPTY;
-        }
+	@Override
+	public TransferPack receivePower(TransferPack transfer, boolean debug) {
+	    return TransferPack.EMPTY;
+	}
 
-        @Override
-        public void overVoltage(TransferPack transfer) {
-            parent.overVoltage(transfer);
-        }
+	@Override
+	public void overVoltage(TransferPack transfer) {
+	    parent.overVoltage(transfer);
+	}
 
-        @Override
-        public void onChange() {
-            parent.onChange();
-        }
+	@Override
+	public void onChange() {
+	    parent.onChange();
+	}
 
-        @Override
-        public TransferPack getConnectedLoad(LoadProfile loadProfile, Direction dir) {
-            return TransferPack.EMPTY;
-        }
+	@Override
+	public TransferPack getConnectedLoad(LoadProfile loadProfile, Direction dir) {
+	    return TransferPack.EMPTY;
+	}
 
     }
 

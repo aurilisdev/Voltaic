@@ -4,9 +4,9 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import voltaic.prefab.properties.PropertyManager;
 
 public interface IPropertyHolderTile {
-	PropertyManager getPropertyManager();
+    PropertyManager getPropertyManager();
 
-	default BlockEntity getTile() {
-		return (BlockEntity) this;
-	}
+    default BlockEntity getTile() {
+	return (BlockEntity) this;
+    }
 }

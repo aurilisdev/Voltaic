@@ -9,16 +9,16 @@ public class EffectRadiationResistance extends MobEffect {
     public static final Color COLOR = new Color(255, 251, 245, 255);
 
     public EffectRadiationResistance(MobEffectCategory typeIn, int liquidColorIn) {
-        super(typeIn, liquidColorIn);
+	super(typeIn, liquidColorIn);
     }
 
     public EffectRadiationResistance() {
-        this(MobEffectCategory.HARMFUL, COLOR.color());
+	this(MobEffectCategory.HARMFUL, COLOR.color());
     }
 
     @Override
     public boolean shouldApplyEffectTickThisTick(int duration, int amplifier) {
-        return true;
+	return true;
     }
 
 }

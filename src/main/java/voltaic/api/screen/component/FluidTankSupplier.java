@@ -7,5 +7,5 @@ import net.neoforged.neoforge.fluids.IFluidTank;
 @OnlyIn(Dist.CLIENT)
 @FunctionalInterface
 public interface FluidTankSupplier {
-	IFluidTank getTank();
+    IFluidTank getTank();
 }

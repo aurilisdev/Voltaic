@@ -4,12 +4,12 @@ import net.minecraft.network.chat.Component;
 
 public interface IDisplayUnit {
 
-	public Component getSymbol();
+    public Component getSymbol();
 
-	public Component getName();
+    public Component getName();
 
-	public Component getNamePlural();
+    public Component getNamePlural();
 
-	public Component getDistanceFromValue();
+    public Component getDistanceFromValue();
 
 }

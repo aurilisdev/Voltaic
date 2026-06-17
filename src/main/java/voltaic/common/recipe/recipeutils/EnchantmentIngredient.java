@@ -26,14 +26,12 @@ import voltaic.registers.VoltaicIngredients;
 public class EnchantmentIngredient implements ICustomIngredient {
 
     public static final MapCodec<EnchantmentIngredient> CODEC = RecordCodecBuilder.mapCodec(
-            builder -> builder.group(
-                    Ingredient.CODEC.fieldOf("ingredient").forGetter(instance -> instance.ingredient),
-                    TagKey.codec(Registries.ENCHANTMENT).listOf().fieldOf("enchantments").forGetter(instance -> instance.enchantments),
-                    Codec.BOOL.fieldOf("isStrict").forGetter(instance -> instance.isStrict)
+	    builder -> builder.group(Ingredient.CODEC.fieldOf("ingredient").forGetter(instance -> instance.ingredient),
+		    TagKey.codec(Registries.ENCHANTMENT).listOf().fieldOf("enchantments")
+			    .forGetter(instance -> instance.enchantments),
+		    Codec.BOOL.fieldOf("isStrict").forGetter(instance -> instance.isStrict)
 
-
-            ).apply(builder, EnchantmentIngredient::new)
-
+	    ).apply(builder, EnchantmentIngredient::new)
 
     );
 
@@ -43,113 +41,113 @@ public class EnchantmentIngredient implements ICustomIngredient {
     private final boolean isStrict;
 
     public EnchantmentIngredient(Ingredient base, List<TagKey<Enchantment>> enchantments, boolean isStrict) {
-        this.ingredient = base;
-        this.enchantments = enchantments;
-        this.isStrict = isStrict;
+	this.ingredient = base;
+	this.enchantments = enchantments;
+	this.isStrict = isStrict;
     }
 
     @Override
     public boolean test(ItemStack stack) {
 
-        boolean isBase = ingredient.test(stack);
+	boolean isBase = ingredient.test(stack);
 
-        if (!isBase) {
-            return false;
-        }
+	if (!isBase) {
+	    return false;
+	}
 
-        if (isStrict) {
+	if (isStrict) {
 
-            ItemEnchantments current = stack.getTagEnchantments();
-            if (current.isEmpty() || current.keySet().size() != enchantments.size()) {
-                return false;
-            }
+	    ItemEnchantments current = stack.getTagEnchantments();
+	    if (current.isEmpty() || current.keySet().size() != enchantments.size()) {
+		return false;
+	    }
 
-            boolean foundMatch = false;
-            boolean hasStored = stack.has(DataComponents.STORED_ENCHANTMENTS);
+	    boolean foundMatch = false;
+	    boolean hasStored = stack.has(DataComponents.STORED_ENCHANTMENTS);
 
-            for (Holder<Enchantment> enchant : current.keySet()) {
-                for (TagKey<Enchantment> tag : enchantments) {
-                    if (enchant.is(tag)) {
-                        foundMatch = true;
-                        break;
-                    }
-                }
-                if (!foundMatch && !hasStored) {
-                    return false;
-                }
-                foundMatch = false;
-            }
+	    for (Holder<Enchantment> enchant : current.keySet()) {
+		for (TagKey<Enchantment> tag : enchantments) {
+		    if (enchant.is(tag)) {
+			foundMatch = true;
+			break;
+		    }
+		}
+		if (!foundMatch && !hasStored) {
+		    return false;
+		}
+		foundMatch = false;
+	    }
 
-            current = stack.get(DataComponents.STORED_ENCHANTMENTS);
+	    current = stack.get(DataComponents.STORED_ENCHANTMENTS);
 
-            if (current.isEmpty() || current.keySet().size() != enchantments.size()) {
-                return false;
-            }
+	    if (current.isEmpty() || current.keySet().size() != enchantments.size()) {
+		return false;
+	    }
 
-            foundMatch = false;
+	    foundMatch = false;
 
-            for (Holder<Enchantment> enchant : current.keySet()) {
-                for (TagKey<Enchantment> tag : enchantments) {
-                    if (enchant.is(tag)) {
-                        foundMatch = true;
-                        break;
-                    }
-                }
-                if (!foundMatch && !hasStored) {
-                    return false;
-                }
-                foundMatch = false;
-            }
+	    for (Holder<Enchantment> enchant : current.keySet()) {
+		for (TagKey<Enchantment> tag : enchantments) {
+		    if (enchant.is(tag)) {
+			foundMatch = true;
+			break;
+		    }
+		}
+		if (!foundMatch && !hasStored) {
+		    return false;
+		}
+		foundMatch = false;
+	    }
 
-            return true;
+	    return true;
 
-
-        }
+	}
 	for (TagKey<Enchantment> enchantment : enchantments) {
 	    if (EnchantmentHelper.hasTag(stack, enchantment)) {
-	        return true;
+		return true;
 	    }
 
 	    if (!stack.has(DataComponents.STORED_ENCHANTMENTS)) {
-	        continue;
+		continue;
 	    }
 
 	    for (var enchantmentHolder : stack.get(DataComponents.STORED_ENCHANTMENTS).keySet()) {
-	        if (enchantmentHolder.is(enchantment)) {
-	            return true;
-	        }
+		if (enchantmentHolder.is(enchantment)) {
+		    return true;
+		}
 	    }
 	}
 
-
-        return false;
+	return false;
     }
 
     @Override
     public Stream<ItemStack> getItems() {
-        return Stream.of(ingredient.getItems());
+	return Stream.of(ingredient.getItems());
     }
 
     @Override
     public boolean isSimple() {
-        return false;
+	return false;
     }
 
     @Override
     public IngredientType<?> getType() {
-        return VoltaicIngredients.ENCHANTMENT_INGREDIENT_TYPE.get();
+	return VoltaicIngredients.ENCHANTMENT_INGREDIENT_TYPE.get();
     }
 
     @Override
     public String toString() {
-        return "items: " + Arrays.toString(ingredient.getItems()) + ", enchants: " + StringUtils.join(enchantments.iterator(), ", ") + ", is strict: " + isStrict;
+	return "items: " + Arrays.toString(ingredient.getItems()) + ", enchants: "
+		+ StringUtils.join(enchantments.iterator(), ", ") + ", is strict: " + isStrict;
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof EnchantmentIngredient ing) {
-            return ing.isStrict == isStrict && ing.ingredient.equals(ingredient) && ing.enchantments.equals(enchantments);
-        }
-        return false;
+	if (obj instanceof EnchantmentIngredient ing) {
+	    return ing.isStrict == isStrict && ing.ingredient.equals(ingredient)
+		    && ing.enchantments.equals(enchantments);
+	}
+	return false;
     }
 }

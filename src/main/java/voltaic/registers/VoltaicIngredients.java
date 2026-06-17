@@ -11,14 +11,19 @@ import voltaic.common.recipe.recipeutils.FluidIngredient;
 import voltaic.common.recipe.recipeutils.GasIngredient;
 
 public class VoltaicIngredients {
-    
-    public static final DeferredRegister<IngredientType<?>> INGREDIENT_TYPES = DeferredRegister.create(NeoForgeRegistries.INGREDIENT_TYPES, Voltaic.ID);
-    
+
+    public static final DeferredRegister<IngredientType<?>> INGREDIENT_TYPES = DeferredRegister
+	    .create(NeoForgeRegistries.INGREDIENT_TYPES, Voltaic.ID);
+
     /* INGREDIENT TYPES */
-    
-    public static final DeferredHolder<IngredientType<?>, IngredientType<CountableIngredient>> COUNTABLE_INGREDIENT_TYPE = INGREDIENT_TYPES.register("countableingredient", () -> new IngredientType<>(CountableIngredient.CODEC));
-    public static final DeferredHolder<IngredientType<?>, IngredientType<FluidIngredient>> FLUID_INGREDIENT_TYPE = INGREDIENT_TYPES.register("fluidingredient", () -> new IngredientType<>(FluidIngredient.CODEC));
-    public static final DeferredHolder<IngredientType<?>, IngredientType<GasIngredient>> GAS_INGREDIENT_TYPE = INGREDIENT_TYPES.register("gasingredient", () -> new IngredientType<>(GasIngredient.CODEC));
-    public static final DeferredHolder<IngredientType<?>, IngredientType<EnchantmentIngredient>> ENCHANTMENT_INGREDIENT_TYPE = INGREDIENT_TYPES.register("enchantmentingredient", () -> new IngredientType<>(EnchantmentIngredient.CODEC));
+
+    public static final DeferredHolder<IngredientType<?>, IngredientType<CountableIngredient>> COUNTABLE_INGREDIENT_TYPE = INGREDIENT_TYPES
+	    .register("countableingredient", () -> new IngredientType<>(CountableIngredient.CODEC));
+    public static final DeferredHolder<IngredientType<?>, IngredientType<FluidIngredient>> FLUID_INGREDIENT_TYPE = INGREDIENT_TYPES
+	    .register("fluidingredient", () -> new IngredientType<>(FluidIngredient.CODEC));
+    public static final DeferredHolder<IngredientType<?>, IngredientType<GasIngredient>> GAS_INGREDIENT_TYPE = INGREDIENT_TYPES
+	    .register("gasingredient", () -> new IngredientType<>(GasIngredient.CODEC));
+    public static final DeferredHolder<IngredientType<?>, IngredientType<EnchantmentIngredient>> ENCHANTMENT_INGREDIENT_TYPE = INGREDIENT_TYPES
+	    .register("enchantmentingredient", () -> new IngredientType<>(EnchantmentIngredient.CODEC));
 
 }

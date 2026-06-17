@@ -34,163 +34,168 @@ import voltaic.registers.VoltaicDataComponentTypes;
 
 @OnlyIn(Dist.CLIENT)
 public class ScreenComponentFluidGauge extends AbstractScreenComponentGauge {
-	public FluidTankSupplier fluidInfoHandler;
+    public FluidTankSupplier fluidInfoHandler;
 
-	public ScreenComponentFluidGauge(FluidTankSupplier fluidInfoHandler, int x, int y) {
-		super(x, y);
-		this.fluidInfoHandler = fluidInfoHandler;
+    public ScreenComponentFluidGauge(FluidTankSupplier fluidInfoHandler, int x, int y) {
+	super(x, y);
+	this.fluidInfoHandler = fluidInfoHandler;
+    }
+
+    @Override
+    protected int getScaledLevel() {
+	IFluidTank tank = fluidInfoHandler.getTank();
+	if (tank != null) {
+	    if (tank.getFluidAmount() > 0 && tank.getCapacity() > 0) {
+		return tank.getFluidAmount() * (GaugeTextures.BACKGROUND_DEFAULT.textureHeight() - 2)
+			/ tank.getCapacity();
+	    }
 	}
 
-	@Override
-	protected int getScaledLevel() {
-		IFluidTank tank = fluidInfoHandler.getTank();
-		if (tank != null) {
-			if (tank.getFluidAmount() > 0 && tank.getCapacity() > 0) {
-				return tank.getFluidAmount() * (GaugeTextures.BACKGROUND_DEFAULT.textureHeight() - 2) / tank.getCapacity();
-			}
-		}
+	return 0;
+    }
 
-		return 0;
+    @Override
+    protected void applyColor() {
+	IFluidTank tank = fluidInfoHandler.getTank();
+	if (tank != null) {
+	    FluidStack fluidStack = tank.getFluid();
+	    if (!fluidStack.isEmpty()) {
+		IClientFluidTypeExtensions extensions = IClientFluidTypeExtensions.of(fluidStack.getFluid());
+		RenderingUtils.setShaderColor(new Color(extensions.getTintColor(fluidStack)));
+	    }
+	}
+    }
+
+    @Override
+    protected ResourceLocation getTexture() {
+	IFluidTank tank = fluidInfoHandler.getTank();
+	if (tank != null) {
+	    FluidStack fluidStack = tank.getFluid();
+	    IClientFluidTypeExtensions extensions = IClientFluidTypeExtensions.of(fluidStack.getFluid());
+	    return extensions.getStillTexture();
+	}
+	return texture.getLocation();
+    }
+
+    @SuppressWarnings("removal")
+    @Override
+    protected List<? extends FormattedCharSequence> getTooltips() {
+	List<FormattedCharSequence> tooltips = new ArrayList<>();
+	IFluidTank tank = fluidInfoHandler.getTank();
+	if (tank != null) {
+	    FluidStack fluidStack = tank.getFluid();
+	    if (fluidStack.getAmount() > 0) {
+		tooltips.add(Component.translatable(fluidStack.getTranslationKey()).getVisualOrderText());
+		tooltips.add(VoltaicTextUtils
+			.ratio(ChatFormatter.formatFluidMilibuckets(tank.getFluidAmount()),
+				ChatFormatter.formatFluidMilibuckets(tank.getCapacity()))
+			.withStyle(ChatFormatting.GRAY).getVisualOrderText());
+	    } else {
+		tooltips.add(VoltaicTextUtils
+			.ratio(Component.literal("0"), ChatFormatter.formatFluidMilibuckets(tank.getCapacity()))
+			.withStyle(ChatFormatting.GRAY).getVisualOrderText());
+	    }
+	}
+	return tooltips;
+    }
+
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+	if (isActiveAndVisible() && isValidClick(button) && isInClickRegion(mouseX, mouseY)) {
+
+	    onMouseClick(mouseX, mouseY);
+
+	    return true;
+	}
+	return false;
+    }
+
+    @Override
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+	if (isValidClick(button)) {
+	    onMouseRelease(mouseX, mouseY);
+	    return true;
+	}
+	return false;
+    }
+
+    @Override
+    public void onMouseClick(double mouseX, double mouseY) {
+
+	PropertyFluidTank tank = fluidInfoHandler.getTank() instanceof PropertyFluidTank x ? x : null;
+
+	if (tank == null) {
+	    return;
 	}
 
-	@Override
-	protected void applyColor() {
-		IFluidTank tank = fluidInfoHandler.getTank();
-		if (tank != null) {
-			FluidStack fluidStack = tank.getFluid();
-			if (!fluidStack.isEmpty()) {
-				IClientFluidTypeExtensions extensions = IClientFluidTypeExtensions.of(fluidStack.getFluid());
-				RenderingUtils.setShaderColor(new Color(extensions.getTintColor(fluidStack)));
-			}
-		}
+	GenericScreen<?> screen = (GenericScreen<?>) gui;
+
+	GenericTile owner = (GenericTile) ((GenericContainerBlockEntity<?>) screen.getMenu()).getSafeHost();
+
+	if (owner == null) {
+	    return;
 	}
 
-	@Override
-	protected ResourceLocation getTexture() {
-		IFluidTank tank = fluidInfoHandler.getTank();
-		if (tank != null) {
-			FluidStack fluidStack = tank.getFluid();
-			IClientFluidTypeExtensions extensions = IClientFluidTypeExtensions.of(fluidStack.getFluid());
-			return extensions.getStillTexture();
-		}
-		return texture.getLocation();
+	ItemStack stack = screen.getMenu().getCarried();
+
+	if (stack.isEmpty() || stack.getOrDefault(VoltaicDataComponentTypes.HASCLICKEDONFLUIDGAUGE, false)) {
+	    return;
 	}
 
-	@SuppressWarnings("removal")
-	@Override
-	protected List<? extends FormattedCharSequence> getTooltips() {
-		List<FormattedCharSequence> tooltips = new ArrayList<>();
-		IFluidTank tank = fluidInfoHandler.getTank();
-		if (tank != null) {
-			FluidStack fluidStack = tank.getFluid();
-			if (fluidStack.getAmount() > 0) {
-				tooltips.add(Component.translatable(fluidStack.getTranslationKey()).getVisualOrderText());
-				tooltips.add(VoltaicTextUtils.ratio(ChatFormatter.formatFluidMilibuckets(tank.getFluidAmount()), ChatFormatter.formatFluidMilibuckets(tank.getCapacity())).withStyle(ChatFormatting.GRAY).getVisualOrderText());
-			} else {
-				tooltips.add(VoltaicTextUtils.ratio(Component.literal("0"), ChatFormatter.formatFluidMilibuckets(tank.getCapacity())).withStyle(ChatFormatting.GRAY).getVisualOrderText());
-			}
-		}
-		return tooltips;
+	IFluidHandlerItem handler = stack.getCapability(Capabilities.FluidHandler.ITEM);
+
+	if (handler == null) {
+	    return;
 	}
 
-	@Override
-	public boolean mouseClicked(double mouseX, double mouseY, int button) {
-		if (isActiveAndVisible() && isValidClick(button) && isInClickRegion(mouseX, mouseY)) {
+	FluidStack drainedSourceFluid = tank.getFluid().copy();
 
-			onMouseClick(mouseX, mouseY);
+	int taken = handler.fill(drainedSourceFluid, IFluidHandler.FluidAction.EXECUTE);
 
-			return true;
-		}
-		return false;
-	}
+	// drain this fluid gauge if the amount taken was greater than zero
+	if (taken > 0) {
 
-	@Override
-	public boolean mouseReleased(double mouseX, double mouseY, int button) {
-		if (isValidClick(button)) {
-			onMouseRelease(mouseX, mouseY);
-			return true;
-		}
-		return false;
-	}
+	    tank.drain(taken, IFluidHandler.FluidAction.EXECUTE);
 
-	@Override
-	public void onMouseClick(double mouseX, double mouseY) {
+	    Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.BUCKET_FILL, 1.0F));
 
-	    	
-		PropertyFluidTank tank = fluidInfoHandler.getTank() instanceof PropertyFluidTank x ? x : null;
+	    stack = handler.getContainer();
 
-		if (tank == null) {
-			return;
-		}
+	    screen.getMenu().setCarried(stack);
 
-		GenericScreen<?> screen = (GenericScreen<?>) gui;
+	    PacketDistributor.sendToServer(new PacketUpdateCarriedItemServer(stack.copy(),
+		    ((GenericContainerBlockEntity<?>) screen.getMenu()).getSafeHost().getBlockPos(),
+		    Minecraft.getInstance().player.getUUID()));
 
-		GenericTile owner = (GenericTile) ((GenericContainerBlockEntity<?>) screen.getMenu()).getSafeHost();
+	    stack.set(VoltaicDataComponentTypes.HASCLICKEDONFLUIDGAUGE, true);
 
-		if (owner == null) {
-			return;
-		}
-
-		ItemStack stack = screen.getMenu().getCarried();
-
-		if(stack.isEmpty() || stack.getOrDefault(VoltaicDataComponentTypes.HASCLICKEDONFLUIDGAUGE, false)) {
-			return;
-		}
-
-		IFluidHandlerItem handler = stack.getCapability(Capabilities.FluidHandler.ITEM);
-
-		if(handler == null) {
-			return;
-		}
-
-		FluidStack drainedSourceFluid = tank.getFluid().copy();
-
-		int taken = handler.fill(drainedSourceFluid, IFluidHandler.FluidAction.EXECUTE);
-
-		//drain this fluid gauge if the amount taken was greater than zero
-		if (taken > 0) {
-
-			tank.drain(taken, IFluidHandler.FluidAction.EXECUTE);
-
-			Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.BUCKET_FILL, 1.0F));
-
-			stack = handler.getContainer();
-
-			screen.getMenu().setCarried(stack);
-
-			PacketDistributor.sendToServer(new PacketUpdateCarriedItemServer(stack.copy(), ((GenericContainerBlockEntity<?>) screen.getMenu()).getSafeHost().getBlockPos(), Minecraft.getInstance().player.getUUID()));
-
-			stack.set(VoltaicDataComponentTypes.HASCLICKEDONFLUIDGAUGE, true);
-
-			return;
-
-		}
-		//we didn't drain the gauge, now we try to fill it
-
-		for(int i = 0; i < handler.getTanks(); i++){
-			drainedSourceFluid = handler.getFluidInTank(i);
-			taken = tank.fill(drainedSourceFluid, IFluidHandler.FluidAction.EXECUTE);
-			if(taken <= 0) {
-				continue;
-			}
-			handler.drain(taken, IFluidHandler.FluidAction.EXECUTE);
-
-			Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.BUCKET_EMPTY, 1.0F));
-
-			stack = handler.getContainer();
-
-			screen.getMenu().setCarried(stack);
-
-			PacketDistributor.sendToServer(new PacketUpdateCarriedItemServer(stack.copy(), ((GenericContainerBlockEntity<?>) screen.getMenu()).getSafeHost().getBlockPos(), Minecraft.getInstance().player.getUUID()));
-
-			stack.set(VoltaicDataComponentTypes.HASCLICKEDONFLUIDGAUGE, true);
-
-			return;
-		}
-
-
-
-
+	    return;
 
 	}
+	// we didn't drain the gauge, now we try to fill it
+
+	for (int i = 0; i < handler.getTanks(); i++) {
+	    drainedSourceFluid = handler.getFluidInTank(i);
+	    taken = tank.fill(drainedSourceFluid, IFluidHandler.FluidAction.EXECUTE);
+	    if (taken <= 0) {
+		continue;
+	    }
+	    handler.drain(taken, IFluidHandler.FluidAction.EXECUTE);
+
+	    Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.BUCKET_EMPTY, 1.0F));
+
+	    stack = handler.getContainer();
+
+	    screen.getMenu().setCarried(stack);
+
+	    PacketDistributor.sendToServer(new PacketUpdateCarriedItemServer(stack.copy(),
+		    ((GenericContainerBlockEntity<?>) screen.getMenu()).getSafeHost().getBlockPos(),
+		    Minecraft.getInstance().player.getUUID()));
+
+	    stack.set(VoltaicDataComponentTypes.HASCLICKEDONFLUIDGAUGE, true);
+
+	    return;
+	}
+
+    }
 }

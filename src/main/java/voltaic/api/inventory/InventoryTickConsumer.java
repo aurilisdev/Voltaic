@@ -7,6 +7,6 @@ import net.minecraft.world.level.Level;
 @FunctionalInterface
 public interface InventoryTickConsumer {
 
-	void apply(ItemStack stack, Level world, Entity entity, Integer slot, Boolean isSelected);
+    void apply(ItemStack stack, Level world, Entity entity, Integer slot, Boolean isSelected);
 
 }

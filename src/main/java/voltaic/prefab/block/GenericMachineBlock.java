@@ -34,65 +34,71 @@ public class GenericMachineBlock extends GenericEntityBlockWaterloggable {
     public static HashMap<BlockPos, LivingEntity> IPLAYERSTORABLE_MAP = new HashMap<>();
 
     public GenericMachineBlock(BlockEntitySupplier<BlockEntity> blockEntitySupplier, VoxelShapeProvider provider) {
-        super(Properties.ofFullCopy(Blocks.IRON_BLOCK).strength(3.5F).sound(SoundType.METAL).noOcclusion().requiresCorrectToolForDrops());
-        registerDefaultState(stateDefinition.any().setValue(VoltaicBlockStates.FACING, Direction.NORTH));
-        this.blockEntitySupplier = blockEntitySupplier;
-        this.shapeProvider = provider;
+	super(Properties.ofFullCopy(Blocks.IRON_BLOCK).strength(3.5F).sound(SoundType.METAL).noOcclusion()
+		.requiresCorrectToolForDrops());
+	registerDefaultState(stateDefinition.any().setValue(VoltaicBlockStates.FACING, Direction.NORTH));
+	this.blockEntitySupplier = blockEntitySupplier;
+	this.shapeProvider = provider;
     }
 
     public GenericMachineBlock(BlockEntitySupplier<BlockEntity> blockEntitySupplier, boolean temp) {
-        this(blockEntitySupplier, VoxelShapeProvider.DEFAULT);
+	this(blockEntitySupplier, VoxelShapeProvider.DEFAULT);
     }
 
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
-        Direction dir = null;
-        if (state.hasProperty(VoltaicBlockStates.FACING)) {
+	Direction dir = null;
+	if (state.hasProperty(VoltaicBlockStates.FACING)) {
 
-            dir = state.getValue(VoltaicBlockStates.FACING);
+	    dir = state.getValue(VoltaicBlockStates.FACING);
 
-        }
-        return shapeProvider.getShape(dir);
+	}
+	return shapeProvider.getShape(dir);
     }
 
     @Override
-    public void setPlacedBy(Level pLevel, BlockPos pPos, BlockState pState, @Nullable LivingEntity pPlacer, ItemStack pStack) {
-        if (isIPlayerStorable()) {
-            IPLAYERSTORABLE_MAP.put(pPos, pPlacer);
-        }
-        super.setPlacedBy(pLevel, pPos, pState, pPlacer, pStack);
+    public void setPlacedBy(Level pLevel, BlockPos pPos, BlockState pState, @Nullable LivingEntity pPlacer,
+	    ItemStack pStack) {
+	if (isIPlayerStorable()) {
+	    IPLAYERSTORABLE_MAP.put(pPos, pPlacer);
+	}
+	super.setPlacedBy(pLevel, pPos, pState, pPlacer, pStack);
     }
 
     @Override
     public final BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return blockEntitySupplier.create(pos, state);
+	return blockEntitySupplier.create(pos, state);
     }
 
     @Override
     public float getShadeBrightness(BlockState state, BlockGetter worldIn, BlockPos pos) {
-        return 1;
+	return 1;
     }
 
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
-        return super.getStateForPlacement(context).setValue(VoltaicBlockStates.FACING, context.getHorizontalDirection().getOpposite());
+	return super.getStateForPlacement(context).setValue(VoltaicBlockStates.FACING,
+		context.getHorizontalDirection().getOpposite());
     }
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        super.createBlockStateDefinition(builder);
-        builder.add(VoltaicBlockStates.FACING);
+	super.createBlockStateDefinition(builder);
+	builder.add(VoltaicBlockStates.FACING);
     }
 
     public boolean isIPlayerStorable() {
-        return false;
+	return false;
     }
+
     @Override
-    public boolean canConnectRedstone(BlockState state, BlockGetter level, BlockPos pos, @Nullable Direction direction) {
-        return true;
+    public boolean canConnectRedstone(BlockState state, BlockGetter level, BlockPos pos,
+	    @Nullable Direction direction) {
+	return true;
     }
+
     @Override
     protected MapCodec<? extends BaseEntityBlock> codec() {
-        throw new UnsupportedOperationException("Need to implement CODEC");
+	throw new UnsupportedOperationException("Need to implement CODEC");
     }
 }

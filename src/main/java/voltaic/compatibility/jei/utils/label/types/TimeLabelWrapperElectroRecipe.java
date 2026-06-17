@@ -10,13 +10,13 @@ import voltaic.prefab.utilities.math.Color;
 
 public class TimeLabelWrapperElectroRecipe extends AbstractLabelWrapper {
 
-	public TimeLabelWrapperElectroRecipe(int xPos, int yPos) {
-		super(Color.JEI_TEXT_GRAY, yPos, xPos, true);
-	}
+    public TimeLabelWrapperElectroRecipe(int xPos, int yPos) {
+	super(Color.JEI_TEXT_GRAY, yPos, xPos, true);
+    }
 
-	@Override
-	public Component getComponent(AbstractRecipeCategory<?> category, Object recipe) {
-		return ChatFormatter.getChatDisplayShort(((VoltaicRecipe) recipe).getTicks() / 20.0, DisplayUnits.TIME_SECONDS);
-	}
+    @Override
+    public Component getComponent(AbstractRecipeCategory<?> category, Object recipe) {
+	return ChatFormatter.getChatDisplayShort(((VoltaicRecipe) recipe).getTicks() / 20.0, DisplayUnits.TIME_SECONDS);
+    }
 
 }

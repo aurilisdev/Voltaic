@@ -14,23 +14,24 @@ import voltaic.prefab.screen.component.types.ScreenComponentSlot.SlotType;
 
 public class SlotItemHandlerUpgrade extends SlotItemHandlerGeneric implements IUpgradeSlot {
 
-	private final List<SubtypeItemUpgrade> upgrades;
+    private final List<SubtypeItemUpgrade> upgrades;
 
-	public SlotItemHandlerUpgrade(IItemHandler itemHandler, int index, int xPosition, int yPosition, SubtypeItemUpgrade... upgrades) {
-		super(SlotType.NORMAL, IconType.UPGRADE_DARK, itemHandler, index, xPosition, yPosition);
+    public SlotItemHandlerUpgrade(IItemHandler itemHandler, int index, int xPosition, int yPosition,
+	    SubtypeItemUpgrade... upgrades) {
+	super(SlotType.NORMAL, IconType.UPGRADE_DARK, itemHandler, index, xPosition, yPosition);
 
-		this.upgrades = Arrays.asList(upgrades);
+	this.upgrades = Arrays.asList(upgrades);
 
-	}
+    }
 
-	@Override
-	public boolean mayPlace(ItemStack stack) {
-		return stack.getItem() instanceof ItemUpgrade upgrade && upgrades.contains(upgrade.subtype);
-	}
+    @Override
+    public boolean mayPlace(ItemStack stack) {
+	return stack.getItem() instanceof ItemUpgrade upgrade && upgrades.contains(upgrade.subtype);
+    }
 
-	@Override
-	public List<SubtypeItemUpgrade> getUpgrades() {
-		return upgrades;
-	}
+    @Override
+    public List<SubtypeItemUpgrade> getUpgrades() {
+	return upgrades;
+    }
 
 }

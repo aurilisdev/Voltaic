@@ -12,18 +12,20 @@ import voltaic.registers.VoltaicDamageTypes;
 
 public class VoltaicDamageTagsProvider extends DamageTypeTagsProvider {
 
-	public VoltaicDamageTagsProvider(PackOutput output, CompletableFuture<Provider> lookupProvider, ExistingFileHelper existingFileHelper) {
-		super(output, lookupProvider, Voltaic.ID, existingFileHelper);
-	}
+    public VoltaicDamageTagsProvider(PackOutput output, CompletableFuture<Provider> lookupProvider,
+	    ExistingFileHelper existingFileHelper) {
+	super(output, lookupProvider, Voltaic.ID, existingFileHelper);
+    }
 
-	@Override
-	protected void addTags(Provider provider) {
-		tag(DamageTypeTags.BYPASSES_ARMOR).add(VoltaicDamageTypes.ELECTRICITY, VoltaicDamageTypes.RADIATION);
-		// .isMagic()
-		tag(DamageTypeTags.WITCH_RESISTANT_TO).add(VoltaicDamageTypes.ELECTRICITY, VoltaicDamageTypes.RADIATION);
-		tag(DamageTypeTags.AVOIDS_GUARDIAN_THORNS).add(VoltaicDamageTypes.ELECTRICITY, VoltaicDamageTypes.RADIATION);
-		tag(DamageTypeTags.ALWAYS_TRIGGERS_SILVERFISH).add(VoltaicDamageTypes.ELECTRICITY, VoltaicDamageTypes.RADIATION);
-		tag(DamageTypeTags.NO_KNOCKBACK).add(VoltaicDamageTypes.RADIATION);
-	}
+    @Override
+    protected void addTags(Provider provider) {
+	tag(DamageTypeTags.BYPASSES_ARMOR).add(VoltaicDamageTypes.ELECTRICITY, VoltaicDamageTypes.RADIATION);
+	// .isMagic()
+	tag(DamageTypeTags.WITCH_RESISTANT_TO).add(VoltaicDamageTypes.ELECTRICITY, VoltaicDamageTypes.RADIATION);
+	tag(DamageTypeTags.AVOIDS_GUARDIAN_THORNS).add(VoltaicDamageTypes.ELECTRICITY, VoltaicDamageTypes.RADIATION);
+	tag(DamageTypeTags.ALWAYS_TRIGGERS_SILVERFISH).add(VoltaicDamageTypes.ELECTRICITY,
+		VoltaicDamageTypes.RADIATION);
+	tag(DamageTypeTags.NO_KNOCKBACK).add(VoltaicDamageTypes.RADIATION);
+    }
 
 }

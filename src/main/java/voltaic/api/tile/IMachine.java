@@ -21,7 +21,7 @@ public interface IMachine {
     public boolean isPlayerStorable();
 
     public default IMultiblockParentBlock.SubnodeWrapper getSubnodes() {
-        return IMultiblockParentBlock.SubnodeWrapper.EMPTY;
+	return IMultiblockParentBlock.SubnodeWrapper.EMPTY;
     }
 
     public VoxelShapeProvider getVoxelShapeProvider();

@@ -18,15 +18,15 @@ import voltaic.prefab.block.GenericMachineBlock;
 public class BlockMultiblockSlave extends GenericMachineBlock {
 
     public BlockMultiblockSlave() {
-        super(TileMultiblockSlave::new, VoxelShapeProvider.DEFAULT);
+	super(TileMultiblockSlave::new, VoxelShapeProvider.DEFAULT);
     }
 
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
-        if(worldIn.getBlockEntity(pos) instanceof TileMultiblockSlave slave) {
-            return slave.getShape();
-        }
-        return Shapes.block();
+	if (worldIn.getBlockEntity(pos) instanceof TileMultiblockSlave slave) {
+	    return slave.getShape();
+	}
+	return Shapes.block();
     }
 
     @Override
@@ -36,17 +36,17 @@ public class BlockMultiblockSlave extends GenericMachineBlock {
 
     @Override
     public BlockState rotate(BlockState state, LevelAccessor level, BlockPos pos, Rotation direction) {
-        return state;
+	return state;
     }
 
     @Override
     public BlockState rotate(BlockState state, Rotation rot) {
-        return state;
+	return state;
     }
 
     @Override
     public BlockState mirror(BlockState state, Mirror mirrorIn) {
-        return state;
+	return state;
     }
 
 }

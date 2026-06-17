@@ -22,37 +22,39 @@ public class Fluid2ItemBuilder<T extends Fluid2ItemRecipe> extends BaseRecipeBui
     private List<FluidStack> fluidIngredients = new ArrayList<>();
     private List<Pair<TagKey<Fluid>, Integer>> tagFluidIngredients = new ArrayList<>();
 
-    public Fluid2ItemBuilder(Fluid2ItemRecipe.Factory<T> factory, ItemStack output, RecipeCategory category, String parent, String name, String group, double experience, int processTime, double usagePerTick) {
-        super(category, parent, name, group, experience, processTime, usagePerTick);
-        this.factory = factory;
-        this.output = output;
+    public Fluid2ItemBuilder(Fluid2ItemRecipe.Factory<T> factory, ItemStack output, RecipeCategory category,
+	    String parent, String name, String group, double experience, int processTime, double usagePerTick) {
+	super(category, parent, name, group, experience, processTime, usagePerTick);
+	this.factory = factory;
+	this.output = output;
     }
 
     @Override
     public Item getResult() {
-        return output.getItem();
+	return output.getItem();
     }
 
     @Override
     public T makeRecipe() {
-        List<FluidIngredient> ings = new ArrayList<>();
-        for (FluidStack fluid : fluidIngredients) {
-            ings.add(new FluidIngredient(fluid));
-        }
-        for (Pair<TagKey<Fluid>, Integer> pair : tagFluidIngredients) {
-            ings.add(new FluidIngredient(pair.getFirst(), pair.getSecond()));
-        }
-        return factory.create(group, ings, output, experience, processTime, usagePerTick, itemBiproducts, fluidBiproducts, gasBiproducts);
+	List<FluidIngredient> ings = new ArrayList<>();
+	for (FluidStack fluid : fluidIngredients) {
+	    ings.add(new FluidIngredient(fluid));
+	}
+	for (Pair<TagKey<Fluid>, Integer> pair : tagFluidIngredients) {
+	    ings.add(new FluidIngredient(pair.getFirst(), pair.getSecond()));
+	}
+	return factory.create(group, ings, output, experience, processTime, usagePerTick, itemBiproducts,
+		fluidBiproducts, gasBiproducts);
     }
 
     public Fluid2ItemBuilder<T> addFluidStackInput(FluidStack stack) {
-        fluidIngredients.add(stack);
-        return this;
+	fluidIngredients.add(stack);
+	return this;
     }
 
     public Fluid2ItemBuilder<T> addFluidTagInput(TagKey<Fluid> tag, int count) {
-        tagFluidIngredients.add(Pair.of(tag, count));
-        return this;
+	tagFluidIngredients.add(Pair.of(tag, count));
+	return this;
     }
 
 }

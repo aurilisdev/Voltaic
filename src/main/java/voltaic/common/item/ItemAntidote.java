@@ -17,37 +17,37 @@ import net.minecraft.world.level.Level;
 public class ItemAntidote extends ItemVoltaic {
 
     public ItemAntidote(Properties properties, Holder<CreativeModeTab> creativeTab) {
-        super(properties, creativeTab);
+	super(properties, creativeTab);
     }
 
     @Override
     public ItemStack finishUsingItem(ItemStack stack, Level worldIn, LivingEntity entityLiving) {
-        if (!worldIn.isClientSide) {
-            entityLiving.removeAllEffects();
-        }
-        if (entityLiving instanceof ServerPlayer serverplayerentity) {
-            CriteriaTriggers.CONSUME_ITEM.trigger(serverplayerentity, stack);
-            serverplayerentity.awardStat(Stats.ITEM_USED.get(this));
-        }
-        if (entityLiving instanceof Player pl && !pl.getAbilities().instabuild) {
-            stack.shrink(1);
-        }
-        return stack;
+	if (!worldIn.isClientSide) {
+	    entityLiving.removeAllEffects();
+	}
+	if (entityLiving instanceof ServerPlayer serverplayerentity) {
+	    CriteriaTriggers.CONSUME_ITEM.trigger(serverplayerentity, stack);
+	    serverplayerentity.awardStat(Stats.ITEM_USED.get(this));
+	}
+	if (entityLiving instanceof Player pl && !pl.getAbilities().instabuild) {
+	    stack.shrink(1);
+	}
+	return stack;
     }
 
     @Override
     public int getUseDuration(ItemStack stack, LivingEntity entity) {
-        return 32;
+	return 32;
     }
 
     @Override
     public UseAnim getUseAnimation(ItemStack stack) {
-        return UseAnim.DRINK;
+	return UseAnim.DRINK;
     }
 
     @Override
     public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn) {
-        return ItemUtils.startUsingInstantly(worldIn, playerIn, handIn);
+	return ItemUtils.startUsingInstantly(worldIn, playerIn, handIn);
     }
 
 }

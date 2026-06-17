@@ -10,8 +10,11 @@ import voltaic.prefab.utilities.VoltaicTextUtils;
 
 public class VoltaicCreativeTabs {
 
-	public static final DeferredRegister<CreativeModeTab> CREATIVE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, Voltaic.ID);
+    public static final DeferredRegister<CreativeModeTab> CREATIVE_TABS = DeferredRegister
+	    .create(Registries.CREATIVE_MODE_TAB, Voltaic.ID);
 
-	public static final DeferredHolder<CreativeModeTab, CreativeModeTab> MAIN = CREATIVE_TABS.register("main", () -> CreativeModeTab.builder().title(VoltaicTextUtils.creativeTab("main")).icon(() -> new ItemStack(VoltaicItems.ITEM_WRENCH)).build());
+    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> MAIN = CREATIVE_TABS.register("main",
+	    () -> CreativeModeTab.builder().title(VoltaicTextUtils.creativeTab("main"))
+		    .icon(() -> new ItemStack(VoltaicItems.ITEM_WRENCH)).build());
 
 }

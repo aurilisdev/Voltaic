@@ -58,155 +58,170 @@ public class AdvancementBuilder implements IAdvancementBuilderExtension {
     private List<ICondition> conditions;
 
     private AdvancementBuilder(ResourceLocation id) {
-        this.id = id;
+	this.id = id;
     }
 
     public static AdvancementBuilder create(ResourceLocation id) {
-        return new AdvancementBuilder(id);
+	return new AdvancementBuilder(id);
     }
 
     public AdvancementBuilder parent(AdvancementHolder parent) {
-        this.parent = parent;
-        return this;
+	this.parent = parent;
+	return this;
     }
 
     public AdvancementBuilder parent(ResourceLocation parentId) {
-        this.parentId = parentId;
-        return this;
+	this.parentId = parentId;
+	return this;
     }
 
-    public AdvancementBuilder display(Item item, Component title, Component description, AdvancementBackgrounds background, AdvancementType frame, boolean showToast, boolean announceToChat, boolean hidden) {
-        return this.display(new DisplayInfo(new ItemStack(item), title, description, Optional.ofNullable(background.loc), frame, showToast, announceToChat, hidden));
+    public AdvancementBuilder display(Item item, Component title, Component description,
+	    AdvancementBackgrounds background, AdvancementType frame, boolean showToast, boolean announceToChat,
+	    boolean hidden) {
+	return this.display(new DisplayInfo(new ItemStack(item), title, description,
+		Optional.ofNullable(background.loc), frame, showToast, announceToChat, hidden));
     }
 
-    public AdvancementBuilder display(ItemStack stack, Component title, Component description, AdvancementBackgrounds background, AdvancementType frame, boolean showToast, boolean announceToChat, boolean hidden) {
-        return this.display(new DisplayInfo(stack, title, description, Optional.of(background.loc), frame, showToast, announceToChat, hidden));
+    public AdvancementBuilder display(ItemStack stack, Component title, Component description,
+	    AdvancementBackgrounds background, AdvancementType frame, boolean showToast, boolean announceToChat,
+	    boolean hidden) {
+	return this.display(new DisplayInfo(stack, title, description, Optional.of(background.loc), frame, showToast,
+		announceToChat, hidden));
     }
 
-    public AdvancementBuilder display(ItemStack stack, Component title, Component description, @Nullable ResourceLocation background, AdvancementType frame, boolean showToast, boolean announceToChat, boolean hidden) {
-        return this.display(new DisplayInfo(stack, title, description, Optional.of(background), frame, showToast, announceToChat, hidden));
+    public AdvancementBuilder display(ItemStack stack, Component title, Component description,
+	    @Nullable ResourceLocation background, AdvancementType frame, boolean showToast, boolean announceToChat,
+	    boolean hidden) {
+	return this.display(new DisplayInfo(stack, title, description, Optional.of(background), frame, showToast,
+		announceToChat, hidden));
     }
 
-    public AdvancementBuilder display(ItemLike item, Component title, Component description, @Nullable ResourceLocation background, AdvancementType frame, boolean showToast, boolean announceToChat, boolean hidden) {
-        return this.display(new DisplayInfo(new ItemStack(item.asItem()), title, description, Optional.of(background), frame, showToast, announceToChat, hidden));
+    public AdvancementBuilder display(ItemLike item, Component title, Component description,
+	    @Nullable ResourceLocation background, AdvancementType frame, boolean showToast, boolean announceToChat,
+	    boolean hidden) {
+	return this.display(new DisplayInfo(new ItemStack(item.asItem()), title, description, Optional.of(background),
+		frame, showToast, announceToChat, hidden));
     }
 
     public AdvancementBuilder display(DisplayInfo display) {
-        this.display = display;
-        return this;
+	this.display = display;
+	return this;
     }
 
     public AdvancementBuilder rewards(AdvancementRewards.Builder rewardsBuilder) {
-        return this.rewards(rewardsBuilder.build());
+	return this.rewards(rewardsBuilder.build());
     }
 
     public AdvancementBuilder rewards(AdvancementRewards rewards) {
-        this.rewards = rewards;
-        return this;
+	this.rewards = rewards;
+	return this;
     }
 
     public AdvancementBuilder addCriterion(String key, Criterion<?> criterion) {
-        if (this.criteria.containsKey(key)) {
-            throw new IllegalArgumentException("Duplicate criterion " + key);
-        }
-        this.criteria.put(key, criterion);
-        return this;
+	if (this.criteria.containsKey(key)) {
+	    throw new IllegalArgumentException("Duplicate criterion " + key);
+	}
+	this.criteria.put(key, criterion);
+	return this;
     }
 
     public AdvancementBuilder requirements(AdvancementRequirements.Strategy strategy) {
-        this.requirementsStrategy = strategy;
-        return this;
+	this.requirementsStrategy = strategy;
+	return this;
     }
 
     public AdvancementBuilder requirements(AdvancementRequirements requirements) {
-        this.requirements = requirements;
-        return this;
+	this.requirements = requirements;
+	return this;
     }
 
     public AdvancementBuilder condition(ICondition condition) {
-        if (conditions == null) {
-            conditions = new ArrayList<>();
-        }
-        conditions.add(condition);
-        return this;
+	if (conditions == null) {
+	    conditions = new ArrayList<>();
+	}
+	conditions.add(condition);
+	return this;
     }
 
     public AdvancementBuilder comment(String comment) {
-        this.comment = comment;
-        return this;
+	this.comment = comment;
+	return this;
     }
 
     public AdvancementBuilder author(String author) {
-        this.author = author;
-        return this;
+	this.author = author;
+	return this;
     }
 
     /**
-     * Tries to resolve the parent of this advancement, if possible. Returns {@code true} on success.
+     * Tries to resolve the parent of this advancement, if possible. Returns
+     * {@code true} on success.
      */
     public boolean canBuild(Function<ResourceLocation, AdvancementHolder> parentLookup) {
-        if (this.parentId == null) {
-            return true;
-        }
-        if (this.parent == null) {
-            this.parent = parentLookup.apply(this.parentId);
-        }
+	if (this.parentId == null) {
+	    return true;
+	}
+	if (this.parent == null) {
+	    this.parent = parentLookup.apply(this.parentId);
+	}
 
-        return this.parent != null;
+	return this.parent != null;
     }
 
     public AdvancementHolder build() {
-        if (!this.canBuild(resourceLocation -> null)) {
-            throw new IllegalStateException("Tried to build incomplete advancement!");
-        }
-        if (this.requirements == null) {
-            this.requirements = this.requirementsStrategy.create(this.criteria.keySet());
-        }
+	if (!this.canBuild(resourceLocation -> null)) {
+	    throw new IllegalStateException("Tried to build incomplete advancement!");
+	}
+	if (this.requirements == null) {
+	    this.requirements = this.requirementsStrategy.create(this.criteria.keySet());
+	}
 
-        return holder = new AdvancementHolder(id, new Advancement(Optional.ofNullable(parent == null ? parentId : this.parent.id()), Optional.ofNullable(this.display), this.rewards, this.criteria, this.requirements, false));
+	return holder = new AdvancementHolder(id,
+		new Advancement(Optional.ofNullable(parent == null ? parentId : this.parent.id()),
+			Optional.ofNullable(this.display), this.rewards, this.criteria, this.requirements, false));
     }
 
     public JsonObject serializeToJson(HolderLookup.Provider registries) {
-        if (holder == null) {
-            build();
-        }
+	if (holder == null) {
+	    build();
+	}
 
-        RegistryOps<JsonElement> registryops = registries.createSerializationContext(JsonOps.INSTANCE);
+	RegistryOps<JsonElement> registryops = registries.createSerializationContext(JsonOps.INSTANCE);
 
-        JsonElement jsonElement = Advancement.CODEC.encodeStart(registryops, holder.value()).getOrThrow();
+	JsonElement jsonElement = Advancement.CODEC.encodeStart(registryops, holder.value()).getOrThrow();
 
-        if (!jsonElement.isJsonObject()) {
-            throw new UnsupportedOperationException("Advancement " + holder.id().toString() + " is not a Json Object!");
-        }
+	if (!jsonElement.isJsonObject()) {
+	    throw new UnsupportedOperationException("Advancement " + holder.id().toString() + " is not a Json Object!");
+	}
 
-        JsonObject jsonObject = jsonElement.getAsJsonObject();
+	JsonObject jsonObject = jsonElement.getAsJsonObject();
 
-        if (author != null) {
-            jsonObject.addProperty("__author", author);
-        }
+	if (author != null) {
+	    jsonObject.addProperty("__author", author);
+	}
 
-        if (comment != null) {
-            jsonObject.addProperty("__comment", comment);
-        }
+	if (comment != null) {
+	    jsonObject.addProperty("__comment", comment);
+	}
 
-        return jsonObject;
+	return jsonObject;
     }
 
     public static enum AdvancementBackgrounds {
 
-        NONE(null),
-        // Vanilla
-        ADVENTURE(Voltaic.vanillarl("textures/gui/advancements/backgrounds/adventure.png")), //
-        END(Voltaic.vanillarl("textures/gui/advancements/backgrounds/end.png")), //
-        HUSBANDRY(Voltaic.vanillarl("textures/gui/advancements/backgrounds/husbandry.png")), //
-        NETHER(Voltaic.vanillarl("textures/gui/advancements/backgrounds/nether.png")), //
-        STONE(Voltaic.vanillarl("textures/gui/advancements/backgrounds/stone.png")); //
+	NONE(null),
+	// Vanilla
+	ADVENTURE(Voltaic.vanillarl("textures/gui/advancements/backgrounds/adventure.png")), //
+	END(Voltaic.vanillarl("textures/gui/advancements/backgrounds/end.png")), //
+	HUSBANDRY(Voltaic.vanillarl("textures/gui/advancements/backgrounds/husbandry.png")), //
+	NETHER(Voltaic.vanillarl("textures/gui/advancements/backgrounds/nether.png")), //
+	STONE(Voltaic.vanillarl("textures/gui/advancements/backgrounds/stone.png")); //
 
-        public final ResourceLocation loc;
+	public final ResourceLocation loc;
 
-        private AdvancementBackgrounds(ResourceLocation loc) {
-            this.loc = loc;
-        }
+	private AdvancementBackgrounds(ResourceLocation loc) {
+	    this.loc = loc;
+	}
 
     }
 

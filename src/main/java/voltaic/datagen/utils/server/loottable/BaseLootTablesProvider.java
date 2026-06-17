@@ -11,11 +11,13 @@ import voltaic.prefab.tile.GenericTile;
 public abstract class BaseLootTablesProvider extends AbstractLootTableProvider {
 
     public BaseLootTablesProvider(String modID, HolderLookup.Provider provider) {
-        super(provider, modID);
+	super(provider, modID);
     }
 
-    public <T extends GenericTile> void addMachineTable(Block block, DeferredHolder<BlockEntityType<?>, BlockEntityType<T>> tilereg, boolean items, boolean fluids, boolean gases, boolean energy, boolean additional) {
-        add(block, machineTable(name(block), block, tilereg.get(), items, fluids, gases, energy, additional));
+    public <T extends GenericTile> void addMachineTable(Block block,
+	    DeferredHolder<BlockEntityType<?>, BlockEntityType<T>> tilereg, boolean items, boolean fluids,
+	    boolean gases, boolean energy, boolean additional) {
+	add(block, machineTable(name(block), block, tilereg.get(), items, fluids, gases, energy, additional));
     }
 
     /**
@@ -25,30 +27,30 @@ public abstract class BaseLootTablesProvider extends AbstractLootTableProvider {
      * @author SeaRobber69
      */
     public void addSilkTouchOnlyTable(DeferredHolder<Block, ? extends Block> reg) {
-        Block block = reg.get();
-        add(block, createSilkTouchOnlyTable(name(block), block));
+	Block block = reg.get();
+	add(block, createSilkTouchOnlyTable(name(block), block));
     }
 
-    public void addFortuneAndSilkTouchTable(DeferredHolder<Block, ? extends Block> reg, Item nonSilk, int minDrop, int maxDrop) {
-        addFortuneAndSilkTouchTable(reg.get(), nonSilk, minDrop, maxDrop);
+    public void addFortuneAndSilkTouchTable(DeferredHolder<Block, ? extends Block> reg, Item nonSilk, int minDrop,
+	    int maxDrop) {
+	addFortuneAndSilkTouchTable(reg.get(), nonSilk, minDrop, maxDrop);
     }
 
     public void addFortuneAndSilkTouchTable(Block block, Item nonSilk, int minDrop, int maxDrop) {
-        add(block, createSilkTouchAndFortuneTable(name(block), block, nonSilk, minDrop, maxDrop));
+	add(block, createSilkTouchAndFortuneTable(name(block), block, nonSilk, minDrop, maxDrop));
     }
 
     public void addSimpleBlock(DeferredHolder<Block, ? extends Block> reg) {
-        addSimpleBlock(reg.get());
+	addSimpleBlock(reg.get());
     }
 
     public void addSimpleBlock(Block block) {
 
-        add(block, createSimpleBlockTable(name(block), block));
+	add(block, createSimpleBlockTable(name(block), block));
     }
 
     public String name(Block block) {
-        return BuiltInRegistries.BLOCK.getKey(block).getPath();
+	return BuiltInRegistries.BLOCK.getKey(block).getPath();
     }
-
 
 }

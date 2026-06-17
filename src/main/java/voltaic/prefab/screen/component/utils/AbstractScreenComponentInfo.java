@@ -12,19 +12,19 @@ import voltaic.prefab.screen.component.ScreenComponentGeneric;
 
 @OnlyIn(Dist.CLIENT)
 public abstract class AbstractScreenComponentInfo extends ScreenComponentGeneric {
-	public static final int SIZE = 26;
-	protected TextPropertySupplier infoHandler;
+    public static final int SIZE = 26;
+    protected TextPropertySupplier infoHandler;
 
-	public static final TextPropertySupplier EMPTY = Collections::emptyList;
+    public static final TextPropertySupplier EMPTY = Collections::emptyList;
 
-	public AbstractScreenComponentInfo(ITexture texture, TextPropertySupplier infoHandler, int x, int y) {
-		super(texture, x, y);
-		this.infoHandler = infoHandler;
-		onTooltip((graphics, component, xAxis, yAxis) -> {
-			graphics.renderTooltip(gui.getFontRenderer(), getInfo(infoHandler.getInfo()), xAxis, yAxis);
-		});
-	}
+    public AbstractScreenComponentInfo(ITexture texture, TextPropertySupplier infoHandler, int x, int y) {
+	super(texture, x, y);
+	this.infoHandler = infoHandler;
+	onTooltip((graphics, component, xAxis, yAxis) -> {
+	    graphics.renderTooltip(gui.getFontRenderer(), getInfo(infoHandler.getInfo()), xAxis, yAxis);
+	});
+    }
 
-	protected abstract List<? extends FormattedCharSequence> getInfo(List<? extends FormattedCharSequence> list);
+    protected abstract List<? extends FormattedCharSequence> getInfo(List<? extends FormattedCharSequence> list);
 
 }

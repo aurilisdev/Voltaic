@@ -8,30 +8,32 @@ import voltaic.Voltaic;
 
 public class AtlasHolderVoltaicCustom extends TextureAtlasHolder {
 
-	public static AtlasHolderVoltaicCustom INSTANCE;
+    public static AtlasHolderVoltaicCustom INSTANCE;
 
-	// Custom Textures
+    // Custom Textures
 //	public static final ResourceLocation TEXTURE_QUARRYARM = create("quarryarm");
 //	public static final ResourceLocation TEXTURE_QUARRYARM_DARK = create("quarrydark");
 //	public static final ResourceLocation TEXTURE_MERCURY = create("mercury");
 //	public static final ResourceLocation TEXTURE_GAS = create("gastexture");
 
-	public AtlasHolderVoltaicCustom(TextureManager textureManager) {
-		super(textureManager, Voltaic.rl("textures/" + Voltaic.ID + "/" + VoltaicTextureAtlases.ELECTRODYNAMICS_CUSTOM_NAME + ".png"), VoltaicTextureAtlases.ELECTRODYNAMICS_CUSTOM);
-	}
+    public AtlasHolderVoltaicCustom(TextureManager textureManager) {
+	super(textureManager,
+		Voltaic.rl("textures/" + Voltaic.ID + "/" + VoltaicTextureAtlases.ELECTRODYNAMICS_CUSTOM_NAME + ".png"),
+		VoltaicTextureAtlases.ELECTRODYNAMICS_CUSTOM);
+    }
 
-	@Override
-	public TextureAtlasSprite getSprite(ResourceLocation location) {
-		return super.getSprite(location);
-	}
+    @Override
+    public TextureAtlasSprite getSprite(ResourceLocation location) {
+	return super.getSprite(location);
+    }
 
-	public static TextureAtlasSprite get(ResourceLocation loc) {
-		return INSTANCE.getSprite(loc);
-	}
+    public static TextureAtlasSprite get(ResourceLocation loc) {
+	return INSTANCE.getSprite(loc);
+    }
 
-	@SuppressWarnings("unused")
-	private static ResourceLocation create(String name) {
-		return Voltaic.rl("custom/" + name);
-	}
+    @SuppressWarnings("unused")
+    private static ResourceLocation create(String name) {
+	return Voltaic.rl("custom/" + name);
+    }
 
 }

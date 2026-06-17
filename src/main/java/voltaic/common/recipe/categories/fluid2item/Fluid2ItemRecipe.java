@@ -20,39 +20,41 @@ public abstract class Fluid2ItemRecipe extends AbstractMaterialRecipe {
     private List<FluidIngredient> inputFluids;
     private ItemStack outputItem;
 
-    public Fluid2ItemRecipe(String group, List<FluidIngredient> fluidInputs, ItemStack itemOutput, double experience, int ticks, double usagePerTick, List<ProbableItem> itemBiproducts, List<ProbableFluid> fluidBiproducts, List<ProbableGas> gasBiproducts) {
-        super(group, experience, ticks, usagePerTick, itemBiproducts, fluidBiproducts, gasBiproducts);
-        inputFluids = fluidInputs;
-        outputItem = itemOutput;
+    public Fluid2ItemRecipe(String group, List<FluidIngredient> fluidInputs, ItemStack itemOutput, double experience,
+	    int ticks, double usagePerTick, List<ProbableItem> itemBiproducts, List<ProbableFluid> fluidBiproducts,
+	    List<ProbableGas> gasBiproducts) {
+	super(group, experience, ticks, usagePerTick, itemBiproducts, fluidBiproducts, gasBiproducts);
+	inputFluids = fluidInputs;
+	outputItem = itemOutput;
     }
 
     @Override
     public boolean matchesRecipe(ComponentProcessor pr, int procNumber) {
-        Pair<List<Integer>, Boolean> pair = areFluidsValid(getFluidIngredients(), pr.getHolder().<ComponentFluidHandlerMulti>getComponent(IComponentType.FluidHandler).getInputTanks());
-        if (pair.getSecond()) {
-            setFluidArrangement(pair.getFirst());
-            return true;
-        }
-        return false;
+	Pair<List<Integer>, Boolean> pair = areFluidsValid(getFluidIngredients(),
+		pr.getHolder().<ComponentFluidHandlerMulti>getComponent(IComponentType.FluidHandler).getInputTanks());
+	if (pair.getSecond()) {
+	    setFluidArrangement(pair.getFirst());
+	    return true;
+	}
+	return false;
     }
 
     @Override
     public ItemStack getItemRecipeOutput() {
-        return outputItem;
+	return outputItem;
     }
 
     @Override
     public List<FluidIngredient> getFluidIngredients() {
-        List<FluidIngredient> list = new ArrayList<>();
-        for (FluidIngredient ing : inputFluids) {
-            list.add(ing);
-        }
-        return list;
+	List<FluidIngredient> list = new ArrayList<>(inputFluids);
+	return list;
     }
 
     public interface Factory<T extends Fluid2ItemRecipe> {
 
-        T create(String group, List<FluidIngredient> fluidInputs, ItemStack itemOutput, double experience, int ticks, double usagePerTick, List<ProbableItem> itemBiproducts, List<ProbableFluid> fluidBiproducts, List<ProbableGas> gasBiproducts);
+	T create(String group, List<FluidIngredient> fluidInputs, ItemStack itemOutput, double experience, int ticks,
+		double usagePerTick, List<ProbableItem> itemBiproducts, List<ProbableFluid> fluidBiproducts,
+		List<ProbableGas> gasBiproducts);
 
     }
 

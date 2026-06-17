@@ -14,31 +14,31 @@ import voltaic.common.packet.NetworkHandler;
 
 public class PacketUpdateCarriedItemServer implements CustomPacketPayload {
 
-    public static final ResourceLocation PACKET_UPDATECARRIEDITEMSERVER_PACKETID = NetworkHandler.id("packetupdatecarrieditemserver");
+    public static final ResourceLocation PACKET_UPDATECARRIEDITEMSERVER_PACKETID = NetworkHandler
+	    .id("packetupdatecarrieditemserver");
     public static final Type<PacketUpdateCarriedItemServer> TYPE = new Type<>(PACKET_UPDATECARRIEDITEMSERVER_PACKETID);
-    public static final StreamCodec<RegistryFriendlyByteBuf, PacketUpdateCarriedItemServer> CODEC = StreamCodec.composite(
-       ItemStack.STREAM_CODEC, instance -> instance.carriedItem,
-            BlockPos.STREAM_CODEC, instance -> instance.tilePos,
-            UUIDUtil.STREAM_CODEC, instance -> instance.playerId,
-            PacketUpdateCarriedItemServer::new
-    );
+    public static final StreamCodec<RegistryFriendlyByteBuf, PacketUpdateCarriedItemServer> CODEC = StreamCodec
+	    .composite(ItemStack.STREAM_CODEC, instance -> instance.carriedItem, BlockPos.STREAM_CODEC,
+		    instance -> instance.tilePos, UUIDUtil.STREAM_CODEC, instance -> instance.playerId,
+		    PacketUpdateCarriedItemServer::new);
 
     private final ItemStack carriedItem;
     private final BlockPos tilePos;
     private final UUID playerId;
 
     public PacketUpdateCarriedItemServer(ItemStack carriedItem, BlockPos tilePos, UUID playerId) {
-        this.carriedItem = carriedItem;
-        this.tilePos = tilePos;
-        this.playerId = playerId;
+	this.carriedItem = carriedItem;
+	this.tilePos = tilePos;
+	this.playerId = playerId;
     }
 
     public static void handle(PacketUpdateCarriedItemServer message, IPayloadContext context) {
-        ServerBarrierMethods.handleUpdateCarriedItemServer(context.player().level(), message.carriedItem, message.tilePos, message.playerId);
+	ServerBarrierMethods.handleUpdateCarriedItemServer(context.player().level(), message.carriedItem,
+		message.tilePos, message.playerId);
     }
 
     @Override
     public Type<? extends CustomPacketPayload> type() {
-        return TYPE;
+	return TYPE;
     }
 }

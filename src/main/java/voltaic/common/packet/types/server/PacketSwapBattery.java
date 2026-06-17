@@ -14,23 +14,21 @@ public class PacketSwapBattery implements CustomPacketPayload {
 
     public static final ResourceLocation PACKET_SWAPBATTER_PACKETID = NetworkHandler.id("packetswapbattery");
     public static final Type<PacketSwapBattery> TYPE = new Type<>(PACKET_SWAPBATTER_PACKETID);
-    public static final StreamCodec<ByteBuf, PacketSwapBattery> CODEC = StreamCodec.composite(
-            UUIDUtil.STREAM_CODEC, instance -> instance.playerId,
-            PacketSwapBattery::new
-    );
+    public static final StreamCodec<ByteBuf, PacketSwapBattery> CODEC = StreamCodec.composite(UUIDUtil.STREAM_CODEC,
+	    instance -> instance.playerId, PacketSwapBattery::new);
 
     private final UUID playerId;
 
     public PacketSwapBattery(UUID uuid) {
-        playerId = uuid;
+	playerId = uuid;
     }
 
     public static void handle(PacketSwapBattery message, IPayloadContext context) {
-        ServerBarrierMethods.handleSwapBattery(context.player().level(), message.playerId);
+	ServerBarrierMethods.handleSwapBattery(context.player().level(), message.playerId);
     }
 
     @Override
     public Type<? extends CustomPacketPayload> type() {
-        return TYPE;
+	return TYPE;
     }
 }

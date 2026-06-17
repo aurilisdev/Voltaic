@@ -23,35 +23,42 @@ public abstract class BaseRadioactiveFluidsProvider implements DataProvider {
     private final String loc;
 
     public BaseRadioactiveFluidsProvider(PackOutput output, String modID) {
-        this.output = output;
-        this.modID = modID;
-        loc = "data/" + Voltaic.ID + "/" + RadioactiveFluidRegister.FOLDER + "/" + modID + "_" + RadioactiveFluidRegister.FILE_NAME;
+	this.output = output;
+	this.modID = modID;
+	loc = "data/" + Voltaic.ID + "/" + RadioactiveFluidRegister.FOLDER + "/" + modID + "_"
+		+ RadioactiveFluidRegister.FILE_NAME;
     }
 
     @Override
     public CompletableFuture<?> run(CachedOutput cache) {
-        JsonObject json = new JsonObject();
-        getRadioactiveFluids(json);
+	JsonObject json = new JsonObject();
+	getRadioactiveFluids(json);
 
-        Path parent = output.getOutputFolder().resolve(loc + ".json");
+	Path parent = output.getOutputFolder().resolve(loc + ".json");
 
-        return CompletableFuture.allOf(DataProvider.saveStable(cache, json, parent));
+	return CompletableFuture.allOf(DataProvider.saveStable(cache, json, parent));
     }
 
     public abstract void getRadioactiveFluids(JsonObject json);
 
     public void addFluid(Fluid fluid, double radiationAmount, double radiationStrength, JsonObject json) {
-        JsonObject data = new JsonObject();
-        json.add(BuiltInRegistries.FLUID.getKey(fluid).toString(), RadioactiveObject.CODEC.encode(new RadioactiveObject(radiationStrength, radiationAmount), JsonOps.INSTANCE, data).getOrThrow());
+	JsonObject data = new JsonObject();
+	json.add(BuiltInRegistries.FLUID.getKey(fluid).toString(),
+		RadioactiveObject.CODEC
+			.encode(new RadioactiveObject(radiationStrength, radiationAmount), JsonOps.INSTANCE, data)
+			.getOrThrow());
     }
 
     public void addTag(TagKey<Fluid> tag, double radiationAmount, double radiationStrength, JsonObject json) {
-        JsonObject data = new JsonObject();
-        json.add("#" + tag.location().toString(), RadioactiveObject.CODEC.encode(new RadioactiveObject(radiationStrength, radiationAmount), JsonOps.INSTANCE, data).getOrThrow());
+	JsonObject data = new JsonObject();
+	json.add("#" + tag.location().toString(),
+		RadioactiveObject.CODEC
+			.encode(new RadioactiveObject(radiationStrength, radiationAmount), JsonOps.INSTANCE, data)
+			.getOrThrow());
     }
 
     @Override
     public String getName() {
-        return modID + " Radioactive Fluids Provider";
+	return modID + " Radioactive Fluids Provider";
     }
 }

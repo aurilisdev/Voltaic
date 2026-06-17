@@ -16,7 +16,8 @@ import voltaic.common.recipe.categories.fluiditem2fluid.FluidItem2FluidRecipe;
 import voltaic.common.recipe.recipeutils.CountableIngredient;
 import voltaic.common.recipe.recipeutils.FluidIngredient;
 
-public class FluidItem2FluidBuilder<T extends FluidItem2FluidRecipe> extends BaseRecipeBuilder<T, FluidItem2FluidBuilder<T>> {
+public class FluidItem2FluidBuilder<T extends FluidItem2FluidRecipe>
+	extends BaseRecipeBuilder<T, FluidItem2FluidBuilder<T>> {
 
     private final FluidItem2FluidRecipe.Factory<T> factory;
 
@@ -27,56 +28,58 @@ public class FluidItem2FluidBuilder<T extends FluidItem2FluidRecipe> extends Bas
 
     private List<FluidStack> fluidIngredients = new ArrayList<>();
     private List<Pair<TagKey<Fluid>, Integer>> tagFluidIngredients = new ArrayList<>();
-    
-    public FluidItem2FluidBuilder(FluidItem2FluidRecipe.Factory<T> factory, FluidStack output, RecipeCategory category, String parent, String name, String group, double experience, int processTime, double usagePerTick) {
-        super(category, parent, name, group, experience, processTime, usagePerTick);
-        this.factory = factory;
-        this.output = output;
+
+    public FluidItem2FluidBuilder(FluidItem2FluidRecipe.Factory<T> factory, FluidStack output, RecipeCategory category,
+	    String parent, String name, String group, double experience, int processTime, double usagePerTick) {
+	super(category, parent, name, group, experience, processTime, usagePerTick);
+	this.factory = factory;
+	this.output = output;
     }
 
     @Override
     public Item getResult() {
-        return Items.AIR;
+	return Items.AIR;
     }
 
     @Override
     public T makeRecipe() {
-        List<CountableIngredient> itemIngs = new ArrayList<>();
-        for (ItemStack item : itemIngredients) {
-            itemIngs.add(new CountableIngredient(Ingredient.of(item), item.getCount()));
-        }
-        for (Pair<TagKey<Item>, Integer> pair : tagItemIngredients) {
-            itemIngs.add(new CountableIngredient(Ingredient.of(pair.getFirst()), pair.getSecond()));
-        }
+	List<CountableIngredient> itemIngs = new ArrayList<>();
+	for (ItemStack item : itemIngredients) {
+	    itemIngs.add(new CountableIngredient(Ingredient.of(item), item.getCount()));
+	}
+	for (Pair<TagKey<Item>, Integer> pair : tagItemIngredients) {
+	    itemIngs.add(new CountableIngredient(Ingredient.of(pair.getFirst()), pair.getSecond()));
+	}
 
-        List<FluidIngredient> fluidIngs = new ArrayList<>();
-        for (FluidStack fluid : fluidIngredients) {
-            fluidIngs.add(new FluidIngredient(fluid));
-        }
-        for (Pair<TagKey<Fluid>, Integer> pair : tagFluidIngredients) {
-            fluidIngs.add(new FluidIngredient(pair.getFirst(), pair.getSecond()));
-        }
-        return factory.create(group, itemIngs, fluidIngs, output, experience, processTime, usagePerTick, itemBiproducts, fluidBiproducts, gasBiproducts);
+	List<FluidIngredient> fluidIngs = new ArrayList<>();
+	for (FluidStack fluid : fluidIngredients) {
+	    fluidIngs.add(new FluidIngredient(fluid));
+	}
+	for (Pair<TagKey<Fluid>, Integer> pair : tagFluidIngredients) {
+	    fluidIngs.add(new FluidIngredient(pair.getFirst(), pair.getSecond()));
+	}
+	return factory.create(group, itemIngs, fluidIngs, output, experience, processTime, usagePerTick, itemBiproducts,
+		fluidBiproducts, gasBiproducts);
     }
-    
+
     public FluidItem2FluidBuilder<T> addItemStackInput(ItemStack stack) {
-        itemIngredients.add(stack);
-        return this;
+	itemIngredients.add(stack);
+	return this;
     }
 
     public FluidItem2FluidBuilder<T> addItemTagInput(TagKey<Item> tag, int count) {
-        tagItemIngredients.add(Pair.of(tag, count));
-        return this;
+	tagItemIngredients.add(Pair.of(tag, count));
+	return this;
     }
 
     public FluidItem2FluidBuilder<T> addFluidStackInput(FluidStack stack) {
-        fluidIngredients.add(stack);
-        return this;
+	fluidIngredients.add(stack);
+	return this;
     }
 
     public FluidItem2FluidBuilder<T> addFluidTagInput(TagKey<Fluid> tag, int count) {
-        tagFluidIngredients.add(Pair.of(tag, count));
-        return this;
+	tagFluidIngredients.add(Pair.of(tag, count));
+	return this;
     }
 
 }

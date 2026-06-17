@@ -13,34 +13,35 @@ public class FluidStackComponent {
 
     public static final Codec<FluidStackComponent> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 
-            FluidStack.OPTIONAL_CODEC.fieldOf("fluid").forGetter(instance0 -> instance0.fluid)
+	    FluidStack.OPTIONAL_CODEC.fieldOf("fluid").forGetter(instance0 -> instance0.fluid)
 
     ).apply(instance, FluidStackComponent::new));
 
-    public static final StreamCodec<RegistryFriendlyByteBuf, FluidStackComponent> STREAM_CODEC = StreamCodec.composite(
-            FluidStack.OPTIONAL_STREAM_CODEC, instance -> instance.fluid,
-            FluidStackComponent::new
+    public static final StreamCodec<RegistryFriendlyByteBuf, FluidStackComponent> STREAM_CODEC = StreamCodec
+	    .composite(FluidStack.OPTIONAL_STREAM_CODEC, instance -> instance.fluid, FluidStackComponent::new
 
-    );
+	    );
 
     public static final FluidStackComponent EMPTY = new FluidStackComponent(FluidStack.EMPTY);
 
     public FluidStack fluid = FluidStack.EMPTY;
 
     public FluidStackComponent(FluidStack fluid) {
-        this.fluid = fluid;
+	this.fluid = fluid;
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        FluidStackComponent that = (FluidStackComponent) o;
-        return Objects.equals(fluid, that.fluid);
+	if (this == o)
+	    return true;
+	if (o == null || getClass() != o.getClass())
+	    return false;
+	FluidStackComponent that = (FluidStackComponent) o;
+	return Objects.equals(fluid, that.fluid);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(fluid);
+	return Objects.hash(fluid);
     }
 }

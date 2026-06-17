@@ -29,108 +29,115 @@ public class BlockMachine extends GenericMachineBlock implements IMultiblockPare
     protected final IMachine machine;
 
     public BlockMachine(IMachine machine) {
-        super(machine.getBlockEntitySupplier(), machine.getVoxelShapeProvider());
-        this.machine = machine;
-        if (machine.usesLit()) {
-            registerDefaultState(stateDefinition.any().setValue(VoltaicBlockStates.LIT, false));
-        }
+	super(machine.getBlockEntitySupplier(), machine.getVoxelShapeProvider());
+	this.machine = machine;
+	if (machine.usesLit()) {
+	    registerDefaultState(stateDefinition.any().setValue(VoltaicBlockStates.LIT, false));
+	}
 
     }
 
     @Override
     public boolean propagatesSkylightDown(BlockState pState, BlockGetter pLevel, BlockPos pPos) {
-        if (machine.propegatesLightDown()) {
-            return true;
-        }
-        return super.propagatesSkylightDown(pState, pLevel, pPos);
+	if (machine.propegatesLightDown()) {
+	    return true;
+	}
+	return super.propagatesSkylightDown(pState, pLevel, pPos);
     }
 
     @Override
     public boolean canSurvive(BlockState state, LevelReader worldIn, BlockPos pos) {
 
-        if(machine.isMultiblock()) {
-            return isValidMultiblockPlacement(state, worldIn, pos, machine.getSubnodes().getSubnodes(state.hasProperty(VoltaicBlockStates.FACING) ? state.getValue(VoltaicBlockStates.FACING) : Direction.NORTH));
-        }
-        return super.canSurvive(state, worldIn, pos);
+	if (machine.isMultiblock()) {
+	    return isValidMultiblockPlacement(state, worldIn, pos,
+		    machine.getSubnodes()
+			    .getSubnodes(state.hasProperty(VoltaicBlockStates.FACING)
+				    ? state.getValue(VoltaicBlockStates.FACING)
+				    : Direction.NORTH));
+	}
+	return super.canSurvive(state, worldIn, pos);
 
     }
 
     @Override
     public RenderShape getRenderShape(BlockState state) {
-        return machine.getRenderShape();
+	return machine.getRenderShape();
     }
 
     @Override
     public int getLightEmission(BlockState state, BlockGetter world, BlockPos pos) {
 
-        if (machine.getLitBrightness() > 0 && state.hasProperty(VoltaicBlockStates.LIT) && state.getValue(VoltaicBlockStates.LIT)) {
-            return machine.getLitBrightness();
-        }
+	if (machine.getLitBrightness() > 0 && state.hasProperty(VoltaicBlockStates.LIT)
+		&& state.getValue(VoltaicBlockStates.LIT)) {
+	    return machine.getLitBrightness();
+	}
 
-        return super.getLightEmission(state, world, pos);
+	return super.getLightEmission(state, world, pos);
     }
 
     @Override
     public void setPlacedBy(Level worldIn, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
-        super.setPlacedBy(worldIn, pos, state, placer, stack);
-        BlockEntity tile = worldIn.getBlockEntity(pos);
-        if (hasMultiBlock() && tile instanceof IMultiblockParentTile multi) {
-            multi.onNodePlaced(worldIn, pos, state, placer, stack);
-        }
+	super.setPlacedBy(worldIn, pos, state, placer, stack);
+	BlockEntity tile = worldIn.getBlockEntity(pos);
+	if (hasMultiBlock() && tile instanceof IMultiblockParentTile multi) {
+	    multi.onNodePlaced(worldIn, pos, state, placer, stack);
+	}
     }
 
     @Override
     public void onRemove(BlockState state, Level worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
-        BlockEntity tile = worldIn.getBlockEntity(pos);
-        if (!(state.getBlock() == newState.getBlock() && state.getValue(VoltaicBlockStates.FACING) != newState.getValue(VoltaicBlockStates.FACING))) {
+	BlockEntity tile = worldIn.getBlockEntity(pos);
+	if (!(state.getBlock() == newState.getBlock()
+		&& state.getValue(VoltaicBlockStates.FACING) != newState.getValue(VoltaicBlockStates.FACING))) {
 
-            if (tile instanceof IMultiblockParentTile multi) {
-                multi.onNodeReplaced(worldIn, pos, true);
-            }
-        }
-        if (newState.isAir()) {
-            if (tile instanceof IMultiblockParentTile multi) {
-                multi.onNodeReplaced(worldIn, pos, false);
-            }
-        }
+	    if (tile instanceof IMultiblockParentTile multi) {
+		multi.onNodeReplaced(worldIn, pos, true);
+	    }
+	}
+	if (newState.isAir()) {
+	    if (tile instanceof IMultiblockParentTile multi) {
+		multi.onNodeReplaced(worldIn, pos, false);
+	    }
+	}
 
-        super.onRemove(state, worldIn, pos, newState, isMoving);
+	super.onRemove(state, worldIn, pos, newState, isMoving);
 
     }
 
     @Override
     public boolean hasMultiBlock() {
-        return machine.isMultiblock();
+	return machine.isMultiblock();
     }
 
     @Override
     public boolean isIPlayerStorable() {
-        return machine.isPlayerStorable();
+	return machine.isPlayerStorable();
     }
 
     @Override
-    public ItemStack getCloneItemStack(BlockState state, HitResult target, LevelReader level, BlockPos pos, Player player) {
-        ItemStack stack = super.getCloneItemStack(state, target, level, pos, player);
-        BlockEntity tile = level.getBlockEntity(pos);
-        if (tile != null) {
-            tile.saveToItem(stack, level.registryAccess());
-        }
-        return stack;
+    public ItemStack getCloneItemStack(BlockState state, HitResult target, LevelReader level, BlockPos pos,
+	    Player player) {
+	ItemStack stack = super.getCloneItemStack(state, target, level, pos, player);
+	BlockEntity tile = level.getBlockEntity(pos);
+	if (tile != null) {
+	    tile.saveToItem(stack, level.registryAccess());
+	}
+	return stack;
     }
 
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
-        return super.getStateForPlacement(context).setValue(VoltaicBlockStates.LIT, false);
+	return super.getStateForPlacement(context).setValue(VoltaicBlockStates.LIT, false);
     }
 
     @Override
     protected void createBlockStateDefinition(Builder<Block, BlockState> builder) {
-        super.createBlockStateDefinition(builder);
-        builder.add(VoltaicBlockStates.LIT);
+	super.createBlockStateDefinition(builder);
+	builder.add(VoltaicBlockStates.LIT);
     }
 
     @Override
     protected MapCodec<? extends BaseEntityBlock> codec() {
-        throw new UnsupportedOperationException("Need to implement CODEC");
+	throw new UnsupportedOperationException("Need to implement CODEC");
     }
 }

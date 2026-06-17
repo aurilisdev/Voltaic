@@ -4,6 +4,6 @@ import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
 public abstract class AbstractPlayerStartTrackingHandler {
 
-	public abstract void handle(PlayerEvent.StartTracking event);
+    public abstract void handle(PlayerEvent.StartTracking event);
 
 }

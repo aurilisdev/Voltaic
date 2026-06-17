@@ -4,6 +4,6 @@ import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent.RightClick
 
 public abstract class AbstractRightClickBlockHandler {
 
-	public abstract void handle(RightClickBlock event);
+    public abstract void handle(RightClickBlock event);
 
 }

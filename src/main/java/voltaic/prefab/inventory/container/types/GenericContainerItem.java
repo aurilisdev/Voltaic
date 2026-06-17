@@ -34,8 +34,8 @@ public abstract class GenericContainerItem extends GenericContainerSlotData<Capa
     public void clicked(int slot, int button, ClickType type, Player pl) {
 	Inventory playerinv = pl.getInventory();
 	ItemStack owner = getOwnerItem();
-	if (owner.isEmpty() || (slot >= 0 && slot <= playerinv.getContainerSize() - 1
-		&& ItemStack.isSameItem(getSlot(slot).getItem(), owner))) {
+	if (owner.isEmpty() || slot >= 0 && slot <= playerinv.getContainerSize() - 1
+		&& ItemStack.isSameItem(getSlot(slot).getItem(), owner)) {
 	    return;
 	}
 

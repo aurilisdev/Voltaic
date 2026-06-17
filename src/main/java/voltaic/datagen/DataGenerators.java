@@ -31,35 +31,35 @@ public class DataGenerators {
     @SubscribeEvent
     public static void gatherData(GatherDataEvent event) {
 
-        DataGenerator generator = event.getGenerator();
+	DataGenerator generator = event.getGenerator();
 
-        PackOutput output = generator.getPackOutput();
+	PackOutput output = generator.getPackOutput();
 
-        ExistingFileHelper helper = event.getExistingFileHelper();
+	ExistingFileHelper helper = event.getExistingFileHelper();
 
-        CompletableFuture<HolderLookup.Provider> lookupProvider = event.getLookupProvider();
+	CompletableFuture<HolderLookup.Provider> lookupProvider = event.getLookupProvider();
 
+	if (event.includeServer()) {
 
-        if (event.includeServer()) {
+	    DatapackBuiltinEntriesProvider datapacks = new DatapackBuiltinEntriesProvider(output, lookupProvider,
+		    new RegistrySetBuilder()
+			    //
+			    .add(Registries.DAMAGE_TYPE, VoltaicDamageTypes::registerTypes)
+		    //
+		    , Set.of(Voltaic.ID));
 
-            DatapackBuiltinEntriesProvider datapacks = new DatapackBuiltinEntriesProvider(output, lookupProvider, new RegistrySetBuilder()
-                    //
-                    .add(Registries.DAMAGE_TYPE, VoltaicDamageTypes::registerTypes)
-                    //
-                    , Set.of(Voltaic.ID));
-
-            generator.addProvider(true, datapacks);
-            VoltaicTagsProvider.addTagProviders(generator, output, datapacks.getRegistryProvider(), helper);
-            generator.addProvider(true, new VoltaicRecipeProvider(output, lookupProvider));
-            generator.addProvider(true, new VoltaicAdvancementProvider(output, datapacks.getRegistryProvider()));
-            generator.addProvider(true, new VoltaicRadiationShieldingProvider(output));
-        }
-        if (event.includeClient()) {
-            generator.addProvider(true, new VoltaicBlockStateProvider(output, helper));
-            generator.addProvider(true, new VoltaicItemModelsProvider(output, helper));
-            generator.addProvider(true, new VoltaicLangKeyProvider(output, Locale.EN_US));
-            generator.addProvider(true, new VoltaicSoundProvider(output, helper));
-        }
+	    generator.addProvider(true, datapacks);
+	    VoltaicTagsProvider.addTagProviders(generator, output, datapacks.getRegistryProvider(), helper);
+	    generator.addProvider(true, new VoltaicRecipeProvider(output, lookupProvider));
+	    generator.addProvider(true, new VoltaicAdvancementProvider(output, datapacks.getRegistryProvider()));
+	    generator.addProvider(true, new VoltaicRadiationShieldingProvider(output));
+	}
+	if (event.includeClient()) {
+	    generator.addProvider(true, new VoltaicBlockStateProvider(output, helper));
+	    generator.addProvider(true, new VoltaicItemModelsProvider(output, helper));
+	    generator.addProvider(true, new VoltaicLangKeyProvider(output, Locale.EN_US));
+	    generator.addProvider(true, new VoltaicSoundProvider(output, helper));
+	}
     }
 
 }

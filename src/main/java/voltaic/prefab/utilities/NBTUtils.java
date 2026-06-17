@@ -14,45 +14,45 @@ import voltaic.registers.VoltaicDataComponentTypes;
 
 public class NBTUtils {
 
-	public static final String TIMER = "timer";
-	public static final String MODE = "mode";
-	public static final String XP = "xp";
-	public static final String USED = "used";
-	public static final String ON = "on";
-	public static final String SMART = "smart";
-	public static final String SIZE = "size";
-	public static final String DIRECTION = "dir";
-	public static final String LOCATION = "loc";
-	public static final String PLATES = "plates";
-	public static final String SUCESS = "sucess";
-	public static final String PLAYING_SOUND = "false";
-	public static final String DIMENSION = "dimension";
-	public static final String TEMPERATURE = "temperature";
+    public static final String TIMER = "timer";
+    public static final String MODE = "mode";
+    public static final String XP = "xp";
+    public static final String USED = "used";
+    public static final String ON = "on";
+    public static final String SMART = "smart";
+    public static final String SIZE = "size";
+    public static final String DIRECTION = "dir";
+    public static final String LOCATION = "loc";
+    public static final String PLATES = "plates";
+    public static final String SUCESS = "sucess";
+    public static final String PLAYING_SOUND = "false";
+    public static final String DIMENSION = "dimension";
+    public static final String TEMPERATURE = "temperature";
 
-	public static final String FORTUNE_ENCHANT = "fortuneenchant";
-	public static final String SILK_TOUCH_ENCHANT = "silktouchenchant";
-	public static final String SPEED_ENCHANT = "speedenchant";
+    public static final String FORTUNE_ENCHANT = "fortuneenchant";
+    public static final String SILK_TOUCH_ENCHANT = "silktouchenchant";
+    public static final String SPEED_ENCHANT = "speedenchant";
 
-	public static List<Direction> readDirectionList(ItemStack item) {
-		return item.getOrDefault(VoltaicDataComponentTypes.DIRECTIONS, new ArrayList<Direction>());
-	}
+    public static List<Direction> readDirectionList(ItemStack item) {
+	return item.getOrDefault(VoltaicDataComponentTypes.DIRECTIONS, new ArrayList<Direction>());
+    }
 
-	public static void writeDirectionList(List<Direction> dirs, ItemStack item) {
-		item.set(VoltaicDataComponentTypes.DIRECTIONS, dirs);
-	}
+    public static void writeDirectionList(List<Direction> dirs, ItemStack item) {
+	item.set(VoltaicDataComponentTypes.DIRECTIONS, dirs);
+    }
 
-	public static void clearDirectionList(ItemStack item) {
-		item.remove(VoltaicDataComponentTypes.DIRECTIONS);
-	}
+    public static void clearDirectionList(ItemStack item) {
+	item.remove(VoltaicDataComponentTypes.DIRECTIONS);
+    }
 
-	public static CompoundTag writeDimensionToTag(ResourceKey<Level> level) {
-		CompoundTag tag = new CompoundTag();
-		tag.putString(DIMENSION, level.location().toString());
-		return tag;
-	}
+    public static CompoundTag writeDimensionToTag(ResourceKey<Level> level) {
+	CompoundTag tag = new CompoundTag();
+	tag.putString(DIMENSION, level.location().toString());
+	return tag;
+    }
 
-	public static ResourceKey<Level> readDimensionFromTag(CompoundTag tag) {
-		return ResourceKey.create(Registries.DIMENSION, ResourceLocation.parse(tag.getString(DIMENSION)));
-	}
+    public static ResourceKey<Level> readDimensionFromTag(CompoundTag tag) {
+	return ResourceKey.create(Registries.DIMENSION, ResourceLocation.parse(tag.getString(DIMENSION)));
+    }
 
 }

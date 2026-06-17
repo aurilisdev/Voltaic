@@ -18,20 +18,21 @@ public interface IGasPipe {
 
     public static interface IPipeMaterial {
 
-        /**
-         * units of ATM
-         * @return
-         */
-        int getMaxPressuire();
+	/**
+	 * units of ATM
+	 * 
+	 * @return
+	 */
+	int getMaxPressuire();
 
+	/**
+	 * returns whether this pipe material can be destroyed by corrosive gasses.
+	 * 
+	 * @return
+	 */
+	boolean canBeCorroded();
 
-        /**
-         * returns whether this pipe material can be destroyed by corrosive gasses.
-         * @return
-         */
-        boolean canBeCorroded();
-
-        Component getName();
+	Component getName();
 
     }
 

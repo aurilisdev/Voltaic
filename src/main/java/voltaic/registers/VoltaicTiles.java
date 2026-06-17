@@ -11,9 +11,14 @@ import voltaic.api.multiblock.assemblybased.TileMultiblockSlave;
 import voltaic.api.multiblock.subnodebased.TileMultiSubnode;
 
 public class VoltaicTiles {
-	public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPES = DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, Voltaic.ID);
+    public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPES = DeferredRegister
+	    .create(Registries.BLOCK_ENTITY_TYPE, Voltaic.ID);
 
-	public static final DeferredHolder<BlockEntityType<?>,BlockEntityType<TileMultiSubnode>> TILE_MULTI = BLOCK_ENTITY_TYPES.register("multisubnode", () -> new BlockEntityType<>(TileMultiSubnode::new, Sets.newHashSet(VoltaicBlocks.BLOCK_MULTISUBNODE.get()), null));
-	public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TileMultiblockSlave>> TILE_MULTIBLOCK_SLAVE = BLOCK_ENTITY_TYPES.register("multiblockslave", () -> new BlockEntityType<>(TileMultiblockSlave::new, Sets.newHashSet(VoltaicBlocks.BLOCK_MULTIBLOCK_SLAVE.get()), null));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TileMultiSubnode>> TILE_MULTI = BLOCK_ENTITY_TYPES
+	    .register("multisubnode", () -> new BlockEntityType<>(TileMultiSubnode::new,
+		    Sets.newHashSet(VoltaicBlocks.BLOCK_MULTISUBNODE.get()), null));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TileMultiblockSlave>> TILE_MULTIBLOCK_SLAVE = BLOCK_ENTITY_TYPES
+	    .register("multiblockslave", () -> new BlockEntityType<>(TileMultiblockSlave::new,
+		    Sets.newHashSet(VoltaicBlocks.BLOCK_MULTIBLOCK_SLAVE.get()), null));
 
 }

@@ -10,13 +10,13 @@ import voltaic.prefab.tile.components.IComponent;
 
 public interface IComponentGasHandler extends IComponent {
 
-	public static final int TANK_MULTIPLIER = 1000;
+    public static final int TANK_MULTIPLIER = 1000;
 
-	PropertyGasTank[] getInputTanks();
+    PropertyGasTank[] getInputTanks();
 
-	PropertyGasTank[] getOutputTanks();
-	
-	@Nullable
-	public IGasHandler getCapability(@Nullable Direction direction, CapabilityInputType mode);
+    PropertyGasTank[] getOutputTanks();
+
+    @Nullable
+    public IGasHandler getCapability(@Nullable Direction direction, CapabilityInputType mode);
 
 }

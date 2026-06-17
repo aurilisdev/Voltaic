@@ -7,25 +7,25 @@ import voltaic.prefab.screen.component.types.ScreenComponentProgress.ProgressBar
 
 public class ArrowAnimatedObject extends ScreenObject {
 
-	private ScreenObject offArrow;
-	private StartDirection startDirection;
+    private ScreenObject offArrow;
+    private StartDirection startDirection;
 
-	public ArrowAnimatedObject(ITexture offTexture, ITexture onTexture, int x, int y, StartDirection startDirection) {
-		super(onTexture, x, y);
-		offArrow = new ScreenObject(offTexture, x, y);
-		this.startDirection = startDirection;
-	}
+    public ArrowAnimatedObject(ITexture offTexture, ITexture onTexture, int x, int y, StartDirection startDirection) {
+	super(onTexture, x, y);
+	offArrow = new ScreenObject(offTexture, x, y);
+	this.startDirection = startDirection;
+    }
 
-	public ArrowAnimatedObject(ProgressBars bar, int x, int y, StartDirection startDirection) {
-		this(bar.off, bar.on, x, y, startDirection);
-	}
+    public ArrowAnimatedObject(ProgressBars bar, int x, int y, StartDirection startDirection) {
+	this(bar.off, bar.on, x, y, startDirection);
+    }
 
-	public ScreenObject getOffArrow() {
-		return offArrow;
-	}
+    public ScreenObject getOffArrow() {
+	return offArrow;
+    }
 
-	public StartDirection startDirection() {
-		return startDirection;
-	}
+    public StartDirection startDirection() {
+	return startDirection;
+    }
 
 }

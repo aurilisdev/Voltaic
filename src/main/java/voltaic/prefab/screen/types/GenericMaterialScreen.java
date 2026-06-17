@@ -13,7 +13,8 @@ import voltaic.prefab.screen.component.utils.AbstractScreenComponent;
 
 /**
  * 
- * This is a simple addon class that allows for a clean integration for fluid and gas lookups with JEI
+ * This is a simple addon class that allows for a clean integration for fluid
+ * and gas lookups with JEI
  * 
  * Note the tile does not need to be a GenericMaterialTile to use this class
  * 
@@ -23,31 +24,31 @@ import voltaic.prefab.screen.component.utils.AbstractScreenComponent;
  */
 public class GenericMaterialScreen<T extends GenericContainer> extends GenericScreen<T> {
 
-	private Set<ScreenComponentFluidGauge> fluidGauges = new HashSet<>();
-	private Set<ScreenComponentGasGauge> gasGauges = new HashSet<>();
+    private Set<ScreenComponentFluidGauge> fluidGauges = new HashSet<>();
+    private Set<ScreenComponentGasGauge> gasGauges = new HashSet<>();
 
-	public GenericMaterialScreen(T container, Inventory inv, Component titleIn) {
-		super(container, inv, titleIn);
+    public GenericMaterialScreen(T container, Inventory inv, Component titleIn) {
+	super(container, inv, titleIn);
+    }
+
+    @Override
+    public AbstractScreenComponent addComponent(AbstractScreenComponent component) {
+	super.addComponent(component);
+
+	if (component instanceof ScreenComponentFluidGauge gauge) {
+	    fluidGauges.add(gauge);
+	} else if (component instanceof ScreenComponentGasGauge gauge) {
+	    gasGauges.add(gauge);
 	}
+	return component;
+    }
 
-	@Override
-	public AbstractScreenComponent addComponent(AbstractScreenComponent component) {
-		super.addComponent(component);
+    public Set<ScreenComponentFluidGauge> getFluidGauges() {
+	return fluidGauges;
+    }
 
-		if (component instanceof ScreenComponentFluidGauge gauge) {
-			fluidGauges.add(gauge);
-		} else if (component instanceof ScreenComponentGasGauge gauge) {
-			gasGauges.add(gauge);
-		}
-		return component;
-	}
-
-	public Set<ScreenComponentFluidGauge> getFluidGauges() {
-		return fluidGauges;
-	}
-
-	public Set<ScreenComponentGasGauge> getGasGauges() {
-		return gasGauges;
-	}
+    public Set<ScreenComponentGasGauge> getGasGauges() {
+	return gasGauges;
+    }
 
 }
