@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
 import voltaic.prefab.inventory.container.slot.item.SlotGeneric;
 import voltaic.prefab.screen.GenericScreen;
 import voltaic.prefab.screen.component.button.ScreenComponentButton;
@@ -14,137 +17,146 @@ import voltaic.prefab.screen.component.types.ScreenComponentSlot;
 import voltaic.prefab.screen.component.types.guitab.ScreenComponentGuiTab;
 import voltaic.prefab.utilities.VoltaicTextUtils;
 import voltaic.prefab.utilities.math.Color;
-import net.minecraft.ChatFormatting;
-import net.minecraft.core.Direction;
-import net.minecraft.network.chat.Component;
 
 public class WrapperInventoryIO {
 
-	private ScreenComponentInventoryIO[] ioArr = new ScreenComponentInventoryIO[6];
+    private ScreenComponentInventoryIO[] ioArr = new ScreenComponentInventoryIO[6];
 
-	private ScreenComponentSimpleLabel label;
+    private ScreenComponentSimpleLabel label;
 
-	public ScreenComponentButton<?> button;
+    public ScreenComponentButton<?> button;
 
-	private final GenericScreen<?> screen;
+    private final GenericScreen<?> screen;
 
-	private final BiFunction<SlotGeneric, Integer, Color> defaultColorSupplier;
+    private final BiFunction<SlotGeneric, Integer, Color> defaultColorSupplier;
 
-	private Consumer<Boolean> additionalToHide = show -> {};
+    private Consumer<Boolean> additionalToHide = show -> {
+    };
 
-	public WrapperInventoryIO(GenericScreen<?> screen, int tabX, int tabY, int slotStartX, int slotStartY, int labelX, int labelY) {
-		this(screen, tabX, tabY, slotStartX, slotStartY, labelX, labelY, (slot, index) -> Color.WHITE);
-	}
+    public WrapperInventoryIO(GenericScreen<?> screen, int tabX, int tabY, int slotStartX, int slotStartY, int labelX,
+	    int labelY) {
+	this(screen, tabX, tabY, slotStartX, slotStartY, labelX, labelY, (slot, index) -> Color.WHITE);
+    }
 
-	public WrapperInventoryIO(GenericScreen<?> screen, int tabX, int tabY, int slotStartX, int slotStartY, int labelX, int labelY, BiFunction<SlotGeneric, Integer, Color> defaultColorSupplier) {
-		this.screen = screen;
-		this.defaultColorSupplier = defaultColorSupplier;
-		screen.addComponent(button = (ScreenComponentButton<?>) new ScreenComponentButton<>(ScreenComponentGuiTab.GuiInfoTabTextures.REGULAR, tabX, tabY).setOnPress(button -> {
-			//
-			button.isPressed = !button.isPressed;
+    public WrapperInventoryIO(GenericScreen<?> screen, int tabX, int tabY, int slotStartX, int slotStartY, int labelX,
+	    int labelY, BiFunction<SlotGeneric, Integer, Color> defaultColorSupplier) {
+	this.screen = screen;
+	this.defaultColorSupplier = defaultColorSupplier;
+	screen.addComponent(button = (ScreenComponentButton<?>) new ScreenComponentButton<>(
+		ScreenComponentGuiTab.GuiInfoTabTextures.REGULAR, tabX, tabY).setOnPress(button -> {
+		    //
+		    button.isPressed = !button.isPressed;
 
-			if (button.isPressed) {
+		    if (button.isPressed) {
 
-				additionalToHide.accept(false);
+			additionalToHide.accept(false);
 
-				this.screen.playerInvLabel.setVisible(false);
+			this.screen.playerInvLabel.setVisible(false);
 
-				setColoredSlots();
+			setColoredSlots();
 
-				updateVisibility(true);
+			updateVisibility(true);
 
-			} else {
-				additionalToHide.accept(true);
+		    } else {
+			additionalToHide.accept(true);
 
-				this.screen.playerInvLabel.setVisible(true);
+			this.screen.playerInvLabel.setVisible(true);
 
-				resetSlots();
+			resetSlots();
 
-				updateVisibility(false);
-			}
+			updateVisibility(false);
+		    }
 
 		}).onTooltip((graphics, but, xAxis, yAxis) -> {
-			//
-			ScreenComponentButton<?> button = (ScreenComponentButton<?>) but;
-			List<Component> tooltips = new ArrayList<>();
-			tooltips.add(VoltaicTextUtils.tooltip("inventoryio").withStyle(ChatFormatting.DARK_GRAY));
-			if (!button.isPressed) {
-				tooltips.add(VoltaicTextUtils.tooltip("inventoryio.presstoshow").withStyle(ChatFormatting.ITALIC, ChatFormatting.GRAY));
-			} else {
-				tooltips.add(VoltaicTextUtils.tooltip("inventoryio.presstohide").withStyle(ChatFormatting.ITALIC, ChatFormatting.GRAY));
-			}
+		    //
+		    ScreenComponentButton<?> button = (ScreenComponentButton<?>) but;
+		    List<Component> tooltips = new ArrayList<>();
+		    tooltips.add(VoltaicTextUtils.tooltip("inventoryio").withStyle(ChatFormatting.DARK_GRAY));
+		    if (!button.isPressed) {
+			tooltips.add(VoltaicTextUtils.tooltip("inventoryio.presstoshow")
+				.withStyle(ChatFormatting.ITALIC, ChatFormatting.GRAY));
+		    } else {
+			tooltips.add(VoltaicTextUtils.tooltip("inventoryio.presstohide")
+				.withStyle(ChatFormatting.ITALIC, ChatFormatting.GRAY));
+		    }
 
-			graphics.renderComponentTooltip(this.screen.getFontRenderer(), tooltips, xAxis, yAxis);
+		    graphics.renderComponentTooltip(this.screen.getFontRenderer(), tooltips, xAxis, yAxis);
 
 		}).setIcon(ScreenComponentSlot.IconType.INVENTORY_IO));
 
-		this.screen.addComponent(label = new ScreenComponentSimpleLabel(labelX, labelY, 10, Color.TEXT_GRAY, VoltaicTextUtils.tooltip("inventoryio.slotmap")));
+	this.screen.addComponent(label = new ScreenComponentSimpleLabel(labelX, labelY, 10, Color.TEXT_GRAY,
+		VoltaicTextUtils.tooltip("inventoryio.slotmap")));
 
-		label.setVisible(false);
+	label.setVisible(false);
 
-		this.screen.addComponent(ioArr[0] = new ScreenComponentInventoryIO(slotStartX, slotStartY+1, Direction.UP));
-		this.screen.addComponent(ioArr[1] = new ScreenComponentInventoryIO(slotStartX, slotStartY + 26, Direction.NORTH));
-		this.screen.addComponent(ioArr[2] = new ScreenComponentInventoryIO(slotStartX, slotStartY + 26 * 2 - 1, Direction.DOWN));
-		this.screen.addComponent(ioArr[3] = new ScreenComponentInventoryIO(slotStartX - 25, slotStartY + 26, Direction.EAST));
-		this.screen.addComponent(ioArr[4] = new ScreenComponentInventoryIO(slotStartX + 25, slotStartY + 26, Direction.WEST));
-		this.screen.addComponent(ioArr[5] = new ScreenComponentInventoryIO(slotStartX + 25, slotStartY + 26 * 2 - 1, Direction.SOUTH));
+	this.screen.addComponent(ioArr[0] = new ScreenComponentInventoryIO(slotStartX, slotStartY + 1, Direction.UP));
+	this.screen
+		.addComponent(ioArr[1] = new ScreenComponentInventoryIO(slotStartX, slotStartY + 26, Direction.NORTH));
+	this.screen.addComponent(
+		ioArr[2] = new ScreenComponentInventoryIO(slotStartX, slotStartY + 26 * 2 - 1, Direction.DOWN));
+	this.screen.addComponent(
+		ioArr[3] = new ScreenComponentInventoryIO(slotStartX - 25, slotStartY + 26, Direction.EAST));
+	this.screen.addComponent(
+		ioArr[4] = new ScreenComponentInventoryIO(slotStartX + 25, slotStartY + 26, Direction.WEST));
+	this.screen.addComponent(
+		ioArr[5] = new ScreenComponentInventoryIO(slotStartX + 25, slotStartY + 26 * 2 - 1, Direction.SOUTH));
 
-		for (ScreenComponentInventoryIO io : ioArr) {
-			io.setVisible(false);
-		}
+	for (ScreenComponentInventoryIO io : ioArr) {
+	    io.setVisible(false);
+	}
+    }
+
+    public WrapperInventoryIO hideAdditional(Consumer<Boolean> additionalToHide) {
+	this.additionalToHide = additionalToHide;
+	return this;
+    }
+
+    public void updateVisibility(boolean show) {
+	for (ScreenComponentInventoryIO io : ioArr) {
+	    io.setVisible(show);
 	}
 
-	public WrapperInventoryIO hideAdditional(Consumer<Boolean> additionalToHide){
-		this.additionalToHide = additionalToHide;
-		return this;
+	label.setVisible(show);
+    }
+
+    public void setColoredSlots() {
+	for (int i = this.screen.getMenu().getAdditionalSlotCount(); i < this.screen.getMenu().slots.size(); i++) {
+
+	    ((SlotGeneric) this.screen.getMenu().slots.get(i)).setActive(false);
+
 	}
 
-	public void updateVisibility(boolean show) {
-		for (ScreenComponentInventoryIO io : ioArr) {
-			io.setVisible(show);
-		}
+	for (int i = 0; i < this.screen.getMenu().getAdditionalSlotCount(); i++) {
 
-		label.setVisible(show);
+	    SlotGeneric generic = (SlotGeneric) this.screen.getMenu().slots.get(i);
+
+	    if (generic.ioColor != null) {
+
+		this.screen.slots.get(i).setColor(generic.ioColor);
+
+	    }
+
+	}
+    }
+
+    public void resetSlots() {
+	for (int i = this.screen.getMenu().getAdditionalSlotCount(); i < this.screen.getMenu().slots.size(); i++) {
+
+	    ((SlotGeneric) this.screen.getMenu().slots.get(i)).setActive(true);
+
 	}
 
-	public void setColoredSlots() {
-		for (int i = this.screen.getMenu().getAdditionalSlotCount(); i < this.screen.getMenu().slots.size(); i++) {
+	for (int i = 0; i < this.screen.getMenu().getAdditionalSlotCount(); i++) {
 
-			((SlotGeneric) this.screen.getMenu().slots.get(i)).setActive(false);
+	    SlotGeneric generic = (SlotGeneric) this.screen.getMenu().slots.get(i);
 
-		}
+	    if (generic.ioColor != null) {
 
-		for (int i = 0; i < this.screen.getMenu().getAdditionalSlotCount(); i++) {
+		this.screen.slots.get(i).setColor(this.defaultColorSupplier.apply(generic, i));
 
-			SlotGeneric generic = (SlotGeneric) this.screen.getMenu().slots.get(i);
+	    }
 
-			if (generic.ioColor != null) {
-
-				this.screen.slots.get(i).setColor(generic.ioColor);
-
-			}
-
-		}
 	}
-
-	public void resetSlots() {
-		for (int i = this.screen.getMenu().getAdditionalSlotCount(); i < this.screen.getMenu().slots.size(); i++) {
-
-			((SlotGeneric) this.screen.getMenu().slots.get(i)).setActive(true);
-
-		}
-
-		for (int i = 0; i < this.screen.getMenu().getAdditionalSlotCount(); i++) {
-
-			SlotGeneric generic = (SlotGeneric) this.screen.getMenu().slots.get(i);
-
-			if (generic.ioColor != null) {
-
-				this.screen.slots.get(i).setColor(this.defaultColorSupplier.apply(generic, i));
-
-			}
-
-		}
-	}
+    }
 
 }

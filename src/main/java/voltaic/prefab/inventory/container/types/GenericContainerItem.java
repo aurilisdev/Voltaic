@@ -2,7 +2,6 @@ package voltaic.prefab.inventory.container.types;
 
 import javax.annotation.Nullable;
 
-import voltaic.api.item.CapabilityItemStackHandler;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -11,15 +10,18 @@ import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.item.ItemStack;
+import voltaic.api.item.CapabilityItemStackHandler;
 
 public abstract class GenericContainerItem extends GenericContainerSlotData<CapabilityItemStackHandler> {
 
     /**
-     * Documentation note here: DO NOT use ItemStack.EMPTY for the dummy handler created on the client. The empty
-     * ItemStack cannot store data components. Use a piece of cobblestone or something generic like that!
+     * Documentation note here: DO NOT use ItemStack.EMPTY for the dummy handler
+     * created on the client. The empty ItemStack cannot store data components. Use
+     * a piece of cobblestone or something generic like that!
      */
-    public GenericContainerItem(MenuType<?> type, int id, Inventory playerinv, CapabilityItemStackHandler handler, ContainerData data) {
-        super(type, id, playerinv, handler, data);
+    public GenericContainerItem(MenuType<?> type, int id, Inventory playerinv, CapabilityItemStackHandler handler,
+	    ContainerData data) {
+	super(type, id, playerinv, handler, data);
     }
 
     @Override
@@ -30,22 +32,22 @@ public abstract class GenericContainerItem extends GenericContainerSlotData<Capa
     @Override
     public void clicked(int slot, int button, ClickType type, Player pl) {
 
-        Inventory playerinv = pl.getInventory();
+	Inventory playerinv = pl.getInventory();
 
-        ItemStack owner = getOwnerItem();
-	if (owner.isEmpty() || (slot >= 0 && slot <= playerinv.getContainerSize() - 1 && ItemStack.isSameItem(getSlot(slot).getItem(), owner))) {
+	ItemStack owner = getOwnerItem();
+	if (owner.isEmpty() || slot >= 0 && slot <= playerinv.getContainerSize() - 1
+		&& ItemStack.isSameItem(getSlot(slot).getItem(), owner)) {
 	    return;
 	}
 
-        super.clicked(slot, button, type, pl);
+	super.clicked(slot, button, type, pl);
     }
 
     @Override
     public boolean stillValid(Player player) {
 
-        return !getOwnerItem().isEmpty();
+	return !getOwnerItem().isEmpty();
     }
-
 
     /**
      * Retrieves the item that owns this container
@@ -54,42 +56,42 @@ public abstract class GenericContainerItem extends GenericContainerSlotData<Capa
      */
     public ItemStack getOwnerItem() {
 
-        if (getData().getCount() == 0 || getData().get(0) == -1) {
-            return ItemStack.EMPTY;
-        }
+	if (getData().getCount() == 0 || getData().get(0) == -1) {
+	    return ItemStack.EMPTY;
+	}
 
-        try {
-            return getPlayer().getItemInHand(InteractionHand.values()[getData().get(0)]);
-        } catch (Exception e) {
-            return ItemStack.EMPTY;
-        }
+	try {
+	    return getPlayer().getItemInHand(InteractionHand.values()[getData().get(0)]);
+	} catch (Exception e) {
+	    return ItemStack.EMPTY;
+	}
 
     }
 
     public @Nullable InteractionHand getHand() {
-        if (getData().getCount() == 0 || getData().get(0) == -1) {
-            return null;
-        }
+	if (getData().getCount() == 0 || getData().get(0) == -1) {
+	    return null;
+	}
 
-        try {
-            return InteractionHand.values()[getData().get(0)];
-        } catch (Exception e) {
-            return null;
-        }
+	try {
+	    return InteractionHand.values()[getData().get(0)];
+	} catch (Exception e) {
+	    return null;
+	}
     }
 
     public static SimpleContainerData makeDefaultData(int size) {
-        SimpleContainerData data = new SimpleContainerData(size);
-        for (int i = 0; i < size; i++) {
-            data.set(i, -1);
-        }
-        return data;
+	SimpleContainerData data = new SimpleContainerData(size);
+	for (int i = 0; i < size; i++) {
+	    data.set(i, -1);
+	}
+	return data;
     }
 
     public static SimpleContainerData makeData(InteractionHand hand) {
-        SimpleContainerData data = new SimpleContainerData(1);
-        data.set(0, hand.ordinal());
-        return data;
+	SimpleContainerData data = new SimpleContainerData(1);
+	data.set(0, hand.ordinal());
+	return data;
     }
 
 }

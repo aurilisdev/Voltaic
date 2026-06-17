@@ -1,89 +1,91 @@
 package voltaic.api.screen;
 
-import voltaic.Voltaic;
 import net.minecraft.resources.ResourceLocation;
+import voltaic.Voltaic;
 
 /**
- * Simple wrapper interface allowing for basic compatibility between different textures. Textures are assumed to be 256 x 256
+ * Simple wrapper interface allowing for basic compatibility between different
+ * textures. Textures are assumed to be 256 x 256
  * 
  * @author skip999
  *
  */
 public interface ITexture {
 
-	int textureWidth();
+    int textureWidth();
 
-	int textureHeight();
+    int textureHeight();
 
-	int textureU();
+    int textureU();
 
-	int textureV();
+    int textureV();
 
-	int imageWidth();
+    int imageWidth();
 
-	int imageHeight();
+    int imageHeight();
 
-	ResourceLocation getLocation();
+    ResourceLocation getLocation();
 
-	enum Textures implements ITexture {
-		NONE(0, 0, 0, 0, 0, 0, null),
-		CONDENSER_COLUMN(32, 47, 0, 0, 32, 47, Voltaic.rl("textures/screen/component/condensercolumn.png")),
-		TRANSFORMER_SYMBOL(25, 33, 0, 0, 25, 33, Voltaic.rl("textures/screen/component/transformercoil.png")),
-		WHITE(10, 10, 0, 0 ,10, 10, Voltaic.forgerl("textures/white.png"));
+    enum Textures implements ITexture {
+	NONE(0, 0, 0, 0, 0, 0, null),
+	CONDENSER_COLUMN(32, 47, 0, 0, 32, 47, Voltaic.rl("textures/screen/component/condensercolumn.png")),
+	TRANSFORMER_SYMBOL(25, 33, 0, 0, 25, 33, Voltaic.rl("textures/screen/component/transformercoil.png")),
+	WHITE(10, 10, 0, 0, 10, 10, Voltaic.forgerl("textures/white.png"));
 
-		private final int textureWidth;
-		private final int textureHeight;
-		private final int textureU;
-		private final int textureV;
-		private final int imageWidth;
-		private final int imageHeight;
-		private final ResourceLocation loc;
+	private final int textureWidth;
+	private final int textureHeight;
+	private final int textureU;
+	private final int textureV;
+	private final int imageWidth;
+	private final int imageHeight;
+	private final ResourceLocation loc;
 
-		Textures(int textureWidth, int textureHeight, int textureU, int textureV, int imageWidth, int imageHeight, ResourceLocation loc) {
-			this.textureWidth = textureWidth;
-			this.textureHeight = textureHeight;
-			this.textureU = textureU;
-			this.textureV = textureV;
-			this.imageWidth = imageWidth;
-			this.imageHeight = imageHeight;
-			this.loc = loc;
-		}
-
-		@Override
-		public ResourceLocation getLocation() {
-			return loc;
-		}
-
-		@Override
-		public int imageHeight() {
-			return imageHeight;
-		}
-
-		@Override
-		public int imageWidth() {
-			return imageWidth;
-		}
-
-		@Override
-		public int textureHeight() {
-			return textureHeight;
-		}
-
-		@Override
-		public int textureU() {
-			return textureU;
-		}
-
-		@Override
-		public int textureV() {
-			return textureV;
-		}
-
-		@Override
-		public int textureWidth() {
-			return textureWidth;
-		}
-
+	Textures(int textureWidth, int textureHeight, int textureU, int textureV, int imageWidth, int imageHeight,
+		ResourceLocation loc) {
+	    this.textureWidth = textureWidth;
+	    this.textureHeight = textureHeight;
+	    this.textureU = textureU;
+	    this.textureV = textureV;
+	    this.imageWidth = imageWidth;
+	    this.imageHeight = imageHeight;
+	    this.loc = loc;
 	}
+
+	@Override
+	public ResourceLocation getLocation() {
+	    return loc;
+	}
+
+	@Override
+	public int imageHeight() {
+	    return imageHeight;
+	}
+
+	@Override
+	public int imageWidth() {
+	    return imageWidth;
+	}
+
+	@Override
+	public int textureHeight() {
+	    return textureHeight;
+	}
+
+	@Override
+	public int textureU() {
+	    return textureU;
+	}
+
+	@Override
+	public int textureV() {
+	    return textureV;
+	}
+
+	@Override
+	public int textureWidth() {
+	    return textureWidth;
+	}
+
+    }
 
 }

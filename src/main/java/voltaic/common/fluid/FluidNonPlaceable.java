@@ -18,71 +18,72 @@ import net.minecraftforge.fluids.FluidType;
 
 public class FluidNonPlaceable extends Fluid {
 
-	private final Supplier<? extends Item> bucket;
-	private final FluidType type;
+    private final Supplier<? extends Item> bucket;
+    private final FluidType type;
 
-	public FluidNonPlaceable(Supplier<? extends Item> bucket, FluidType type) {
-		this.bucket = bucket;
-		this.type = type;
-	}
+    public FluidNonPlaceable(Supplier<? extends Item> bucket, FluidType type) {
+	this.bucket = bucket;
+	this.type = type;
+    }
 
-	@Override
-	public Item getBucket() {
-		return bucket.get();
-	}
+    @Override
+    public Item getBucket() {
+	return bucket.get();
+    }
 
-	@Override
-	protected boolean canBeReplacedWith(FluidState fluidState, BlockGetter blockReader, BlockPos pos, Fluid fluid, Direction direction) {
-		return false;
-	}
+    @Override
+    protected boolean canBeReplacedWith(FluidState fluidState, BlockGetter blockReader, BlockPos pos, Fluid fluid,
+	    Direction direction) {
+	return false;
+    }
 
-	@Override
-	protected Vec3 getFlow(BlockGetter blockReader, BlockPos pos, FluidState fluidState) {
-		return Vec3.ZERO;
-	}
+    @Override
+    protected Vec3 getFlow(BlockGetter blockReader, BlockPos pos, FluidState fluidState) {
+	return Vec3.ZERO;
+    }
 
-	@Override
-	public int getTickDelay(LevelReader levelReader) {
-		return 0;
-	}
+    @Override
+    public int getTickDelay(LevelReader levelReader) {
+	return 0;
+    }
 
-	@Override
-	protected float getExplosionResistance() {
-		return 0;
-	}
+    @Override
+    protected float getExplosionResistance() {
+	return 0;
+    }
 
-	@Override
-	public float getHeight(FluidState fluidState, BlockGetter blockGetter, BlockPos pos) {
-		return 0;
-	}
+    @Override
+    public float getHeight(FluidState fluidState, BlockGetter blockGetter, BlockPos pos) {
+	return 0;
+    }
 
-	@Override
-	public float getOwnHeight(FluidState state) {
-		return 0;
-	}
+    @Override
+    public float getOwnHeight(FluidState state) {
+	return 0;
+    }
 
-	@Override
-	protected BlockState createLegacyBlock(FluidState state) {
-		return Blocks.AIR.defaultBlockState();
-	}
+    @Override
+    protected BlockState createLegacyBlock(FluidState state) {
+	return Blocks.AIR.defaultBlockState();
+    }
 
-	@Override
-	public boolean isSource(FluidState state) {
-		return false;
-	}
+    @Override
+    public boolean isSource(FluidState state) {
+	return false;
+    }
 
-	@Override
-	public int getAmount(FluidState state) {
-		return 0;
-	}
+    @Override
+    public int getAmount(FluidState state) {
+	return 0;
+    }
 
-	@Override
-	public VoxelShape getShape(FluidState state, BlockGetter getter, BlockPos pos) {
-		return Shapes.block();
-	}
+    @Override
+    public VoxelShape getShape(FluidState state, BlockGetter getter, BlockPos pos) {
+	return Shapes.block();
+    }
 
-	@Override
-	public FluidType getFluidType() {
-		return type;
-	}
+    @Override
+    public FluidType getFluidType() {
+	return type;
+    }
 }

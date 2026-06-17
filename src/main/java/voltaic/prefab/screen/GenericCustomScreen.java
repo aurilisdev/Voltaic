@@ -10,22 +10,22 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 
 public abstract class GenericCustomScreen<T extends AbstractContainerMenu> extends AbstractContainerScreen<T> {
-	protected GenericCustomScreen(T screenContainer, Inventory inv, Component titleIn) {
-		super(screenContainer, inv, titleIn);
-	}
+    protected GenericCustomScreen(T screenContainer, Inventory inv, Component titleIn) {
+	super(screenContainer, inv, titleIn);
+    }
 
-	@Override
-	public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-		this.renderBackground(graphics);
-		super.render(graphics, mouseX, mouseY, partialTicks);
-		renderTooltip(graphics, mouseX, mouseY);
-	}
+    @Override
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+	this.renderBackground(graphics);
+	super.render(graphics, mouseX, mouseY, partialTicks);
+	renderTooltip(graphics, mouseX, mouseY);
+    }
 
-	@Override
-	protected void renderBg(GuiGraphics graphics, float partialTicks, int mouseX, int mouseY) {
-		RenderSystem.setShaderColor(1, 1, 1, 1);
-		graphics.blit(getScreenBackground(), leftPos, topPos, 0, 0, imageWidth, imageHeight);
-	}
+    @Override
+    protected void renderBg(GuiGraphics graphics, float partialTicks, int mouseX, int mouseY) {
+	RenderSystem.setShaderColor(1, 1, 1, 1);
+	graphics.blit(getScreenBackground(), leftPos, topPos, 0, 0, imageWidth, imageHeight);
+    }
 
-	public abstract ResourceLocation getScreenBackground();
+    public abstract ResourceLocation getScreenBackground();
 }

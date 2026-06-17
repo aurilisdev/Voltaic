@@ -4,9 +4,9 @@ import voltaic.prefab.utilities.object.TransferPack;
 
 public interface IElectricGenerator {
 
-	void setMultiplier(double val);
+    void setMultiplier(double val);
 
-	double getMultiplier();
+    double getMultiplier();
 
-	TransferPack getProduced();
+    TransferPack getProduced();
 }

@@ -5,9 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.function.Supplier;
 
-import voltaic.api.electricity.formatting.ChatFormatter;
-import voltaic.api.electricity.formatting.DisplayUnits;
-import voltaic.prefab.utilities.VoltaicTextUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.CreativeModeTab;
@@ -15,6 +12,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import voltaic.api.electricity.formatting.ChatFormatter;
+import voltaic.api.electricity.formatting.DisplayUnits;
+import voltaic.prefab.utilities.VoltaicTextUtils;
 
 public class BlockItemDescriptable extends BlockItemVoltaic {
 
@@ -24,47 +24,48 @@ public class BlockItemDescriptable extends BlockItemVoltaic {
     private static boolean initialized = false;
 
     public BlockItemDescriptable(Block block, Properties properties, Supplier<CreativeModeTab> creativeTab) {
-        super(block, properties, creativeTab);
+	super(block, properties, creativeTab);
     }
 
     @Override
     public void appendHoverText(ItemStack stack, Level context, List<Component> tooltip, TooltipFlag flagIn) {
-        super.appendHoverText(stack, context, tooltip, flagIn);
-        if (!initialized) {
-            BlockItemDescriptable.initialized = true;
+	super.appendHoverText(stack, context, tooltip, flagIn);
+	if (!initialized) {
+	    BlockItemDescriptable.initialized = true;
 
-            DESCRIPTION_MAPPINGS.forEach((supplier, set) -> {
+	    DESCRIPTION_MAPPINGS.forEach((supplier, set) -> {
 
-                PROCESSED_DESCRIPTION_MAPPINGS.put(supplier.get(), set);
+		PROCESSED_DESCRIPTION_MAPPINGS.put(supplier.get(), set);
 
-            });
+	    });
 
-        }
-        ArrayList<MutableComponent> gotten = PROCESSED_DESCRIPTION_MAPPINGS.get(getBlock());
-        if (gotten != null) {
-            tooltip.addAll(gotten);
-        }
+	}
+	ArrayList<MutableComponent> gotten = PROCESSED_DESCRIPTION_MAPPINGS.get(getBlock());
+	if (gotten != null) {
+	    tooltip.addAll(gotten);
+	}
 
-        if (stack.hasTag() && stack.getTag().contains("joules")) {
-            double joules = stack.getTag().getDouble("joules");
-            if (joules > 0) {
-                tooltip.add(VoltaicTextUtils.gui("machine.stored", ChatFormatter.getChatDisplayShort(joules, DisplayUnits.JOULES)));
-            }
-        }
+	if (stack.hasTag() && stack.getTag().contains("joules")) {
+	    double joules = stack.getTag().getDouble("joules");
+	    if (joules > 0) {
+		tooltip.add(VoltaicTextUtils.gui("machine.stored",
+			ChatFormatter.getChatDisplayShort(joules, DisplayUnits.JOULES)));
+	    }
+	}
     }
 
     @Override
     public int getMaxStackSize(ItemStack stack) {
-    	return stack.hasTag() && stack.getTag().getDouble("joules") > 0 ? 1 : super.getMaxStackSize(stack);
+	return stack.hasTag() && stack.getTag().getDouble("joules") > 0 ? 1 : super.getMaxStackSize(stack);
     }
 
     public static void addDescription(Supplier<Block> block, MutableComponent description) {
 
-        ArrayList<MutableComponent> set = DESCRIPTION_MAPPINGS.getOrDefault(block, new ArrayList<>());
+	ArrayList<MutableComponent> set = DESCRIPTION_MAPPINGS.getOrDefault(block, new ArrayList<>());
 
-        set.add(description);
+	set.add(description);
 
-        DESCRIPTION_MAPPINGS.put(block, set);
+	DESCRIPTION_MAPPINGS.put(block, set);
 
     }
 

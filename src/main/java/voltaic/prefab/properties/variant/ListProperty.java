@@ -15,338 +15,338 @@ import voltaic.prefab.properties.types.ListPropertyType;
 
 public class ListProperty<T> extends AbstractProperty<List<T>, ListPropertyType<T, ?>> {
 
-	private boolean alreadySynced = false;
+    private boolean alreadySynced = false;
 
-	// This fires when the property has had a value set and that value is different
-	// from the value the property currently has
-	// The property contains the new value and val represents the old value. Level
-	// may or may not be present.
+    // This fires when the property has had a value set and that value is different
+    // from the value the property currently has
+    // The property contains the new value and val represents the old value. Level
+    // may or may not be present.
 
-	private TriConsumer<ListProperty<T>, List<T>, Integer> onChange = (prop, val, index) -> {
-	};
-	// this fires when the owning tile has been loaded. This fires on both the
-	// client and server-side, and Level is present
-	private Consumer<ListProperty<T>> onTileLoaded = (prop) -> {
-	};
+    private TriConsumer<ListProperty<T>, List<T>, Integer> onChange = (prop, val, index) -> {
+    };
+    // this fires when the owning tile has been loaded. This fires on both the
+    // client and server-side, and Level is present
+    private Consumer<ListProperty<T>> onTileLoaded = prop -> {
+    };
 
-	public ListProperty(ListPropertyType<T, ?> type, String name, List<T> defaultValue) {
-		super(type, name, defaultValue);
+    public ListProperty(ListPropertyType<T, ?> type, String name, List<T> defaultValue) {
+	super(type, name, defaultValue);
+    }
+
+    @Override
+    public void onTileLoaded() {
+	onTileLoaded.accept(this);
+    }
+
+    @Override
+    public void onLoadedFromTag(AbstractProperty<List<T>, ListPropertyType<T, ?>> prop, List<T> loadedValue) {
+	onChange.accept((ListProperty<T>) prop, loadedValue, -1);
+    }
+
+    public ListProperty<T> onChange(TriConsumer<ListProperty<T>, List<T>, Integer> event) {
+	onChange = event;
+	return this;
+    }
+
+    public ListProperty<T> onTileLoaded(Consumer<ListProperty<T>> event) {
+	onTileLoaded = onTileLoaded.andThen(event);
+	return this;
+    }
+
+    @Override
+    public void setValue(Object updated) {
+
+	if (alreadySynced) {
+	    return;
+	}
+	/*
+	 * if (!updated.getClass().equals(value.getClass())) { throw new
+	 * RuntimeException("Value " + updated + " being set for " + getName() +
+	 * " on tile " + getPropertyManager().getOwner() + " is an invalid data type!");
+	 * }
+	 * 
+	 */
+
+	List<T> old = new ArrayList<>(getValue());
+	value = (List<T>) updated;
+	setDirty();
+	PropertyManager manager = getPropertyManager();
+	if (isDirty() && manager.getOwner().getLevel() != null) {
+	    if (!manager.getOwner().getLevel().isClientSide()) {
+		manager.setDirty(this);
+		if (shouldUpdateOnChange()) {
+		    alreadySynced = true;
+		    manager.getOwner().getLevel().sendBlockUpdated(manager.getOwner().getBlockPos(),
+			    manager.getOwner().getBlockState(), manager.getOwner().getBlockState(),
+			    Block.UPDATE_CLIENTS);
+		    manager.getOwner().setChanged();
+		    alreadySynced = false;
+		}
+	    } else if (shouldUpdateServer()) {
+		updateServer();
+	    }
+	    onChange.accept(this, old, -1);
+	}
+    }
+
+    public void setValue(Object updated, int index) {
+
+	if (alreadySynced) {
+	    return;
+	}
+	/*
+	 * if (!updated.getClass().equals(value.getClass())) { throw new
+	 * RuntimeException("Value " + updated + " being set for " + getName() +
+	 * " on tile " + getPropertyManager().getOwner() + " is an invalid data type!");
+	 * }
+	 * 
+	 */
+	checkForChange((T) updated, index);
+	List<T> old = new ArrayList<>(getValue());
+	value.set(index, (T) updated);
+	PropertyManager manager = getPropertyManager();
+	if (isDirty() && manager.getOwner().getLevel() != null) {
+	    if (!manager.getOwner().getLevel().isClientSide()) {
+		manager.setDirty(this);
+		if (shouldUpdateOnChange()) {
+		    alreadySynced = true;
+		    manager.getOwner().getLevel().sendBlockUpdated(manager.getOwner().getBlockPos(),
+			    manager.getOwner().getBlockState(), manager.getOwner().getBlockState(),
+			    Block.UPDATE_CLIENTS);
+		    manager.getOwner().setChanged();
+		    alreadySynced = false;
+		}
+	    } else if (shouldUpdateServer()) {
+		updateServer();
+	    }
+	    onChange.accept(this, old, index);
+	}
+    }
+
+    public void addValue(Object updated) {
+	if (alreadySynced || updated == null) {
+	    return;
 	}
 
-	@Override
-	public void onTileLoaded() {
-		onTileLoaded.accept(this);
+	List<T> old = new ArrayList<>(getValue());
+
+	getValue().add((T) updated);
+
+	PropertyManager manager = getPropertyManager();
+
+	setDirty();
+
+	if (manager.getOwner().getLevel() != null) {
+	    if (!manager.getOwner().getLevel().isClientSide()) {
+		if (shouldUpdateOnChange()) {
+		    alreadySynced = true;
+		    manager.getOwner().getLevel().sendBlockUpdated(manager.getOwner().getBlockPos(),
+			    manager.getOwner().getBlockState(), manager.getOwner().getBlockState(),
+			    Block.UPDATE_CLIENTS);
+		    manager.getOwner().setChanged();
+		    alreadySynced = false;
+		}
+		manager.setDirty(this);
+	    } else if (shouldUpdateServer()) {
+		updateServer();
+	    }
+	    onChange.accept(this, old, -1);
 	}
 
-	@Override
-	public void onLoadedFromTag(AbstractProperty<List<T>, ListPropertyType<T, ?>> prop, List<T> loadedValue) {
-		onChange.accept((ListProperty<T>) prop, loadedValue, -1);
+    }
+
+    public void addValue(Object updated, int index) {
+
+	if (alreadySynced || updated == null) {
+	    return;
 	}
 
-	public ListProperty<T> onChange(TriConsumer<ListProperty<T>, List<T>, Integer> event) {
-		onChange = event;
-		return this;
+	List<T> old = new ArrayList<>(getValue());
+
+	getValue().add(index, (T) updated);
+
+	PropertyManager manager = getPropertyManager();
+
+	setDirty();
+
+	if (manager.getOwner().getLevel() != null) {
+	    if (!manager.getOwner().getLevel().isClientSide()) {
+		if (shouldUpdateOnChange()) {
+		    alreadySynced = true;
+		    manager.getOwner().getLevel().sendBlockUpdated(manager.getOwner().getBlockPos(),
+			    manager.getOwner().getBlockState(), manager.getOwner().getBlockState(),
+			    Block.UPDATE_CLIENTS);
+		    manager.getOwner().setChanged();
+		    alreadySynced = false;
+		}
+		manager.setDirty(this);
+	    } else if (shouldUpdateServer()) {
+		updateServer();
+	    }
+	    onChange.accept(this, old, index);
 	}
 
-	public ListProperty<T> onTileLoaded(Consumer<ListProperty<T>> event) {
-		onTileLoaded = onTileLoaded.andThen(event);
-		return this;
+    }
+
+    public void addValues(List<?> updated) {
+	if (alreadySynced || updated == null) {
+	    return;
 	}
 
-	@Override
-	public void setValue(Object updated) {
+	List<T> old = new ArrayList<>(getValue());
 
-		if (alreadySynced) {
-			return;
-		}
-		/*
-		 * if (!updated.getClass().equals(value.getClass())) { throw new
-		 * RuntimeException("Value " + updated + " being set for " + getName() +
-		 * " on tile " + getPropertyManager().getOwner() + " is an invalid data type!");
-		 * }
-		 * 
-		 */
-
-		List<T> old = new ArrayList<>(getValue());
-		value = (List<T>) updated;
-		setDirty();
-		PropertyManager manager = getPropertyManager();
-		if (isDirty() && manager.getOwner().getLevel() != null) {
-			if (!manager.getOwner().getLevel().isClientSide()) {
-				manager.setDirty(this);
-				if (shouldUpdateOnChange()) {
-					alreadySynced = true;
-					manager.getOwner().getLevel().sendBlockUpdated(manager.getOwner().getBlockPos(),
-							manager.getOwner().getBlockState(), manager.getOwner().getBlockState(),
-							Block.UPDATE_CLIENTS);
-					manager.getOwner().setChanged();
-					alreadySynced = false;
-				}
-			} else if (shouldUpdateServer()) {
-				updateServer();
-			}
-			onChange.accept(this, old, -1);
-		}
+	for (Object obj : updated) {
+	    getValue().add((T) obj);
 	}
 
-	public void setValue(Object updated, int index) {
+	PropertyManager manager = getPropertyManager();
 
-		if (alreadySynced) {
-			return;
+	setDirty();
+
+	if (manager.getOwner().getLevel() != null) {
+	    if (!manager.getOwner().getLevel().isClientSide()) {
+		if (shouldUpdateOnChange()) {
+		    alreadySynced = true;
+		    manager.getOwner().getLevel().sendBlockUpdated(manager.getOwner().getBlockPos(),
+			    manager.getOwner().getBlockState(), manager.getOwner().getBlockState(),
+			    Block.UPDATE_CLIENTS);
+		    manager.getOwner().setChanged();
+		    alreadySynced = false;
 		}
-		/*
-		 * if (!updated.getClass().equals(value.getClass())) { throw new
-		 * RuntimeException("Value " + updated + " being set for " + getName() +
-		 * " on tile " + getPropertyManager().getOwner() + " is an invalid data type!");
-		 * }
-		 * 
-		 */
-		checkForChange((T) updated, index);
-		List<T> old = new ArrayList<>(getValue());
-		value.set(index, (T) updated);
-		PropertyManager manager = getPropertyManager();
-		if (isDirty() && manager.getOwner().getLevel() != null) {
-			if (!manager.getOwner().getLevel().isClientSide()) {
-				manager.setDirty(this);
-				if (shouldUpdateOnChange()) {
-					alreadySynced = true;
-					manager.getOwner().getLevel().sendBlockUpdated(manager.getOwner().getBlockPos(),
-							manager.getOwner().getBlockState(), manager.getOwner().getBlockState(),
-							Block.UPDATE_CLIENTS);
-					manager.getOwner().setChanged();
-					alreadySynced = false;
-				}
-			} else if (shouldUpdateServer()) {
-				updateServer();
-			}
-			onChange.accept(this, old, index);
-		}
+		manager.setDirty(this);
+	    } else if (shouldUpdateServer()) {
+		updateServer();
+	    }
+	    onChange.accept(this, old, -1);
 	}
 
-	public void addValue(Object updated) {
-		if (alreadySynced || updated == null) {
-			return;
-		}
+    }
 
-		List<T> old = new ArrayList<>(getValue());
+    public void removeValue(int index) {
 
-		getValue().add((T) updated);
-
-		PropertyManager manager = getPropertyManager();
-
-		setDirty();
-
-		if (manager.getOwner().getLevel() != null) {
-			if (!manager.getOwner().getLevel().isClientSide()) {
-				if (shouldUpdateOnChange()) {
-					alreadySynced = true;
-					manager.getOwner().getLevel().sendBlockUpdated(manager.getOwner().getBlockPos(),
-							manager.getOwner().getBlockState(), manager.getOwner().getBlockState(),
-							Block.UPDATE_CLIENTS);
-					manager.getOwner().setChanged();
-					alreadySynced = false;
-				}
-				manager.setDirty(this);
-			} else if (shouldUpdateServer()) {
-				updateServer();
-			}
-			onChange.accept(this, old, -1);
-		}
-
+	if (alreadySynced || index >= getValue().size()) {
+	    return;
 	}
 
-	public void addValue(Object updated, int index) {
+	List<T> old = new ArrayList<>(getValue());
 
-		if (alreadySynced || updated == null) {
-			return;
+	getValue().remove(index);
+
+	PropertyManager manager = getPropertyManager();
+
+	setDirty();
+
+	if (manager.getOwner().getLevel() != null) {
+	    if (!manager.getOwner().getLevel().isClientSide()) {
+		if (shouldUpdateOnChange()) {
+		    alreadySynced = true;
+		    manager.getOwner().getLevel().sendBlockUpdated(manager.getOwner().getBlockPos(),
+			    manager.getOwner().getBlockState(), manager.getOwner().getBlockState(),
+			    Block.UPDATE_CLIENTS);
+		    manager.getOwner().setChanged();
+		    alreadySynced = false;
 		}
-
-		List<T> old = new ArrayList<>(getValue());
-
-		getValue().add(index, (T) updated);
-
-		PropertyManager manager = getPropertyManager();
-
-		setDirty();
-
-		if (manager.getOwner().getLevel() != null) {
-			if (!manager.getOwner().getLevel().isClientSide()) {
-				if (shouldUpdateOnChange()) {
-					alreadySynced = true;
-					manager.getOwner().getLevel().sendBlockUpdated(manager.getOwner().getBlockPos(),
-							manager.getOwner().getBlockState(), manager.getOwner().getBlockState(),
-							Block.UPDATE_CLIENTS);
-					manager.getOwner().setChanged();
-					alreadySynced = false;
-				}
-				manager.setDirty(this);
-			} else if (shouldUpdateServer()) {
-				updateServer();
-			}
-			onChange.accept(this, old, index);
-		}
-
+		manager.setDirty(this);
+	    } else if (shouldUpdateServer()) {
+		updateServer();
+	    }
+	    onChange.accept(this, old, index);
 	}
 
-	public void addValues(List<?> updated) {
-		if (alreadySynced || updated == null) {
-			return;
-		}
+    }
 
-		List<T> old = new ArrayList<>(getValue());
+    public void removeValue(T value) {
 
-		for (Object obj : updated) {
-			getValue().add((T) obj);
-		}
-
-		PropertyManager manager = getPropertyManager();
-
-		setDirty();
-
-		if (manager.getOwner().getLevel() != null) {
-			if (!manager.getOwner().getLevel().isClientSide()) {
-				if (shouldUpdateOnChange()) {
-					alreadySynced = true;
-					manager.getOwner().getLevel().sendBlockUpdated(manager.getOwner().getBlockPos(),
-							manager.getOwner().getBlockState(), manager.getOwner().getBlockState(),
-							Block.UPDATE_CLIENTS);
-					manager.getOwner().setChanged();
-					alreadySynced = false;
-				}
-				manager.setDirty(this);
-			} else if (shouldUpdateServer()) {
-				updateServer();
-			}
-			onChange.accept(this, old, -1);
-		}
-
+	if (alreadySynced || !getValue().contains(value)) {
+	    return;
 	}
 
-	public void removeValue(int index) {
+	List<T> old = new ArrayList<>(getValue());
 
-		if (alreadySynced || index >= getValue().size()) {
-			return;
+	getValue().remove(value);
+
+	PropertyManager manager = getPropertyManager();
+
+	setDirty();
+
+	if (manager.getOwner().getLevel() != null) {
+	    if (!manager.getOwner().getLevel().isClientSide()) {
+		if (shouldUpdateOnChange()) {
+		    alreadySynced = true;
+		    manager.getOwner().getLevel().sendBlockUpdated(manager.getOwner().getBlockPos(),
+			    manager.getOwner().getBlockState(), manager.getOwner().getBlockState(),
+			    Block.UPDATE_CLIENTS);
+		    manager.getOwner().setChanged();
+		    alreadySynced = false;
 		}
-
-		List<T> old = new ArrayList<>(getValue());
-
-		getValue().remove(index);
-
-		PropertyManager manager = getPropertyManager();
-
-		setDirty();
-
-		if (manager.getOwner().getLevel() != null) {
-			if (!manager.getOwner().getLevel().isClientSide()) {
-				if (shouldUpdateOnChange()) {
-					alreadySynced = true;
-					manager.getOwner().getLevel().sendBlockUpdated(manager.getOwner().getBlockPos(),
-							manager.getOwner().getBlockState(), manager.getOwner().getBlockState(),
-							Block.UPDATE_CLIENTS);
-					manager.getOwner().setChanged();
-					alreadySynced = false;
-				}
-				manager.setDirty(this);
-			} else if (shouldUpdateServer()) {
-				updateServer();
-			}
-			onChange.accept(this, old, index);
-		}
-
+		manager.setDirty(this);
+	    } else if (shouldUpdateServer()) {
+		updateServer();
+	    }
+	    onChange.accept(this, old, -1);
 	}
 
-	public void removeValue(T value) {
+    }
 
-		if (alreadySynced || !getValue().contains(value)) {
-			return;
+    public void wipeList() {
+
+	PropertyManager manager = getPropertyManager();
+
+	List<T> old = new ArrayList<>(getValue());
+
+	overwriteValue(new ArrayList<>());
+
+	setDirty();
+
+	if (manager.getOwner().getLevel() != null) {
+	    if (!manager.getOwner().getLevel().isClientSide()) {
+		if (shouldUpdateOnChange()) {
+		    alreadySynced = true;
+		    manager.getOwner().getLevel().sendBlockUpdated(manager.getOwner().getBlockPos(),
+			    manager.getOwner().getBlockState(), manager.getOwner().getBlockState(),
+			    Block.UPDATE_CLIENTS);
+		    manager.getOwner().setChanged();
+		    alreadySynced = false;
 		}
-
-		List<T> old = new ArrayList<>(getValue());
-
-		getValue().remove(value);
-
-		PropertyManager manager = getPropertyManager();
-
-		setDirty();
-
-		if (manager.getOwner().getLevel() != null) {
-			if (!manager.getOwner().getLevel().isClientSide()) {
-				if (shouldUpdateOnChange()) {
-					alreadySynced = true;
-					manager.getOwner().getLevel().sendBlockUpdated(manager.getOwner().getBlockPos(),
-							manager.getOwner().getBlockState(), manager.getOwner().getBlockState(),
-							Block.UPDATE_CLIENTS);
-					manager.getOwner().setChanged();
-					alreadySynced = false;
-				}
-				manager.setDirty(this);
-			} else if (shouldUpdateServer()) {
-				updateServer();
-			}
-			onChange.accept(this, old, -1);
-		}
-
+		manager.setDirty(this);
+	    } else if (shouldUpdateServer()) {
+		updateServer();
+	    }
+	    onChange.accept(this, old, -1);
 	}
+    }
 
-	public void wipeList() {
-
-		PropertyManager manager = getPropertyManager();
-
-		List<T> old = new ArrayList<>(getValue());
-
-		overwriteValue(new ArrayList<>());
-
-		setDirty();
-
-		if (manager.getOwner().getLevel() != null) {
-			if (!manager.getOwner().getLevel().isClientSide()) {
-				if (shouldUpdateOnChange()) {
-					alreadySynced = true;
-					manager.getOwner().getLevel().sendBlockUpdated(manager.getOwner().getBlockPos(),
-							manager.getOwner().getBlockState(), manager.getOwner().getBlockState(),
-							Block.UPDATE_CLIENTS);
-					manager.getOwner().setChanged();
-					alreadySynced = false;
-				}
-				manager.setDirty(this);
-			} else if (shouldUpdateServer()) {
-				updateServer();
-			}
-			onChange.accept(this, old, -1);
-		}
+    public void copy(ListProperty<T> other) {
+	List<T> otherVal = other.getValue();
+	if (otherVal == null) {
+	    return;
 	}
+	overwriteValue(otherVal);
+    }
 
-	public void copy(ListProperty<T> other) {
-		List<T> otherVal = other.getValue();
-		if (otherVal == null) {
-			return;
-		}
-		overwriteValue(otherVal);
+    private boolean checkForChange(T updated, int index) {
+	boolean shouldUpdate = value.get(index) == null && updated != null;
+	if (value.get(index) != null && updated != null) {
+	    shouldUpdate = !getType().isSingleEqual(value.get(index), updated);
 	}
+	if (shouldUpdate) {
+	    setDirty();
+	}
+	return shouldUpdate;
+    }
 
-	private boolean checkForChange(T updated, int index) {
-		boolean shouldUpdate = value.get(index) == null && updated != null;
-		if (value.get(index) != null && updated != null) {
-			shouldUpdate = !getType().isSingleEqual(value.get(index), updated);
-		}
-		if (shouldUpdate) {
-			setDirty();
-		}
-		return shouldUpdate;
+    @Override
+    public void loadFromTag(CompoundTag tag) {
+	try {
+	    List<T> data = getType().readFromTag(new IPropertyType.TagReader(this, tag));
+	    if (data != null) {
+		value = data;
+		onLoadedFromTag(this, value);
+	    }
+	} catch (Exception e) {
+	    Voltaic.LOGGER
+		    .info("Catching error while loading property " + getName() + " from NBT. Error: " + e.getMessage());
 	}
-
-	@Override
-	public void loadFromTag(CompoundTag tag) {
-		try {
-			List<T> data = getType().readFromTag(new IPropertyType.TagReader(this, tag));
-			if (data != null) {
-				value = data;
-				onLoadedFromTag(this, value);
-			}
-		} catch (Exception e) {
-			Voltaic.LOGGER
-					.info("Catching error while loading property " + getName() + " from NBT. Error: " + e.getMessage());
-		}
-	}
+    }
 
 }

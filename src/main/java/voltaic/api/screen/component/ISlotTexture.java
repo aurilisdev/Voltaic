@@ -4,8 +4,8 @@ import voltaic.api.screen.ITexture;
 
 public interface ISlotTexture extends ITexture {
 
-	int xOffset();
+    int xOffset();
 
-	int yOffset();
+    int yOffset();
 
 }

@@ -12,28 +12,28 @@ import voltaic.Voltaic;
 
 @EventBusSubscriber(modid = Voltaic.ID, bus = EventBusSubscriber.Bus.FORGE)
 public class Scheduler {
-	private static ConcurrentHashMap<Runnable, Integer> scheduled = new ConcurrentHashMap<>();
+    private static ConcurrentHashMap<Runnable, Integer> scheduled = new ConcurrentHashMap<>();
 
-	@SubscribeEvent
-	public static void onTick(ServerTickEvent event) {
-		if(event.phase == Phase.START) {
-			return;
-		}
-		if (!scheduled.isEmpty()) {
-			Iterator<Entry<Runnable, Integer>> it = scheduled.entrySet().iterator();
-			while (it.hasNext()) {
-				Entry<Runnable, Integer> next = it.next();
-				if (next.getValue() <= 0) {
-					next.getKey().run();
-					it.remove();
-				} else {
-					next.setValue(next.getValue() - 1);
-				}
-			}
-		}
+    @SubscribeEvent
+    public static void onTick(ServerTickEvent event) {
+	if (event.phase == Phase.START) {
+	    return;
 	}
+	if (!scheduled.isEmpty()) {
+	    Iterator<Entry<Runnable, Integer>> it = scheduled.entrySet().iterator();
+	    while (it.hasNext()) {
+		Entry<Runnable, Integer> next = it.next();
+		if (next.getValue() <= 0) {
+		    next.getKey().run();
+		    it.remove();
+		} else {
+		    next.setValue(next.getValue() - 1);
+		}
+	    }
+	}
+    }
 
-	public static void schedule(int timeUntil, Runnable run) {
-		scheduled.put(run, timeUntil);
-	}
+    public static void schedule(int timeUntil, Runnable run) {
+	scheduled.put(run, timeUntil);
+    }
 }

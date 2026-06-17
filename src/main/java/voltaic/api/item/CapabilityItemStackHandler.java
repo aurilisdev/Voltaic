@@ -18,37 +18,38 @@ import net.minecraftforge.items.ItemStackHandler;
 
 public class CapabilityItemStackHandler extends ItemStackHandler implements ICapabilitySerializable<CompoundTag> {
 
-	private final LazyOptional<IItemHandler> handler = LazyOptional.of(() -> this);
-	private final ItemStack owner;
+    private final LazyOptional<IItemHandler> handler = LazyOptional.of(() -> this);
+    private final ItemStack owner;
 
-	private TriConsumer<ItemStack, CapabilityItemStackHandler, Integer> onChange = (stack, handler, slot) -> {
-	};
+    private TriConsumer<ItemStack, CapabilityItemStackHandler, Integer> onChange = (stack, handler, slot) -> {
+    };
 
-	public CapabilityItemStackHandler(int size, ItemStack owner) {
-		super(size);
-		this.owner = owner;
+    public CapabilityItemStackHandler(int size, ItemStack owner) {
+	super(size);
+	this.owner = owner;
+    }
+
+    public CapabilityItemStackHandler setOnChange(
+	    TriConsumer<ItemStack, CapabilityItemStackHandler, Integer> onChange) {
+	this.onChange = onChange;
+	return this;
+    }
+
+    @Override
+    public <T> @NotNull LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
+	if (cap == ForgeCapabilities.ITEM_HANDLER) {
+	    return handler.cast();
 	}
+	return LazyOptional.empty();
+    }
 
-	public CapabilityItemStackHandler setOnChange(TriConsumer<ItemStack, CapabilityItemStackHandler, Integer> onChange) {
-		this.onChange = onChange;
-		return this;
-	}
+    @Override
+    protected void onContentsChanged(int slot) {
+	onChange.accept(owner, this, slot);
+    }
 
-	@Override
-	public <T> @NotNull LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-		if (cap == ForgeCapabilities.ITEM_HANDLER) {
-			return handler.cast();
-		}
-		return LazyOptional.empty();
-	}
-
-	@Override
-	protected void onContentsChanged(int slot) {
-		onChange.accept(owner, this, slot);
-	}
-
-	public List<ItemStack> getItems() {
-		return stacks;
-	}
+    public List<ItemStack> getItems() {
+	return stacks;
+    }
 
 }

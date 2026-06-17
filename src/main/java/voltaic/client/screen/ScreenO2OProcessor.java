@@ -17,22 +17,23 @@ import voltaic.prefab.tile.components.type.ComponentProcessor;
 @OnlyIn(Dist.CLIENT)
 public class ScreenO2OProcessor extends GenericScreen<ContainerO2OProcessor> {
 
-	public ScreenO2OProcessor(ContainerO2OProcessor container, Inventory playerInventory, Component title) {
-		super(container, playerInventory, title);
-		addComponent(new ScreenComponentProgress(ScreenComponentProgress.ProgressBars.PROGRESS_ARROW_RIGHT, () -> {
-			GenericTile furnace = container.getSafeHost();
-			if (furnace != null) {
-				ComponentProcessor processor = furnace.getComponent(IComponentType.Processor);
-				if (processor.isActive(0)) {
-					return processor.operatingTicks.getValue()[0] / processor.requiredTicks.getValue()[0];
-				}
-			}
-			return 0;
-		}, 84 - ContainerO2OProcessor.startXOffset, 34));
-		addComponent(new ScreenComponentElectricInfo(-AbstractScreenComponentInfo.SIZE + 1, 2));
+    public ScreenO2OProcessor(ContainerO2OProcessor container, Inventory playerInventory, Component title) {
+	super(container, playerInventory, title);
+	addComponent(new ScreenComponentProgress(ScreenComponentProgress.ProgressBars.PROGRESS_ARROW_RIGHT, () -> {
+	    GenericTile furnace = container.getSafeHost();
+	    if (furnace != null) {
+		ComponentProcessor processor = furnace.getComponent(IComponentType.Processor);
+		if (processor.isActive(0)) {
+		    return processor.operatingTicks.getValue()[0] / processor.requiredTicks.getValue()[0];
+		}
+	    }
+	    return 0;
+	}, 84 - ContainerO2OProcessor.startXOffset, 34));
+	addComponent(new ScreenComponentElectricInfo(-AbstractScreenComponentInfo.SIZE + 1, 2));
 
-		new WrapperInventoryIO(this, -AbstractScreenComponentInfo.SIZE + 1, AbstractScreenComponentInfo.SIZE + 2, 75, 82, 8, 72);
+	new WrapperInventoryIO(this, -AbstractScreenComponentInfo.SIZE + 1, AbstractScreenComponentInfo.SIZE + 2, 75,
+		82, 8, 72);
 
-	}
+    }
 
 }

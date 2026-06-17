@@ -5,86 +5,86 @@ import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
 
-import voltaic.prefab.utilities.object.Location;
-import voltaic.registers.VoltaicCapabilities;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.util.LazyOptional;
+import voltaic.prefab.utilities.object.Location;
+import voltaic.registers.VoltaicCapabilities;
 
 public class CapabilityLocationStorage implements ILocationStorage, ICapabilitySerializable<CompoundTag> {
-	
-	public final LazyOptional<ILocationStorage> holder = LazyOptional.of(() -> this);
 
-	public CapabilityLocationStorage(int size) {
-		// avoids null errors
-		for (int i = 0; i < size; i++) {
-			locations.add(new Location(0, 0, 0));
-		}
-	}
-	
-	@Override
-	public <T> @NotNull LazyOptional<T> getCapability(@NotNull Capability<T> cap, Direction side) {
-		if (cap == VoltaicCapabilities.CAPABILITY_LOCATIONSTORAGE_ITEM) {
-			return holder.cast();
-		}
-		return LazyOptional.empty();
-	}
+    public final LazyOptional<ILocationStorage> holder = LazyOptional.of(() -> this);
 
-	@Override
-	public CompoundTag serializeNBT() {
-		if (VoltaicCapabilities.CAPABILITY_LOCATIONSTORAGE_ITEM != null) {
-			CompoundTag nbt = new CompoundTag();
-			nbt.putInt("size", locations.size());
-			for (int i = 0; i < locations.size(); i++) {
-				locations.get(i).writeToNBT(nbt, VoltaicCapabilities.LOCATION_KEY + i);
-			}
-			return nbt;
-		}
-		return new CompoundTag();
+    public CapabilityLocationStorage(int size) {
+	// avoids null errors
+	for (int i = 0; i < size; i++) {
+	    locations.add(new Location(0, 0, 0));
 	}
+    }
 
-	@Override
-	public void deserializeNBT(CompoundTag nbt) {
-		if (VoltaicCapabilities.CAPABILITY_LOCATIONSTORAGE_ITEM != null) {
-			locations.clear();
-			for (int i = 0; i < nbt.getInt("size"); i++) {
-				locations.add(Location.readFromNBT(nbt, VoltaicCapabilities.LOCATION_KEY + i));
-			}
-		}
+    @Override
+    public <T> @NotNull LazyOptional<T> getCapability(@NotNull Capability<T> cap, Direction side) {
+	if (cap == VoltaicCapabilities.CAPABILITY_LOCATIONSTORAGE_ITEM) {
+	    return holder.cast();
 	}
+	return LazyOptional.empty();
+    }
 
-	private final List<Location> locations = new ArrayList<>();
-
-	@Override
-	public void setLocation(int index, double x, double y, double z) {
-		locations.set(index, new Location(x, y, z));
+    @Override
+    public CompoundTag serializeNBT() {
+	if (VoltaicCapabilities.CAPABILITY_LOCATIONSTORAGE_ITEM != null) {
+	    CompoundTag nbt = new CompoundTag();
+	    nbt.putInt("size", locations.size());
+	    for (int i = 0; i < locations.size(); i++) {
+		locations.get(i).writeToNBT(nbt, VoltaicCapabilities.LOCATION_KEY + i);
+	    }
+	    return nbt;
 	}
+	return new CompoundTag();
+    }
 
-	@Override
-	public Location getLocation(int index) {
-		return locations.get(index);
+    @Override
+    public void deserializeNBT(CompoundTag nbt) {
+	if (VoltaicCapabilities.CAPABILITY_LOCATIONSTORAGE_ITEM != null) {
+	    locations.clear();
+	    for (int i = 0; i < nbt.getInt("size"); i++) {
+		locations.add(Location.readFromNBT(nbt, VoltaicCapabilities.LOCATION_KEY + i));
+	    }
 	}
+    }
 
-	@Override
-	public void addLocation(double x, double y, double z) {
-		locations.add(new Location(x, y, z));
-	}
+    private final List<Location> locations = new ArrayList<>();
 
-	@Override
-	public void removeLocation(Location location) {
-		locations.remove(location);
-	}
+    @Override
+    public void setLocation(int index, double x, double y, double z) {
+	locations.set(index, new Location(x, y, z));
+    }
 
-	@Override
-	public void clearLocations() {
-		locations.clear();
-	}
+    @Override
+    public Location getLocation(int index) {
+	return locations.get(index);
+    }
 
-	@Override
-	public List<Location> getLocations() {
-		return locations;
-	}
+    @Override
+    public void addLocation(double x, double y, double z) {
+	locations.add(new Location(x, y, z));
+    }
+
+    @Override
+    public void removeLocation(Location location) {
+	locations.remove(location);
+    }
+
+    @Override
+    public void clearLocations() {
+	locations.clear();
+    }
+
+    @Override
+    public List<Location> getLocations() {
+	return locations;
+    }
 
 }

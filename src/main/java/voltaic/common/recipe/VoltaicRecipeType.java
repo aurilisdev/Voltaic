@@ -8,7 +8,7 @@ public class VoltaicRecipeType<T extends Recipe<?>> implements RecipeType<T> {
 
     @Override
     public String toString() {
-        return BuiltInRegistries.RECIPE_TYPE.getKey(this).toString();
+	return BuiltInRegistries.RECIPE_TYPE.getKey(this).toString();
     }
 
 }

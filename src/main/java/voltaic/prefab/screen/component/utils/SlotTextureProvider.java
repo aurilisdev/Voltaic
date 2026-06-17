@@ -5,8 +5,8 @@ import voltaic.api.screen.component.ISlotTexture;
 
 public interface SlotTextureProvider {
 
-	public ISlotTexture getSlotType();
+    public ISlotTexture getSlotType();
 
-	public ITexture getIconType();
+    public ITexture getIconType();
 
 }

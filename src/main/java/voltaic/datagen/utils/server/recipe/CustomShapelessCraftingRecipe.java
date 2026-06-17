@@ -23,91 +23,93 @@ import net.minecraftforge.common.crafting.conditions.ICondition;
 
 public class CustomShapelessCraftingRecipe extends ShapelessRecipeBuilder.Result {
 
+    @Nullable
+    private ICondition[] recipeConditions;
+
+    private CustomShapelessCraftingRecipe(ResourceLocation recipeId, Item result, int count,
+	    List<Ingredient> ingredients, ICondition[] recipeConditions) {
+	super(recipeId, result, count, "", CraftingBookCategory.MISC, ingredients, null, null);
+	this.recipeConditions = recipeConditions;
+    }
+
+    public static Builder start(Item item, int count) {
+	return new Builder(item, count);
+    }
+
+    @Override
+    public void serializeRecipeData(JsonObject json) {
+	super.serializeRecipeData(json);
+
+	if (recipeConditions == null || recipeConditions.length == 0) {
+	    return;
+	}
+
+	JsonArray conditions = new JsonArray();
+
+	for (ICondition condition : recipeConditions) {
+	    conditions.add(CraftingHelper.serialize(condition));
+	}
+
+	json.add("conditions", conditions);
+
+    }
+
+    @Override
+    public JsonObject serializeAdvancement() {
+	return null;
+    }
+
+    public static class Builder {
+
+	private Item item;
+	private int count;
+	private List<Ingredient> ingredients = new ArrayList<>();
 	@Nullable
 	private ICondition[] recipeConditions;
 
-	private CustomShapelessCraftingRecipe(ResourceLocation recipeId, Item result, int count, List<Ingredient> ingredients, ICondition[] recipeConditions) {
-		super(recipeId, result, count, "", CraftingBookCategory.MISC, ingredients, null, null);
-		this.recipeConditions = recipeConditions;
+	private Builder(Item item, int count) {
+	    this.item = item;
+	    this.count = count;
 	}
 
-	public static Builder start(Item item, int count) {
-		return new Builder(item, count);
+	public Builder addIngredient(Ingredient ing) {
+	    ingredients.add(ing);
+	    return this;
 	}
 
-	@Override
-	public void serializeRecipeData(JsonObject json) {
-		super.serializeRecipeData(json);
-
-		if (recipeConditions == null || recipeConditions.length == 0) {
-			return;
-		}
-
-		JsonArray conditions = new JsonArray();
-
-		for (ICondition condition : recipeConditions) {
-			conditions.add(CraftingHelper.serialize(condition));
-		}
-
-		json.add("conditions", conditions);
-
+	public Builder addIngredient(String parent, String tag) {
+	    ingredients.add(Ingredient.of(itemTag(new ResourceLocation(parent, tag))));
+	    return this;
 	}
 
-	@Override
-	public JsonObject serializeAdvancement() {
-		return null;
+	public Builder addIngredient(TagKey<Item> tag) {
+	    ingredients.add(Ingredient.of(tag));
+	    return this;
 	}
 
-	public static class Builder {
-
-		private Item item;
-		private int count;
-		private List<Ingredient> ingredients = new ArrayList<>();
-		@Nullable
-		private ICondition[] recipeConditions;
-
-		private Builder(Item item, int count) {
-			this.item = item;
-			this.count = count;
-		}
-
-		public Builder addIngredient(Ingredient ing) {
-			ingredients.add(ing);
-			return this;
-		}
-
-		public Builder addIngredient(String parent, String tag) {
-			ingredients.add(Ingredient.of(itemTag(new ResourceLocation(parent, tag))));
-			return this;
-		}
-
-		public Builder addIngredient(TagKey<Item> tag) {
-			ingredients.add(Ingredient.of(tag));
-			return this;
-		}
-
-		public Builder addIngredient(Item item) {
-			return addIngredient(new ItemStack(item));
-		}
-
-		public Builder addIngredient(ItemStack item) {
-			ingredients.add(Ingredient.of(item));
-			return this;
-		}
-
-		public Builder addConditions(ICondition... conditions) {
-			recipeConditions = conditions;
-			return this;
-		}
-
-		public void complete(String parent, String name, Consumer<FinishedRecipe> consumer) {
-			consumer.accept(new CustomShapelessCraftingRecipe(new ResourceLocation(parent, name), item, count, ingredients, recipeConditions));
-		}
-
-		private static TagKey<Item> itemTag(ResourceLocation tag) {
-			return TagKey.create(Registries.ITEM, tag);
-		}
-
+	public Builder addIngredient(Item item) {
+	    return addIngredient(new ItemStack(item));
 	}
+
+	public Builder addIngredient(ItemStack item) {
+	    ingredients.add(Ingredient.of(item));
+	    return this;
+	}
+
+	public Builder addConditions(ICondition... conditions) {
+	    recipeConditions = conditions;
+	    return this;
+	}
+
+	public void complete(String parent, String name, Consumer<FinishedRecipe> consumer) {
+	    consumer.accept(new CustomShapelessCraftingRecipe(new ResourceLocation(parent, name), item, count,
+		    ingredients, recipeConditions));
+	}
+
+	private static TagKey<Item> itemTag(ResourceLocation tag) {
+	    return TagKey.create(Registries.ITEM, tag);
+	}
+
+    }
 
 }

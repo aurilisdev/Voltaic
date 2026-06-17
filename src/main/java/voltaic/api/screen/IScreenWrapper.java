@@ -7,10 +7,10 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 @OnlyIn(Dist.CLIENT)
 public interface IScreenWrapper {
 
-	double getGuiWidth();
+    double getGuiWidth();
 
-	double getGuiHeight();
+    double getGuiHeight();
 
-	Font getFontRenderer();
+    Font getFontRenderer();
 
 }

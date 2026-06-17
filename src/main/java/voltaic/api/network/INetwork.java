@@ -3,7 +3,7 @@ package voltaic.api.network;
 import java.util.UUID;
 
 public interface INetwork {
-	int getSize();
+    int getSize();
 
-	public UUID getId();
+    public UUID getId();
 }

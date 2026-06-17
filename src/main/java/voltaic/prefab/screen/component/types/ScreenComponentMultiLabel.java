@@ -2,29 +2,29 @@ package voltaic.prefab.screen.component.types;
 
 import java.util.function.Consumer;
 
-import voltaic.prefab.screen.component.utils.AbstractScreenComponent;
 import net.minecraft.client.gui.GuiGraphics;
+import voltaic.prefab.screen.component.utils.AbstractScreenComponent;
 
 public class ScreenComponentMultiLabel extends AbstractScreenComponent {
 
-	private final Consumer<GuiGraphics> fontConsumer;
+    private final Consumer<GuiGraphics> fontConsumer;
 
-	public ScreenComponentMultiLabel(int x, int y, Consumer<GuiGraphics> fontConsumer) {
-		super(x, y, 0, 0);
-		this.fontConsumer = fontConsumer;
-	}
+    public ScreenComponentMultiLabel(int x, int y, Consumer<GuiGraphics> fontConsumer) {
+	super(x, y, 0, 0);
+	this.fontConsumer = fontConsumer;
+    }
 
-	@Override
-	public void renderForeground(GuiGraphics graphics, int xAxis, int yAxis, int guiWidth, int guiHeight) {
-		if(!isVisible()){
-			return;
-		}
-		fontConsumer.accept(graphics);
+    @Override
+    public void renderForeground(GuiGraphics graphics, int xAxis, int yAxis, int guiWidth, int guiHeight) {
+	if (!isVisible()) {
+	    return;
 	}
+	fontConsumer.accept(graphics);
+    }
 
-	@Override
-	public boolean isMouseOver(double mouseX, double mouseY) {
-		return false;
-	}
+    @Override
+    public boolean isMouseOver(double mouseX, double mouseY) {
+	return false;
+    }
 
 }

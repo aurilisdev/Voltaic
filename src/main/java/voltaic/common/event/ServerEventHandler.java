@@ -24,43 +24,45 @@ import voltaic.registers.VoltaicCapabilities;
 @EventBusSubscriber(modid = Voltaic.ID, bus = EventBusSubscriber.Bus.FORGE)
 public class ServerEventHandler {
 
-	@SubscribeEvent
-	public static void addReloadListeners(AddReloadListenerEvent event) {
-		event.addListener(RadioactiveItemRegister.INSTANCE);
-		event.addListener(RadioactiveFluidRegister.INSTANCE);
-		event.addListener(RadioactiveGasRegister.INSTANCE);
-		event.addListener(RadiationShieldingRegister.INSTANCE);
-		event.addListener(RadioactiveBlockRegister.INSTANCE);
-	}
+    @SubscribeEvent
+    public static void addReloadListeners(AddReloadListenerEvent event) {
+	event.addListener(RadioactiveItemRegister.INSTANCE);
+	event.addListener(RadioactiveFluidRegister.INSTANCE);
+	event.addListener(RadioactiveGasRegister.INSTANCE);
+	event.addListener(RadiationShieldingRegister.INSTANCE);
+	event.addListener(RadioactiveBlockRegister.INSTANCE);
+    }
 
-	@SubscribeEvent
-	public static void serverStartedHandler(ServerStartedEvent event) {
-		RadioactiveItemRegister.INSTANCE.generateTagValues();
-		RadioactiveFluidRegister.INSTANCE.generateTagValues();
-		RadioactiveGasRegister.INSTANCE.generateTagValues();
-		RadiationShieldingRegister.INSTANCE.generateTagValues();
-		RadioactiveBlockRegister.INSTANCE.generateTagValues();
-	}
+    @SubscribeEvent
+    public static void serverStartedHandler(ServerStartedEvent event) {
+	RadioactiveItemRegister.INSTANCE.generateTagValues();
+	RadioactiveFluidRegister.INSTANCE.generateTagValues();
+	RadioactiveGasRegister.INSTANCE.generateTagValues();
+	RadiationShieldingRegister.INSTANCE.generateTagValues();
+	RadioactiveBlockRegister.INSTANCE.generateTagValues();
+    }
 
-	@SubscribeEvent
-	public static void registerCommands(RegisterCommandsEvent event) {
-		CommandWipeRadiationSources.register(event.getDispatcher());
+    @SubscribeEvent
+    public static void registerCommands(RegisterCommandsEvent event) {
+	CommandWipeRadiationSources.register(event.getDispatcher());
+    }
+
+    @SubscribeEvent
+    public static void registerEntityCaps(AttachCapabilitiesEvent<Entity> event) {
+	Entity entity = event.getObject();
+	if (entity instanceof LivingEntity && entity.getCapability(VoltaicCapabilities.CAPABILITY_RADIATIONRECIPIENT)
+		.orElse(CapabilityUtils.EMPTY_RADIATION_REPIPIENT) == CapabilityUtils.EMPTY_RADIATION_REPIPIENT) {
+	    event.addCapability(Voltaic.rl("radiationrecipient"), new CapabilityRadiationRecipient());
 	}
-	
-	@SubscribeEvent
-	public static void registerEntityCaps(AttachCapabilitiesEvent<Entity> event) {
-		Entity entity = event.getObject();
-		if(entity instanceof LivingEntity && entity.getCapability(VoltaicCapabilities.CAPABILITY_RADIATIONRECIPIENT).orElse(CapabilityUtils.EMPTY_RADIATION_REPIPIENT) == CapabilityUtils.EMPTY_RADIATION_REPIPIENT) {
-			event.addCapability(Voltaic.rl("radiationrecipient"), new CapabilityRadiationRecipient());
-		}
+    }
+
+    @SubscribeEvent
+    public static void registerLevelCaps(AttachCapabilitiesEvent<Level> event) {
+	Level world = event.getObject();
+	if (world != null && world.getCapability(VoltaicCapabilities.CAPABILITY_RADIATIONMANAGER)
+		.orElse(CapabilityUtils.EMPTY_MANAGER) == CapabilityUtils.EMPTY_MANAGER) {
+	    event.addCapability(Voltaic.rl("radiationmanager"), new RadiationManager());
 	}
-	
-	@SubscribeEvent
-	public static void registerLevelCaps(AttachCapabilitiesEvent<Level> event) {
-		Level world = event.getObject();
-		if(world != null && world.getCapability(VoltaicCapabilities.CAPABILITY_RADIATIONMANAGER).orElse(CapabilityUtils.EMPTY_MANAGER) == CapabilityUtils.EMPTY_MANAGER) {
-			event.addCapability(Voltaic.rl("radiationmanager"), new RadiationManager());
-		}
-	}
+    }
 
 }

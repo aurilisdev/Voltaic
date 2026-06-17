@@ -17,152 +17,148 @@ import voltaic.api.codec.StreamCodec;
 
 public class ListPropertyType<TYPE, BUFFERTYPE extends ByteBuf> implements IPropertyType<List<TYPE>, BUFFERTYPE> {
 
-	private final BiPredicate<TYPE, TYPE> singleComparison;
-	private final BiPredicate<List<TYPE>, List<TYPE>> comparison;
-	private final StreamCodec<BUFFERTYPE, List<TYPE>> packetCodec;
-	private final Consumer<TagWriter<List<TYPE>>> writeToNbt;
-	private final Function<TagReader<List<TYPE>>, List<TYPE>> readFromNbt;
+    private final BiPredicate<TYPE, TYPE> singleComparison;
+    private final BiPredicate<List<TYPE>, List<TYPE>> comparison;
+    private final StreamCodec<BUFFERTYPE, List<TYPE>> packetCodec;
+    private final Consumer<TagWriter<List<TYPE>>> writeToNbt;
+    private final Function<TagReader<List<TYPE>>, List<TYPE>> readFromNbt;
 
-	public ListPropertyType(@Nonnull BiPredicate<TYPE, TYPE> singleComparison,
-			StreamCodec<BUFFERTYPE, TYPE> singlePacketCodec, Codec<TYPE> singleNbtCodec, TYPE defaultValue) {
+    public ListPropertyType(@Nonnull BiPredicate<TYPE, TYPE> singleComparison,
+	    StreamCodec<BUFFERTYPE, TYPE> singlePacketCodec, Codec<TYPE> singleNbtCodec, TYPE defaultValue) {
 
-		this.singleComparison = singleComparison;
+	this.singleComparison = singleComparison;
 
-		this.comparison = (list1, list2) -> {
+	this.comparison = (list1, list2) -> {
 
-			if (list1 == null || list2 == null) {
-				return false;
-			}
+	    if (list1 == null || list2 == null || (list1.size() != list2.size())) {
+		return false;
+	    }
 
-			if (list1.size() != list2.size()) {
-				return false;
-			}
+	    for (int i = 0; i < list1.size(); i++) {
 
-			for (int i = 0; i < list1.size(); i++) {
+		if (!singleComparison.test(list1.get(i), list2.get(i))) {
+		    return false;
+		}
 
-				if (!singleComparison.test(list1.get(i), list2.get(i))) {
-					return false;
-				}
+	    }
 
-			}
+	    return true;
 
-			return true;
+	};
 
-		};
+	packetCodec = new StreamCodec<>() {
 
-		packetCodec = new StreamCodec<>() {
+	    @Override
+	    public List<TYPE> decode(BUFFERTYPE buffer) {
 
-			@Override
-			public List<TYPE> decode(BUFFERTYPE buffer) {
+		int size = buffer.readInt();
 
-				int size = buffer.readInt();
+		List<TYPE> list = new ArrayList<>(size);
 
-				List<TYPE> list = new ArrayList<>(size);
+		for (int i = 0; i < size; i++) {
 
-				for (int i = 0; i < size; i++) {
+		    list.add(singlePacketCodec.decode(buffer));
 
-					list.add(singlePacketCodec.decode(buffer));
+		}
 
-				}
+		return list;
+	    }
 
-				return list;
-			}
+	    @Override
+	    public void encode(BUFFERTYPE buffer, List<TYPE> value) {
 
-			@Override
-			public void encode(BUFFERTYPE buffer, List<TYPE> value) {
+		buffer.writeInt(value.size());
 
-				buffer.writeInt(value.size());
+		for (int i = 0; i < value.size(); i++) {
 
-				for (int i = 0; i < value.size(); i++) {
+		    singlePacketCodec.encode(buffer, value.get(i));
 
-					singlePacketCodec.encode(buffer, value.get(i));
+		}
 
-				}
+	    }
+	};
 
-			}
-		};
+	writeToNbt = writer -> {
 
-		writeToNbt = writer -> {
+	    CompoundTag tag = new CompoundTag();
 
-			CompoundTag tag = new CompoundTag();
+	    List<TYPE> list = writer.prop().getValue();
 
-			List<TYPE> list = writer.prop().getValue();
+	    tag.putInt("size", list.size());
 
-			tag.putInt("size", list.size());
+	    for (int i = 0; i < list.size(); i++) {
 
-			for (int i = 0; i < list.size(); i++) {
+		final int index = i;
 
-				final int index = i;
+		TYPE value = list.get(i);
 
-				TYPE value = list.get(i);
+		if (value != null) {
+		    singleNbtCodec.encode(value, NbtOps.INSTANCE, NbtOps.INSTANCE.empty()).result()
+			    .ifPresent(nbt -> tag.put("" + index, nbt.copy()));
+		}
+	    }
 
-				if (value != null) {
-					singleNbtCodec.encode(value, NbtOps.INSTANCE, NbtOps.INSTANCE.empty()).result()
-							.ifPresent(nbt -> tag.put("" + index, nbt.copy()));
-				}
-			}
+	    writer.tag().put(writer.prop().getName(), tag);
 
-			writer.tag().put(writer.prop().getName(), tag);
+	};
 
-		};
+	readFromNbt = reader -> {
 
-		readFromNbt = reader -> {
+	    CompoundTag data = reader.tag().getCompound(reader.prop().getName());
 
-			CompoundTag data = reader.tag().getCompound(reader.prop().getName());
+	    if (!data.contains("size")) {
+		return reader.prop().getValue();
+	    }
 
-			if (!data.contains("size")) {
-				return reader.prop().getValue();
-			}
+	    int size = data.getInt("size");
 
-			int size = data.getInt("size");
+	    if (size <= 0) {
+		return new ArrayList<>();
+	    }
 
-			if (size <= 0) {
-				return new ArrayList<>();
-			}
+	    List<TYPE> list = new ArrayList<>(size);
 
-			List<TYPE> list = new ArrayList<>(size);
+	    for (int i = 0; i < size; i++) {
+		list.add(defaultValue);
+	    }
 
-			for (int i = 0; i < size; i++) {
-				list.add(defaultValue);
-			}
+	    for (int i = 0; i < size; i++) {
 
-			for (int i = 0; i < size; i++) {
+		final int index = i;
 
-				final int index = i;
+		singleNbtCodec.decode(NbtOps.INSTANCE, data.get("" + i)).result()
+			.ifPresent(pair -> list.set(index, pair.getFirst()));
 
-				singleNbtCodec.decode(NbtOps.INSTANCE, data.get("" + i)).result()
-						.ifPresent(pair -> list.set(index, pair.getFirst()));
+	    }
 
-			}
+	    return list;
 
-			return list;
+	};
 
-		};
+    }
 
-	}
+    @Override
+    public StreamCodec<BUFFERTYPE, List<TYPE>> getPacketCodec() {
+	return packetCodec;
+    }
 
-	@Override
-	public StreamCodec<BUFFERTYPE, List<TYPE>> getPacketCodec() {
-		return packetCodec;
-	}
+    @Override
+    public void writeToTag(TagWriter<List<TYPE>> writer) {
+	writeToNbt.accept(writer);
+    }
 
-	@Override
-	public void writeToTag(TagWriter<List<TYPE>> writer) {
-		writeToNbt.accept(writer);
-	}
+    @Override
+    public List<TYPE> readFromTag(TagReader<List<TYPE>> reader) {
+	return readFromNbt.apply(reader);
+    }
 
-	@Override
-	public List<TYPE> readFromTag(TagReader<List<TYPE>> reader) {
-		return readFromNbt.apply(reader);
-	}
+    @Override
+    public boolean isEqual(List<TYPE> currentValue, List<TYPE> newValue) {
+	return comparison.test(currentValue, newValue);
+    }
 
-	@Override
-	public boolean isEqual(List<TYPE> currentValue, List<TYPE> newValue) {
-		return comparison.test(currentValue, newValue);
-	}
-
-	public boolean isSingleEqual(TYPE val1, TYPE val2) {
-		return singleComparison.test(val1, val2);
-	}
+    public boolean isSingleEqual(TYPE val1, TYPE val2) {
+	return singleComparison.test(val1, val2);
+    }
 
 }

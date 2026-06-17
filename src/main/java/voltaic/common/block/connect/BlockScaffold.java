@@ -10,19 +10,19 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class BlockScaffold extends Block {
 
-	public BlockScaffold(Properties properties) {
-		super(properties);
-		// TODO Auto-generated constructor stub
-	}
+    public BlockScaffold(Properties properties) {
+	super(properties);
+	// TODO Auto-generated constructor stub
+    }
 
-	@Override
-	public boolean propagatesSkylightDown(BlockState pState, BlockGetter pLevel, BlockPos pPos) {
-		return true;
-	}
+    @Override
+    public boolean propagatesSkylightDown(BlockState pState, BlockGetter pLevel, BlockPos pPos) {
+	return true;
+    }
 
-	@Override
-	public VoxelShape getVisualShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {
-		return Shapes.empty();
-	}
+    @Override
+    public VoxelShape getVisualShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {
+	return Shapes.empty();
+    }
 
 }

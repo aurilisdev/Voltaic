@@ -22,43 +22,46 @@ public abstract class Item2FluidRecipe extends AbstractMaterialRecipe {
     private List<CountableIngredient> inputItems;
     private FluidStack outputFluid;
 
-    public Item2FluidRecipe(ResourceLocation group, List<CountableIngredient> itemInputs, FluidStack fluidOutput, double experience, int ticks, double usagePerTick, List<ProbableItem> itemBiproducts, List<ProbableFluid> fluidBiproducts, List<ProbableGas> gasBiproducts) {
-        super(group, experience, ticks, usagePerTick, itemBiproducts, fluidBiproducts, gasBiproducts);
-        inputItems = itemInputs;
-        outputFluid = fluidOutput;
+    public Item2FluidRecipe(ResourceLocation group, List<CountableIngredient> itemInputs, FluidStack fluidOutput,
+	    double experience, int ticks, double usagePerTick, List<ProbableItem> itemBiproducts,
+	    List<ProbableFluid> fluidBiproducts, List<ProbableGas> gasBiproducts) {
+	super(group, experience, ticks, usagePerTick, itemBiproducts, fluidBiproducts, gasBiproducts);
+	inputItems = itemInputs;
+	outputFluid = fluidOutput;
     }
 
     @Override
     public boolean matchesRecipe(ComponentProcessor pr, int procNumber) {
-        Pair<List<Integer>, Boolean> pair = areItemsValid(getCountedIngredients(), ((ComponentInventory) pr.getHolder().getComponent(IComponentType.Inventory)).getInputsForProcessor(procNumber));
-        if (pair.getSecond()) {
-            setItemArrangement(procNumber, pair.getFirst());
-            return true;
-        }
-        return false;
+	Pair<List<Integer>, Boolean> pair = areItemsValid(getCountedIngredients(),
+		((ComponentInventory) pr.getHolder().getComponent(IComponentType.Inventory))
+			.getInputsForProcessor(procNumber));
+	if (pair.getSecond()) {
+	    setItemArrangement(procNumber, pair.getFirst());
+	    return true;
+	}
+	return false;
     }
 
     @Override
     public FluidStack getFluidRecipeOutput() {
-        return outputFluid;
+	return outputFluid;
     }
 
     public List<CountableIngredient> getCountedIngredients() {
-        List<CountableIngredient> list = new ArrayList<>();
-        for (CountableIngredient ing : inputItems) {
-            list.add(ing);
-        }
-        return list;
+	List<CountableIngredient> list = new ArrayList<>(inputItems);
+	return list;
     }
 
     @Override
     public List<FluidIngredient> getFluidIngredients() {
-        return new ArrayList<>();
+	return new ArrayList<>();
     }
 
     public interface Factory<T extends Item2FluidRecipe> {
 
-        T create(ResourceLocation group, List<CountableIngredient> itemInputs, FluidStack fluidOutput, double experience, int ticks, double usagePerTick, List<ProbableItem> itemBiproducts, List<ProbableFluid> fluidBiproducts, List<ProbableGas> gasBiproducts);
+	T create(ResourceLocation group, List<CountableIngredient> itemInputs, FluidStack fluidOutput,
+		double experience, int ticks, double usagePerTick, List<ProbableItem> itemBiproducts,
+		List<ProbableFluid> fluidBiproducts, List<ProbableGas> gasBiproducts);
 
     }
 

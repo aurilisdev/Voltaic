@@ -11,15 +11,16 @@ import net.minecraftforge.registries.RegistryObject;
 
 public abstract class BaseSoundProvider extends SoundDefinitionsProvider {
 
-	private final String modID;
+    private final String modID;
 
-	public BaseSoundProvider(PackOutput output, ExistingFileHelper helper, String modID) {
-		super(output, modID, helper);
-		this.modID = modID;
-	}
+    public BaseSoundProvider(PackOutput output, ExistingFileHelper helper, String modID) {
+	super(output, modID, helper);
+	this.modID = modID;
+    }
 
-	public void add(RegistryObject<SoundEvent> sound) {
-		add(sound.get(), SoundDefinition.definition().subtitle("subtitles." + modID + "." + sound.getId().getPath()).with(Sound.sound(sound.getId(), SoundType.SOUND)));
-	}
+    public void add(RegistryObject<SoundEvent> sound) {
+	add(sound.get(), SoundDefinition.definition().subtitle("subtitles." + modID + "." + sound.getId().getPath())
+		.with(Sound.sound(sound.getId(), SoundType.SOUND)));
+    }
 
 }

@@ -10,19 +10,19 @@ import net.minecraft.data.recipes.RecipeProvider;
 
 public abstract class BaseRecipeProvider extends RecipeProvider {
 
-	public final List<AbstractRecipeGenerator> generators = new ArrayList<>();
+    public final List<AbstractRecipeGenerator> generators = new ArrayList<>();
 
-	public BaseRecipeProvider(PackOutput output) {
-		super(output);
-		addRecipes();
+    public BaseRecipeProvider(PackOutput output) {
+	super(output);
+	addRecipes();
+    }
+
+    public abstract void addRecipes();
+
+    @Override
+    protected void buildRecipes(Consumer<FinishedRecipe> consumer) {
+	for (AbstractRecipeGenerator generator : generators) {
+	    generator.addRecipes(consumer);
 	}
-
-	public abstract void addRecipes();
-
-	@Override
-	protected void buildRecipes(Consumer<FinishedRecipe> consumer) {
-		for (AbstractRecipeGenerator generator : generators) {
-			generator.addRecipes(consumer);
-		}
-	}
-}	
+    }
+}

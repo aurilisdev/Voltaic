@@ -1,38 +1,38 @@
 package voltaic.client.misc;
 
-import voltaic.common.fluid.SimpleWaterBasedFluidType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
+import voltaic.common.fluid.SimpleWaterBasedFluidType;
 
 public class SWBFClientExtensions implements IClientFluidTypeExtensions {
 
     private final SimpleWaterBasedFluidType fluidType;
 
     public SWBFClientExtensions(SimpleWaterBasedFluidType fluidType) {
-        this.fluidType = fluidType;
+	this.fluidType = fluidType;
     }
 
     @Override
     public ResourceLocation getStillTexture() {
-        return fluidType.texture;
+	return fluidType.texture;
     }
 
     @Override
     public ResourceLocation getFlowingTexture() {
-        return fluidType.texture;
+	return fluidType.texture;
     }
 
     @Override
     public int getTintColor() {
-        return fluidType.color.color();
+	return fluidType.color.color();
     }
 
     @Override
     public int getTintColor(FluidState state, BlockAndTintGetter getter, BlockPos pos) {
-        return getTintColor();
+	return getTintColor();
     }
 
 }

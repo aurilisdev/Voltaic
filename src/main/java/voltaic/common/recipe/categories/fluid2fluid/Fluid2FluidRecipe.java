@@ -20,35 +20,40 @@ public abstract class Fluid2FluidRecipe extends AbstractMaterialRecipe {
     private List<FluidIngredient> inputFluidIngredients;
     private FluidStack outputFluidStack;
 
-    public Fluid2FluidRecipe(ResourceLocation recipeGroup, List<FluidIngredient> inputFluids, FluidStack outputFluid, double experience, int ticks, double usagePerTick, List<ProbableItem> itemBiproducts, List<ProbableFluid> fluidBiproducts, List<ProbableGas> gasBiproducts) {
-        super(recipeGroup, experience, ticks, usagePerTick, itemBiproducts, fluidBiproducts, gasBiproducts);
-        inputFluidIngredients = inputFluids;
-        outputFluidStack = outputFluid;
+    public Fluid2FluidRecipe(ResourceLocation recipeGroup, List<FluidIngredient> inputFluids, FluidStack outputFluid,
+	    double experience, int ticks, double usagePerTick, List<ProbableItem> itemBiproducts,
+	    List<ProbableFluid> fluidBiproducts, List<ProbableGas> gasBiproducts) {
+	super(recipeGroup, experience, ticks, usagePerTick, itemBiproducts, fluidBiproducts, gasBiproducts);
+	inputFluidIngredients = inputFluids;
+	outputFluidStack = outputFluid;
     }
 
     @Override
     public boolean matchesRecipe(ComponentProcessor pr, int procNumber) {
-        Pair<List<Integer>, Boolean> pair = areFluidsValid(getFluidIngredients(), pr.getHolder().<ComponentFluidHandlerMulti>getComponent(IComponentType.FluidHandler).getInputTanks());
-        if (pair.getSecond()) {
-            setFluidArrangement(pair.getFirst());
-            return true;
-        }
-        return false;
+	Pair<List<Integer>, Boolean> pair = areFluidsValid(getFluidIngredients(),
+		pr.getHolder().<ComponentFluidHandlerMulti>getComponent(IComponentType.FluidHandler).getInputTanks());
+	if (pair.getSecond()) {
+	    setFluidArrangement(pair.getFirst());
+	    return true;
+	}
+	return false;
     }
 
     @Override
     public FluidStack getFluidRecipeOutput() {
-        return outputFluidStack;
+	return outputFluidStack;
     }
 
     @Override
     public List<FluidIngredient> getFluidIngredients() {
-        return inputFluidIngredients;
+	return inputFluidIngredients;
     }
 
     public interface Factory<T extends Fluid2FluidRecipe> {
 
-        T create(ResourceLocation recipeGroup, List<FluidIngredient> inputFluids, FluidStack outputFluid, double experience, int ticks, double usagePerTick, List<ProbableItem> itemBiproducts, List<ProbableFluid> fluidBiproducts, List<ProbableGas> gasBiproducts);
+	T create(ResourceLocation recipeGroup, List<FluidIngredient> inputFluids, FluidStack outputFluid,
+		double experience, int ticks, double usagePerTick, List<ProbableItem> itemBiproducts,
+		List<ProbableFluid> fluidBiproducts, List<ProbableGas> gasBiproducts);
 
     }
 

@@ -5,6 +5,6 @@ import net.minecraftforge.client.event.InputEvent.Key;
 
 public abstract class AbstractKeyPressHandler {
 
-	public abstract void handler(Key event, Minecraft minecraft);
+    public abstract void handler(Key event, Minecraft minecraft);
 
 }

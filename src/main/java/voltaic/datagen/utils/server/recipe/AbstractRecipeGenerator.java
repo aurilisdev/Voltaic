@@ -6,6 +6,6 @@ import net.minecraft.data.recipes.FinishedRecipe;
 
 public abstract class AbstractRecipeGenerator {
 
-	public abstract void addRecipes(Consumer<FinishedRecipe> consumer);
+    public abstract void addRecipes(Consumer<FinishedRecipe> consumer);
 
 }

@@ -4,8 +4,8 @@ import net.minecraft.nbt.CompoundTag;
 import voltaic.Voltaic;
 import voltaic.common.packet.NetworkHandler;
 import voltaic.common.packet.types.server.PacketSendUpdatePropertiesServer;
-import voltaic.prefab.properties.types.IPropertyType;
 import voltaic.prefab.properties.PropertyManager;
+import voltaic.prefab.properties.types.IPropertyType;
 
 public abstract class AbstractProperty<T, PROPERTYTYPE extends IPropertyType> {
 
@@ -13,8 +13,9 @@ public abstract class AbstractProperty<T, PROPERTYTYPE extends IPropertyType> {
     private final PROPERTYTYPE type;
     private boolean shouldSave = true;
     private boolean shouldUpdateClient = true;
-    //set this if you want to update a property without having a tile tick
-    //otherwise the property will be synced to the client upon change at the end of the tile's tick
+    // set this if you want to update a property without having a tile tick
+    // otherwise the property will be synced to the client upon change at the end of
+    // the tile's tick
     private boolean shouldUpdateOnChange = false;
     private boolean shouldUpdateServer = true;
     private final String name;
@@ -26,145 +27,152 @@ public abstract class AbstractProperty<T, PROPERTYTYPE extends IPropertyType> {
     private int index = 0;
 
     public AbstractProperty(PROPERTYTYPE type, String name, T defaultValue) {
-        this.type = type;
-        if (name == null || name.length() == 0) {
-            throw new RuntimeException("The property's name cannot be null or empty");
-        }
-        this.name = name;
-        value = defaultValue;
+	this.type = type;
+	if (name == null || name.length() == 0) {
+	    throw new RuntimeException("The property's name cannot be null or empty");
+	}
+	this.name = name;
+	value = defaultValue;
     }
 
     public String getName() {
-        return name;
+	return name;
     }
 
     public boolean shouldSave() {
-        return shouldSave;
+	return shouldSave;
     }
 
     public <A extends AbstractProperty<T, PROPERTYTYPE>> A setNoSave() {
-        shouldSave = false;
-        return (A) this;
+	shouldSave = false;
+	return (A) this;
     }
 
     public boolean shouldUpdateClient() {
-        return shouldUpdateClient;
+	return shouldUpdateClient;
     }
 
     public <A extends AbstractProperty<T, PROPERTYTYPE>> A setNoUpdateClient() {
-        shouldUpdateClient = false;
-        return (A) this;
+	shouldUpdateClient = false;
+	return (A) this;
     }
 
     public boolean shouldUpdateOnChange() {
-        return shouldUpdateOnChange;
+	return shouldUpdateOnChange;
     }
 
     public <A extends AbstractProperty<T, PROPERTYTYPE>> A setShouldUpdateOnChange() {
-        shouldUpdateOnChange = true;
-        return (A) this;
+	shouldUpdateOnChange = true;
+	return (A) this;
     }
 
     public boolean shouldUpdateServer() {
-        return shouldUpdateServer;
+	return shouldUpdateServer;
     }
 
     public <A extends AbstractProperty<T, PROPERTYTYPE>> A setNoUpdateServer() {
-        shouldUpdateServer = false;
-        return (A) this;
+	shouldUpdateServer = false;
+	return (A) this;
     }
 
     public PROPERTYTYPE getType() {
-        return type;
+	return type;
     }
 
     public int index() {
-        return index;
+	return index;
     }
 
     public void setIndex(int index) {
-        this.index = index;
+	this.index = index;
     }
 
     public PropertyManager getPropertyManager() {
-        return manager;
+	return manager;
     }
 
     public void setManager(PropertyManager manager) {
-        this.manager = manager;
+	this.manager = manager;
     }
 
     public void saveToTag(CompoundTag tag) {
-        try {
-            getType().writeToTag(new IPropertyType.TagWriter<>(this, tag));
-        } catch (Exception e) {
-            Voltaic.LOGGER.info("Catching error while saving property " + getName() + " from NBT. Error: " + e.getMessage());
-        }
+	try {
+	    getType().writeToTag(new IPropertyType.TagWriter<>(this, tag));
+	} catch (Exception e) {
+	    Voltaic.LOGGER
+		    .info("Catching error while saving property " + getName() + " from NBT. Error: " + e.getMessage());
+	}
     }
 
     public void loadFromTag(CompoundTag tag) {
-        try {
-            T data = (T) getType().readFromTag(new IPropertyType.TagReader(this, tag));
-            if (data != null) {
-                value = data;
-                onLoadedFromTag(this, value);
-            }
-        } catch (Exception e) {
-            Voltaic.LOGGER.info("Catching error while loading property " + getName() + " from NBT. Error: " + e.getMessage());
-        }
+	try {
+	    T data = (T) getType().readFromTag(new IPropertyType.TagReader(this, tag));
+	    if (data != null) {
+		value = data;
+		onLoadedFromTag(this, value);
+	    }
+	} catch (Exception e) {
+	    Voltaic.LOGGER
+		    .info("Catching error while loading property " + getName() + " from NBT. Error: " + e.getMessage());
+	}
     }
+
     public abstract void onTileLoaded();
 
     public abstract void onLoadedFromTag(AbstractProperty<T, PROPERTYTYPE> prop, T loadedValue);
 
     public T getValue() {
-        return value;
+	return value;
     }
-    
+
     public abstract void setValue(Object newValue);
 
     /**
-     * Documentation note: This merely forces the value of the property and does not indicate that it is dirty!
+     * Documentation note: This merely forces the value of the property and does not
+     * indicate that it is dirty!
      *
      * @param newVal
      */
     @Deprecated(since = "Be careful when you use this!")
     public void overwriteValue(T newVal) {
-        value = newVal;
+	value = newVal;
     }
 
     public void setDirty() {
-        isDirty = true;
+	isDirty = true;
     }
 
     public boolean isDirty() {
-        return isDirty;
+	return isDirty;
     }
 
     /**
      * This method should be used only as a last resort
      * <p>
-     * If it is a single object (FluidStack for example), then do NOT used this method
+     * If it is a single object (FluidStack for example), then do NOT used this
+     * method
      */
     @Deprecated(since = "This should be used when working with arrays")
     public void forceDirtyForManager() {
-        if (!manager.getOwner().getLevel().isClientSide()) {
-            manager.setDirty(this);
-        } else {
-            CompoundTag data = new CompoundTag();
-            saveToTag(data);
-            NetworkHandler.CHANNEL.sendToServer(new PacketSendUpdatePropertiesServer(data, index(), manager.getOwner().getBlockPos()));
-        }
+	if (!manager.getOwner().getLevel().isClientSide()) {
+	    manager.setDirty(this);
+	} else {
+	    CompoundTag data = new CompoundTag();
+	    saveToTag(data);
+	    NetworkHandler.CHANNEL.sendToServer(
+		    new PacketSendUpdatePropertiesServer(data, index(), manager.getOwner().getBlockPos()));
+	}
     }
 
     public void clean() {
-        isDirty = false;
+	isDirty = false;
     }
 
     public void updateServer() {
-        CompoundTag data = new CompoundTag();
-        saveToTag(data);
-        NetworkHandler.CHANNEL.sendToServer(new PacketSendUpdatePropertiesServer(data, index(), manager.getOwner().getBlockPos()));
+	CompoundTag data = new CompoundTag();
+	saveToTag(data);
+	NetworkHandler.CHANNEL
+		.sendToServer(new PacketSendUpdatePropertiesServer(data, index(), manager.getOwner().getBlockPos()));
     }
 
 }

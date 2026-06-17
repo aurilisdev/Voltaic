@@ -3,7 +3,8 @@ package voltaic.api.electricity;
 import net.minecraft.sounds.SoundEvent;
 
 /**
- * Wrapper interface allowing for a material a wire is resting on to have a certain voltage value it can insulate to
+ * Wrapper interface allowing for a material a wire is resting on to have a
+ * certain voltage value it can insulate to
  * 
  * This should be implemented on the Block
  * 
@@ -12,8 +13,8 @@ import net.minecraft.sounds.SoundEvent;
  */
 public interface IInsulator {
 
-	double getMaximumVoltage();
+    double getMaximumVoltage();
 
-	SoundEvent getBreakingSound();
+    SoundEvent getBreakingSound();
 
 }

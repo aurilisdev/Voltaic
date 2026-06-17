@@ -1,7 +1,6 @@
 package voltaic.prefab.properties.types;
 
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -13,7 +12,6 @@ import com.mojang.serialization.Codec;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.Tag;
 import voltaic.api.codec.StreamCodec;
 
 public class SetPropertyType<TYPE, BUFFERTYPE extends ByteBuf> implements IPropertyType<HashSet<TYPE>, BUFFERTYPE> {
@@ -24,132 +22,128 @@ public class SetPropertyType<TYPE, BUFFERTYPE extends ByteBuf> implements IPrope
     private final Consumer<TagWriter<HashSet<TYPE>>> writeToNbt;
     private final Function<TagReader<HashSet<TYPE>>, HashSet<TYPE>> readFromNbt;
 
-    public SetPropertyType(@Nonnull BiPredicate<TYPE, TYPE> singleComparison, StreamCodec<BUFFERTYPE, TYPE> singlePacketCodec, Codec<TYPE> singleNbtCodec) {
+    public SetPropertyType(@Nonnull BiPredicate<TYPE, TYPE> singleComparison,
+	    StreamCodec<BUFFERTYPE, TYPE> singlePacketCodec, Codec<TYPE> singleNbtCodec) {
 
-        this.singleComparison = singleComparison;
+	this.singleComparison = singleComparison;
 
-        this.comparison = (set1, set2) -> {
+	this.comparison = (set1, set2) -> {
 
-            if (set1 == null || set2 == null) {
-                return false;
-            }
+	    if (set1 == null || set2 == null || (set1.size() != set2.size())) {
+		return false;
+	    }
 
-            if (set1.size() != set2.size()) {
-                return false;
-            }
+	    return set1.equals(set2);
 
-            return set1.equals(set2);
+	};
 
-        };
+	packetCodec = new StreamCodec<>() {
 
-        packetCodec = new StreamCodec<BUFFERTYPE, HashSet<TYPE>>() {
+	    @Override
+	    public HashSet<TYPE> decode(BUFFERTYPE buffer) {
 
-            @Override
-            public HashSet<TYPE> decode(BUFFERTYPE buffer) {
+		int size = buffer.readInt();
 
-                int size = buffer.readInt();
+		HashSet<TYPE> newSet = new HashSet<>();
 
-                HashSet<TYPE> newSet = new HashSet<>();
+		for (int i = 0; i < size; i++) {
 
-                for (int i = 0; i < size; i++) {
+		    newSet.add(singlePacketCodec.decode(buffer));
 
-                    newSet.add(singlePacketCodec.decode(buffer));
+		}
 
-                }
+		return newSet;
+	    }
 
-                return newSet;
-            }
+	    @Override
+	    public void encode(BUFFERTYPE buffer, HashSet<TYPE> value) {
 
-            @Override
-            public void encode(BUFFERTYPE buffer, HashSet<TYPE> value) {
+		buffer.writeInt(value.size());
 
-                buffer.writeInt(value.size());
+		for (TYPE val : value) {
+		    singlePacketCodec.encode(buffer, val);
+		}
 
-                for (TYPE val : value) {
-                    singlePacketCodec.encode(buffer, val);
-                }
+	    }
+	};
 
-            }
-        };
+	writeToNbt = writer -> {
 
-        writeToNbt = writer -> {
+	    CompoundTag tag = new CompoundTag();
 
-            CompoundTag tag = new CompoundTag();
+	    HashSet<TYPE> set = writer.prop().getValue();
 
-            HashSet<TYPE> set = writer.prop().getValue();
+	    tag.putInt("size", set.size());
 
-            tag.putInt("size", set.size());
+	    int index = 0;
 
-            int index = 0;
+	    for (TYPE val : set) {
 
-            for (TYPE val : set) {
+		final int indx = index;
 
-                final int indx = index;
+		if (val != null) {
+		    singleNbtCodec.encode(val, NbtOps.INSTANCE, NbtOps.INSTANCE.empty()).result()
+			    .ifPresent(nbt -> tag.put("" + indx, nbt.copy()));
+		}
 
-                if (val != null) {
-                    singleNbtCodec
-                            .encode(val, NbtOps.INSTANCE, NbtOps.INSTANCE.empty())
-                            .result()
-                            .ifPresent(nbt -> tag.put("" + indx, nbt.copy()));
-                }
+		index++;
+	    }
 
-                index++;
-            }
+	    writer.tag().put(writer.prop().getName(), tag);
 
-            writer.tag().put(writer.prop().getName(), tag);
+	};
 
-        };
+	readFromNbt = reader -> {
 
-        readFromNbt = reader -> {
+	    CompoundTag data = reader.tag().getCompound(reader.prop().getName());
 
-            CompoundTag data = reader.tag().getCompound(reader.prop().getName());
+	    if (!data.contains("size")) {
+		return reader.prop().getValue();
+	    }
 
-            if (!data.contains("size")) {
-                return reader.prop().getValue();
-            }
+	    int size = data.getInt("size");
 
-            int size = data.getInt("size");
-            
-            HashSet<TYPE> set = new HashSet<>();
+	    HashSet<TYPE> set = new HashSet<>();
 
-            if (size <= 0) {
-                return set;
-            }
+	    if (size <= 0) {
+		return set;
+	    }
 
-            for (int i = 0; i < size; i++) {
+	    for (int i = 0; i < size; i++) {
 
-                singleNbtCodec.decode(NbtOps.INSTANCE, data.get("" + i)).result().ifPresent(pair -> set.add(pair.getFirst()));
+		singleNbtCodec.decode(NbtOps.INSTANCE, data.get("" + i)).result()
+			.ifPresent(pair -> set.add(pair.getFirst()));
 
-            }
+	    }
 
-            return set;
+	    return set;
 
-        };
+	};
 
     }
 
     @Override
     public StreamCodec<BUFFERTYPE, HashSet<TYPE>> getPacketCodec() {
-        return packetCodec;
+	return packetCodec;
     }
 
     @Override
     public void writeToTag(TagWriter<HashSet<TYPE>> writer) {
-        writeToNbt.accept(writer);
+	writeToNbt.accept(writer);
     }
 
     @Override
     public HashSet<TYPE> readFromTag(TagReader<HashSet<TYPE>> reader) {
-        return readFromNbt.apply(reader);
+	return readFromNbt.apply(reader);
     }
 
     @Override
     public boolean isEqual(HashSet<TYPE> currentValue, HashSet<TYPE> newValue) {
-        return comparison.test(currentValue, newValue);
+	return comparison.test(currentValue, newValue);
     }
 
     public boolean isSingleEqual(TYPE val1, TYPE val2) {
-        return singleComparison.test(val1, val2);
+	return singleComparison.test(val1, val2);
     }
 
 }

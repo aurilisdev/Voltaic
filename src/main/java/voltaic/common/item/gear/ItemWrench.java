@@ -1,9 +1,5 @@
 package voltaic.common.item.gear;
 
-import voltaic.api.IWrenchItem;
-import voltaic.common.item.ItemVoltaic;
-import voltaic.prefab.tile.IWrenchable;
-
 import java.util.function.Supplier;
 
 import net.minecraft.core.BlockPos;
@@ -17,65 +13,68 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
+import voltaic.api.IWrenchItem;
+import voltaic.common.item.ItemVoltaic;
+import voltaic.prefab.tile.IWrenchable;
 
 public class ItemWrench extends ItemVoltaic implements IWrenchItem {
 
-	public ItemWrench(Properties properties, Supplier<CreativeModeTab> creativeTab) {
-		super(properties, creativeTab);
+    public ItemWrench(Properties properties, Supplier<CreativeModeTab> creativeTab) {
+	super(properties, creativeTab);
+    }
+
+    @Override
+    public InteractionResult useOn(UseOnContext context) {
+
+	Player player = context.getPlayer();
+
+	if (player == null) {
+	    return InteractionResult.FAIL;
 	}
 
-	@Override
-	public InteractionResult useOn(UseOnContext context) {
+	BlockPos pos = context.getClickedPos();
+	BlockState state = context.getLevel().getBlockState(pos);
+	Block block = state.getBlock();
 
-		Player player = context.getPlayer();
+	ItemStack stack = player.getItemInHand(context.getHand());
 
-		if (player == null) {
-			return InteractionResult.FAIL;
-		}
+	if (block instanceof IWrenchable wrenchable) {
 
-		BlockPos pos = context.getClickedPos();
-		BlockState state = context.getLevel().getBlockState(pos);
-		Block block = state.getBlock();
+	    if (player.isShiftKeyDown()) {
 
-		ItemStack stack = player.getItemInHand(context.getHand());
+		if (shouldPickup(stack, pos, player)) {
 
-		if (block instanceof IWrenchable wrenchable) {
+		    wrenchable.onPickup(stack, pos, player);
 
-			if (player.isShiftKeyDown()) {
-
-				if (shouldPickup(stack, pos, player)) {
-
-					wrenchable.onPickup(stack, pos, player);
-
-					return InteractionResult.CONSUME;
-
-				}
-
-			} else if (shouldRotate(stack, pos, player)) {
-
-				wrenchable.onRotate(stack, pos, player);
-
-				return InteractionResult.CONSUME;
-
-			}
+		    return InteractionResult.CONSUME;
 
 		}
 
-		return InteractionResult.PASS;
+	    } else if (shouldRotate(stack, pos, player)) {
+
+		wrenchable.onRotate(stack, pos, player);
+
+		return InteractionResult.CONSUME;
+
+	    }
+
 	}
 
-	@Override
-	public InteractionResultHolder<ItemStack> use(Level pLevel, Player pPlayer, InteractionHand pUsedHand) {
-		return InteractionResultHolder.fail(pPlayer.getItemInHand(pUsedHand));
-	}
+	return InteractionResult.PASS;
+    }
 
-	@Override
-	public boolean shouldRotate(ItemStack stack, BlockPos pos, Player player) {
-		return true;
-	}
+    @Override
+    public InteractionResultHolder<ItemStack> use(Level pLevel, Player pPlayer, InteractionHand pUsedHand) {
+	return InteractionResultHolder.fail(pPlayer.getItemInHand(pUsedHand));
+    }
 
-	@Override
-	public boolean shouldPickup(ItemStack stack, BlockPos pos, Player player) {
-		return true;
-	}
+    @Override
+    public boolean shouldRotate(ItemStack stack, BlockPos pos, Player player) {
+	return true;
+    }
+
+    @Override
+    public boolean shouldPickup(ItemStack stack, BlockPos pos, Player player) {
+	return true;
+    }
 }

@@ -6,11 +6,11 @@ import voltaic.datagen.utils.server.recipe.BaseRecipeProvider;
 public class VoltaicRecipeProvider extends BaseRecipeProvider {
 
     public VoltaicRecipeProvider(PackOutput output) {
-        super(output);
+	super(output);
     }
 
     @Override
     public void addRecipes() {
-        generators.add(new VoltaicCraftingTableRecipes());
+	generators.add(new VoltaicCraftingTableRecipes());
     }
 }

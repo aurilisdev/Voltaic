@@ -12,7 +12,7 @@ public class VoltaicClientEvents {
 
     @SubscribeEvent
     public static void wipeRenderHashes(ClientPlayerNetworkEvent.LoggingOut event) {
-        ScreenGuidebook.setInitNotHappened();
+	ScreenGuidebook.setInitNotHappened();
     }
 
 }

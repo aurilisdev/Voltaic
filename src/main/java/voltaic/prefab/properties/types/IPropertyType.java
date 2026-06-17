@@ -13,7 +13,7 @@ import voltaic.prefab.properties.variant.AbstractProperty;
 public interface IPropertyType<TYPE, BUFFERTYPE> {
 
     default boolean isEqual(TYPE currentValue, TYPE newValue) {
-        return currentValue.equals(newValue);
+	return currentValue.equals(newValue);
     }
 
     public StreamCodec<BUFFERTYPE, TYPE> getPacketCodec();
@@ -24,8 +24,8 @@ public interface IPropertyType<TYPE, BUFFERTYPE> {
 
     public static final record TagWriter<TYPE>(AbstractProperty<TYPE, ? extends IPropertyType> prop, CompoundTag tag) {
 
-
     }
+
     public static final record TagReader<TYPE>(AbstractProperty<TYPE, ? extends IPropertyType> prop, CompoundTag tag) {
 
     }

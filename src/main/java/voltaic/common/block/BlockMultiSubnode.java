@@ -1,9 +1,5 @@
 package voltaic.common.block;
 
-import voltaic.api.multiblock.subnodebased.child.IMultiblockChildBlock;
-import voltaic.api.multiblock.subnodebased.TileMultiSubnode;
-import voltaic.prefab.block.GenericEntityBlock;
-import voltaic.prefab.tile.GenericTile;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.player.Player;
@@ -20,72 +16,78 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import voltaic.api.multiblock.subnodebased.TileMultiSubnode;
+import voltaic.api.multiblock.subnodebased.child.IMultiblockChildBlock;
+import voltaic.prefab.block.GenericEntityBlock;
+import voltaic.prefab.tile.GenericTile;
 
 public class BlockMultiSubnode extends GenericEntityBlock implements IMultiblockChildBlock {
 
     public BlockMultiSubnode() {
-        super(Properties.copy(Blocks.GLASS).strength(3.5F).sound(SoundType.METAL).isRedstoneConductor((a, b, c) -> false).noOcclusion());
+	super(Properties.copy(Blocks.GLASS).strength(3.5F).sound(SoundType.METAL)
+		.isRedstoneConductor((a, b, c) -> false).noOcclusion());
     }
 
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
-        return worldIn.getBlockEntity(pos) instanceof TileMultiSubnode subnode ? subnode.getShape() : Shapes.block();
+	return worldIn.getBlockEntity(pos) instanceof TileMultiSubnode subnode ? subnode.getShape() : Shapes.block();
     }
 
     @Override
     public VoxelShape getVisualShape(BlockState state, BlockGetter reader, BlockPos pos, CollisionContext context) {
-        return Shapes.empty();
+	return Shapes.empty();
     }
 
     @Override
     @OnlyIn(Dist.CLIENT)
     public boolean skipRendering(BlockState state, BlockState adjacentBlockState, Direction side) {
-        return true;
+	return true;
     }
 
     @OnlyIn(Dist.CLIENT)
     @Override
     public float getShadeBrightness(BlockState state, BlockGetter worldIn, BlockPos pos) {
-        return 1.0f;
+	return 1.0f;
     }
 
     @Override
     public boolean propagatesSkylightDown(BlockState state, BlockGetter reader, BlockPos pos) {
-        return true;
+	return true;
     }
-    
+
     @Override
-    public ItemStack getCloneItemStack(BlockState state, HitResult target, BlockGetter level, BlockPos pos, Player player) {
-    	if (level.getBlockEntity(pos) instanceof TileMultiSubnode subnode) {
-            return new ItemStack(level.getBlockState(subnode.parentPos.getValue()).getBlock());
-        }
-    	return super.getCloneItemStack(state, target, level, pos, player);
+    public ItemStack getCloneItemStack(BlockState state, HitResult target, BlockGetter level, BlockPos pos,
+	    Player player) {
+	if (level.getBlockEntity(pos) instanceof TileMultiSubnode subnode) {
+	    return new ItemStack(level.getBlockState(subnode.parentPos.getValue()).getBlock());
+	}
+	return super.getCloneItemStack(state, target, level, pos, player);
     }
 
     @Override
     public boolean isSignalSource(BlockState state) {
-        return true;
+	return true;
     }
 
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return new TileMultiSubnode(pos, state);
+	return new TileMultiSubnode(pos, state);
     }
 
     @Override
     public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
-        if (newState.isAir() && level.getBlockEntity(pos) instanceof GenericTile generic) {
-            generic.onBlockDestroyed();
-        }
-        super.onRemove(state, level, pos, newState, isMoving);
+	if (newState.isAir() && level.getBlockEntity(pos) instanceof GenericTile generic) {
+	    generic.onBlockDestroyed();
+	}
+	super.onRemove(state, level, pos, newState, isMoving);
     }
 
     @Override
     public void onPlace(BlockState newState, Level level, BlockPos pos, BlockState oldState, boolean isMoving) {
-        super.onPlace(newState, level, pos, oldState, isMoving);
-        if (level.getBlockEntity(pos) instanceof GenericTile generic) {
-            generic.onPlace(oldState, isMoving);
-        }
+	super.onPlace(newState, level, pos, oldState, isMoving);
+	if (level.getBlockEntity(pos) instanceof GenericTile generic) {
+	    generic.onPlace(oldState, isMoving);
+	}
     }
 
 }

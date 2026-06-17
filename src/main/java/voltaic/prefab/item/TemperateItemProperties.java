@@ -1,11 +1,11 @@
 package voltaic.prefab.item;
 
 public class TemperateItemProperties {
-	public double temperature;
+    public double temperature;
 
-	public TemperateItemProperties temperature(double temperature) {
-		this.temperature = temperature;
-		return this;
-	}
+    public TemperateItemProperties temperature(double temperature) {
+	this.temperature = temperature;
+	return this;
+    }
 
 }

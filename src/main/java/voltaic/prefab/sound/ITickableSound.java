@@ -2,8 +2,8 @@ package voltaic.prefab.sound;
 
 public interface ITickableSound {
 
-	void setNotPlaying();
+    void setNotPlaying();
 
-	boolean shouldPlaySound();
+    boolean shouldPlaySound();
 
 }

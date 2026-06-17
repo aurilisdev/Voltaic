@@ -23,224 +23,199 @@ import voltaic.registers.VoltaicCapabilities;
 @EventBusSubscriber(modid = Voltaic.ID, bus = EventBusSubscriber.Bus.FORGE)
 public class RadiationSystem {
 
-	@SubscribeEvent
-	public static void tickServer(LevelTickEvent event) {
-		
-		if(event.phase == Phase.END) {
-			return;
-		}
+    @SubscribeEvent
+    public static void tickServer(LevelTickEvent event) {
 
-		Level level = event.level;
-
-		if(level.isClientSide()) {
-			return;
-		}
-		
-		if(!VoltaicConstants.RADIATION_SYSTEM_ENABLED) {
-			wipeAllSources(level);
-			return;
-		}
-	
-		IRadiationManager manager = level.getCapability(VoltaicCapabilities.CAPABILITY_RADIATIONMANAGER).orElse(CapabilityUtils.EMPTY_MANAGER);
-		
-		if(manager == CapabilityUtils.EMPTY_MANAGER) {
-			return;
-		}
-
-		manager.tick(level);
-
-
+	if (event.phase == Phase.END) {
+	    return;
 	}
 
-	@SubscribeEvent
-	public static void entityTick(LivingTickEvent event) {
-		
-		if(!VoltaicConstants.RADIATION_SYSTEM_ENABLED || event.getEntity().level().isClientSide() || event.getEntity() == null) {
-			return;
-		}
-		IRadiationRecipient capability = event.getEntity().getCapability(VoltaicCapabilities.CAPABILITY_RADIATIONRECIPIENT).orElse(CapabilityUtils.EMPTY_RADIATION_REPIPIENT);
-		if(capability == CapabilityUtils.EMPTY_RADIATION_REPIPIENT) {
-			return;
-		}
-		capability.tick(event.getEntity());
+	Level level = event.level;
 
+	if (level.isClientSide()) {
+	    return;
 	}
 
-	public static void addRadiationSource(Level world, SimpleRadiationSource source) {
-		if(!VoltaicConstants.RADIATION_SYSTEM_ENABLED) {
-			return;
-		}
-		if(source == null) {
-			throw new UnsupportedOperationException("source cannot be null");
-		}
-		IRadiationManager manager = world.getCapability(VoltaicCapabilities.CAPABILITY_RADIATIONMANAGER).orElse(CapabilityUtils.EMPTY_MANAGER);
-		
-		if(manager == CapabilityUtils.EMPTY_MANAGER) {
-			return;
-		}
-		manager.addRadiationSource(source, world);
-
+	if (!VoltaicConstants.RADIATION_SYSTEM_ENABLED) {
+	    wipeAllSources(level);
+	    return;
 	}
 
-	public static void removeRadiationSource(Level world, BlockPos pos, boolean shouldLinger) {
-		if(!VoltaicConstants.RADIATION_SYSTEM_ENABLED) {
-			return;
-		}
-		if(pos == null) {
-			throw new UnsupportedOperationException("position cannot be null");
-		}
-		IRadiationManager manager = world.getCapability(VoltaicCapabilities.CAPABILITY_RADIATIONMANAGER).orElse(CapabilityUtils.EMPTY_MANAGER);
-		
-		if(manager == CapabilityUtils.EMPTY_MANAGER) {
-			return;
-		}
-		manager.removeRadiationSource(pos, shouldLinger, world);
+	IRadiationManager manager = level.getCapability(VoltaicCapabilities.CAPABILITY_RADIATIONMANAGER)
+		.orElse(CapabilityUtils.EMPTY_MANAGER);
+
+	if (manager == CapabilityUtils.EMPTY_MANAGER) {
+	    return;
 	}
 
-	public static List<BlockPos> getRadiationSources(Level world) {
-		IRadiationManager manager = world.getCapability(VoltaicCapabilities.CAPABILITY_RADIATIONMANAGER).orElse(CapabilityUtils.EMPTY_MANAGER);
-		
-		if(manager == CapabilityUtils.EMPTY_MANAGER) {
-			return Collections.emptyList();
-		}
-		HashSet<BlockPos> sources = new HashSet<>();
-		sources.addAll(manager.getPermanentLocations(world));
-		sources.addAll(manager.getTemporaryLocations(world));
-		sources.addAll(manager.getFadingLocations(world));
-		return new ArrayList<>(sources);
+	manager.tick(level);
+
+    }
+
+    @SubscribeEvent
+    public static void entityTick(LivingTickEvent event) {
+
+	if (!VoltaicConstants.RADIATION_SYSTEM_ENABLED || event.getEntity().level().isClientSide()
+		|| event.getEntity() == null) {
+	    return;
 	}
-
-	public static void addDisipation(Level world, double amount, AABB volume) {
-		if(!VoltaicConstants.RADIATION_SYSTEM_ENABLED) {
-			return;
-		}
-		IRadiationManager manager = world.getCapability(VoltaicCapabilities.CAPABILITY_RADIATIONMANAGER).orElse(CapabilityUtils.EMPTY_MANAGER);
-		
-		if(manager == CapabilityUtils.EMPTY_MANAGER) {
-			return;
-		}
-		manager.setLocalizedDisipation(amount, volume, world);
+	IRadiationRecipient capability = event.getEntity()
+		.getCapability(VoltaicCapabilities.CAPABILITY_RADIATIONRECIPIENT)
+		.orElse(CapabilityUtils.EMPTY_RADIATION_REPIPIENT);
+	if (capability == CapabilityUtils.EMPTY_RADIATION_REPIPIENT) {
+	    return;
 	}
+	capability.tick(event.getEntity());
 
-	public static void removeDisipation(Level world, AABB volume) {
-		IRadiationManager manager = world.getCapability(VoltaicCapabilities.CAPABILITY_RADIATIONMANAGER).orElse(CapabilityUtils.EMPTY_MANAGER);
-		
-		if(manager == CapabilityUtils.EMPTY_MANAGER) {
-			return;
-		}
-		manager.removeLocalizedDisipation(volume, world);
+    }
+
+    public static void addRadiationSource(Level world, SimpleRadiationSource source) {
+	if (!VoltaicConstants.RADIATION_SYSTEM_ENABLED) {
+	    return;
 	}
-
-	public static void wipeAllSources(Level world) {
-		IRadiationManager manager = world.getCapability(VoltaicCapabilities.CAPABILITY_RADIATIONMANAGER).orElse(CapabilityUtils.EMPTY_MANAGER);
-		
-		if(manager == CapabilityUtils.EMPTY_MANAGER) {
-			return;
-		}
-		manager.wipeAllSources(world);
+	if (source == null) {
+	    throw new UnsupportedOperationException("source cannot be null");
 	}
+	IRadiationManager manager = world.getCapability(VoltaicCapabilities.CAPABILITY_RADIATIONMANAGER)
+		.orElse(CapabilityUtils.EMPTY_MANAGER);
 
-
-	/*
-	public static ThreadLocal<HashMap<Player, Double>> radiationMap = ThreadLocal.withInitial(HashMap::new);
-
-	private static double getRadiationModifier(Level world, Location source, Location end) {
-		double distance = 1 + source.distance(end);
-		Location clone = new Location(end);
-		double modifier = 1;
-		Location newSource = new Location(source);
-		clone.add(-source.x(), -source.y(), -source.z()).normalize().mul(0.33f);
-		int checks = (int) distance * 3;
-		BlockPos curr = newSource.toBlockPos();
-		double lastHard = 0;
-		while (checks > 0) {
-			newSource.add(clone);
-			double hard = lastHard;
-			BlockPos next = newSource.toBlockPos();
-			if (!curr.equals(next)) {
-				curr = next;
-				BlockState state = world.getBlockState(curr);
-				lastHard = hard = (state.getBlock() == NuclearScienceBlocks.blocklead ? 20000 : state.getDestroySpeed(world, curr)) / (world.getFluidState(curr).isEmpty() ? 1 : 50.0);
-			}
-			modifier += hard / 4.5f;
-			checks--;
-		}
-		return modifier;
+	if (manager == CapabilityUtils.EMPTY_MANAGER) {
+	    return;
 	}
+	manager.addRadiationSource(source, world);
 
-	public static double getRadiation(Level world, Location source, Location end, double strength) {
-		double distance = 1 + source.distance(end);
-		return strength / (getRadiationModifier(world, source, end) * distance * distance);
+    }
+
+    public static void removeRadiationSource(Level world, BlockPos pos, boolean shouldLinger) {
+	if (!VoltaicConstants.RADIATION_SYSTEM_ENABLED) {
+	    return;
 	}
-
-	public static void applyRadiation(LivingEntity entity, Location source, double strength) {
-		int protection = 1;
-		boolean isPlayer = entity instanceof Player;
-		if (isPlayer) {
-			Player player = (Player) entity;
-			if (!player.isCreative()) {
-				for (int i = 0; i < player.getInventory().armor.size(); i++) {
-					ItemStack next = player.getInventory().armor.get(i);
-					if (next.getItem() instanceof ItemHazmatArmor) {
-						protection++;
-						float damage = (float) (strength * 2.15f) / 2169.9975f;
-						if (Math.random() < damage) {
-							int integerDamage = Math.round(damage);
-							if (next.getDamageValue() > next.getMaxDamage() || next.hurthurt(integerDamage, entity.level().random, player instanceof ServerPlayer s ? s : null)) {
-								player.getInventory().armor.set(i, ItemStack.EMPTY);
-							}
-						}
-					}
-				}
-			}
-		}
-		Location end = new Location(entity.position().add(0, entity.getEyeHeight() / 2.0, 0));
-		double radiation = 0;
-		if (entity instanceof Player pl && (pl.getItemBySlot(EquipmentSlot.MAINHAND).getItem() instanceof ItemGeigerCounter || pl.getItemBySlot(EquipmentSlot.OFFHAND).getItem() instanceof ItemGeigerCounter)) {
-			double already = radiationMap.get().containsKey(entity) ? radiationMap.get().get(entity) : 0;
-			radiation = getRadiation(entity.level(), source, end, strength);
-			radiationMap.get().put((Player) entity, already + radiation);
-		}
-		if (!(entity instanceof Player pl && pl.isCreative()) && protection < 5 && radiationMap.get().getOrDefault(entity, 11.0) > 4) {
-			if (radiation == 0) {
-				radiation = getRadiation(entity.level(), source, end, strength);
-			}
-			double distance = 1 + source.distance(end);
-			double modifier = strength / (radiation * distance * distance);
-			int amplitude = (int) Math.max(0, Math.min(strength / modifier / (distance * 4000.0), 9));
-			int time = (int) (strength / modifier / ((amplitude + 1) * distance));
-			if (amplitude == 0 && time <= 40) {
-				return;
-			}
-			entity.addEffect(new MobEffectInstance(NuclearScienceEffects.RADIATION.get(), time, Math.min(40, amplitude), false, true));
-		}
+	if (pos == null) {
+	    throw new UnsupportedOperationException("position cannot be null");
 	}
+	IRadiationManager manager = world.getCapability(VoltaicCapabilities.CAPABILITY_RADIATIONMANAGER)
+		.orElse(CapabilityUtils.EMPTY_MANAGER);
 
-	public static void emitRadiationFromLocation(Level level, Location source, double radius, double strength) {
-		AABB bb = AABB.ofSize(new Vec3(source.x(), source.y(), source.z()), radius * 2, radius * 2, radius * 2);
-		List<LivingEntity> list = level.getEntitiesOfClass(LivingEntity.class, bb);
-		for (LivingEntity living : list) {
-			RadiationSystem.applyRadiation(living, source, strength);
-		}
+	if (manager == CapabilityUtils.EMPTY_MANAGER) {
+	    return;
 	}
+	manager.removeRadiationSource(pos, shouldLinger, world);
+    }
 
-	@SubscribeEvent
-	public static void onTick(ServerTickEvent.Pre event) {
-		radiationMap.get().clear();
+    public static List<BlockPos> getRadiationSources(Level world) {
+	IRadiationManager manager = world.getCapability(VoltaicCapabilities.CAPABILITY_RADIATIONMANAGER)
+		.orElse(CapabilityUtils.EMPTY_MANAGER);
+
+	if (manager == CapabilityUtils.EMPTY_MANAGER) {
+	    return Collections.emptyList();
 	}
+	HashSet<BlockPos> sources = new HashSet<>(manager.getPermanentLocations(world));
+	sources.addAll(manager.getTemporaryLocations(world));
+	sources.addAll(manager.getFadingLocations(world));
+	return new ArrayList<>(sources);
+    }
 
-	private static int tick = 0;
-
-	@SubscribeEvent
-	public static void onTickC(ClientTickEvent.Post event) {
-		tick++;
-		if (tick % 20 == 0) {
-			for (Map.Entry<Player, Double> en : ((HashMap<Player, Double>) radiationMap.get().clone()).entrySet()) {
-				radiationMap.get().put(en.getKey(), en.getValue() * 0.3);
-			}
-			tick = 0;
-		}
+    public static void addDisipation(Level world, double amount, AABB volume) {
+	if (!VoltaicConstants.RADIATION_SYSTEM_ENABLED) {
+	    return;
 	}
+	IRadiationManager manager = world.getCapability(VoltaicCapabilities.CAPABILITY_RADIATIONMANAGER)
+		.orElse(CapabilityUtils.EMPTY_MANAGER);
 
-	 */
+	if (manager == CapabilityUtils.EMPTY_MANAGER) {
+	    return;
+	}
+	manager.setLocalizedDisipation(amount, volume, world);
+    }
+
+    public static void removeDisipation(Level world, AABB volume) {
+	IRadiationManager manager = world.getCapability(VoltaicCapabilities.CAPABILITY_RADIATIONMANAGER)
+		.orElse(CapabilityUtils.EMPTY_MANAGER);
+
+	if (manager == CapabilityUtils.EMPTY_MANAGER) {
+	    return;
+	}
+	manager.removeLocalizedDisipation(volume, world);
+    }
+
+    public static void wipeAllSources(Level world) {
+	IRadiationManager manager = world.getCapability(VoltaicCapabilities.CAPABILITY_RADIATIONMANAGER)
+		.orElse(CapabilityUtils.EMPTY_MANAGER);
+
+	if (manager == CapabilityUtils.EMPTY_MANAGER) {
+	    return;
+	}
+	manager.wipeAllSources(world);
+    }
+
+    /*
+     * public static ThreadLocal<HashMap<Player, Double>> radiationMap =
+     * ThreadLocal.withInitial(HashMap::new);
+     * 
+     * private static double getRadiationModifier(Level world, Location source,
+     * Location end) { double distance = 1 + source.distance(end); Location clone =
+     * new Location(end); double modifier = 1; Location newSource = new
+     * Location(source); clone.add(-source.x(), -source.y(),
+     * -source.z()).normalize().mul(0.33f); int checks = (int) distance * 3;
+     * BlockPos curr = newSource.toBlockPos(); double lastHard = 0; while (checks >
+     * 0) { newSource.add(clone); double hard = lastHard; BlockPos next =
+     * newSource.toBlockPos(); if (!curr.equals(next)) { curr = next; BlockState
+     * state = world.getBlockState(curr); lastHard = hard = (state.getBlock() ==
+     * NuclearScienceBlocks.blocklead ? 20000 : state.getDestroySpeed(world, curr))
+     * / (world.getFluidState(curr).isEmpty() ? 1 : 50.0); } modifier += hard /
+     * 4.5f; checks--; } return modifier; }
+     * 
+     * public static double getRadiation(Level world, Location source, Location end,
+     * double strength) { double distance = 1 + source.distance(end); return
+     * strength / (getRadiationModifier(world, source, end) * distance * distance);
+     * }
+     * 
+     * public static void applyRadiation(LivingEntity entity, Location source,
+     * double strength) { int protection = 1; boolean isPlayer = entity instanceof
+     * Player; if (isPlayer) { Player player = (Player) entity; if
+     * (!player.isCreative()) { for (int i = 0; i <
+     * player.getInventory().armor.size(); i++) { ItemStack next =
+     * player.getInventory().armor.get(i); if (next.getItem() instanceof
+     * ItemHazmatArmor) { protection++; float damage = (float) (strength * 2.15f) /
+     * 2169.9975f; if (Math.random() < damage) { int integerDamage =
+     * Math.round(damage); if (next.getDamageValue() > next.getMaxDamage() ||
+     * next.hurthurt(integerDamage, entity.level().random, player instanceof
+     * ServerPlayer s ? s : null)) { player.getInventory().armor.set(i,
+     * ItemStack.EMPTY); } } } } } } Location end = new
+     * Location(entity.position().add(0, entity.getEyeHeight() / 2.0, 0)); double
+     * radiation = 0; if (entity instanceof Player pl &&
+     * (pl.getItemBySlot(EquipmentSlot.MAINHAND).getItem() instanceof
+     * ItemGeigerCounter || pl.getItemBySlot(EquipmentSlot.OFFHAND).getItem()
+     * instanceof ItemGeigerCounter)) { double already =
+     * radiationMap.get().containsKey(entity) ? radiationMap.get().get(entity) : 0;
+     * radiation = getRadiation(entity.level(), source, end, strength);
+     * radiationMap.get().put((Player) entity, already + radiation); } if (!(entity
+     * instanceof Player pl && pl.isCreative()) && protection < 5 &&
+     * radiationMap.get().getOrDefault(entity, 11.0) > 4) { if (radiation == 0) {
+     * radiation = getRadiation(entity.level(), source, end, strength); } double
+     * distance = 1 + source.distance(end); double modifier = strength / (radiation
+     * * distance * distance); int amplitude = (int) Math.max(0, Math.min(strength /
+     * modifier / (distance * 4000.0), 9)); int time = (int) (strength / modifier /
+     * ((amplitude + 1) * distance)); if (amplitude == 0 && time <= 40) { return; }
+     * entity.addEffect(new MobEffectInstance(NuclearScienceEffects.RADIATION.get(),
+     * time, Math.min(40, amplitude), false, true)); } }
+     * 
+     * public static void emitRadiationFromLocation(Level level, Location source,
+     * double radius, double strength) { AABB bb = AABB.ofSize(new Vec3(source.x(),
+     * source.y(), source.z()), radius * 2, radius * 2, radius * 2);
+     * List<LivingEntity> list = level.getEntitiesOfClass(LivingEntity.class, bb);
+     * for (LivingEntity living : list) { RadiationSystem.applyRadiation(living,
+     * source, strength); } }
+     * 
+     * @SubscribeEvent public static void onTick(ServerTickEvent.Pre event) {
+     * radiationMap.get().clear(); }
+     * 
+     * private static int tick = 0;
+     * 
+     * @SubscribeEvent public static void onTickC(ClientTickEvent.Post event) {
+     * tick++; if (tick % 20 == 0) { for (Map.Entry<Player, Double> en :
+     * ((HashMap<Player, Double>) radiationMap.get().clone()).entrySet()) {
+     * radiationMap.get().put(en.getKey(), en.getValue() * 0.3); } tick = 0; } }
+     * 
+     */
 }

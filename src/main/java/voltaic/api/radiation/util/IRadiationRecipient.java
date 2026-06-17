@@ -3,8 +3,9 @@ package voltaic.api.radiation.util;
 import net.minecraft.world.entity.LivingEntity;
 
 /**
- * Instead of the radiation manager directly apply affects like radiation and hunger to radiation recipients,
- * this class is intended to allow individual recipients to handle their infections.
+ * Instead of the radiation manager directly apply affects like radiation and
+ * hunger to radiation recipients, this class is intended to allow individual
+ * recipients to handle their infections.
  *
  *
  */
@@ -15,6 +16,5 @@ public interface IRadiationRecipient {
     RadioactiveObject getRecievedRadiation(LivingEntity entity);
 
     void tick(LivingEntity entity);
-
 
 }

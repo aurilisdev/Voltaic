@@ -8,11 +8,11 @@ public abstract class BaseAdvancementProvider implements AdvancementGenerator {
     public final String modID;
 
     public BaseAdvancementProvider(String modID) {
-        this.modID = modID;
+	this.modID = modID;
     }
-    
+
     public AdvancementBuilder advancement(String name) {
-		return AdvancementBuilder.create(new ResourceLocation(modID, name));
-	}
+	return AdvancementBuilder.create(new ResourceLocation(modID, name));
+    }
 
 }

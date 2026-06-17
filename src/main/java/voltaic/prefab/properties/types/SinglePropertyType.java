@@ -9,13 +9,14 @@ import javax.annotation.Nonnull;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
+
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import voltaic.api.codec.StreamCodec;
 
 public class SinglePropertyType<TYPE, BUFFERTYPE> implements IPropertyType<TYPE, BUFFERTYPE> {
 
-    //.ifSuccess(tag -> writer.tag().put(writer.prop().getName(), tag))
+    // .ifSuccess(tag -> writer.tag().put(writer.prop().getName(), tag))
 
     private final BiPredicate<TYPE, TYPE> comparison;
 
@@ -24,58 +25,57 @@ public class SinglePropertyType<TYPE, BUFFERTYPE> implements IPropertyType<TYPE,
     private final Function<TagReader<TYPE>, TYPE> readFromNbt;
     private final StreamCodec<BUFFERTYPE, TYPE> packetCodec;
 
-    public SinglePropertyType(@Nonnull BiPredicate<TYPE, TYPE> comparison, StreamCodec<BUFFERTYPE, TYPE> packetCodec, Codec<TYPE> nbtCodec) {
+    public SinglePropertyType(@Nonnull BiPredicate<TYPE, TYPE> comparison, StreamCodec<BUFFERTYPE, TYPE> packetCodec,
+	    Codec<TYPE> nbtCodec) {
 
-        this(
-                comparison,
-                //
-                packetCodec,
-                //
-                writer -> {
-                    TYPE value = writer.prop().getValue();
+	this(comparison,
+		//
+		packetCodec,
+		//
+		writer -> {
+		    TYPE value = writer.prop().getValue();
 
-                    if (value != null) {
-                        nbtCodec.encode(value, NbtOps.INSTANCE, NbtOps.INSTANCE.empty())
-                                .result()
-                                .ifPresent(tag -> writer.tag().put(writer.prop().getName(), tag.copy()));
-                    }
-                },                //
-                reader -> {
-                    DataResult<Pair<TYPE, Tag>> result = nbtCodec.decode(NbtOps.INSTANCE, reader.tag().get(reader.prop().getName()));
+		    if (value != null) {
+			nbtCodec.encode(value, NbtOps.INSTANCE, NbtOps.INSTANCE.empty()).result()
+				.ifPresent(tag -> writer.tag().put(writer.prop().getName(), tag.copy()));
+		    }
+		}, //
+		reader -> {
+		    DataResult<Pair<TYPE, Tag>> result = nbtCodec.decode(NbtOps.INSTANCE,
+			    reader.tag().get(reader.prop().getName()));
 
-                    return result.result().isPresent() ? result.result().get().getFirst() : reader.prop().getValue();
-                }
-        );
-
+		    return result.result().isPresent() ? result.result().get().getFirst() : reader.prop().getValue();
+		});
 
     }
 
-    public SinglePropertyType(@Nonnull BiPredicate<TYPE, TYPE> comparison, StreamCodec<BUFFERTYPE, TYPE> packetCodec, Consumer<TagWriter<TYPE>> tagWriter, Function<TagReader<TYPE>, TYPE> tagReader) {
+    public SinglePropertyType(@Nonnull BiPredicate<TYPE, TYPE> comparison, StreamCodec<BUFFERTYPE, TYPE> packetCodec,
+	    Consumer<TagWriter<TYPE>> tagWriter, Function<TagReader<TYPE>, TYPE> tagReader) {
 
-        this.comparison = comparison;
-        this.packetCodec = packetCodec;
-        this.writeToNbt = tagWriter;
-        this.readFromNbt = tagReader;
+	this.comparison = comparison;
+	this.packetCodec = packetCodec;
+	this.writeToNbt = tagWriter;
+	this.readFromNbt = tagReader;
     }
 
     @Override
     public StreamCodec<BUFFERTYPE, TYPE> getPacketCodec() {
-        return packetCodec;
+	return packetCodec;
     }
 
     @Override
     public void writeToTag(TagWriter<TYPE> writer) {
-        writeToNbt.accept(writer);
+	writeToNbt.accept(writer);
     }
 
     @Override
     public TYPE readFromTag(TagReader<TYPE> reader) {
-        return readFromNbt.apply(reader);
+	return readFromNbt.apply(reader);
     }
 
     @Override
     public boolean isEqual(TYPE currentValue, TYPE newValue) {
-        return comparison.test(currentValue, newValue);
+	return comparison.test(currentValue, newValue);
     }
 
 }

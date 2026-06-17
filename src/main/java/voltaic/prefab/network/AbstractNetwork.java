@@ -10,28 +10,30 @@ import java.util.UUID;
 
 import javax.annotation.Nonnull;
 
-import voltaic.api.network.ITickableNetwork;
-import voltaic.api.network.util.AbstractNetworkFinder;
-import voltaic.common.network.NetworkRegistry;
-import voltaic.prefab.tile.types.GenericRefreshingConnectTile;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import voltaic.api.network.ITickableNetwork;
+import voltaic.api.network.util.AbstractNetworkFinder;
+import voltaic.common.network.NetworkRegistry;
+import voltaic.prefab.tile.types.GenericRefreshingConnectTile;
 
 /**
  *
- * A graph network representing a type of cable that will update when something changes
+ * A graph network representing a type of cable that will update when something
+ * changes
  *
- * @param <C> The type of the cable
- * @param <T> The type of the cable categories
- * @param <P> The value this network will transport
+ * @param <C>    The type of the cable
+ * @param <T>    The type of the cable categories
+ * @param <P>    The value this network will transport
  * @param <TYPE> The type of this network
  *
  * @author aurilisdev
  * @author skip999
  */
-public abstract class AbstractNetwork<C extends GenericRefreshingConnectTile<T, C, TYPE>, T, P, TYPE extends AbstractNetwork<C, T, P, TYPE>> implements ITickableNetwork {
+public abstract class AbstractNetwork<C extends GenericRefreshingConnectTile<T, C, TYPE>, T, P, TYPE extends AbstractNetwork<C, T, P, TYPE>>
+	implements ITickableNetwork {
 
     private final UUID id = UUID.randomUUID();
 
@@ -42,7 +44,6 @@ public abstract class AbstractNetwork<C extends GenericRefreshingConnectTile<T, 
     public double transmittedLastTick;
     public double transmittedThisTick;
 
-
     /**
      * Updates this network with the passed in receivers
      *
@@ -50,31 +51,31 @@ public abstract class AbstractNetwork<C extends GenericRefreshingConnectTile<T, 
      */
     public void updateRecievers(List<GenericRefreshingConnectTile.UpdatedReceiver> receivers) {
 
-        boolean updateRecieverStatistics = false;
+	boolean updateRecieverStatistics = false;
 
-        for (GenericRefreshingConnectTile.UpdatedReceiver receiver : receivers) {
+	for (GenericRefreshingConnectTile.UpdatedReceiver receiver : receivers) {
 
-            if (receiver.reciever() == null) {
-                continue;
-            }
+	    if (receiver.reciever() == null) {
+		continue;
+	    }
 
-            updateRecieverStatistics = updateReceiver(receiver.reciever(), receiver.removed(), receiver.dir());
-        }
+	    updateRecieverStatistics = updateReceiver(receiver.reciever(), receiver.removed(), receiver.dir());
+	}
 
-        // check if we need to recheck the overall statistics
-        if(updateRecieverStatistics) {
+	// check if we need to recheck the overall statistics
+	if (updateRecieverStatistics) {
 
-            resetReceiverStatistics();
+	    resetReceiverStatistics();
 
-            for(BlockEntity entity : acceptorSet) {
+	    for (BlockEntity entity : acceptorSet) {
 
-                for(Direction dir : acceptorInputMap.getOrDefault(entity, new HashSet<>())) {
-                    updateRecieverStatistics(entity, dir);
-                }
+		for (Direction dir : acceptorInputMap.getOrDefault(entity, new HashSet<>())) {
+		    updateRecieverStatistics(entity, dir);
+		}
 
-            }
+	    }
 
-        }
+	}
 
     }
 
@@ -83,40 +84,40 @@ public abstract class AbstractNetwork<C extends GenericRefreshingConnectTile<T, 
      *
      * @param entity the receiver
      * @param remove whether the receiver was removed
-     * @param dir the direction this network is connected to the receiver on
+     * @param dir    the direction this network is connected to the receiver on
      * @return whether the overall receiver statistics need to be updated
      */
     private boolean updateReceiver(BlockEntity entity, boolean remove, Direction dir) {
 
-        HashSet<Direction> dirs;
+	HashSet<Direction> dirs;
 
-        if(remove) {
+	if (remove) {
 
-            if (!entity.isRemoved() && acceptorInputMap.containsKey(entity)) {
+	    if (!entity.isRemoved() && acceptorInputMap.containsKey(entity)) {
 
-                dirs = acceptorInputMap.get(entity);
-                dirs.remove(dir.getOpposite());
-                acceptorInputMap.put(entity, dirs);
+		dirs = acceptorInputMap.get(entity);
+		dirs.remove(dir.getOpposite());
+		acceptorInputMap.put(entity, dirs);
 
-            } else if (entity.isRemoved()) {
+	    } else if (entity.isRemoved()) {
 
-                acceptorSet.remove(entity);
-                acceptorInputMap.remove(entity);
-                return true;
+		acceptorSet.remove(entity);
+		acceptorInputMap.remove(entity);
+		return true;
 
-            }
+	    }
 
-        } else {
+	} else {
 
-            acceptorSet.add(entity);
-            dirs = acceptorInputMap.getOrDefault(entity, new HashSet<>());
-            dirs.add(dir.getOpposite());
-            acceptorInputMap.put(entity, dirs);
-            updateRecieverStatistics(entity, dir);
+	    acceptorSet.add(entity);
+	    dirs = acceptorInputMap.getOrDefault(entity, new HashSet<>());
+	    dirs.add(dir.getOpposite());
+	    acceptorInputMap.put(entity, dirs);
+	    updateRecieverStatistics(entity, dir);
 
-        }
+	}
 
-        return false;
+	return false;
 
     }
 
@@ -127,28 +128,28 @@ public abstract class AbstractNetwork<C extends GenericRefreshingConnectTile<T, 
      */
     public void updateConductors(List<GenericRefreshingConnectTile.UpdatedConductor<C>> conductors) {
 
-        boolean updateConductorStatistics = false;
+	boolean updateConductorStatistics = false;
 
-        for(GenericRefreshingConnectTile.UpdatedConductor<C> conductor : conductors) {
-            if(conductor.conductor() == null) {
-                continue;
-            }
+	for (GenericRefreshingConnectTile.UpdatedConductor<C> conductor : conductors) {
+	    if (conductor.conductor() == null) {
+		continue;
+	    }
 
-            updateConductorStatistics = updateConductor(conductor.conductor(), conductor.removed());
+	    updateConductorStatistics = updateConductor(conductor.conductor(), conductor.removed());
 
-        }
+	}
 
-        if(updateConductorStatistics) {
+	if (updateConductorStatistics) {
 
-            resetConductorStatistics();
+	    resetConductorStatistics();
 
-            for(C conductor : conductorSet) {
+	    for (C conductor : conductorSet) {
 
-                updateConductorStatistics(conductor, false);
+		updateConductorStatistics(conductor, false);
 
-            }
+	    }
 
-        }
+	}
 
     }
 
@@ -156,111 +157,110 @@ public abstract class AbstractNetwork<C extends GenericRefreshingConnectTile<T, 
      * Updates this network with the passed in cable
      *
      * @param conductor the cable
-     * @param remove whether the cable was removed
+     * @param remove    whether the cable was removed
      * @return whether the overall cable statistics need to be updated
      */
     public boolean updateConductor(C conductor, boolean remove) {
 
-        boolean updateConductorStatistics = false;
+	boolean updateConductorStatistics = false;
 
-        if(remove) {
+	if (remove) {
 
-            updateConductorStatistics = true;
+	    updateConductorStatistics = true;
 
-        } else {
+	} else {
 
-            conductorSet.add(conductor);
+	    conductorSet.add(conductor);
 
-            conductor.setNetwork((TYPE) this);
+	    conductor.setNetwork((TYPE) this);
 
-            updateConductorStatistics(conductor, false);
+	    updateConductorStatistics(conductor, false);
 
-        }
+	}
 
+	int index = 0;
 
+	List<GenericRefreshingConnectTile.UpdatedReceiver> receivers = new ArrayList<>();
 
-        int index = 0;
+	for (BlockEntity entity : conductor.getConectedRecievers()) {
 
-        List<GenericRefreshingConnectTile.UpdatedReceiver> receivers = new ArrayList<>();
+	    if (entity == null) {
+		index++;
+		continue;
+	    }
 
-        for(BlockEntity entity : conductor.getConectedRecievers()) {
+	    receivers.add(new GenericRefreshingConnectTile.UpdatedReceiver(entity, remove, Direction.values()[index]));
 
-            if(entity == null) {
-                index++;
-                continue;
-            }
+	    index++;
 
-            receivers.add(new GenericRefreshingConnectTile.UpdatedReceiver(entity, remove, Direction.values()[index]));
+	}
 
-            index++;
+	updateRecievers(receivers);
 
-        }
-
-        updateRecievers(receivers);
-
-        return updateConductorStatistics;
+	return updateConductorStatistics;
 
     }
 
     /**
-     * This method will refresh the entire network, so use it if you know what you're doing
+     * This method will refresh the entire network, so use it if you know what
+     * you're doing
      */
     public void refreshNewNetwork() {
-        Iterator<C> it = conductorSet.iterator();
-        acceptorSet.clear();
-        acceptorInputMap.clear();
-        while (it.hasNext()) {
-            C conductor = it.next();
-            if (conductor == null || conductor.isRemoved()) {
-                it.remove();
-            } else {
-                conductor.setNetwork((TYPE) this);
+	Iterator<C> it = conductorSet.iterator();
+	acceptorSet.clear();
+	acceptorInputMap.clear();
+	while (it.hasNext()) {
+	    C conductor = it.next();
+	    if (conductor == null || conductor.isRemoved()) {
+		it.remove();
+	    } else {
+		conductor.setNetwork((TYPE) this);
 
-                int i = 0;
-                Direction dir;
+		int i = 0;
+		Direction dir;
 
-                for (BlockEntity acceptor : conductor.getConectedRecievers()) {
+		for (BlockEntity acceptor : conductor.getConectedRecievers()) {
 
-                    if (acceptor == null) {
-                        i++;
-                        continue;
-                    }
+		    if (acceptor == null) {
+			i++;
+			continue;
+		    }
 
-                    dir = Direction.values()[i];
+		    dir = Direction.values()[i];
 
-                    acceptorSet.add(acceptor);
+		    acceptorSet.add(acceptor);
 
-                    updateRecieverStatistics(acceptor, dir);
+		    updateRecieverStatistics(acceptor, dir);
 
-                    HashSet<Direction> directions = acceptorInputMap.getOrDefault(acceptor, new HashSet<>());
+		    HashSet<Direction> directions = acceptorInputMap.getOrDefault(acceptor, new HashSet<>());
 
-                    directions.add(dir.getOpposite());
+		    directions.add(dir.getOpposite());
 
-                    acceptorInputMap.put(acceptor, directions);
+		    acceptorInputMap.put(acceptor, directions);
 
-                    i++;
+		    i++;
 
-                }
+		}
 
-
-            }
-        }
-        updateNewNetworkStatistics();
+	    }
+	}
+	updateNewNetworkStatistics();
     }
 
     /**
      * Updates the statics of the entire network
      */
     public void updateNewNetworkStatistics() {
-        for (C wire : conductorSet) {
-            networkMaxTransfer = networkMaxTransfer == 0 ? wire.getMaxTransfer() : Math.min(networkMaxTransfer, wire.getMaxTransfer());
-            updateConductorStatistics(wire, false);
-        }
-        for (BlockEntity reciever : acceptorSet) {
-            for (Direction dir : acceptorInputMap.getOrDefault(reciever, new HashSet<>())) {
-                updateRecieverStatistics(reciever, dir);
-            }
-        }
+	for (C wire : conductorSet) {
+	    networkMaxTransfer = networkMaxTransfer == 0 ? wire.getMaxTransfer()
+		    : Math.min(networkMaxTransfer, wire.getMaxTransfer());
+	    updateConductorStatistics(wire, false);
+	}
+	for (BlockEntity reciever : acceptorSet) {
+	    for (Direction dir : acceptorInputMap.getOrDefault(reciever, new HashSet<>())) {
+		updateRecieverStatistics(reciever, dir);
+	    }
+	}
     }
 
     /**
@@ -273,14 +273,16 @@ public abstract class AbstractNetwork<C extends GenericRefreshingConnectTile<T, 
     }
 
     /**
-     * Override to reset specific receiver parameters when #updateReceiver returns true
+     * Override to reset specific receiver parameters when #updateReceiver returns
+     * true
      */
     public void resetReceiverStatistics() {
 
     }
 
     /**
-     * Override to reset specific conductor parameters when #updateConductor returns true
+     * Override to reset specific conductor parameters when #updateConductor returns
+     * true
      */
     public void resetConductorStatistics() {
 
@@ -302,66 +304,67 @@ public abstract class AbstractNetwork<C extends GenericRefreshingConnectTile<T, 
      */
     public void split(@Nonnull C splitPoint) {
 
-        removeFromNetwork(splitPoint);
+	removeFromNetwork(splitPoint);
 
-        BlockEntity[] connectedTiles = new BlockEntity[6];
+	BlockEntity[] connectedTiles = new BlockEntity[6];
 
-        boolean[] dealtWith = {false, false, false, false, false, false};
+	boolean[] dealtWith = { false, false, false, false, false, false };
 
-        BlockPos relative;
-        BlockEntity sideTile;
-        Level world = splitPoint.getLevel();
-        int ordinal;
+	BlockPos relative;
+	BlockEntity sideTile;
+	Level world = splitPoint.getLevel();
+	int ordinal;
 
-        for (Direction direction : Direction.values()) {
+	for (Direction direction : Direction.values()) {
 
-            ordinal = direction.ordinal();
+	    ordinal = direction.ordinal();
 
-            relative = splitPoint.getBlockPos().relative(direction);
+	    relative = splitPoint.getBlockPos().relative(direction);
 
-            if (!world.hasChunkAt(relative)) {
-                continue;
-            }
+	    if (!world.hasChunkAt(relative)) {
+		continue;
+	    }
 
-            sideTile = world.getBlockEntity(relative);
+	    sideTile = world.getBlockEntity(relative);
 
-            if (sideTile == null) {
-                continue;
-            }
+	    if (sideTile == null) {
+		continue;
+	    }
 
-            connectedTiles[ordinal] = sideTile;
-        }
+	    connectedTiles[ordinal] = sideTile;
+	}
 
-        for(int index = 0; index < 6; index++) {
+	for (int index = 0; index < 6; index++) {
 
-            BlockEntity tile = connectedTiles[index];
+	    BlockEntity tile = connectedTiles[index];
 
-            if (tile == null || !isConductor(tile, splitPoint) || dealtWith[index]) {
-                continue;
-            }
+	    if (tile == null || !isConductor(tile, splitPoint) || dealtWith[index]) {
+		continue;
+	    }
 
-            Set<C> explored = new AbstractNetworkFinder<>(world, tile.getBlockPos(), this, splitPoint.getBlockPos()).exploreNetwork();
+	    Set<C> explored = new AbstractNetworkFinder<>(world, tile.getBlockPos(), this, splitPoint.getBlockPos())
+		    .exploreNetwork();
 
-            for (int i = index + 1; i < 6; i++) {
+	    for (int i = index + 1; i < 6; i++) {
 
-                BlockEntity connection = connectedTiles[i];
+		BlockEntity connection = connectedTiles[i];
 
-                if (isConductor(connection, (C) tile) && !dealtWith[i] && explored.contains(connection)) {
+		if (isConductor(connection, (C) tile) && !dealtWith[i] && explored.contains(connection)) {
 
-                    dealtWith[i] = true;
+		    dealtWith[i] = true;
 
-                }
-            }
+		}
+	    }
 
-            explored.remove(splitPoint);
+	    explored.remove(splitPoint);
 
-            TYPE newNetwork = createInstanceConductor(explored);
+	    TYPE newNetwork = createInstanceConductor(explored);
 
-            newNetwork.refreshNewNetwork();
+	    newNetwork.refreshNewNetwork();
 
-        }
+	}
 
-        deregister();
+	deregister();
     }
 
     /**
@@ -370,21 +373,21 @@ public abstract class AbstractNetwork<C extends GenericRefreshingConnectTile<T, 
      * @param conductor the cable to be removed
      */
     public void removeFromNetwork(C conductor) {
-        conductorSet.remove(conductor);
-        updateConductorStatistics(conductor, true);
-        if (conductorSet.isEmpty()) {
-            deregister();
-        }
+	conductorSet.remove(conductor);
+	updateConductorStatistics(conductor, true);
+	if (conductorSet.isEmpty()) {
+	    deregister();
+	}
     }
 
     /**
      * Removes this network from the registry
      */
     public void deregister() {
-        conductorSet.clear();
-        acceptorSet.clear();
-        acceptorInputMap.clear();
-        NetworkRegistry.deregister(this);
+	conductorSet.clear();
+	acceptorSet.clear();
+	acceptorInputMap.clear();
+	NetworkRegistry.deregister(this);
     }
 
     /**
@@ -394,7 +397,7 @@ public abstract class AbstractNetwork<C extends GenericRefreshingConnectTile<T, 
      */
     @Override
     public int getSize() {
-        return conductorSet.size();
+	return conductorSet.size();
     }
 
     /**
@@ -402,17 +405,18 @@ public abstract class AbstractNetwork<C extends GenericRefreshingConnectTile<T, 
      */
     @Override
     public void tick() {
-        transmittedLastTick = transmittedThisTick;
-        transmittedThisTick = 0;
+	transmittedLastTick = transmittedThisTick;
+	transmittedThisTick = 0;
     }
 
     /**
-     * returns the amount of the specified value that is currently being transmitted over this network
+     * returns the amount of the specified value that is currently being transmitted
+     * over this network
      *
      * @return the amount currently being transmitted
      */
     public double getActiveTransmitted() {
-        return transmittedLastTick;
+	return transmittedLastTick;
     }
 
     /**
@@ -421,15 +425,15 @@ public abstract class AbstractNetwork<C extends GenericRefreshingConnectTile<T, 
      * @return the maximum amount this network can transport per tick
      */
     public double getNetworkMaxTransfer() {
-        return networkMaxTransfer;
+	return networkMaxTransfer;
     }
 
     /**
      * takes the input value and emits it to valid receivers on the network
      *
      * @param transfer the value to be emitted
-     * @param ignored the receivers to be ignored
-     * @param debug whether this should be simulated or not
+     * @param ignored  the receivers to be ignored
+     * @param debug    whether this should be simulated or not
      *
      * @return the amount that was accepted
      */
@@ -438,7 +442,7 @@ public abstract class AbstractNetwork<C extends GenericRefreshingConnectTile<T, 
     /**
      * Checks if the tile is a cable or not
      *
-     * @param tile the tile to check
+     * @param tile            the tile to check
      * @param requestingCable the cable in this network requesting the check
      *
      * @return whether the tile is a cable or not
@@ -456,10 +460,10 @@ public abstract class AbstractNetwork<C extends GenericRefreshingConnectTile<T, 
 
     @Override
     public boolean equals(Object obj) {
-        if(obj instanceof AbstractNetwork<?,?,?,?> network) {
-            return network.id.equals(id);
-        }
-        return false;
+	if (obj instanceof AbstractNetwork<?, ?, ?, ?> network) {
+	    return network.id.equals(id);
+	}
+	return false;
     }
 
     /**
@@ -469,6 +473,6 @@ public abstract class AbstractNetwork<C extends GenericRefreshingConnectTile<T, 
      */
     @Override
     public UUID getId() {
-        return id;
+	return id;
     }
 }

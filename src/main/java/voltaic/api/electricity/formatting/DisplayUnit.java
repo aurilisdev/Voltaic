@@ -10,34 +10,34 @@ public class DisplayUnit implements IDisplayUnit {
     private final Component distanceFromValue;
 
     public DisplayUnit(Component name, Component namePlural, Component symbol, Component distanceFromValue) {
-        this.name = name;
-        this.namePlural = namePlural;
-        this.symbol = symbol;
-        this.distanceFromValue = distanceFromValue;
+	this.name = name;
+	this.namePlural = namePlural;
+	this.symbol = symbol;
+	this.distanceFromValue = distanceFromValue;
     }
 
     public DisplayUnit(Component name, Component namePlural, Component symbol) {
-        this(name, namePlural, symbol, Component.literal(" "));
+	this(name, namePlural, symbol, Component.literal(" "));
     }
 
     @Override
     public Component getSymbol() {
-        return symbol;
+	return symbol;
     }
 
     @Override
     public Component getName() {
-        return name;
+	return name;
     }
 
     @Override
     public Component getNamePlural() {
-        return namePlural;
+	return namePlural;
     }
 
     @Override
     public Component getDistanceFromValue() {
-        return distanceFromValue;
+	return distanceFromValue;
     }
 
 }

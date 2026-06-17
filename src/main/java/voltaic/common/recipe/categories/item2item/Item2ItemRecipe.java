@@ -4,6 +4,10 @@ import java.util.List;
 
 import com.mojang.datafixers.util.Pair;
 
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.items.wrapper.RecipeWrapper;
 import voltaic.common.recipe.VoltaicRecipe;
 import voltaic.common.recipe.recipeutils.CountableIngredient;
 import voltaic.common.recipe.recipeutils.ProbableFluid;
@@ -12,53 +16,55 @@ import voltaic.common.recipe.recipeutils.ProbableItem;
 import voltaic.prefab.tile.components.IComponentType;
 import voltaic.prefab.tile.components.type.ComponentInventory;
 import voltaic.prefab.tile.components.type.ComponentProcessor;
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.wrapper.RecipeWrapper;
 
 public abstract class Item2ItemRecipe extends VoltaicRecipe {
 
     private List<CountableIngredient> inputItems;
     private ItemStack outputItem;
 
-    public Item2ItemRecipe(ResourceLocation group, List<CountableIngredient> inputs, ItemStack output, double experience, int ticks, double usagePerTick, List<ProbableItem> itemBiproducts, List<ProbableFluid> fluidBiproducts, List<ProbableGas> gasBiproducts) {
-        super(group, experience, ticks, usagePerTick, itemBiproducts, fluidBiproducts, gasBiproducts);
-        inputItems = inputs;
-        outputItem = output;
+    public Item2ItemRecipe(ResourceLocation group, List<CountableIngredient> inputs, ItemStack output,
+	    double experience, int ticks, double usagePerTick, List<ProbableItem> itemBiproducts,
+	    List<ProbableFluid> fluidBiproducts, List<ProbableGas> gasBiproducts) {
+	super(group, experience, ticks, usagePerTick, itemBiproducts, fluidBiproducts, gasBiproducts);
+	inputItems = inputs;
+	outputItem = output;
     }
 
     @Override
     public boolean matchesRecipe(ComponentProcessor pr, int procNumber) {
-        Pair<List<Integer>, Boolean> pair = areItemsValid(getCountedIngredients(), ((ComponentInventory) pr.getHolder().getComponent(IComponentType.Inventory)).getInputsForProcessor(procNumber));
-        if (pair.getSecond()) {
-            setItemArrangement(procNumber, pair.getFirst());
-            return true;
-        }
-        return false;
+	Pair<List<Integer>, Boolean> pair = areItemsValid(getCountedIngredients(),
+		((ComponentInventory) pr.getHolder().getComponent(IComponentType.Inventory))
+			.getInputsForProcessor(procNumber));
+	if (pair.getSecond()) {
+	    setItemArrangement(procNumber, pair.getFirst());
+	    return true;
+	}
+	return false;
     }
-    
+
     @Override
     public ItemStack assemble(RecipeWrapper pContainer, RegistryAccess pRegistryAccess) {
-    	return getItemRecipeOutput();
+	return getItemRecipeOutput();
     }
-    
+
     @Override
     public ItemStack getResultItem(RegistryAccess pRegistryAccess) {
-    	return getItemRecipeOutput();
+	return getItemRecipeOutput();
     }
 
     public ItemStack getItemRecipeOutput() {
-        return outputItem;
+	return outputItem;
     }
 
     public List<CountableIngredient> getCountedIngredients() {
-        return inputItems;
+	return inputItems;
     }
 
     public interface Factory<T extends Item2ItemRecipe> {
 
-        T create(ResourceLocation group, List<CountableIngredient> inputs, ItemStack output, double experience, int ticks, double usagePerTick, List<ProbableItem> itemBiproducts, List<ProbableFluid> fluidBiproducts, List<ProbableGas> gasBiproducts);
+	T create(ResourceLocation group, List<CountableIngredient> inputs, ItemStack output, double experience,
+		int ticks, double usagePerTick, List<ProbableItem> itemBiproducts, List<ProbableFluid> fluidBiproducts,
+		List<ProbableGas> gasBiproducts);
 
     }
 
