@@ -17,6 +17,7 @@ public abstract class AbstractProperty<T, PROPERTYTYPE extends IPropertyType> {
     // otherwise the property will be synced to the client upon change at the end of
     // the tile's tick
     private boolean shouldUpdateOnChange = false;
+    @Deprecated(forRemoval = true, since = "This should've never been implemented as = true by defauylt. MUST BE REMOVED ASAP and replaced with a setUpdateServer instead. By default this allows dupes and hacks etc....")
     private boolean shouldUpdateServer = true;
     private final String name;
 
@@ -66,10 +67,12 @@ public abstract class AbstractProperty<T, PROPERTYTYPE extends IPropertyType> {
 	return (A) this;
     }
 
+    @Deprecated(forRemoval = false, since = "Added to remember to remove the default = true.")
     public boolean shouldUpdateServer() {
 	return shouldUpdateServer;
     }
 
+    @Deprecated(forRemoval = true, since = "This should've never been implemented. MUST BE REMOVED ASAP and replaced with a setUpdateServer instead. By default this allows dupes and hacks etc....")
     public <A extends AbstractProperty<T, PROPERTYTYPE>> A setNoUpdateServer() {
 	shouldUpdateServer = false;
 	return (A) this;

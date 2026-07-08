@@ -132,7 +132,7 @@ public class ComponentInventory implements IComponent, WorldlyContainer {
 	    items.add(ItemStack.EMPTY);
 	}
 
-	this.items = holder.property(new ListProperty<>(PropertyTypes.ITEM_STACK_LIST, "machineinventory", items));
+	this.items = holder.property(new ListProperty<>(PropertyTypes.ITEM_STACK_LIST, "machineinventory", items)).setNoUpdateServer();
 
     }
 
@@ -347,7 +347,14 @@ public class ComponentInventory implements IComponent, WorldlyContainer {
 
     @Override
     public void clearContent() {
-	items.wipeList();
+	List<ItemStack> cleared = new ArrayList<>(inventorySize);
+
+	for (int i = 0; i < inventorySize; i++) {
+	    cleared.add(ItemStack.EMPTY);
+	}
+
+	items.setValue(cleared);
+	setChanged(-1);
     }
 
     @Override
