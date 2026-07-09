@@ -96,7 +96,9 @@ public class IndexedSidedInvWrapper implements IItemHandlerModifiable {
 
 	int m;
 	if (!stackInSlot.isEmpty()) {
-	    if ((stackInSlot.getCount() >= Math.min(stackInSlot.getMaxStackSize(), getSlotLimit(slot))) || !ItemStack.isSameItemSameComponents(stack, stackInSlot) || !inv.canPlaceItemThroughFace(slot1, stack, side) || !inv.canPlaceItem(slot1, stack))
+	    if ((stackInSlot.getCount() >= Math.min(stackInSlot.getMaxStackSize(), getSlotLimit(slot)))
+		    || !ItemStack.isSameItemSameComponents(stack, stackInSlot)
+		    || !inv.canPlaceItemThroughFace(slot1, stack, side) || !inv.canPlaceItem(slot1, stack))
 		return stack;
 
 	    m = Math.min(stack.getMaxStackSize(), getSlotLimit(slot)) - stackInSlot.getCount();

@@ -16,9 +16,9 @@ import voltaic.registers.VoltaicMenuTypes;
 
 public class ContainerDO2OProcessor extends GenericContainerBlockEntity<GenericTile> {
 
-    public static final SubtypeItemUpgrade[] VALID_UPGRADES = {
-	    SubtypeItemUpgrade.advancedspeed, SubtypeItemUpgrade.basicspeed, SubtypeItemUpgrade.itemoutput,
-	    SubtypeItemUpgrade.iteminput, SubtypeItemUpgrade.experience };
+    public static final SubtypeItemUpgrade[] VALID_UPGRADES = { SubtypeItemUpgrade.advancedspeed,
+	    SubtypeItemUpgrade.basicspeed, SubtypeItemUpgrade.itemoutput, SubtypeItemUpgrade.iteminput,
+	    SubtypeItemUpgrade.experience };
 
     public static final int startXOffset = 36;
 

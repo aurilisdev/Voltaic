@@ -133,7 +133,8 @@ public class ComponentInventory implements IComponent, WorldlyContainer {
 	    items.add(ItemStack.EMPTY);
 	}
 
-	this.items = holder.property(new ListProperty<>(PropertyTypes.ITEM_STACK_LIST, "machineinventory", items)).setNoUpdateServer();
+	this.items = holder.property(new ListProperty<>(PropertyTypes.ITEM_STACK_LIST, "machineinventory", items))
+		.setNoUpdateServer();
 
     }
 

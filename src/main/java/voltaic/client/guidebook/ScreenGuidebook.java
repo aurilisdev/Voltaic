@@ -945,8 +945,9 @@ public class ScreenGuidebook extends GenericScreen<ContainerGuidebook> {
 		    if (page.associatedChapter.module.isCat(module.getTitle())) {
 			for (TextWrapper wrapper : page.text) {
 
-			    if ((caseSensitive.isSelected() && wrapper.characters().getString().contains(text)) || (!caseSensitive.isSelected() && wrapper.characters().getString()
-				    .toLowerCase(Locale.ROOT).contains(text.toLowerCase()))) {
+			    if ((caseSensitive.isSelected() && wrapper.characters().getString().contains(text))
+				    || (!caseSensitive.isSelected() && wrapper.characters().getString()
+					    .toLowerCase(Locale.ROOT).contains(text.toLowerCase()))) {
 
 				found.add(new SearchHit(wrapper.characters(), page.getPage(), page.associatedChapter));
 
@@ -956,8 +957,9 @@ public class ScreenGuidebook extends GenericScreen<ContainerGuidebook> {
 
 			for (GraphicWrapper graphic : page.graphics) {
 			    for (GraphicTextDescriptor descriptor : graphic.graphic().descriptors) {
-				if ((caseSensitive.isSelected() && descriptor.text.getString().contains(text)) || (!caseSensitive.isSelected() && descriptor.text.getString()
-					.toLowerCase(Locale.ROOT).contains(text.toLowerCase()))) {
+				if ((caseSensitive.isSelected() && descriptor.text.getString().contains(text))
+					|| (!caseSensitive.isSelected() && descriptor.text.getString()
+						.toLowerCase(Locale.ROOT).contains(text.toLowerCase()))) {
 
 				    found.add(new SearchHit(descriptor.text, page.getPage(), page.associatedChapter));
 

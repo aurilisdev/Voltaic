@@ -1225,7 +1225,8 @@ public class ComponentProcessor implements IComponent {
 	    ItemStack slotStack = slots.get(i);
 	    ItemStack biStack = biproducts[Math.min(i, biproducts.length - 1)];
 	    if (!slotStack.isEmpty()) {
-		if ((slotStack.getCount() + biStack.getCount() > slotStack.getMaxStackSize()) || !ItemUtils.testItems(slotStack.getItem(), biStack.getItem())) {
+		if ((slotStack.getCount() + biStack.getCount() > slotStack.getMaxStackSize())
+			|| !ItemUtils.testItems(slotStack.getItem(), biStack.getItem())) {
 		    return false;
 		}
 	    }

@@ -179,7 +179,8 @@ public interface IItemElectric {
     static boolean overrideOtherStackedOnMe(ItemStack stack, ItemStack other, Slot slot, ClickAction action,
 	    Player player, SlotAccess access) {
 
-	if (action == null || action == ClickAction.PRIMARY || other.isEmpty() || ((IItemElectric) stack.getItem()).cannotHaveBatterySwapped()) {
+	if (action == null || action == ClickAction.PRIMARY || other.isEmpty()
+		|| ((IItemElectric) stack.getItem()).cannotHaveBatterySwapped()) {
 	    return false;
 	}
 
