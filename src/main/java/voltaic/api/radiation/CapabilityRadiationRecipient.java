@@ -70,7 +70,7 @@ public class CapabilityRadiationRecipient implements IRadiationRecipient, ICapab
     @Override
     public void recieveRadiation(LivingEntity entity, double rads, double strength) {
 
-	if (rads <= 0) {
+	if (rads <= RadiationManager.MIN_APPLIED_RADIATION) {
 	    return;
 	}
 

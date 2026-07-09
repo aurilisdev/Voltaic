@@ -9,6 +9,7 @@ import java.util.Map;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Dynamic;
 
 import net.minecraft.core.BlockPos;
@@ -16,11 +17,15 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.DoorBlock;
+import net.minecraft.world.level.block.TrapDoorBlock;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.util.LazyOptional;
@@ -34,6 +39,7 @@ import voltaic.prefab.utilities.CodecUtils;
 import voltaic.registers.VoltaicCapabilities;
 
 public class RadiationManager implements IRadiationManager, ICapabilitySerializable<CompoundTag> {
+    public static final double MIN_APPLIED_RADIATION = 0.1;
 
     private final LazyOptional<IRadiationManager> lazyOptional = LazyOptional.of(() -> this);
 
@@ -362,16 +368,8 @@ public class RadiationManager implements IRadiationManager, ICapabilitySerializa
 		    continue;
 		}
 
-		int splitTargets = (int) Math.ceil(living.getBbHeight());
-
-		for (int i = 0; i < splitTargets; i++) {
-		    capability.recieveRadiation(living,
-			    getAppliedRadiation(world, position, living.getOnPos().above(i + 1),
-				    permanentSource.getRadiationAmount() / splitTargets,
-				    permanentSource.getRadiationStrength()),
-			    permanentSource.getRadiationStrength());
-		}
-
+		applyRadiationFromSource(world, living, capability, position, permanentSource.getRadiationAmount(),
+			permanentSource.getRadiationStrength());
 	    }
 
 	    /* Temporary Sources */
@@ -385,14 +383,8 @@ public class RadiationManager implements IRadiationManager, ICapabilitySerializa
 		    continue;
 		}
 
-		int splitTargets = (int) Math.ceil(living.getBbHeight());
-
-		for (int i = 0; i < splitTargets; i++) {
-		    capability.recieveRadiation(living,
-			    getAppliedRadiation(world, position, living.getOnPos().above(i + 1),
-				    temporarySource.radiation / splitTargets, temporarySource.strength),
-			    temporarySource.strength);
-		}
+		applyRadiationFromSource(world, living, capability, position, temporarySource.radiation,
+			temporarySource.strength);
 	    }
 
 	    /* Fading Sources */
@@ -406,12 +398,8 @@ public class RadiationManager implements IRadiationManager, ICapabilitySerializa
 		    continue;
 		}
 
-		for (int i = 0; i < (int) Math.ceil(living.getBbHeight()); i++) {
-		    capability.recieveRadiation(living, getAppliedRadiation(world, position,
-			    living.getOnPos().above(i + 1), fadingSource.radiation, fadingSource.strength),
-			    fadingSource.strength);
-		}
-
+		applyRadiationFromSource(world, living, capability, position, fadingSource.radiation,
+			fadingSource.strength);
 	    }
 
 	}
@@ -475,73 +463,136 @@ public class RadiationManager implements IRadiationManager, ICapabilitySerializa
 	return true;
     }
 
-    public static List<Block> raycastToBlockPos(Level world, BlockPos start, BlockPos end) {
+    private static List<Vec3> getRadiationSamplePoints(Entity entity) {
 
-	List<Block> blocks = new ArrayList<>();
+	AABB box = entity.getBoundingBox();
 
-	int deltaX = end.getX() - start.getX();
-	int deltaY = end.getY() - start.getY();
-	int deltaZ = end.getZ() - start.getZ();
+	double x0 = Mth.lerp(0.1, box.minX, box.maxX);
+	double x1 = Mth.lerp(1.0 - 0.1, box.minX, box.maxX);
+
+	double y0 = Mth.lerp(0.1, box.minY, box.maxY);
+	double y1 = Mth.lerp(1.0 - 0.1, box.minY, box.maxY);
+
+	double z0 = Mth.lerp(0.1, box.minZ, box.maxZ);
+	double z1 = Mth.lerp(1.0 - 0.1, box.minZ, box.maxZ);
+
+	Vec3 center = box.getCenter();
+
+	return List.of(center,
+
+		new Vec3(x0, y0, z0), new Vec3(x0, y0, z1), new Vec3(x0, y1, z0), new Vec3(x0, y1, z1),
+
+		new Vec3(x1, y0, z0), new Vec3(x1, y0, z1), new Vec3(x1, y1, z0), new Vec3(x1, y1, z1));
+    }
+
+    private static void applyRadiationFromSource(Level world, LivingEntity living, IRadiationRecipient capability,
+	    BlockPos sourcePos, double radiationAmount, double strength) {
+
+	List<Vec3> samples = getRadiationSamplePoints(living);
+
+	Vec3 source = Vec3.atCenterOf(sourcePos);
+
+	double amountPerSample = radiationAmount / samples.size();
+	double totalApplied = 0.0;
+
+	for (Vec3 sample : samples) {
+	    totalApplied += getAppliedRadiation(world, source, sample, amountPerSample, strength);
+	}
+
+	if (totalApplied < MIN_APPLIED_RADIATION) {
+	    return;
+	}
+
+	capability.recieveRadiation(living, totalApplied, strength);
+    }
+
+    public static List<Pair<BlockPos, BlockState>> raycastToBlockPos(Level world, Vec3 start, Vec3 end) {
+
+	List<Pair<BlockPos, BlockState>> blocks = new ArrayList<>();
+
+	double deltaX = end.x - start.x;
+	double deltaY = end.y - start.y;
+	double deltaZ = end.z - start.z;
 
 	double magnitude = Math.sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ);
 
-	int maxChecks = (int) magnitude;
+	if (magnitude <= 0) {
+	    return blocks;
+	}
 
-	double incX = deltaX / magnitude;
-	double incY = deltaY / magnitude;
-	double incZ = deltaZ / magnitude;
+	int maxChecks = Math.max(1, (int) Math.ceil(magnitude));
 
-	double x = 0;
-	double y = 0;
-	double z = 0;
+	double incX = deltaX / maxChecks;
+	double incY = deltaY / maxChecks;
+	double incZ = deltaZ / maxChecks;
 
-	BlockPos toCheck = start;
+	BlockPos startBlock = BlockPos.containing(start);
+	BlockPos lastChecked = null;
 
-	int i = 0;
+	for (int i = 0; i <= maxChecks; i++) {
 
-	while (i < maxChecks) {
+	    BlockPos toCheck = BlockPos.containing(start.x + incX * i, start.y + incY * i, start.z + incZ * i);
 
-	    x += incX;
-	    y += incY;
-	    z += incZ;
-	    toCheck = new BlockPos((int) (start.getX() + x), (int) (start.getY() + y), (int) (start.getZ() + z));
-	    if (!toCheck.equals(start) && !toCheck.equals(end)) {
-		blocks.add(world.getBlockState(toCheck).getBlock());
-		// world.setBlockAndUpdate(toCheck, Blocks.COBBLESTONE.defaultBlockState());
+	    if (toCheck.equals(lastChecked)) {
+		continue;
 	    }
 
-	    i++;
+	    lastChecked = toCheck;
 
+	    // Do not count source block, but do count end block.
+	    if (toCheck.equals(startBlock)) {
+		continue;
+	    }
+
+	    blocks.add(new Pair<>(toCheck, world.getBlockState(toCheck)));
 	}
 
 	return blocks;
     }
 
-    public static double getAppliedRadiation(Level world, BlockPos source, BlockPos entity, double amount,
-	    double strength) {
+    public static double getAppliedRadiation(Level world, Vec3 source, Vec3 entity, double amount, double strength) {
 
-	List<Block> blocks = raycastToBlockPos(world, source, entity);
+	List<Pair<BlockPos, BlockState>> pairs = raycastToBlockPos(world, source, entity);
 
-	if (blocks.isEmpty()) {
-	    return amount;
-	}
+	for (Pair<BlockPos, BlockState> pair : pairs) {
 
-	RadiationShielding shielding;
+	    BlockPos pos = pair.getFirst();
+	    BlockState state = pair.getSecond();
 
-	for (Block block : blocks) {
-	    shielding = RadiationShieldingRegister.getValue(block);
+	    RadiationShielding shielding = RadiationShieldingRegister.getValue(state.getBlock());
+
+	    if (shielding == RadiationShielding.NONE) {
+		shielding = RadiationShielding.getDefault(world, pos, state);
+	    }
+
 	    if (shielding.level() < strength) {
 		continue;
 	    }
-	    amount -= shielding.amount();
-	    if (amount <= 0) {
-		return 0;
+
+	    double transmission = shielding.transmission();
+
+	    if (state.hasProperty(DoorBlock.OPEN) && state.getValue(DoorBlock.OPEN)) {
+		transmission = 1.0 - ((1.0 - transmission) * 0.20);
 	    }
 
+	    if (state.hasProperty(TrapDoorBlock.OPEN) && state.getValue(TrapDoorBlock.OPEN)) {
+		transmission = 1.0 - ((1.0 - transmission) * 0.20);
+	    }
+
+	    amount *= transmission;
+
+	    if (amount < MIN_APPLIED_RADIATION) {
+		return 0;
+	    }
 	}
 
-	return amount / entity.distSqr(source);
-
+	double distanceSq = Math.max(1.0, entity.distanceToSqr(source));
+	return amount / distanceSq;
     }
 
+    public static double getAppliedRadiation(Level world, BlockPos source, BlockPos entity, double amount,
+	    double strength) {
+
+	return getAppliedRadiation(world, Vec3.atCenterOf(source), Vec3.atCenterOf(entity), amount, strength);
+    }
 }
