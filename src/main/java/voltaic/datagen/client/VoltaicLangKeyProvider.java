@@ -87,7 +87,7 @@ public class VoltaicLangKeyProvider extends BaseLangKeyProvider {
 
 	    addTooltip("guidebookname", "AKA Guidebook");
 
-	    addTooltip("radiationshieldingamount", "Shielding Amount: %s");
+	    addTooltip("radiationshieldingblocked", "Radiation Blocked: %s");
 	    addTooltip("radiationshieldinglevel", "Shielding Level: %s");
 
 	    addTooltip("inventoryio", "Inventory I/O");

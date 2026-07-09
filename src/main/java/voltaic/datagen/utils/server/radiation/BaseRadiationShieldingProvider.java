@@ -41,16 +41,16 @@ public abstract class BaseRadiationShieldingProvider implements DataProvider {
 
     public abstract void getRadiationShielding(JsonObject json);
 
-    public void addBlock(Block block, double radiationAmount, double radiationLevel, JsonObject json) {
+    public void addBlock(Block block, double transmission, double radiationLevel, JsonObject json) {
 	JsonObject data = new JsonObject();
 	json.add(BuiltInRegistries.BLOCK.getKey(block).toString(), RadiationShielding.CODEC
-		.encode(new RadiationShielding(radiationAmount, radiationLevel), JsonOps.INSTANCE, data).getOrThrow());
+		.encode(new RadiationShielding(transmission, radiationLevel), JsonOps.INSTANCE, data).getOrThrow());
     }
 
-    public void addTag(TagKey<Block> tag, double radiationAmount, double radiationLevel, JsonObject json) {
+    public void addTag(TagKey<Block> tag, double transmission, double radiationLevel, JsonObject json) {
 	JsonObject data = new JsonObject();
 	json.add("#" + tag.location().toString(), RadiationShielding.CODEC
-		.encode(new RadiationShielding(radiationAmount, radiationLevel), JsonOps.INSTANCE, data).getOrThrow());
+		.encode(new RadiationShielding(transmission, radiationLevel), JsonOps.INSTANCE, data).getOrThrow());
     }
 
     @Override

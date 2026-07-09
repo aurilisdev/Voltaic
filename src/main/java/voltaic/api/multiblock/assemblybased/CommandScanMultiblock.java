@@ -59,7 +59,8 @@ public class CommandScanMultiblock {
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
 
-	dispatcher.register(Commands.literal(Voltaic.ID).requires(source -> source.hasPermission(0)).then(Commands.literal(MULTIBLOCK).requires(source -> source.hasPermission(2)).then(Commands.literal(SCAN))
+	dispatcher.register(Commands.literal(Voltaic.ID).requires(source -> source.hasPermission(0)).then(Commands
+		.literal(MULTIBLOCK).requires(source -> source.hasPermission(2)).then(Commands.literal(SCAN))
 		.then(Commands.argument(CONTROLLER_POS, Vec3Argument.vec3())
 			.then(Commands.argument(START_POS, Vec3Argument.vec3())
 				.then(Commands.argument(END_POS, Vec3Argument.vec3())

@@ -14,14 +14,13 @@ import voltaic.registers.VoltaicAttachmentTypes;
 import voltaic.registers.VoltaicEffects;
 
 public class CapabilityRadiationRecipient implements IRadiationRecipient {
-
     private static final EquipmentSlot[] ARMOR_SLOTS = { EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS,
 	    EquipmentSlot.FEET };
 
     @Override
     public void recieveRadiation(LivingEntity entity, double rads, double strength) {
 
-	if (rads <= 0) {
+	if (rads <= RadiationManager.MIN_APPLIED_RADIATION) {
 	    return;
 	}
 
