@@ -5,12 +5,12 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import voltaic.api.codec.StreamCodec;
-import voltaic.registers.VoltaicParticles;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.registries.ForgeRegistries;
+import voltaic.api.codec.StreamCodec;
+import voltaic.registers.VoltaicParticles;
 
 public class ParticleOptionFluidDrop extends ParticleType<ParticleOptionFluidDrop> implements ParticleOptions {
 
@@ -22,7 +22,7 @@ public class ParticleOptionFluidDrop extends ParticleType<ParticleOptionFluidDro
                     Codec.FLOAT.fieldOf("scale").forGetter(instance0 -> instance0.scale)
             ).apply(instance, (r, g, b, scale) -> new ParticleOptionFluidDrop().setParameters(r, g, b, scale)));
 
-    public static final StreamCodec<FriendlyByteBuf, ParticleOptionFluidDrop> STREAM_CODEC = new StreamCodec<FriendlyByteBuf, ParticleOptionFluidDrop>() {
+    public static final StreamCodec<FriendlyByteBuf, ParticleOptionFluidDrop> STREAM_CODEC = new StreamCodec<>() {
 		
 		@Override
 		public void encode(FriendlyByteBuf buffer, ParticleOptionFluidDrop value) {
@@ -38,7 +38,7 @@ public class ParticleOptionFluidDrop extends ParticleType<ParticleOptionFluidDro
 		}
 	};
 	
-	public static final ParticleOptions.Deserializer<ParticleOptionFluidDrop> DESERIALIZER = new ParticleOptions.Deserializer<ParticleOptionFluidDrop>() {
+	public static final ParticleOptions.Deserializer<ParticleOptionFluidDrop> DESERIALIZER = new ParticleOptions.Deserializer<>() {
 
 		@Override
 		public ParticleOptionFluidDrop fromCommand(ParticleType<ParticleOptionFluidDrop> pParticleType, StringReader reader) throws CommandSyntaxException {

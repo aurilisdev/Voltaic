@@ -1,14 +1,14 @@
 package voltaic.prefab.screen.component.types;
 
+import java.util.function.Consumer;
+
+import com.mojang.blaze3d.vertex.PoseStack;
+
 import net.minecraft.resources.ResourceLocation;
 import voltaic.Voltaic;
 import voltaic.api.screen.ITexture;
 import voltaic.prefab.screen.component.ScreenComponentGeneric;
 import voltaic.prefab.utilities.RenderingUtils;
-
-import java.util.function.Consumer;
-
-import com.mojang.blaze3d.vertex.PoseStack;
 
 public class ScreenComponentHorizontalSlider extends ScreenComponentGeneric {
     private int sliderXOffset = 0;
@@ -67,7 +67,7 @@ public class ScreenComponentHorizontalSlider extends ScreenComponentGeneric {
 
     @Override
     protected boolean isPointInRegion(int x, int y, double xAxis, double yAxis, int width, int height) {
-        return xAxis >= x + sliderXOffset + 2 && xAxis <= (x + 2 + sliderXOffset + 15) && yAxis >= y && yAxis <= (y + height - 1);
+        return xAxis >= x + sliderXOffset + 2 && xAxis <= x + 2 + sliderXOffset + 15 && yAxis >= y && yAxis <= y + height - 1;
     }
 
     @Override
@@ -120,7 +120,7 @@ public class ScreenComponentHorizontalSlider extends ScreenComponentGeneric {
     }
 
     protected boolean isPointInSlider(int x, int y, double xAxis, double yAxis, int width, int height) {
-        return xAxis >= x && xAxis <= (x + width - 1) && yAxis >= y && yAxis <= (y + height - 1);
+        return xAxis >= x && xAxis <= x + width - 1 && yAxis >= y && yAxis <= y + height - 1;
     }
 
     public boolean isSliderActive() {

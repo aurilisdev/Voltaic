@@ -6,10 +6,10 @@ import java.util.List;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import voltaic.Voltaic;
-import voltaic.api.codec.StreamCodec;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
+import voltaic.Voltaic;
+import voltaic.api.codec.StreamCodec;
 
 public class ProbableItem {
 

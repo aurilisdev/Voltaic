@@ -1,11 +1,10 @@
 package voltaic.api.radiation;
 
-import voltaic.Voltaic;
-import voltaic.api.radiation.util.IRadiationManager;
-import voltaic.api.radiation.util.IRadiationRecipient;
-import voltaic.common.settings.VoltaicConstants;
-import voltaic.prefab.utilities.CapabilityUtils;
-import voltaic.registers.VoltaicCapabilities;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
@@ -14,11 +13,12 @@ import net.minecraftforge.event.TickEvent.Phase;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingTickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
+import voltaic.Voltaic;
+import voltaic.api.radiation.util.IRadiationManager;
+import voltaic.api.radiation.util.IRadiationRecipient;
+import voltaic.common.settings.VoltaicConstants;
+import voltaic.prefab.utilities.CapabilityUtils;
+import voltaic.registers.VoltaicCapabilities;
 
 @EventBusSubscriber(modid = Voltaic.ID, bus = EventBusSubscriber.Bus.FORGE)
 public class RadiationSystem {
@@ -103,8 +103,7 @@ public class RadiationSystem {
 		if(manager == CapabilityUtils.EMPTY_MANAGER) {
 			return Collections.emptyList();
 		}
-		HashSet<BlockPos> sources = new HashSet<>();
-		sources.addAll(manager.getPermanentLocations(world));
+		HashSet<BlockPos> sources = new HashSet<>(manager.getPermanentLocations(world));
 		sources.addAll(manager.getTemporaryLocations(world));
 		sources.addAll(manager.getFadingLocations(world));
 		return new ArrayList<>(sources);

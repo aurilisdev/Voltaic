@@ -2,7 +2,6 @@ package voltaic.prefab.screen.component.utils;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 
-import voltaic.api.screen.IScreenWrapper;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.components.Widget;
 import net.minecraft.client.gui.components.events.GuiEventListener;
@@ -10,6 +9,7 @@ import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
+import voltaic.api.screen.IScreenWrapper;
 
 /**
  * 

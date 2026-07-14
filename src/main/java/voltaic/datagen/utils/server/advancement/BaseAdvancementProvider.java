@@ -9,8 +9,8 @@ import com.google.common.collect.Sets;
 
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.data.DataProvider;
 import net.minecraft.data.DataGenerator.PathProvider;
+import net.minecraft.data.DataProvider;
 import net.minecraft.resources.ResourceLocation;
 import voltaic.Voltaic;
 

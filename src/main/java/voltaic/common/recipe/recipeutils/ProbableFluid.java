@@ -6,11 +6,11 @@ import java.util.List;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import voltaic.Voltaic;
-import voltaic.api.codec.StreamCodec;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.registries.ForgeRegistries;
+import voltaic.Voltaic;
+import voltaic.api.codec.StreamCodec;
 
 public class ProbableFluid {
 

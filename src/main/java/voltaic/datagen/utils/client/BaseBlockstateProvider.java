@@ -2,9 +2,6 @@ package voltaic.datagen.utils.client;
 
 import javax.annotation.Nullable;
 
-import voltaic.Voltaic;
-import voltaic.common.block.states.VoltaicBlockStates;
-import voltaic.datagen.utils.client.model.WireModelBuilder;
 import net.minecraft.core.Direction;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.resources.ResourceLocation;
@@ -21,6 +18,9 @@ import net.minecraftforge.client.model.generators.loaders.ObjModelBuilder;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
+import voltaic.Voltaic;
+import voltaic.common.block.states.VoltaicBlockStates;
+import voltaic.datagen.utils.client.model.WireModelBuilder;
 
 public abstract class BaseBlockstateProvider extends BlockStateProvider {
 

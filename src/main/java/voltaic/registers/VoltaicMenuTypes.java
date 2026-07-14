@@ -1,13 +1,17 @@
 package voltaic.registers;
 
-import voltaic.Voltaic;
-import voltaic.common.inventory.container.*;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.MenuType.MenuSupplier;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
+import voltaic.Voltaic;
+import voltaic.common.inventory.container.ContainerDO2OProcessor;
+import voltaic.common.inventory.container.ContainerGuidebook;
+import voltaic.common.inventory.container.ContainerO2OProcessor;
+import voltaic.common.inventory.container.ContainerO2OProcessorDouble;
+import voltaic.common.inventory.container.ContainerO2OProcessorTriple;
 
 public class VoltaicMenuTypes {
 	public static final DeferredRegister<MenuType<?>> MENU_TYPES = DeferredRegister.create(ForgeRegistries.MENU_TYPES, Voltaic.ID);

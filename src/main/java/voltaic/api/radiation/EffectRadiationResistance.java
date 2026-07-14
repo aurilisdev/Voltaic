@@ -1,8 +1,8 @@
 package voltaic.api.radiation;
 
-import voltaic.prefab.utilities.math.Color;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
+import voltaic.prefab.utilities.math.Color;
 
 public class EffectRadiationResistance extends MobEffect {
 

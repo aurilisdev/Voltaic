@@ -4,7 +4,6 @@ import java.util.Locale;
 
 import javax.annotation.Nullable;
 
-import voltaic.client.VoltaicClientRegister;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
@@ -17,6 +16,7 @@ import net.minecraftforge.client.model.generators.loaders.DynamicFluidContainerM
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
+import voltaic.client.VoltaicClientRegister;
 
 public abstract class BaseItemModelsProvider extends ItemModelProvider {
 

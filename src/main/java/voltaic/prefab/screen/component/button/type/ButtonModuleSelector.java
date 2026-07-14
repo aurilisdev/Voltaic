@@ -1,12 +1,11 @@
 package voltaic.prefab.screen.component.button.type;
 
-import voltaic.Voltaic;
-import voltaic.api.screen.ITexture;
-import voltaic.prefab.utilities.RenderingUtils;
-
 import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.resources.ResourceLocation;
+import voltaic.Voltaic;
+import voltaic.api.screen.ITexture;
+import voltaic.prefab.utilities.RenderingUtils;
 
 public class ButtonModuleSelector extends ButtonSpecificPage {
 

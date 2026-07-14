@@ -1,9 +1,5 @@
 package voltaic.client.guidebook.utils.pagedata.graphics;
 
-import voltaic.client.guidebook.utils.components.Page;
-import voltaic.prefab.utilities.RenderingUtils;
-import voltaic.prefab.utilities.math.Color;
-
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 
@@ -14,6 +10,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
+import voltaic.client.guidebook.utils.components.Page;
+import voltaic.prefab.utilities.RenderingUtils;
+import voltaic.prefab.utilities.math.Color;
 
 public class FluidWrapperObject extends AbstractGraphicWrapper<FluidWrapperObject> {
 

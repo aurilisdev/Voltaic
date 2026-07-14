@@ -1,12 +1,12 @@
 package voltaic.datagen.utils.server.loottable;
 
-import voltaic.prefab.tile.GenericTile;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
+import voltaic.prefab.tile.GenericTile;
 
 public abstract class BaseLootTablesProvider extends AbstractLootTableProvider {
 

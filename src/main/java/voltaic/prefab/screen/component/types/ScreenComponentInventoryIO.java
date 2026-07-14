@@ -6,6 +6,9 @@ import java.util.List;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 
+import net.minecraft.core.Direction;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.ResourceLocation;
 import voltaic.Voltaic;
 import voltaic.api.screen.ITexture;
 import voltaic.prefab.inventory.container.slot.item.SlotGeneric;
@@ -17,9 +20,6 @@ import voltaic.prefab.tile.components.IComponentType;
 import voltaic.prefab.tile.components.type.ComponentInventory;
 import voltaic.prefab.utilities.VoltaicTextUtils;
 import voltaic.prefab.utilities.math.Color;
-import net.minecraft.core.Direction;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
 
 public class ScreenComponentInventoryIO extends ScreenComponentGeneric {
 
@@ -129,27 +129,15 @@ public class ScreenComponentInventoryIO extends ScreenComponentGeneric {
 
 	private MutableComponent getLabelFromDir() {
 		MutableComponent component = null;
-		switch (side) {
-		default:
-		case DOWN:
-			component = VoltaicTextUtils.tooltip("inventoryio.bottom");
-			break;
-		case UP:
-			component = VoltaicTextUtils.tooltip("inventoryio.top");
-			break;
-		case EAST:
-			component = VoltaicTextUtils.tooltip("inventoryio.left");
-			break;
-		case WEST:
-			component = VoltaicTextUtils.tooltip("inventoryio.right");
-			break;
-		case NORTH:
-			component = VoltaicTextUtils.tooltip("inventoryio.front");
-			break;
-		case SOUTH:
-			component = VoltaicTextUtils.tooltip("inventoryio.back");
-			break;
-		}
+		component = switch (side) {
+		case DOWN -> VoltaicTextUtils.tooltip("inventoryio.bottom");
+		default -> VoltaicTextUtils.tooltip("inventoryio.bottom");
+		case UP -> VoltaicTextUtils.tooltip("inventoryio.top");
+		case EAST -> VoltaicTextUtils.tooltip("inventoryio.left");
+		case WEST -> VoltaicTextUtils.tooltip("inventoryio.right");
+		case NORTH -> VoltaicTextUtils.tooltip("inventoryio.front");
+		case SOUTH -> VoltaicTextUtils.tooltip("inventoryio.back");
+		};
 //		return component.append(": " + StringUtils.capitalize(side.name().toLowerCase()));
 		// TODO: Add some dynamic face direction here for the slots.
 		return component;

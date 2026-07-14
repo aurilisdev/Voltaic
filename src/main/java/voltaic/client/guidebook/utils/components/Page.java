@@ -5,16 +5,16 @@ import java.util.List;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.Font;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.FormattedText;
 import voltaic.client.guidebook.utils.pagedata.OnClick;
 import voltaic.client.guidebook.utils.pagedata.OnKeyPress;
 import voltaic.client.guidebook.utils.pagedata.OnTooltip;
 import voltaic.client.guidebook.utils.pagedata.graphics.AbstractGraphicWrapper;
 import voltaic.prefab.utilities.VoltaicTextUtils;
 import voltaic.prefab.utilities.math.Color;
-import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.Font;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.FormattedText;
 
 public class Page {
 

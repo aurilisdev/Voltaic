@@ -1,16 +1,16 @@
 package voltaic.prefab.properties.variant;
 
+import java.util.HashSet;
+import java.util.Set;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.Block;
 import voltaic.Voltaic;
 import voltaic.prefab.properties.PropertyManager;
 import voltaic.prefab.properties.types.IPropertyType;
 import voltaic.prefab.properties.types.SetPropertyType;
-
-import java.util.HashSet;
-import java.util.Set;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 public class SetProperty<T> extends AbstractProperty<HashSet<T>, SetPropertyType<T, ?>> {
 
@@ -22,7 +22,7 @@ public class SetProperty<T> extends AbstractProperty<HashSet<T>, SetPropertyType
     private BiConsumer<SetProperty<T>, HashSet<T>> onChange = (prop, val) -> {
     };
     //this fires when the owning tile has been loaded. This fires on both the client and server-side, and Level is present
-    private Consumer<SetProperty<T>> onTileLoaded = (prop) -> {
+    private Consumer<SetProperty<T>> onTileLoaded = prop -> {
     };
 
     public SetProperty(SetPropertyType<T, ?> type, String name, HashSet<T> defaultValue) {
@@ -201,9 +201,10 @@ public class SetProperty<T> extends AbstractProperty<HashSet<T>, SetPropertyType
         overwriteValue(otherVal);
     }
 
+    @Override
     public void loadFromTag(CompoundTag tag) {
         try {
-            HashSet<T> data = (HashSet<T>) getType().readFromTag(new IPropertyType.TagReader(this, tag));
+            HashSet<T> data = getType().readFromTag(new IPropertyType.TagReader(this, tag));
             if (data != null) {
                 value = data;
                 onLoadedFromTag(this, value);

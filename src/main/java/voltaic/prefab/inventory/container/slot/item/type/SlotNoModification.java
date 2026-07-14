@@ -1,11 +1,11 @@
 package voltaic.prefab.inventory.container.slot.item.type;
 
-import voltaic.api.screen.ITexture;
-import voltaic.api.screen.component.ISlotTexture;
-import voltaic.prefab.inventory.container.slot.item.SlotGeneric;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import voltaic.api.screen.ITexture;
+import voltaic.api.screen.component.ISlotTexture;
+import voltaic.prefab.inventory.container.slot.item.SlotGeneric;
 
 public class SlotNoModification extends SlotGeneric {
 

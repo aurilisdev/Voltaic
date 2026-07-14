@@ -1,17 +1,17 @@
 package voltaic.datagen.server;
 
-import voltaic.Voltaic;
-import voltaic.common.condition.ConfigCondition;
-import voltaic.datagen.utils.server.advancement.AdvancementBuilder;
-import voltaic.datagen.utils.server.advancement.BaseAdvancementProvider;
-import net.minecraft.advancements.CriteriaTriggers;
+import java.util.function.Consumer;
+
 import net.minecraft.advancements.AdvancementRewards.Builder;
+import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.advancements.critereon.EntityPredicate;
 import net.minecraft.advancements.critereon.PlayerTrigger;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.resources.ResourceLocation;
-
-import java.util.function.Consumer;
+import voltaic.Voltaic;
+import voltaic.common.condition.ConfigCondition;
+import voltaic.datagen.utils.server.advancement.AdvancementBuilder;
+import voltaic.datagen.utils.server.advancement.BaseAdvancementProvider;
 
 public class VoltaicAdvancementProvider extends BaseAdvancementProvider {
 
@@ -19,6 +19,7 @@ public class VoltaicAdvancementProvider extends BaseAdvancementProvider {
 		super(generator, Voltaic.ID);
 	}
 
+	@Override
 	public void registerAdvancements(Consumer<AdvancementBuilder> consumer) {
 
 		advancement("dispenseguidebook")

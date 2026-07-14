@@ -3,12 +3,12 @@ package voltaic.prefab.screen.component.utils;
 import java.util.Collections;
 import java.util.List;
 
-import voltaic.api.screen.ITexture;
-import voltaic.api.screen.component.TextPropertySupplier;
-import voltaic.prefab.screen.component.ScreenComponentGeneric;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import voltaic.api.screen.ITexture;
+import voltaic.api.screen.component.TextPropertySupplier;
+import voltaic.prefab.screen.component.ScreenComponentGeneric;
 
 @OnlyIn(Dist.CLIENT)
 public abstract class AbstractScreenComponentInfo extends ScreenComponentGeneric {

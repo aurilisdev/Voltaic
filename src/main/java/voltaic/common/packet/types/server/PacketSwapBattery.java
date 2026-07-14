@@ -3,11 +3,11 @@ package voltaic.common.packet.types.server;
 import java.util.UUID;
 import java.util.function.Supplier;
 
-import voltaic.api.codec.StreamCodec;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraftforge.network.NetworkEvent.Context;
+import voltaic.api.codec.StreamCodec;
 
 public class PacketSwapBattery {
 

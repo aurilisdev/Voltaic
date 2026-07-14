@@ -1,9 +1,9 @@
 package voltaic.datagen.client;
 
-import voltaic.Voltaic;
-import voltaic.datagen.utils.client.BaseBlockstateProvider;
 import net.minecraft.data.DataGenerator;
 import net.minecraftforge.common.data.ExistingFileHelper;
+import voltaic.Voltaic;
+import voltaic.datagen.utils.client.BaseBlockstateProvider;
 import voltaic.registers.VoltaicBlocks;
 
 public class VoltaicBlockStateProvider extends BaseBlockstateProvider {

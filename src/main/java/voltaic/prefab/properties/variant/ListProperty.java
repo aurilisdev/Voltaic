@@ -1,17 +1,17 @@
 package voltaic.prefab.properties.variant;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
+
+import org.apache.logging.log4j.util.TriConsumer;
+
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.Block;
 import voltaic.Voltaic;
 import voltaic.prefab.properties.PropertyManager;
 import voltaic.prefab.properties.types.IPropertyType;
 import voltaic.prefab.properties.types.ListPropertyType;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Consumer;
-
-import org.apache.logging.log4j.util.TriConsumer;
 
 public class ListProperty<T> extends AbstractProperty<List<T>, ListPropertyType<T, ?>> {
 
@@ -23,7 +23,7 @@ public class ListProperty<T> extends AbstractProperty<List<T>, ListPropertyType<
     private TriConsumer<ListProperty<T>, List<T>, Integer> onChange = (prop, val, index) -> {
     };
     //this fires when the owning tile has been loaded. This fires on both the client and server-side, and Level is present
-    private Consumer<ListProperty<T>> onTileLoaded = (prop) -> {
+    private Consumer<ListProperty<T>> onTileLoaded = prop -> {
     };
 
     public ListProperty(ListPropertyType<T, ?> type, String name, List<T> defaultValue) {
@@ -315,9 +315,10 @@ public class ListProperty<T> extends AbstractProperty<List<T>, ListPropertyType<
         return shouldUpdate;
     }
 
+    @Override
     public void loadFromTag(CompoundTag tag) {
         try {
-            List<T> data = (List<T>) getType().readFromTag(new IPropertyType.TagReader(this, tag));
+            List<T> data = getType().readFromTag(new IPropertyType.TagReader(this, tag));
             if (data != null) {
                 value = data;
                 onLoadedFromTag(this, value);

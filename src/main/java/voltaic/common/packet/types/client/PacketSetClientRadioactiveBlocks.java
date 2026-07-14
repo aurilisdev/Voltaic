@@ -1,5 +1,8 @@
 package voltaic.common.packet.types.client;
 
+import java.util.HashMap;
+import java.util.function.Supplier;
+
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
@@ -8,12 +11,9 @@ import net.minecraftforge.network.NetworkEvent.Context;
 import voltaic.api.codec.StreamCodec;
 import voltaic.api.radiation.util.RadioactiveObject;
 
-import java.util.HashMap;
-import java.util.function.Supplier;
-
 public class PacketSetClientRadioactiveBlocks {
 
-    public static final StreamCodec<FriendlyByteBuf, PacketSetClientRadioactiveBlocks> CODEC = new StreamCodec<FriendlyByteBuf, PacketSetClientRadioactiveBlocks>() {
+    public static final StreamCodec<FriendlyByteBuf, PacketSetClientRadioactiveBlocks> CODEC = new StreamCodec<>() {
         @Override
         public PacketSetClientRadioactiveBlocks decode(FriendlyByteBuf buf) {
             int count = buf.readInt();

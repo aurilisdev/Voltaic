@@ -4,8 +4,6 @@ import java.util.HashMap;
 
 import javax.annotation.Nullable;
 
-import voltaic.common.block.states.VoltaicBlockStates;
-import voltaic.common.block.voxelshapes.VoxelShapeProvider;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.LivingEntity;
@@ -22,6 +20,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import voltaic.common.block.states.VoltaicBlockStates;
+import voltaic.common.block.voxelshapes.VoxelShapeProvider;
 
 public class GenericMachineBlock extends GenericEntityBlockWaterloggable {
 

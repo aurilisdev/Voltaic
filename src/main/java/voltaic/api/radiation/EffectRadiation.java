@@ -1,17 +1,17 @@
 package voltaic.api.radiation;
 
-import voltaic.common.tags.VoltaicTags;
-import voltaic.prefab.utilities.math.Color;
-import voltaic.registers.VoltaicDamageTypes;
+import java.util.List;
+import java.util.stream.Stream;
+
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-
-import java.util.List;
-import java.util.stream.Stream;
+import voltaic.common.tags.VoltaicTags;
+import voltaic.prefab.utilities.math.Color;
+import voltaic.registers.VoltaicDamageTypes;
 
 public class EffectRadiation extends MobEffect {
 

@@ -2,7 +2,6 @@ package voltaic.prefab.inventory.container.types;
 
 import javax.annotation.Nullable;
 
-import voltaic.api.item.CapabilityItemStackHandler;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -11,6 +10,7 @@ import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.item.ItemStack;
+import voltaic.api.item.CapabilityItemStackHandler;
 
 public abstract class GenericContainerItem extends GenericContainerSlotData<CapabilityItemStackHandler> {
 
@@ -34,7 +34,7 @@ public abstract class GenericContainerItem extends GenericContainerSlotData<Capa
 
         ItemStack owner = getOwnerItem();
 
-        if (owner.isEmpty() || (slot >= 0 && slot <= pl.getInventory().getContainerSize() - 1 && ItemStack.isSameItemSameTags(playerinv.getItem(slot), owner))) {
+        if (owner.isEmpty() || slot >= 0 && slot <= pl.getInventory().getContainerSize() - 1 && ItemStack.isSameItemSameTags(playerinv.getItem(slot), owner)) {
             return;
         }
 

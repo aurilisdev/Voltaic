@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.Direction;
+import net.minecraft.util.FormattedCharSequence;
 import voltaic.prefab.inventory.container.slot.item.SlotGeneric;
 import voltaic.prefab.screen.GenericScreen;
 import voltaic.prefab.screen.component.button.ScreenComponentButton;
@@ -14,9 +17,6 @@ import voltaic.prefab.screen.component.types.ScreenComponentSlot;
 import voltaic.prefab.screen.component.types.guitab.ScreenComponentGuiTab;
 import voltaic.prefab.utilities.VoltaicTextUtils;
 import voltaic.prefab.utilities.math.Color;
-import net.minecraft.ChatFormatting;
-import net.minecraft.core.Direction;
-import net.minecraft.util.FormattedCharSequence;
 
 public class WrapperInventoryIO {
 

@@ -3,22 +3,11 @@ package voltaic;
 import java.util.Random;
 import java.util.function.Consumer;
 
-import voltaic.common.reloadlistener.RadiationShieldingRegister;
-import voltaic.common.reloadlistener.RadioactiveBlockRegister;
-import voltaic.common.reloadlistener.RadioactiveFluidRegister;
-import voltaic.common.reloadlistener.RadioactiveItemRegister;
+import javax.annotation.Nullable;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import voltaic.client.VoltaicClientRegister;
-import voltaic.common.block.states.VoltaicBlockStates;
-import voltaic.common.condition.ConfigCondition;
-import voltaic.common.packet.NetworkHandler;
-import voltaic.common.packet.types.client.PacketResetGuidebookPages;
-import voltaic.common.settings.VoltaicConstants;
-import voltaic.common.tags.VoltaicTags;
-import voltaic.prefab.configuration.ConfigurationHandler;
-import voltaic.registers.UnifiedVoltaicRegister;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.api.distmarker.Dist;
@@ -38,8 +27,19 @@ import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.PacketDistributor.PacketTarget;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegisterEvent;
-
-import javax.annotation.Nullable;
+import voltaic.client.VoltaicClientRegister;
+import voltaic.common.block.states.VoltaicBlockStates;
+import voltaic.common.condition.ConfigCondition;
+import voltaic.common.packet.NetworkHandler;
+import voltaic.common.packet.types.client.PacketResetGuidebookPages;
+import voltaic.common.reloadlistener.RadiationShieldingRegister;
+import voltaic.common.reloadlistener.RadioactiveBlockRegister;
+import voltaic.common.reloadlistener.RadioactiveFluidRegister;
+import voltaic.common.reloadlistener.RadioactiveItemRegister;
+import voltaic.common.settings.VoltaicConstants;
+import voltaic.common.tags.VoltaicTags;
+import voltaic.prefab.configuration.ConfigurationHandler;
+import voltaic.registers.UnifiedVoltaicRegister;
 
 @Mod(Voltaic.ID)
 @EventBusSubscriber(modid = Voltaic.ID, bus = EventBusSubscriber.Bus.MOD)

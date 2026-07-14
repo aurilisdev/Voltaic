@@ -3,9 +3,6 @@ package voltaic.common.block.connect;
 import java.util.ArrayList;
 import java.util.List;
 
-import voltaic.common.block.states.VoltaicBlockStates;
-import voltaic.prefab.block.GenericEntityBlockWaterloggable;
-import voltaic.prefab.tile.types.GenericConnectTile;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -30,6 +27,9 @@ import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import voltaic.common.block.states.VoltaicBlockStates;
+import voltaic.prefab.block.GenericEntityBlockWaterloggable;
+import voltaic.prefab.tile.types.GenericConnectTile;
 
 public abstract class AbstractConnectBlock extends GenericEntityBlockWaterloggable {
 
@@ -117,7 +117,7 @@ public abstract class AbstractConnectBlock extends GenericEntityBlockWaterloggab
 		int flag = 0;
 		for (short i = 0; i < 6; i++) {
 			if (connections[i] != EnumConnectType.NONE) {
-				flag = flag | (1 << i);
+				flag = flag | 1 << i;
 			}
 		}
 		return flag;

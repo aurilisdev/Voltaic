@@ -4,8 +4,6 @@ import java.util.function.Consumer;
 
 import org.jetbrains.annotations.Nullable;
 
-import voltaic.client.misc.SWBFClientExtensions;
-import voltaic.prefab.utilities.math.Color;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
@@ -16,6 +14,8 @@ import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.minecraftforge.common.SoundActions;
 import net.minecraftforge.fluids.FluidType;
+import voltaic.client.misc.SWBFClientExtensions;
+import voltaic.prefab.utilities.math.Color;
 
 public class SimpleWaterBasedFluidType extends FluidType {
 

@@ -2,13 +2,13 @@ package voltaic.compatibility.jei.screenhandlers;
 
 import java.util.Optional;
 
-import voltaic.compatibility.jei.screenhandlers.cliableingredients.ClickableFluidIngredient;
-import voltaic.prefab.screen.component.types.gauges.ScreenComponentFluidGauge;
-import voltaic.prefab.screen.types.GenericMaterialScreen;
 import mezz.jei.api.gui.handlers.IGuiContainerHandler;
 import mezz.jei.api.runtime.IClickableIngredient;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidTank;
+import voltaic.compatibility.jei.screenhandlers.cliableingredients.ClickableFluidIngredient;
+import voltaic.prefab.screen.component.types.gauges.ScreenComponentFluidGauge;
+import voltaic.prefab.screen.types.GenericMaterialScreen;
 
 public class ScreenHandlerMaterialScreen implements IGuiContainerHandler<GenericMaterialScreen<?>> {
 

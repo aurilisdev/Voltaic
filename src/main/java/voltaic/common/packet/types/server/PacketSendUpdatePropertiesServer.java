@@ -1,7 +1,5 @@
 package voltaic.common.packet.types.server;
 
-import voltaic.api.codec.StreamCodec;
-
 import java.util.function.Supplier;
 
 import net.minecraft.core.BlockPos;
@@ -9,6 +7,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraftforge.network.NetworkEvent.Context;
+import voltaic.api.codec.StreamCodec;
 
 public class PacketSendUpdatePropertiesServer {
 	

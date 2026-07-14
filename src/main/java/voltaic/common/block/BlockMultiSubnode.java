@@ -1,9 +1,5 @@
 package voltaic.common.block;
 
-import voltaic.api.multiblock.subnodebased.child.IMultiblockChildBlock;
-import voltaic.api.multiblock.subnodebased.TileMultiSubnode;
-import voltaic.prefab.block.GenericEntityBlock;
-import voltaic.prefab.tile.GenericTile;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.player.Player;
@@ -20,6 +16,10 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import voltaic.api.multiblock.subnodebased.TileMultiSubnode;
+import voltaic.api.multiblock.subnodebased.child.IMultiblockChildBlock;
+import voltaic.prefab.block.GenericEntityBlock;
+import voltaic.prefab.tile.GenericTile;
 
 public class BlockMultiSubnode extends GenericEntityBlock implements IMultiblockChildBlock {
 

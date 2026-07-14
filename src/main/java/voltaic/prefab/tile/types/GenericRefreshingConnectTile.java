@@ -8,15 +8,15 @@ import java.util.Set;
 import com.google.common.collect.Sets;
 import com.mojang.datafixers.util.Pair;
 
-import voltaic.api.network.cable.IRefreshableCable;
-import voltaic.common.block.connect.EnumConnectType;
-import voltaic.prefab.network.AbstractNetwork;
-import voltaic.prefab.utilities.Scheduler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import voltaic.api.network.cable.IRefreshableCable;
+import voltaic.common.block.connect.EnumConnectType;
+import voltaic.prefab.network.AbstractNetwork;
+import voltaic.prefab.utilities.Scheduler;
 
 public abstract class GenericRefreshingConnectTile<CABLETYPE, CONDUCTOR extends GenericRefreshingConnectTile<CABLETYPE, CONDUCTOR, NETWORK>, NETWORK extends AbstractNetwork<CONDUCTOR, CABLETYPE, ?, NETWORK>> extends GenericConnectTile implements IRefreshableCable<CABLETYPE, NETWORK> {
 

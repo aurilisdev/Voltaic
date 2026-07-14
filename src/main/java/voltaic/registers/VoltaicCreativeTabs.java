@@ -1,7 +1,7 @@
 package voltaic.registers;
 
-import voltaic.common.tab.ItemGroupVoltaic;
 import net.minecraft.world.item.CreativeModeTab;
+import voltaic.common.tab.ItemGroupVoltaic;
 
 public class VoltaicCreativeTabs {
 
