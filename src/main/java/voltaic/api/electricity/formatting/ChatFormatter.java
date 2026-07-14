@@ -3,19 +3,19 @@ package voltaic.api.electricity.formatting;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 
-import voltaic.prefab.utilities.VoltaicTextUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextComponent;
+import voltaic.prefab.utilities.VoltaicTextUtils;
 
 public class ChatFormatter {
 
 	public static MutableComponent getChatDisplay(double value, IDisplayUnit unit, int decimalPlaces, boolean isShort) {
 		if (value < Long.MIN_VALUE + 10000) {
-			return new TextComponent("-").append(VoltaicTextUtils.gui("displayunit.infinity.name")).append(" ").append((isShort ? unit.getSymbol() : unit.getNamePlural()));
+			return new TextComponent("-").append(VoltaicTextUtils.gui("displayunit.infinity.name")).append(" ").append(isShort ? unit.getSymbol() : unit.getNamePlural());
 		}
 		if (value > Long.MAX_VALUE - 10000) {
-			return VoltaicTextUtils.gui("displayunit.infinity.name").append(" ").append((isShort ? unit.getSymbol() : unit.getNamePlural()));
+			return VoltaicTextUtils.gui("displayunit.infinity.name").append(" ").append(isShort ? unit.getSymbol() : unit.getNamePlural());
 		}
 		Component unitName;
 		if (isShort) {

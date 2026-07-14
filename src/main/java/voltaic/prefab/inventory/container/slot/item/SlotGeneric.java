@@ -2,6 +2,9 @@ package voltaic.prefab.inventory.container.slot.item;
 
 import javax.annotation.Nullable;
 
+import net.minecraft.world.Container;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
 import voltaic.api.screen.ITexture;
 import voltaic.api.screen.component.ISlotTexture;
 import voltaic.prefab.screen.component.types.ScreenComponentSlot.IconType;
@@ -9,9 +12,6 @@ import voltaic.prefab.screen.component.types.ScreenComponentSlot.SlotType;
 import voltaic.prefab.screen.component.utils.SlotTextureProvider;
 import voltaic.prefab.tile.components.type.ComponentInventory;
 import voltaic.prefab.utilities.math.Color;
-import net.minecraft.world.Container;
-import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.item.ItemStack;
 
 public class SlotGeneric extends Slot implements SlotTextureProvider {
 

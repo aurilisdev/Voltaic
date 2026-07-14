@@ -4,6 +4,9 @@ import java.util.List;
 
 import com.mojang.datafixers.util.Pair;
 
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.items.wrapper.RecipeWrapper;
 import voltaic.common.recipe.VoltaicRecipe;
 import voltaic.common.recipe.recipeutils.CountableIngredient;
 import voltaic.common.recipe.recipeutils.ProbableFluid;
@@ -11,9 +14,6 @@ import voltaic.common.recipe.recipeutils.ProbableItem;
 import voltaic.prefab.tile.components.IComponentType;
 import voltaic.prefab.tile.components.type.ComponentInventory;
 import voltaic.prefab.tile.components.type.ComponentProcessor;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.wrapper.RecipeWrapper;
 
 public abstract class Item2ItemRecipe extends VoltaicRecipe {
 

@@ -19,12 +19,12 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 import net.minecraftforge.items.IItemHandler;
+import voltaic.api.electricity.ICapabilityElectrodynamic;
 import voltaic.api.radiation.SimpleRadiationSource;
 import voltaic.api.radiation.util.IRadiationManager;
 import voltaic.api.radiation.util.IRadiationRecipient;
 import voltaic.api.radiation.util.RadioactiveObject;
 import voltaic.prefab.utilities.object.TransferPack;
-import voltaic.api.electricity.ICapabilityElectrodynamic;
 
 public class CapabilityUtils {
 	

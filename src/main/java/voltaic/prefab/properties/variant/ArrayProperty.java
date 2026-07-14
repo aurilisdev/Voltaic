@@ -1,16 +1,16 @@
 package voltaic.prefab.properties.variant;
 
+import java.util.Arrays;
+import java.util.function.Consumer;
+
+import org.apache.logging.log4j.util.TriConsumer;
+
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.Block;
 import voltaic.Voltaic;
 import voltaic.prefab.properties.PropertyManager;
 import voltaic.prefab.properties.types.ArrayPropertyType;
 import voltaic.prefab.properties.types.IPropertyType;
-
-import java.util.Arrays;
-import java.util.function.Consumer;
-
-import org.apache.logging.log4j.util.TriConsumer;
 
 public class ArrayProperty<T> extends AbstractProperty<T[], ArrayPropertyType<T, ?>> {
 
@@ -21,7 +21,7 @@ public class ArrayProperty<T> extends AbstractProperty<T[], ArrayPropertyType<T,
     private TriConsumer<ArrayProperty<T>, T[], Integer> onChange = (prop, val, index) -> {
     };
     //this fires when the owning tile has been loaded. This fires on both the client and server-side, and Level is present
-    private Consumer<ArrayProperty<T>> onTileLoaded = (prop) -> {
+    private Consumer<ArrayProperty<T>> onTileLoaded = prop -> {
     };
 
     public ArrayProperty(ArrayPropertyType<T, ?> type, String name, T[] defaultValue) {
@@ -133,6 +133,7 @@ public class ArrayProperty<T> extends AbstractProperty<T[], ArrayPropertyType<T,
         return shouldUpdate;
     }
 
+    @Override
     public void loadFromTag(CompoundTag tag) {
         try {
             T[] data = (T[]) getType().readFromTag(new IPropertyType.TagReader(this, tag));

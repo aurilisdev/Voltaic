@@ -3,9 +3,6 @@ package voltaic.common.item.gear;
 import java.util.List;
 import java.util.function.Supplier;
 
-import voltaic.common.inventory.container.ContainerGuidebook;
-import voltaic.common.item.ItemVoltaic;
-import voltaic.prefab.utilities.VoltaicTextUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.network.chat.ClickEvent;
@@ -20,6 +17,9 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
+import voltaic.common.inventory.container.ContainerGuidebook;
+import voltaic.common.item.ItemVoltaic;
+import voltaic.prefab.utilities.VoltaicTextUtils;
 
 public class ItemGuidebook extends ItemVoltaic {
 

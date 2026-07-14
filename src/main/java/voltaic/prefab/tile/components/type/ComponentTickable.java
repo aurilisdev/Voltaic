@@ -4,11 +4,11 @@ import java.util.function.Consumer;
 
 import javax.annotation.Nonnull;
 
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import voltaic.prefab.tile.GenericTile;
 import voltaic.prefab.tile.components.IComponent;
 import voltaic.prefab.tile.components.IComponentType;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
 
 public class ComponentTickable implements IComponent {
 

@@ -2,9 +2,6 @@ package voltaic.api.multiblock.subnodebased.parent;
 
 import org.jetbrains.annotations.NotNull;
 
-import voltaic.api.multiblock.subnodebased.Subnode;
-import voltaic.api.multiblock.subnodebased.child.IMultiblockChildBlock;
-import voltaic.api.multiblock.subnodebased.TileMultiSubnode;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
@@ -19,6 +16,9 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
+import voltaic.api.multiblock.subnodebased.Subnode;
+import voltaic.api.multiblock.subnodebased.TileMultiSubnode;
+import voltaic.api.multiblock.subnodebased.child.IMultiblockChildBlock;
 import voltaic.registers.VoltaicBlocks;
 
 public interface IMultiblockParentTile {

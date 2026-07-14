@@ -1,25 +1,26 @@
 package voltaic.datagen.utils.server.radiation;
 
+import java.io.IOException;
+import java.nio.file.Path;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
-import voltaic.Voltaic;
-import voltaic.api.radiation.util.RadioactiveObject;
-import voltaic.common.reloadlistener.RadioactiveFluidRegister;
+
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.HashCache;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.registries.ForgeRegistries;
-
-import java.io.IOException;
-import java.nio.file.Path;
+import voltaic.Voltaic;
+import voltaic.api.radiation.util.RadioactiveObject;
+import voltaic.common.reloadlistener.RadioactiveFluidRegister;
 
 public abstract class BaseRadioactiveFluidsProvider implements DataProvider {
 	
-	private static final Gson GSON = (new GsonBuilder()).setPrettyPrinting().disableHtmlEscaping().create();
+	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 
 	private final DataGenerator dataGenerator;
 	private final String modID;

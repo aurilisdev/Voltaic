@@ -2,13 +2,14 @@ package voltaic.api.radiation;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+
 import io.netty.buffer.ByteBuf;
-import voltaic.api.codec.StreamCodec;
-import voltaic.api.radiation.util.IRadiationSource;
-import voltaic.prefab.utilities.BlockEntityUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.phys.AABB;
+import voltaic.api.codec.StreamCodec;
+import voltaic.api.radiation.util.IRadiationSource;
+import voltaic.prefab.utilities.BlockEntityUtils;
 
 public class SimpleRadiationSource implements IRadiationSource {
 
@@ -28,7 +29,7 @@ public class SimpleRadiationSource implements IRadiationSource {
 
     ).apply(instance, SimpleRadiationSource::new));
 
-    public static final StreamCodec<ByteBuf, SimpleRadiationSource> STREAM_CODEC = new StreamCodec<ByteBuf, SimpleRadiationSource>() {
+    public static final StreamCodec<ByteBuf, SimpleRadiationSource> STREAM_CODEC = new StreamCodec<>() {
 
         @Override
         public void encode(ByteBuf buffer, SimpleRadiationSource value) {

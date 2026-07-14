@@ -3,15 +3,15 @@ package voltaic.common.packet.types.server;
 import java.util.UUID;
 import java.util.function.Supplier;
 
-import voltaic.api.codec.StreamCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.network.NetworkEvent.Context;
+import voltaic.api.codec.StreamCodec;
 
 public class PacketUpdateCarriedItemServer {
 
-    public static final StreamCodec<FriendlyByteBuf, PacketUpdateCarriedItemServer> CODEC = new StreamCodec<FriendlyByteBuf, PacketUpdateCarriedItemServer>() {
+    public static final StreamCodec<FriendlyByteBuf, PacketUpdateCarriedItemServer> CODEC = new StreamCodec<>() {
 		
 		@Override
 		public void encode(FriendlyByteBuf buffer, PacketUpdateCarriedItemServer value) {

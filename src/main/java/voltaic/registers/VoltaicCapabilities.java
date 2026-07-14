@@ -5,7 +5,6 @@ import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.capabilities.CapabilityToken;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
-
 import voltaic.Voltaic;
 import voltaic.api.electricity.ICapabilityElectrodynamic;
 import voltaic.api.misc.ILocationStorage;

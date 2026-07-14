@@ -2,6 +2,7 @@ package voltaic.api.radiation.util;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+
 import io.netty.buffer.ByteBuf;
 import voltaic.api.codec.StreamCodec;
 
@@ -14,7 +15,7 @@ public record RadiationShielding(double amount, double level) {
             Codec.DOUBLE.fieldOf("level").forGetter(RadiationShielding::level)
     ).apply(instance, RadiationShielding::new));
 
-    public static final StreamCodec<ByteBuf, RadiationShielding> STREAM_CODEC = new StreamCodec<ByteBuf, RadiationShielding>() {
+    public static final StreamCodec<ByteBuf, RadiationShielding> STREAM_CODEC = new StreamCodec<>() {
 		
 		@Override
 		public void encode(ByteBuf buffer, RadiationShielding value) {

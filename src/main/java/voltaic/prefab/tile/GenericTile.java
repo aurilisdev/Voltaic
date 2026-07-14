@@ -2,22 +2,9 @@ package voltaic.prefab.tile;
 
 import java.util.UUID;
 
-import voltaic.Voltaic;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import voltaic.api.IWrenchItem;
-import voltaic.common.block.states.VoltaicBlockStates;
-import voltaic.common.item.ItemUpgrade;
-import voltaic.common.packet.NetworkHandler;
-import voltaic.common.packet.types.client.PacketUpdateCariedItemClient;
-import voltaic.prefab.properties.PropertyManager;
-import voltaic.prefab.properties.variant.AbstractProperty;
-import voltaic.prefab.tile.components.IComponent;
-import voltaic.prefab.tile.components.IComponentType;
-import voltaic.prefab.tile.components.type.*;
-import voltaic.prefab.utilities.ItemUtils;
-import voltaic.registers.VoltaicCapabilities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -48,6 +35,22 @@ import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.network.NetworkDirection;
+import voltaic.Voltaic;
+import voltaic.api.IWrenchItem;
+import voltaic.common.block.states.VoltaicBlockStates;
+import voltaic.common.item.ItemUpgrade;
+import voltaic.common.packet.NetworkHandler;
+import voltaic.common.packet.types.client.PacketUpdateCariedItemClient;
+import voltaic.prefab.properties.PropertyManager;
+import voltaic.prefab.properties.variant.AbstractProperty;
+import voltaic.prefab.tile.components.IComponent;
+import voltaic.prefab.tile.components.IComponentType;
+import voltaic.prefab.tile.components.type.ComponentElectrodynamic;
+import voltaic.prefab.tile.components.type.ComponentInventory;
+import voltaic.prefab.tile.components.type.ComponentName;
+import voltaic.prefab.tile.components.type.ComponentProcessor;
+import voltaic.prefab.utilities.ItemUtils;
+import voltaic.registers.VoltaicCapabilities;
 
 public abstract class GenericTile extends BlockEntity implements Nameable, IPropertyHolderTile {
 
@@ -150,7 +153,7 @@ public abstract class GenericTile extends BlockEntity implements Nameable, IProp
 	@Nullable
 	@Override
 	public Packet<ClientGamePacketListener> getUpdatePacket() {
-		return ClientboundBlockEntityDataPacket.create(this, (tile) -> {
+		return ClientboundBlockEntityDataPacket.create(this, tile -> {
 			CompoundTag tag = new CompoundTag();
 			CompoundTag data = new CompoundTag();
 			propertyManager.saveDirtyPropsToTag(data);

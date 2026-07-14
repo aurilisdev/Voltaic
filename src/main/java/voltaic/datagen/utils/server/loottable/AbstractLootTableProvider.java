@@ -1,8 +1,5 @@
 package voltaic.datagen.utils.server.loottable;
 
-import voltaic.Voltaic;
-import voltaic.prefab.tile.components.type.ComponentInventory;
-
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -40,10 +37,12 @@ import net.minecraft.world.level.storage.loot.predicates.MatchTool;
 import net.minecraft.world.level.storage.loot.providers.nbt.ContextNbtProvider;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
+import voltaic.Voltaic;
+import voltaic.prefab.tile.components.type.ComponentInventory;
 
 public abstract class AbstractLootTableProvider extends LootTableProvider {
 	
-	private static final Gson GSON = (new GsonBuilder()).setPrettyPrinting().disableHtmlEscaping().create();
+	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 
 	protected final Map<Block, LootTable.Builder> lootTables = new HashMap<>();
 	private final DataGenerator generator;

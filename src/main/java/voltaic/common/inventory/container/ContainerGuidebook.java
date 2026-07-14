@@ -1,10 +1,10 @@
 package voltaic.common.inventory.container;
 
-import voltaic.prefab.inventory.container.GenericContainer;
-import voltaic.registers.VoltaicMenuTypes;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
+import voltaic.prefab.inventory.container.GenericContainer;
+import voltaic.registers.VoltaicMenuTypes;
 
 public class ContainerGuidebook extends GenericContainer<Container> {
 

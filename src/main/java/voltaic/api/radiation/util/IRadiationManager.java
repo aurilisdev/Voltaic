@@ -1,15 +1,16 @@
 package voltaic.api.radiation.util;
 
+import java.util.List;
+
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import voltaic.api.radiation.SimpleRadiationSource;
-import voltaic.prefab.utilities.BlockEntityUtils;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
-
-import java.util.List;
+import voltaic.api.radiation.SimpleRadiationSource;
+import voltaic.prefab.utilities.BlockEntityUtils;
 
 /**
  * An abstraction and refactor of Radiation System by AurilisDev

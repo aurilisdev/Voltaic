@@ -2,12 +2,6 @@ package voltaic.prefab.tile.types;
 
 import org.jetbrains.annotations.NotNull;
 
-import voltaic.client.model.block.modelproperties.ModelPropertyConnections;
-import voltaic.common.block.connect.EnumConnectType;
-import voltaic.prefab.properties.variant.SingleProperty;
-import voltaic.prefab.properties.types.PropertyTypes;
-import voltaic.prefab.tile.GenericTile;
-import voltaic.prefab.tile.components.type.ComponentPacketHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.Blocks;
@@ -15,6 +9,12 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.client.model.data.ModelDataMap;
+import voltaic.client.model.block.modelproperties.ModelPropertyConnections;
+import voltaic.common.block.connect.EnumConnectType;
+import voltaic.prefab.properties.types.PropertyTypes;
+import voltaic.prefab.properties.variant.SingleProperty;
+import voltaic.prefab.tile.GenericTile;
+import voltaic.prefab.tile.components.type.ComponentPacketHandler;
 
 public abstract class GenericConnectTile extends GenericTile implements IConnectTile {
 
@@ -129,7 +129,7 @@ public abstract class GenericConnectTile extends GenericTile implements IConnect
         }
         //return EnumConnectType.NONE;
 
-        return EnumConnectType.values()[(extracted >> (dir.ordinal() * 4))];
+        return EnumConnectType.values()[extracted >> dir.ordinal() * 4];
 
 
     }
@@ -140,30 +140,16 @@ public abstract class GenericConnectTile extends GenericTile implements IConnect
         int masked;
 
         for (Direction dir : dirs) {
-            switch (dir) {
-                case DOWN:
-                    masked = connectionData & ~DOWN_MASK;
-                    break;
-                case UP:
-                    masked = connectionData & ~UP_MASK;
-                    break;
-                case NORTH:
-                    masked = connectionData & ~NORTH_MASK;
-                    break;
-                case SOUTH:
-                    masked = connectionData & ~SOUTH_MASK;
-                    break;
-                case WEST:
-                    masked = connectionData & ~WEST_MASK;
-                    break;
-                case EAST:
-                    masked = connectionData & ~EAST_MASK;
-                    break;
-                default:
-                    masked = 0;
-                    break;
-            }
-            connectionData = masked | (connections[dir.ordinal()].ordinal() << (dir.ordinal() * 4));
+            masked = switch (dir) {
+	    case DOWN -> connectionData & ~DOWN_MASK;
+	    case UP -> connectionData & ~UP_MASK;
+	    case NORTH -> connectionData & ~NORTH_MASK;
+	    case SOUTH -> connectionData & ~SOUTH_MASK;
+	    case WEST -> connectionData & ~WEST_MASK;
+	    case EAST -> connectionData & ~EAST_MASK;
+	    default -> 0;
+	    };
+            connectionData = masked | connections[dir.ordinal()].ordinal() << dir.ordinal() * 4;
         }
 
         this.connections.setValue(connectionData);
@@ -174,33 +160,18 @@ public abstract class GenericConnectTile extends GenericTile implements IConnect
 
     public boolean writeConnection(Direction dir, EnumConnectType connection) {
         int connectionData = this.connections.getValue();
-        int masked;
+        int masked = switch (dir) {
+	case DOWN -> connectionData & ~DOWN_MASK;
+	case UP -> connectionData & ~UP_MASK;
+	case NORTH -> connectionData & ~NORTH_MASK;
+	case SOUTH -> connectionData & ~SOUTH_MASK;
+	case WEST -> connectionData & ~WEST_MASK;
+	case EAST -> connectionData & ~EAST_MASK;
+	default -> 0;
+	};
 
 
-        switch (dir) {
-            case DOWN:
-                masked = connectionData & ~DOWN_MASK;
-                break;
-            case UP:
-                masked = connectionData & ~UP_MASK;
-                break;
-            case NORTH:
-                masked = connectionData & ~NORTH_MASK;
-                break;
-            case SOUTH:
-                masked = connectionData & ~SOUTH_MASK;
-                break;
-            case WEST:
-                masked = connectionData & ~WEST_MASK;
-                break;
-            case EAST:
-                masked = connectionData & ~EAST_MASK;
-                break;
-            default:
-                masked = 0;
-                break;
-        }
-        connectionData = masked | (connection.ordinal() << (dir.ordinal() * 4));
+        connectionData = masked | connection.ordinal() << dir.ordinal() * 4;
 
 
         this.connections.setValue(connectionData);
@@ -223,7 +194,7 @@ public abstract class GenericConnectTile extends GenericTile implements IConnect
 
     @Override
     public @NotNull IModelData getModelData() {
-        return new ModelDataMap.Builder().withInitial(ModelPropertyConnections.INSTANCE, () -> readConnections()).build();
+        return new ModelDataMap.Builder().withInitial(ModelPropertyConnections.INSTANCE, this::readConnections).build();
     }
 
 

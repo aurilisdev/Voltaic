@@ -1,6 +1,7 @@
 package voltaic.client.event;
 
 import com.mojang.datafixers.util.Either;
+
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.world.item.BlockItem;

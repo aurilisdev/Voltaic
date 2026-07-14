@@ -1,5 +1,6 @@
 package voltaic.prefab.tile.components.type;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.function.Predicate;
 
@@ -7,13 +8,6 @@ import javax.annotation.Nullable;
 
 import org.jetbrains.annotations.NotNull;
 
-import voltaic.api.fluid.PropertyFluidTank;
-import voltaic.common.block.states.VoltaicBlockStates;
-import voltaic.prefab.tile.GenericTile;
-import voltaic.prefab.tile.components.CapabilityInputType;
-import voltaic.prefab.tile.components.IComponentType;
-import voltaic.prefab.tile.components.utils.IComponentFluidHandler;
-import voltaic.prefab.utilities.BlockEntityUtils;
 import net.minecraft.core.Direction;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.state.BlockState;
@@ -23,6 +17,13 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.registries.ForgeRegistries;
+import voltaic.api.fluid.PropertyFluidTank;
+import voltaic.common.block.states.VoltaicBlockStates;
+import voltaic.prefab.tile.GenericTile;
+import voltaic.prefab.tile.components.CapabilityInputType;
+import voltaic.prefab.tile.components.IComponentType;
+import voltaic.prefab.tile.components.utils.IComponentFluidHandler;
+import voltaic.prefab.utilities.BlockEntityUtils;
 
 /**
  * Extension of PropertyFluidTank implementing directional I/O and the Component system
@@ -191,9 +192,7 @@ public class ComponentFluidHandlerSimple extends PropertyFluidTank implements IC
     public void onLoad() {
         IComponentFluidHandler.super.onLoad();
         if (validFluids != null) {
-            for (Fluid fluid : validFluids) {
-                validatorFluids.add(fluid);
-            }
+            Collections.addAll(validatorFluids, validFluids);
         }
         if (validFluidTags != null) {
             for (TagKey<Fluid> tag : validFluidTags) {

@@ -1,5 +1,10 @@
 package voltaic.datagen;
 
+import net.minecraft.data.DataGenerator;
+import net.minecraftforge.common.data.ExistingFileHelper;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
+import net.minecraftforge.forge.event.lifecycle.GatherDataEvent;
 import voltaic.Voltaic;
 import voltaic.datagen.client.VoltaicBlockStateProvider;
 import voltaic.datagen.client.VoltaicItemModelsProvider;
@@ -9,11 +14,6 @@ import voltaic.datagen.server.VoltaicAdvancementProvider;
 import voltaic.datagen.server.VoltaicRadiationShieldingProvider;
 import voltaic.datagen.server.recipe.VoltaicRecipeProvider;
 import voltaic.datagen.utils.client.BaseLangKeyProvider.Locale;
-import net.minecraft.data.DataGenerator;
-import net.minecraftforge.common.data.ExistingFileHelper;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
-import net.minecraftforge.forge.event.lifecycle.GatherDataEvent;
 
 @EventBusSubscriber(modid = Voltaic.ID, bus = EventBusSubscriber.Bus.MOD)
 public class DataGenerators {

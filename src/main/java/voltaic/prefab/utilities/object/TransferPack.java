@@ -1,5 +1,7 @@
 package voltaic.prefab.utilities.object;
 
+import java.util.function.BiFunction;
+
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
@@ -14,7 +16,7 @@ public class TransferPack {
             instance.group(
                     Codec.DOUBLE.fieldOf("joules").forGetter(TransferPack::getJoules),
                     Codec.DOUBLE.fieldOf("voltage").forGetter(TransferPack::getVoltage)
-            ).apply(instance, (joules, voltage) -> TransferPack.joulesVoltage(joules, voltage))
+            ).apply(instance, (BiFunction<Double, Double, TransferPack>) TransferPack::joulesVoltage)
     );
 
     public static final StreamCodec<ByteBuf, TransferPack> STREAM_CODEC = new StreamCodec<>() {

@@ -1,18 +1,18 @@
 package voltaic.common.packet.types.client;
 
-import voltaic.api.codec.StreamCodec;
-import voltaic.api.radiation.util.RadioactiveObject;
+import java.util.HashMap;
+import java.util.function.Supplier;
+
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.network.NetworkEvent.Context;
-
-import java.util.HashMap;
-import java.util.function.Supplier;
+import voltaic.api.codec.StreamCodec;
+import voltaic.api.radiation.util.RadioactiveObject;
 
 public class PacketSetClientRadioactiveFluids {
 
-    public static final StreamCodec<FriendlyByteBuf, PacketSetClientRadioactiveFluids> CODEC = new StreamCodec<FriendlyByteBuf, PacketSetClientRadioactiveFluids>() {
+    public static final StreamCodec<FriendlyByteBuf, PacketSetClientRadioactiveFluids> CODEC = new StreamCodec<>() {
         @Override
         public PacketSetClientRadioactiveFluids decode(FriendlyByteBuf buf) {
             int count = buf.readInt();

@@ -1,12 +1,11 @@
 package voltaic.client.guidebook.utils.pagedata.graphics;
 
-import voltaic.client.guidebook.utils.components.Page;
-import voltaic.prefab.utilities.RenderingUtils;
-
 import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.resources.ResourceLocation;
+import voltaic.client.guidebook.utils.components.Page;
+import voltaic.prefab.utilities.RenderingUtils;
 
 /**
  * A simple wrapper class that contains render data for an image on the Guidebook screen. The class is capable of displaying images as well as text descriptors for said image.

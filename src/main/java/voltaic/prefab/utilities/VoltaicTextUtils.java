@@ -1,8 +1,5 @@
 package voltaic.prefab.utilities;
 
-import voltaic.Voltaic;
-import voltaic.api.electricity.formatting.ChatFormatter;
-import voltaic.api.electricity.formatting.DisplayUnits;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
@@ -10,6 +7,9 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
+import voltaic.Voltaic;
+import voltaic.api.electricity.formatting.ChatFormatter;
+import voltaic.api.electricity.formatting.DisplayUnits;
 
 public class VoltaicTextUtils {
 

@@ -6,6 +6,9 @@ import java.util.function.DoubleSupplier;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 
+import net.minecraft.ChatFormatting;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FormattedCharSequence;
 import voltaic.Voltaic;
 import voltaic.api.electricity.formatting.ChatFormatter;
 import voltaic.api.electricity.formatting.DisplayUnits;
@@ -13,9 +16,6 @@ import voltaic.api.screen.ITexture;
 import voltaic.api.screen.component.TextPropertySupplier;
 import voltaic.prefab.screen.component.utils.AbstractScreenComponentInfo;
 import voltaic.prefab.utilities.RenderingUtils;
-import net.minecraft.ChatFormatting;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.FormattedCharSequence;
 
 public class ScreenComponentCountdown extends AbstractScreenComponentInfo {
 

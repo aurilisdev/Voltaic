@@ -1,7 +1,7 @@
 package voltaic.api.electricity.formatting;
 
-import voltaic.prefab.utilities.VoltaicTextUtils;
 import net.minecraft.network.chat.TextComponent;
+import voltaic.prefab.utilities.VoltaicTextUtils;
 
 public class DisplayUnits {
 

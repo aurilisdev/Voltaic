@@ -1,17 +1,17 @@
 package voltaic.common.packet.types.client;
 
-import voltaic.api.codec.StreamCodec;
-import voltaic.api.radiation.util.RadiationShielding;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.level.block.Block;
-import net.minecraftforge.network.NetworkEvent.Context;
-
 import java.util.HashMap;
 import java.util.function.Supplier;
 
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.level.block.Block;
+import net.minecraftforge.network.NetworkEvent.Context;
+import voltaic.api.codec.StreamCodec;
+import voltaic.api.radiation.util.RadiationShielding;
+
 public class PacketSetClientRadiationShielding {
 
-	public static final StreamCodec<FriendlyByteBuf, PacketSetClientRadiationShielding> CODEC = new StreamCodec<FriendlyByteBuf, PacketSetClientRadiationShielding>() {
+	public static final StreamCodec<FriendlyByteBuf, PacketSetClientRadiationShielding> CODEC = new StreamCodec<>() {
 		@Override
 		public PacketSetClientRadiationShielding decode(FriendlyByteBuf buf) {
 			int count = buf.readInt();

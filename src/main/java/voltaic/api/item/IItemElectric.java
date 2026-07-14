@@ -2,10 +2,6 @@ package voltaic.api.item;
 
 import java.util.List;
 
-import voltaic.prefab.item.ElectricItemProperties;
-import voltaic.prefab.utilities.VoltaicTextUtils;
-import voltaic.prefab.utilities.object.TransferPack;
-import voltaic.registers.VoltaicSounds;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -19,6 +15,10 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import voltaic.prefab.item.ElectricItemProperties;
+import voltaic.prefab.utilities.VoltaicTextUtils;
+import voltaic.prefab.utilities.object.TransferPack;
+import voltaic.registers.VoltaicSounds;
 
 public interface IItemElectric {
 
@@ -158,15 +158,11 @@ public interface IItemElectric {
 
     static boolean overrideOtherStackedOnMe(ItemStack stack, ItemStack other, Slot slot, ClickAction action, Player player, SlotAccess access) {
 
-        if (action == null || action == ClickAction.PRIMARY || other.isEmpty()) {
+        if (action == null || action == ClickAction.PRIMARY || other.isEmpty() || ((IItemElectric) stack.getItem()).cannotHaveBatterySwapped()) {
             return false;
         }
 
-        if (((IItemElectric) stack.getItem()).cannotHaveBatterySwapped()) {
-            return false;
-        }
-
-        if (!(other.getItem() instanceof IItemElectric) || (other.getItem() instanceof IItemElectric electric && !electric.isEnergyStorageOnly())) {
+        if (!(other.getItem() instanceof IItemElectric) || other.getItem() instanceof IItemElectric electric && !electric.isEnergyStorageOnly()) {
             return false;
         }
 

@@ -15,11 +15,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
 
-import voltaic.Voltaic;
-import voltaic.api.screen.ITexture;
-import voltaic.prefab.screen.component.ScreenComponentGeneric;
-import voltaic.prefab.utilities.RenderingUtils;
-import voltaic.prefab.utilities.math.Color;
 import net.minecraft.SharedConstants;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
@@ -33,6 +28,11 @@ import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import voltaic.Voltaic;
+import voltaic.api.screen.ITexture;
+import voltaic.prefab.screen.component.ScreenComponentGeneric;
+import voltaic.prefab.utilities.RenderingUtils;
+import voltaic.prefab.utilities.math.Color;
 
 @OnlyIn(Dist.CLIENT)
 /**
@@ -153,7 +153,7 @@ public class ScreenComponentEditBox extends ScreenComponentGeneric {
 			filteredLength = length;
 		}
 
-		String updated = (new StringBuilder(this.value)).replace(min, max, filtered).toString();
+		String updated = new StringBuilder(this.value).replace(min, max, filtered).toString();
 		if (this.filter.test(updated)) {
 			this.value = updated;
 			this.setCursorPosition(min + filteredLength);
@@ -203,7 +203,7 @@ public class ScreenComponentEditBox extends ScreenComponentGeneric {
 				int min = Math.min(cursorPos, this.cursorPos);
 				int max = Math.max(cursorPos, this.cursorPos);
 				if (min != max) {
-					String updated = (new StringBuilder(this.value)).delete(min, max).toString();
+					String updated = new StringBuilder(this.value).delete(min, max).toString();
 					if (this.filter.test(updated)) {
 						this.value = updated;
 						this.moveCursorTo(min);
@@ -386,10 +386,7 @@ public class ScreenComponentEditBox extends ScreenComponentGeneric {
 
 	@Override
 	public boolean charTyped(char codePoint, int modifiers) {
-		if (!this.canConsumeInput()) {
-			return false;
-		}
-		if (!SharedConstants.isAllowedChatCharacter(codePoint)) {
+		if (!this.canConsumeInput() || !SharedConstants.isAllowedChatCharacter(codePoint)) {
 			return false;
 		}
 		if (this.isEditable) {
@@ -410,7 +407,7 @@ public class ScreenComponentEditBox extends ScreenComponentGeneric {
 		}
 
 		if (this.isFocused() && mouseOver && button == 0) {
-			int exitBoxXPos = Mth.floor(mouseX) - this.xLocation - ((int) gui.getGuiWidth()) - 4;
+			int exitBoxXPos = Mth.floor(mouseX) - this.xLocation - (int) gui.getGuiWidth() - 4;
 
 			String text = this.font.plainSubstrByWidth(this.value.substring(this.displayPos), this.getInnerWidth());
 			this.moveCursorTo(this.font.plainSubstrByWidth(text, exitBoxXPos).length() + this.displayPos);

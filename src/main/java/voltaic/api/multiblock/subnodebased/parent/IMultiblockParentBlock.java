@@ -4,11 +4,11 @@ import java.util.HashMap;
 
 import javax.annotation.Nullable;
 
-import voltaic.api.multiblock.subnodebased.Subnode;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.state.BlockState;
+import voltaic.api.multiblock.subnodebased.Subnode;
 
 public interface IMultiblockParentBlock {
 

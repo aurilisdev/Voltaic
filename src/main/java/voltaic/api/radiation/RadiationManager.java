@@ -1,11 +1,16 @@
 package voltaic.api.radiation;
 
-import voltaic.api.radiation.util.*;
-import voltaic.common.reloadlistener.RadiationShieldingRegister;
-import voltaic.common.settings.VoltaicConstants;
-import voltaic.prefab.utilities.CapabilityUtils;
-import voltaic.prefab.utilities.CodecUtils;
-import voltaic.registers.VoltaicCapabilities;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import com.mojang.serialization.Dynamic;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -19,13 +24,14 @@ import net.minecraft.world.phys.AABB;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.util.LazyOptional;
-
-import java.util.*;
-
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import com.mojang.serialization.Dynamic;
+import voltaic.api.radiation.util.IRadiationManager;
+import voltaic.api.radiation.util.IRadiationRecipient;
+import voltaic.api.radiation.util.RadiationShielding;
+import voltaic.common.reloadlistener.RadiationShieldingRegister;
+import voltaic.common.settings.VoltaicConstants;
+import voltaic.prefab.utilities.CapabilityUtils;
+import voltaic.prefab.utilities.CodecUtils;
+import voltaic.registers.VoltaicCapabilities;
 
 public class RadiationManager implements IRadiationManager, ICapabilitySerializable<CompoundTag> {
 
@@ -300,11 +306,9 @@ public class RadiationManager implements IRadiationManager, ICapabilitySerializa
 
 			entity = entities.next();
 
-			if (!(entity instanceof LivingEntity)) {
+			if (!(entity instanceof LivingEntity living)) {
 				continue;
 			}
-
-			LivingEntity living = (LivingEntity) entity;
 
 			if (!living.isAlive()) {
 				continue;

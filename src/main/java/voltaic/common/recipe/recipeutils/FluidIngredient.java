@@ -40,7 +40,7 @@ public class FluidIngredient extends Ingredient {
 
     )
             //
-            .apply(instance, (fluid, amount) -> new FluidIngredient(fluid, amount))
+            .apply(instance, FluidIngredient::new)
 
     );
 
@@ -54,7 +54,7 @@ public class FluidIngredient extends Ingredient {
 
     )
             //
-            .apply(instance, (tag, amount) -> new FluidIngredient(tag, amount))
+            .apply(instance, FluidIngredient::new)
     //
 
     );

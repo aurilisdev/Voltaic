@@ -1,12 +1,5 @@
 package voltaic.datagen.server.recipe;
 
-import voltaic.Voltaic;
-import voltaic.common.item.subtype.SubtypeItemUpgrade;
-import voltaic.datagen.utils.server.recipe.AbstractRecipeGenerator;
-import voltaic.datagen.utils.server.recipe.CustomShapedCraftingRecipe;
-import voltaic.datagen.utils.server.recipe.CustomShapelessCraftingRecipe;
-import voltaic.registers.VoltaicItems;
-
 import java.util.function.Consumer;
 
 import net.minecraft.data.recipes.FinishedRecipe;
@@ -19,6 +12,12 @@ import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.crafting.PartialNBTIngredient;
 import net.minecraftforge.common.crafting.conditions.ModLoadedCondition;
 import net.minecraftforge.common.crafting.conditions.NotCondition;
+import voltaic.Voltaic;
+import voltaic.common.item.subtype.SubtypeItemUpgrade;
+import voltaic.datagen.utils.server.recipe.AbstractRecipeGenerator;
+import voltaic.datagen.utils.server.recipe.CustomShapedCraftingRecipe;
+import voltaic.datagen.utils.server.recipe.CustomShapelessCraftingRecipe;
+import voltaic.registers.VoltaicItems;
 
 public class VoltaicCraftingTableRecipes extends AbstractRecipeGenerator {
 

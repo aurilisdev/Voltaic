@@ -6,11 +6,6 @@ import javax.annotation.Nullable;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 
-import voltaic.Voltaic;
-import voltaic.api.screen.ITexture;
-import voltaic.prefab.screen.component.ScreenComponentGeneric;
-import voltaic.prefab.screen.component.editbox.ScreenComponentEditBox;
-import voltaic.prefab.utilities.RenderingUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
@@ -19,6 +14,11 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
+import voltaic.Voltaic;
+import voltaic.api.screen.ITexture;
+import voltaic.prefab.screen.component.ScreenComponentGeneric;
+import voltaic.prefab.screen.component.editbox.ScreenComponentEditBox;
+import voltaic.prefab.utilities.RenderingUtils;
 
 /**
  * A modification of the vanilla button to integrate it with the Electrodynamics system of doing GUI components as the
@@ -148,10 +148,7 @@ public class ScreenComponentButton<T extends ScreenComponentButton<?>> extends S
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (!isActiveAndVisible()) {
-            return false;
-        }
-        if (keyCode != 257 && keyCode != 32 && keyCode != 335) {
+        if (!isActiveAndVisible() || (keyCode != 257 && keyCode != 32 && keyCode != 335)) {
             return false;
         }
         this.playDownSound(Minecraft.getInstance().getSoundManager());

@@ -4,10 +4,10 @@ import java.util.function.Supplier;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 
-import voltaic.prefab.screen.component.utils.AbstractScreenComponent;
-import voltaic.prefab.utilities.math.Color;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
+import voltaic.prefab.screen.component.utils.AbstractScreenComponent;
+import voltaic.prefab.utilities.math.Color;
 
 public class ScreenComponentSimpleLabel extends AbstractScreenComponent {
 

@@ -3,10 +3,13 @@ package voltaic.compatibility.jei;
 import java.util.ArrayList;
 import java.util.List;
 
-import mezz.jei.api.recipe.RecipeType;
-import mezz.jei.api.registration.IGuiHandlerRegistration;
 import org.jetbrains.annotations.NotNull;
 
+import mezz.jei.api.IModPlugin;
+import mezz.jei.api.JeiPlugin;
+import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.api.registration.IGuiHandlerRegistration;
+import net.minecraft.resources.ResourceLocation;
 import voltaic.Voltaic;
 import voltaic.client.guidebook.ScreenGuidebook;
 import voltaic.client.screen.ScreenDO2OProcessor;
@@ -16,9 +19,6 @@ import voltaic.client.screen.ScreenO2OProcessorTriple;
 import voltaic.compatibility.jei.screenhandlers.ScreenHandlerGuidebook;
 import voltaic.compatibility.jei.screenhandlers.ScreenHandlerMaterialScreen;
 import voltaic.prefab.screen.types.GenericMaterialScreen;
-import mezz.jei.api.IModPlugin;
-import mezz.jei.api.JeiPlugin;
-import net.minecraft.resources.ResourceLocation;
 
 @JeiPlugin
 public class VoltaicJEIPlugin implements IModPlugin {

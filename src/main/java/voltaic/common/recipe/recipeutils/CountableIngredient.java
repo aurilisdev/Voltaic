@@ -45,7 +45,7 @@ public class CountableIngredient extends Ingredient {
 
 	)
 			//
-			.apply(instance, (tag, count) -> new CountableIngredient(tag, count))
+			.apply(instance, CountableIngredient::new)
 	//
 
 	);

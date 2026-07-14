@@ -4,6 +4,14 @@ import java.util.function.Supplier;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
+import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
+import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 import voltaic.common.packet.NetworkHandler;
 import voltaic.common.packet.types.server.PacketUpdateCarriedItemServer;
 import voltaic.prefab.inventory.container.types.GenericContainerBlockEntity;
@@ -13,14 +21,6 @@ import voltaic.prefab.screen.component.ScreenComponentGeneric;
 import voltaic.prefab.screen.component.types.ScreenComponentSlot.IconType;
 import voltaic.prefab.tile.GenericTile;
 import voltaic.prefab.utilities.RenderingUtils;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.sounds.SimpleSoundInstance;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
-import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 
 public class ScreenComponentCondensedFluid extends ScreenComponentGeneric {
 

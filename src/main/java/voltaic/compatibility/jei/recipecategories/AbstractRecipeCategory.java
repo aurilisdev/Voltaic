@@ -5,14 +5,6 @@ import java.util.List;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 
-import voltaic.api.screen.ITexture;
-import voltaic.compatibility.jei.utils.gui.ScreenObject;
-import voltaic.compatibility.jei.utils.gui.types.ArrowAnimatedObject;
-import voltaic.compatibility.jei.utils.gui.types.BackgroundObject;
-import voltaic.compatibility.jei.utils.gui.types.ItemSlotObject;
-import voltaic.compatibility.jei.utils.gui.types.fluidgauge.AbstractFluidGaugeObject;
-import voltaic.compatibility.jei.utils.label.AbstractLabelWrapper;
-import voltaic.prefab.utilities.math.MathUtils;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.forge.ForgeTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
@@ -31,6 +23,14 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
+import voltaic.api.screen.ITexture;
+import voltaic.compatibility.jei.utils.gui.ScreenObject;
+import voltaic.compatibility.jei.utils.gui.types.ArrowAnimatedObject;
+import voltaic.compatibility.jei.utils.gui.types.BackgroundObject;
+import voltaic.compatibility.jei.utils.gui.types.ItemSlotObject;
+import voltaic.compatibility.jei.utils.gui.types.fluidgauge.AbstractFluidGaugeObject;
+import voltaic.compatibility.jei.utils.label.AbstractLabelWrapper;
+import voltaic.prefab.utilities.math.MathUtils;
 
 public abstract class AbstractRecipeCategory<T> implements IRecipeCategory<T> {
 
@@ -43,15 +43,15 @@ public abstract class AbstractRecipeCategory<T> implements IRecipeCategory<T> {
 
     protected RecipeType<T> recipeType;
 
-    public AbstractLabelWrapper[] labels = new AbstractLabelWrapper[0];
+    public AbstractLabelWrapper[] labels = {};
 
     protected ArrayList<AnimatedWrapper> animatedDrawables = new ArrayList<>();
     protected ArrayList<StaticWrapper> staticDrawables = new ArrayList<>();
 
-    protected SlotDataWrapper[] inputSlotWrappers = new SlotDataWrapper[0];
-    protected SlotDataWrapper[] outputSlotWrappers = new SlotDataWrapper[0];
-    protected AbstractFluidGaugeObject[] fluidInputWrappers = new AbstractFluidGaugeObject[0];
-    protected AbstractFluidGaugeObject[] fluidOutputWrappers = new AbstractFluidGaugeObject[0];
+    protected SlotDataWrapper[] inputSlotWrappers = {};
+    protected SlotDataWrapper[] outputSlotWrappers = {};
+    protected AbstractFluidGaugeObject[] fluidInputWrappers = {};
+    protected AbstractFluidGaugeObject[] fluidOutputWrappers = {};
 
     public AbstractRecipeCategory(IGuiHelper guiHelper, Component title, ItemStack inputMachine, BackgroundObject wrapper, RecipeType<T> recipeType, int animationTime) {
 

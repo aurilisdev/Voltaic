@@ -5,13 +5,6 @@ import java.util.List;
 
 import org.jetbrains.annotations.Nullable;
 
-import voltaic.common.block.states.VoltaicBlockStates;
-import voltaic.prefab.tile.GenericTile;
-import voltaic.prefab.tile.IWrenchable;
-import voltaic.prefab.tile.components.IComponentType;
-import voltaic.prefab.tile.components.type.ComponentElectrodynamic;
-import voltaic.prefab.tile.components.type.ComponentInventory;
-import voltaic.prefab.tile.components.type.ComponentTickable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.Containers;
@@ -36,6 +29,13 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.BlockHitResult;
+import voltaic.common.block.states.VoltaicBlockStates;
+import voltaic.prefab.tile.GenericTile;
+import voltaic.prefab.tile.IWrenchable;
+import voltaic.prefab.tile.components.IComponentType;
+import voltaic.prefab.tile.components.type.ComponentElectrodynamic;
+import voltaic.prefab.tile.components.type.ComponentInventory;
+import voltaic.prefab.tile.components.type.ComponentTickable;
 
 public abstract class GenericEntityBlock extends BaseEntityBlock implements IWrenchable {
 

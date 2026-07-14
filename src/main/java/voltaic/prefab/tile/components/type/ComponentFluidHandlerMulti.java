@@ -1,6 +1,7 @@
 package voltaic.prefab.tile.components.type;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
@@ -8,16 +9,6 @@ import javax.annotation.Nullable;
 
 import org.jetbrains.annotations.NotNull;
 
-import voltaic.api.fluid.PropertyFluidTank;
-import voltaic.common.block.states.VoltaicBlockStates;
-import voltaic.common.recipe.VoltaicRecipe;
-import voltaic.common.recipe.recipeutils.AbstractMaterialRecipe;
-import voltaic.common.recipe.recipeutils.FluidIngredient;
-import voltaic.prefab.tile.GenericTile;
-import voltaic.prefab.tile.components.CapabilityInputType;
-import voltaic.prefab.tile.components.IComponentType;
-import voltaic.prefab.tile.components.utils.IComponentFluidHandler;
-import voltaic.prefab.utilities.BlockEntityUtils;
 import net.minecraft.core.Direction;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.crafting.RecipeType;
@@ -29,6 +20,16 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
 import net.minecraftforge.registries.ForgeRegistries;
+import voltaic.api.fluid.PropertyFluidTank;
+import voltaic.common.block.states.VoltaicBlockStates;
+import voltaic.common.recipe.VoltaicRecipe;
+import voltaic.common.recipe.recipeutils.AbstractMaterialRecipe;
+import voltaic.common.recipe.recipeutils.FluidIngredient;
+import voltaic.prefab.tile.GenericTile;
+import voltaic.prefab.tile.components.CapabilityInputType;
+import voltaic.prefab.tile.components.IComponentType;
+import voltaic.prefab.tile.components.utils.IComponentFluidHandler;
+import voltaic.prefab.utilities.BlockEntityUtils;
 
 /**
  * This class is separate from ComponentFluidHandlerSimple as it has segregated input and output tanks. These tanks are
@@ -52,8 +53,8 @@ public class ComponentFluidHandlerMulti implements IComponentFluidHandler {
 
     private boolean isSided = false;
 
-    private PropertyFluidTank[] inputTanks = new PropertyFluidTank[0];
-    private PropertyFluidTank[] outputTanks = new PropertyFluidTank[0];
+    private PropertyFluidTank[] inputTanks = {};
+    private PropertyFluidTank[] outputTanks = {};
 
     @Nullable
     private RecipeType<? extends AbstractMaterialRecipe> recipeType;
@@ -340,7 +341,7 @@ public class ComponentFluidHandlerMulti implements IComponentFluidHandler {
             outputValidatorFluids.addAll(outputFluidHohlder);
             if (maxFluidInput > 0) {
 
-                maxFluidInput = (maxFluidInput / TANK_MULTIPLER) * TANK_MULTIPLER + TANK_MULTIPLER;
+                maxFluidInput = maxFluidInput / TANK_MULTIPLER * TANK_MULTIPLER + TANK_MULTIPLER;
 
                 for (PropertyFluidTank tank : inputTanks) {
                     if (tank.getCapacity() < maxFluidInput) {
@@ -351,7 +352,7 @@ public class ComponentFluidHandlerMulti implements IComponentFluidHandler {
             int offset = 0;
             if (maxFluidOutput > 0) {
 
-                maxFluidOutput = (maxFluidOutput / TANK_MULTIPLER) * TANK_MULTIPLER + TANK_MULTIPLER;
+                maxFluidOutput = maxFluidOutput / TANK_MULTIPLER * TANK_MULTIPLER + TANK_MULTIPLER;
 
                 if (outputTanks[0].getCapacity() < maxFluidOutput) {
                     outputTanks[0].setCapacity(maxFluidOutput);
@@ -361,7 +362,7 @@ public class ComponentFluidHandlerMulti implements IComponentFluidHandler {
             }
             if (maxFluidBiproduct > 0) {
 
-                maxFluidBiproduct = (maxFluidBiproduct / TANK_MULTIPLER) * TANK_MULTIPLER + TANK_MULTIPLER;
+                maxFluidBiproduct = maxFluidBiproduct / TANK_MULTIPLER * TANK_MULTIPLER + TANK_MULTIPLER;
 
                 for (int i = 0; i < outputTanks.length - offset; i++) {
 
@@ -374,9 +375,7 @@ public class ComponentFluidHandlerMulti implements IComponentFluidHandler {
 
         } else {
             if (validInputFluids != null) {
-                for (Fluid fluid : validInputFluids) {
-                    inputValidatorFluids.add(fluid);
-                }
+                Collections.addAll(inputValidatorFluids, validInputFluids);
             }
             if (validInputFluidTags != null) {
                 for (TagKey<Fluid> tag : validInputFluidTags) {
@@ -386,9 +385,7 @@ public class ComponentFluidHandlerMulti implements IComponentFluidHandler {
                 }
             }
             if (validOutputFluids != null) {
-                for (Fluid fluid : validOutputFluids) {
-                    outputValidatorFluids.add(fluid);
-                }
+                Collections.addAll(outputValidatorFluids, validOutputFluids);
             }
             if (validOutputFluidTags != null) {
                 for (TagKey<Fluid> tag : validOutputFluidTags) {
@@ -559,7 +556,7 @@ public class ComponentFluidHandlerMulti implements IComponentFluidHandler {
         
         @Override
         public <T> LazyOptional<T> getCapability(Capability<T> capability, Direction side, CapabilityInputType inputType) {
-        	if (side == null || (inputDirections == null && outputDirections == null)) {
+        	if (side == null || inputDirections == null && outputDirections == null) {
                 return LazyOptional.empty();
             }
 

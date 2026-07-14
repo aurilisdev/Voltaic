@@ -1,12 +1,24 @@
 package voltaic.common.reloadlistener;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.function.Consumer;
+
+import org.apache.logging.log4j.Logger;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
-import voltaic.Voltaic;
-import voltaic.api.radiation.util.RadioactiveObject;
-import voltaic.common.packet.types.client.PacketSetClientRadioactiveItems;
+
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.packs.resources.Resource;
@@ -23,16 +35,9 @@ import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.PacketDistributor.PacketTarget;
 import net.minecraftforge.network.simple.SimpleChannel;
 import net.minecraftforge.registries.ForgeRegistries;
-
-import org.apache.logging.log4j.Logger;
-
-import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.function.Consumer;
+import voltaic.Voltaic;
+import voltaic.api.radiation.util.RadioactiveObject;
+import voltaic.common.packet.types.client.PacketSetClientRadioactiveItems;
 
 public class RadioactiveItemRegister extends SimplePreparableReloadListener<JsonObject> {
 

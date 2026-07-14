@@ -45,14 +45,10 @@ public class CodecUtils {
 			//
 			.apply(instance, Vec3::new));
 
-	public static final Codec<UUID> UUID_CODEC = Codec.INT_STREAM.comapFlatMap((intStream) -> {
-		return Util.fixedSize(intStream, 4).map(CodecUtils::uuidFromIntArray);
-	}, (intArray) -> {
-		return Arrays.stream(uuidToIntArray(intArray));
-	});
+	public static final Codec<UUID> UUID_CODEC = Codec.INT_STREAM.comapFlatMap(intStream -> Util.fixedSize(intStream, 4).map(CodecUtils::uuidFromIntArray), intArray -> Arrays.stream(uuidToIntArray(intArray)));
 
 	public static UUID uuidFromIntArray(int[] intArray) {
-		return new UUID((long) intArray[0] << 32 | (long) intArray[1] & 4294967295L, (long) intArray[2] << 32 | (long) intArray[3] & 4294967295L);
+		return new UUID((long) intArray[0] << 32 | intArray[1] & 4294967295L, (long) intArray[2] << 32 | intArray[3] & 4294967295L);
 	}
 
 	public static int[] uuidToIntArray(UUID pUuid) {
@@ -82,7 +78,7 @@ public class CodecUtils {
             final Function<C, T7> pGetter7,
             final Function7<T1, T2, T3, T4, T5, T6, T7, C> pFactory
     ) {
-        return new StreamCodec<B, C>() {
+        return new StreamCodec<>() {
             @Override
             public C decode(B buffer) {
                 T1 t1 = pCodec1.decode(buffer);
@@ -128,7 +124,7 @@ public class CodecUtils {
             final Function<C, T8> pGetter8,
             final Function8<T1, T2, T3, T4, T5, T6, T7, T8, C> pFactory
     ) {
-        return new StreamCodec<B, C>() {
+        return new StreamCodec<>() {
             @Override
             public C decode(B buffer) {
                 T1 t1 = pCodec1.decode(buffer);
@@ -178,7 +174,7 @@ public class CodecUtils {
             final Function<C, T9> pGetter9,
             final Function9<T1, T2, T3, T4, T5, T6, T7, T8, T9, C> pFactory
     ) {
-        return new StreamCodec<B, C>() {
+        return new StreamCodec<>() {
             @Override
             public C decode(B buffer) {
                 T1 t1 = pCodec1.decode(buffer);
@@ -232,7 +228,7 @@ public class CodecUtils {
             final Function<C, T10> pGetter10,
             final Function10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, C> pFactory
     ) {
-        return new StreamCodec<B, C>() {
+        return new StreamCodec<>() {
             @Override
             public C decode(B buffer) {
                 T1 t1 = pCodec1.decode(buffer);
@@ -290,7 +286,7 @@ public class CodecUtils {
             final Function<C, T11> pGetter11,
             final Function11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, C> pFactory
     ) {
-        return new StreamCodec<B, C>() {
+        return new StreamCodec<>() {
             @Override
             public C decode(B buffer) {
                 T1 t1 = pCodec1.decode(buffer);
@@ -352,7 +348,7 @@ public class CodecUtils {
             final Function<C, T12> pGetter12,
             final Function12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, C> pFactory
     ) {
-        return new StreamCodec<B, C>() {
+        return new StreamCodec<>() {
             @Override
             public C decode(B buffer) {
                 T1 t1 = pCodec1.decode(buffer);
@@ -418,7 +414,7 @@ public class CodecUtils {
             final Function<C, T13> pGetter13,
             final Function13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, C> pFactory
     ) {
-        return new StreamCodec<B, C>() {
+        return new StreamCodec<>() {
             @Override
             public C decode(B buffer) {
                 T1 t1 = pCodec1.decode(buffer);
