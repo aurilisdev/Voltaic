@@ -5,7 +5,6 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.util.IReorderingProcessor;
-import net.minecraft.util.text.ITextComponent;
 import voltaic.api.screen.IScreenWrapper;
 import voltaic.prefab.utilities.VoltaicTextUtils;
 
@@ -164,15 +163,18 @@ public abstract class AbstractScreenComponent extends Widget {
 		this.isHovered = isHovered;
 	}
 
+	@Override
 	public boolean isHovered() {
 		return isHovered;
 	}
 
+	@Override
 	public void setFocused(boolean isFocused) {
 		this.isFocused = isFocused;
 		onFocusChanged(isFocused);
 	}
 
+	@Override
 	public boolean isFocused() {
 		return isFocused;
 	}

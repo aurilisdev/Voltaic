@@ -3,23 +3,11 @@ package voltaic;
 import java.util.Random;
 import java.util.function.Consumer;
 
-import voltaic.common.reloadlistener.RadiationShieldingRegister;
-import voltaic.common.reloadlistener.RadioactiveBlockRegister;
-import voltaic.common.reloadlistener.RadioactiveFluidRegister;
-import voltaic.common.reloadlistener.RadioactiveItemRegister;
+import javax.annotation.Nullable;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import voltaic.client.VoltaicClientRegister;
-import voltaic.common.block.states.VoltaicBlockStates;
-import voltaic.common.condition.ConfigCondition;
-import voltaic.common.packet.NetworkHandler;
-import voltaic.common.packet.types.client.PacketResetGuidebookPages;
-import voltaic.common.settings.VoltaicConstants;
-import voltaic.common.tags.VoltaicTags;
-import voltaic.prefab.configuration.ConfigurationHandler;
-import voltaic.registers.UnifiedVoltaicRegister;
-import voltaic.registers.VoltaicCapabilities;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.util.ResourceLocation;
@@ -39,8 +27,20 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.fml.network.PacketDistributor.PacketTarget;
-
-import javax.annotation.Nullable;
+import voltaic.client.VoltaicClientRegister;
+import voltaic.common.block.states.VoltaicBlockStates;
+import voltaic.common.condition.ConfigCondition;
+import voltaic.common.packet.NetworkHandler;
+import voltaic.common.packet.types.client.PacketResetGuidebookPages;
+import voltaic.common.reloadlistener.RadiationShieldingRegister;
+import voltaic.common.reloadlistener.RadioactiveBlockRegister;
+import voltaic.common.reloadlistener.RadioactiveFluidRegister;
+import voltaic.common.reloadlistener.RadioactiveItemRegister;
+import voltaic.common.settings.VoltaicConstants;
+import voltaic.common.tags.VoltaicTags;
+import voltaic.prefab.configuration.ConfigurationHandler;
+import voltaic.registers.UnifiedVoltaicRegister;
+import voltaic.registers.VoltaicCapabilities;
 
 @Mod(Voltaic.ID)
 @EventBusSubscriber(modid = Voltaic.ID, bus = EventBusSubscriber.Bus.MOD)

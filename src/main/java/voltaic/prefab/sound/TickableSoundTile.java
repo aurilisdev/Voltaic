@@ -1,12 +1,12 @@
 package voltaic.prefab.sound;
 
-import voltaic.prefab.utilities.WorldUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.TickableSound;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
+import voltaic.prefab.utilities.WorldUtils;
 
 public class TickableSoundTile<T extends TileEntity & ITickableSound> extends TickableSound {
 

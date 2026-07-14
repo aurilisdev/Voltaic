@@ -3,11 +3,11 @@ package voltaic.common.recipe.recipeutils;
 import java.util.Collections;
 import java.util.List;
 
-import voltaic.common.recipe.VoltaicRecipe;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.items.wrapper.RecipeWrapper;
+import voltaic.common.recipe.VoltaicRecipe;
 
 public abstract class AbstractMaterialRecipe extends VoltaicRecipe {
 

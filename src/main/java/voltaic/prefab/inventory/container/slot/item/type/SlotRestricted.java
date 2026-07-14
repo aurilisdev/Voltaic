@@ -4,13 +4,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
 
-import voltaic.api.screen.ITexture;
-import voltaic.api.screen.component.ISlotTexture;
-import voltaic.prefab.inventory.container.slot.item.SlotGeneric;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.capabilities.Capability;
+import voltaic.api.screen.ITexture;
+import voltaic.api.screen.component.ISlotTexture;
+import voltaic.prefab.inventory.container.slot.item.SlotGeneric;
 
 public class SlotRestricted extends SlotGeneric {
 

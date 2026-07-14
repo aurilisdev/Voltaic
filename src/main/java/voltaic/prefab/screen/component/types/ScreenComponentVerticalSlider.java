@@ -68,7 +68,7 @@ public class ScreenComponentVerticalSlider extends ScreenComponentGeneric {
 
     @Override
     protected boolean isPointInRegion(int x, int y, double xAxis, double yAxis, int width, int height) {
-        return xAxis >= x && xAxis <= (x + width - 1) && yAxis >= y + sliderYOffset + 2 && yAxis <= (y + 2 + sliderYOffset + 15);
+        return xAxis >= x && xAxis <= x + width - 1 && yAxis >= y + sliderYOffset + 2 && yAxis <= y + 2 + sliderYOffset + 15;
     }
 
     @Override
@@ -118,7 +118,7 @@ public class ScreenComponentVerticalSlider extends ScreenComponentGeneric {
     }
 
     protected boolean isPointInSlider(int x, int y, double xAxis, double yAxis, int width, int height) {
-        return xAxis >= x && xAxis <= (x + width - 1) && yAxis >= y && yAxis <= (y + height - 1);
+        return xAxis >= x && xAxis <= x + width - 1 && yAxis >= y && yAxis <= y + height - 1;
     }
 
     public boolean isSliderActive() {

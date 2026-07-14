@@ -1,14 +1,13 @@
 package voltaic.common.packet.types.client;
 
-import voltaic.api.codec.StreamCodec;
-import voltaic.api.radiation.util.RadiationShielding;
-
 import java.util.HashMap;
 import java.util.function.Supplier;
 
 import net.minecraft.block.Block;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent.Context;
+import voltaic.api.codec.StreamCodec;
+import voltaic.api.radiation.util.RadiationShielding;
 
 public class PacketSetClientRadiationShielding {
 

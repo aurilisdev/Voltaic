@@ -6,14 +6,6 @@ import javax.annotation.Nullable;
 
 import org.apache.logging.log4j.util.TriConsumer;
 
-import voltaic.api.ISubtype;
-import voltaic.prefab.tile.GenericTile;
-import voltaic.prefab.tile.components.IComponentType;
-import voltaic.prefab.tile.components.type.ComponentInventory;
-import voltaic.prefab.utilities.CapabilityUtils;
-import voltaic.prefab.utilities.ItemUtils;
-import voltaic.prefab.utilities.NBTUtils;
-import voltaic.prefab.utilities.VoltaicTextUtils;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -23,6 +15,14 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
+import voltaic.api.ISubtype;
+import voltaic.prefab.tile.GenericTile;
+import voltaic.prefab.tile.components.IComponentType;
+import voltaic.prefab.tile.components.type.ComponentInventory;
+import voltaic.prefab.utilities.CapabilityUtils;
+import voltaic.prefab.utilities.ItemUtils;
+import voltaic.prefab.utilities.NBTUtils;
+import voltaic.prefab.utilities.VoltaicTextUtils;
 
 public enum SubtypeItemUpgrade implements ISubtype {
 

@@ -4,18 +4,18 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import mezz.jei.api.helpers.IGuiHelper;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
+import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
+import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 import voltaic.common.recipe.categories.item2item.Item2ItemRecipe;
 import voltaic.common.recipe.recipeutils.ProbableFluid;
 import voltaic.compatibility.jei.recipecategories.AbstractRecipeCategory;
 import voltaic.compatibility.jei.utils.RecipeType;
 import voltaic.compatibility.jei.utils.gui.types.BackgroundObject;
 import voltaic.prefab.utilities.CapabilityUtils;
-import mezz.jei.api.helpers.IGuiHelper;
-import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
-import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 
 public abstract class Item2ItemRecipeCategory<T extends Item2ItemRecipe> extends AbstractRecipeCategory<T> {
 

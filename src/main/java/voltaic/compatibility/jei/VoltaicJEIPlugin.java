@@ -3,6 +3,8 @@ package voltaic.compatibility.jei;
 import java.util.ArrayList;
 import java.util.List;
 
+import mezz.jei.api.IModPlugin;
+import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
 import net.minecraft.util.ResourceLocation;
 import voltaic.Voltaic;
@@ -15,8 +17,6 @@ import voltaic.compatibility.jei.screenhandlers.ScreenHandlerGuidebook;
 import voltaic.compatibility.jei.screenhandlers.ScreenHandlerMaterialScreen;
 import voltaic.compatibility.jei.utils.RecipeType;
 import voltaic.prefab.screen.types.GenericMaterialScreen;
-import mezz.jei.api.IModPlugin;
-import mezz.jei.api.JeiPlugin;
 
 @JeiPlugin
 public class VoltaicJEIPlugin implements IModPlugin {

@@ -1,8 +1,8 @@
 package voltaic.prefab.screen.component.editbox.type;
 
+import net.minecraft.client.gui.FontRenderer;
 import voltaic.client.guidebook.ScreenGuidebook;
 import voltaic.prefab.screen.component.editbox.ScreenComponentEditBox;
-import net.minecraft.client.gui.FontRenderer;
 
 public class EditBoxSpecificPage extends ScreenComponentEditBox {
 

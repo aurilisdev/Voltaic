@@ -11,7 +11,7 @@ import voltaic.prefab.utilities.math.Color;
 
 public class ScreenComponentSimpleLabel extends AbstractScreenComponent {
 
-	private Supplier<ITextComponent> text = () -> VoltaicTextUtils.empty();
+	private Supplier<ITextComponent> text = VoltaicTextUtils::empty;
 	public Color color = Color.WHITE;
 
 	public ScreenComponentSimpleLabel(int x, int y, int height, Color color, ITextComponent text) {

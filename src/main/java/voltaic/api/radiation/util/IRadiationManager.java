@@ -1,5 +1,7 @@
 package voltaic.api.radiation.util;
 
+import java.util.List;
+
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
@@ -10,8 +12,6 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 import voltaic.api.radiation.SimpleRadiationSource;
 import voltaic.prefab.utilities.BlockEntityUtils;
-
-import java.util.List;
 
 /**
  * An abstraction and refactor of Radiation System by AurilisDev

@@ -4,20 +4,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-import voltaic.Voltaic;
-import voltaic.client.guidebook.ScreenGuidebook;
-import voltaic.client.model.block.bakerytypes.CableModelLoader;
-import voltaic.client.particle.fluiddrop.ParticleFluidDrop;
-import voltaic.client.particle.lavawithphysics.ParticleLavaWithPhysics;
-import voltaic.client.particle.plasmaball.ParticlePlasmaBall;
-
-import voltaic.client.screen.ScreenDO2OProcessor;
-import voltaic.client.screen.ScreenO2OProcessor;
-import voltaic.client.screen.ScreenO2OProcessorDouble;
-import voltaic.client.screen.ScreenO2OProcessorTriple;
-import voltaic.registers.VoltaicBlocks;
-import voltaic.registers.VoltaicMenuTypes;
-import voltaic.registers.VoltaicParticles;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.client.particle.ParticleManager;
@@ -28,12 +14,25 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.TextureStitchEvent;
-import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.event.ParticleFactoryRegisterEvent;
+import net.minecraftforge.client.event.TextureStitchEvent;
+import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
+import voltaic.Voltaic;
+import voltaic.client.guidebook.ScreenGuidebook;
+import voltaic.client.model.block.bakerytypes.CableModelLoader;
+import voltaic.client.particle.fluiddrop.ParticleFluidDrop;
+import voltaic.client.particle.lavawithphysics.ParticleLavaWithPhysics;
+import voltaic.client.particle.plasmaball.ParticlePlasmaBall;
+import voltaic.client.screen.ScreenDO2OProcessor;
+import voltaic.client.screen.ScreenO2OProcessor;
+import voltaic.client.screen.ScreenO2OProcessorDouble;
+import voltaic.client.screen.ScreenO2OProcessorTriple;
+import voltaic.registers.VoltaicBlocks;
+import voltaic.registers.VoltaicMenuTypes;
+import voltaic.registers.VoltaicParticles;
 
 @OnlyIn(Dist.CLIENT)
 @EventBusSubscriber(modid = Voltaic.ID, bus = EventBusSubscriber.Bus.MOD, value = {Dist.CLIENT})

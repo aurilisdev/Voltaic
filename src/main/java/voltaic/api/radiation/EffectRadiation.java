@@ -1,9 +1,5 @@
 package voltaic.api.radiation;
 
-import voltaic.common.tags.VoltaicTags;
-import voltaic.prefab.utilities.math.Color;
-import voltaic.registers.VoltaicDamageTypes;
-
 import java.util.Arrays;
 import java.util.List;
 
@@ -13,6 +9,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.potion.Effect;
 import net.minecraft.potion.EffectType;
+import voltaic.common.tags.VoltaicTags;
+import voltaic.prefab.utilities.math.Color;
+import voltaic.registers.VoltaicDamageTypes;
 
 public class EffectRadiation extends Effect {
 

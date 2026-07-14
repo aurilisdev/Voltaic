@@ -2,7 +2,6 @@ package voltaic.api.network.util;
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;

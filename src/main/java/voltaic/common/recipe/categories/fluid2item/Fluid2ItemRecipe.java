@@ -43,10 +43,7 @@ public abstract class Fluid2ItemRecipe extends AbstractMaterialRecipe {
 
     @Override
     public List<FluidIngredient> getFluidIngredients() {
-        List<FluidIngredient> list = new ArrayList<>();
-        for (FluidIngredient ing : inputFluids) {
-            list.add(ing);
-        }
+        List<FluidIngredient> list = new ArrayList<>(inputFluids);
         return list;
     }
 

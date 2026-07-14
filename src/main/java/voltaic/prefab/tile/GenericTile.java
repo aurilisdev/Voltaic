@@ -5,20 +5,6 @@ import java.util.UUID;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import voltaic.Voltaic;
-
-import voltaic.api.IWrenchItem;
-import voltaic.common.block.states.VoltaicBlockStates;
-import voltaic.common.item.ItemUpgrade;
-import voltaic.common.packet.NetworkHandler;
-import voltaic.common.packet.types.client.PacketUpdateCariedItemClient;
-import voltaic.prefab.properties.PropertyManager;
-import voltaic.prefab.properties.variant.AbstractProperty;
-import voltaic.prefab.tile.components.IComponent;
-import voltaic.prefab.tile.components.IComponentType;
-import voltaic.prefab.tile.components.type.*;
-import voltaic.prefab.utilities.ItemUtils;
-import voltaic.registers.VoltaicCapabilities;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -51,6 +37,23 @@ import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
 import net.minecraftforge.fml.network.NetworkDirection;
 import net.minecraftforge.items.CapabilityItemHandler;
+import voltaic.Voltaic;
+import voltaic.api.IWrenchItem;
+import voltaic.common.block.states.VoltaicBlockStates;
+import voltaic.common.item.ItemUpgrade;
+import voltaic.common.packet.NetworkHandler;
+import voltaic.common.packet.types.client.PacketUpdateCariedItemClient;
+import voltaic.prefab.properties.PropertyManager;
+import voltaic.prefab.properties.variant.AbstractProperty;
+import voltaic.prefab.tile.components.IComponent;
+import voltaic.prefab.tile.components.IComponentType;
+import voltaic.prefab.tile.components.type.ComponentElectrodynamic;
+import voltaic.prefab.tile.components.type.ComponentInventory;
+import voltaic.prefab.tile.components.type.ComponentName;
+import voltaic.prefab.tile.components.type.ComponentProcessor;
+import voltaic.prefab.tile.components.type.ComponentTickable;
+import voltaic.prefab.utilities.ItemUtils;
+import voltaic.registers.VoltaicCapabilities;
 
 public abstract class GenericTile extends TileEntity implements INameable, IPropertyHolderTile, ITickableTileEntity {
 

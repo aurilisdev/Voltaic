@@ -3,18 +3,6 @@ package voltaic.prefab.screen.component.types.gauges;
 import java.util.ArrayList;
 import java.util.List;
 
-import voltaic.api.electricity.formatting.ChatFormatter;
-import voltaic.api.fluid.PropertyFluidTank;
-import voltaic.api.screen.component.FluidTankSupplier;
-import voltaic.common.packet.NetworkHandler;
-import voltaic.common.packet.types.server.PacketUpdateCarriedItemServer;
-import voltaic.prefab.utilities.VoltaicTextUtils;
-import voltaic.prefab.inventory.container.types.GenericContainerBlockEntity;
-import voltaic.prefab.screen.GenericScreen;
-import voltaic.prefab.tile.GenericTile;
-import voltaic.prefab.utilities.CapabilityUtils;
-import voltaic.prefab.utilities.RenderingUtils;
-import voltaic.prefab.utilities.math.Color;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.SimpleSound;
 import net.minecraft.entity.player.PlayerInventory;
@@ -33,6 +21,18 @@ import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
 import net.minecraftforge.fluids.capability.IFluidHandlerItem;
+import voltaic.api.electricity.formatting.ChatFormatter;
+import voltaic.api.fluid.PropertyFluidTank;
+import voltaic.api.screen.component.FluidTankSupplier;
+import voltaic.common.packet.NetworkHandler;
+import voltaic.common.packet.types.server.PacketUpdateCarriedItemServer;
+import voltaic.prefab.inventory.container.types.GenericContainerBlockEntity;
+import voltaic.prefab.screen.GenericScreen;
+import voltaic.prefab.tile.GenericTile;
+import voltaic.prefab.utilities.CapabilityUtils;
+import voltaic.prefab.utilities.RenderingUtils;
+import voltaic.prefab.utilities.VoltaicTextUtils;
+import voltaic.prefab.utilities.math.Color;
 
 @OnlyIn(Dist.CLIENT)
 public class ScreenComponentFluidGauge extends AbstractScreenComponentGauge {

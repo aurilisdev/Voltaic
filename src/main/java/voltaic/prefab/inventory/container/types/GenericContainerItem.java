@@ -34,7 +34,7 @@ public abstract class GenericContainerItem extends GenericContainerSlotData<Capa
 
         ItemStack owner = getOwnerItem();
 
-        if (owner.isEmpty() || (slot >= 0 && slot <= pl.inventory.getContainerSize() - 1 && ItemStack.isSame(playerinv.getItem(slot), owner))) {
+        if (owner.isEmpty() || slot >= 0 && slot <= pl.inventory.getContainerSize() - 1 && ItemStack.isSame(playerinv.getItem(slot), owner)) {
             return ItemStack.EMPTY;
         }
 

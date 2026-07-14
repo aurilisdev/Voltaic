@@ -1,12 +1,8 @@
 package voltaic.common.packet.types.client;
 
-import voltaic.api.radiation.util.RadiationShielding;
-import voltaic.api.radiation.util.RadioactiveObject;
-import voltaic.client.guidebook.ScreenGuidebook;
-import voltaic.common.reloadlistener.RadiationShieldingRegister;
-import voltaic.common.reloadlistener.RadioactiveBlockRegister;
-import voltaic.common.reloadlistener.RadioactiveFluidRegister;
-import voltaic.common.reloadlistener.RadioactiveItemRegister;
+import java.util.HashMap;
+import java.util.UUID;
+
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.world.ClientWorld;
@@ -17,9 +13,13 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-
-import java.util.HashMap;
-import java.util.UUID;
+import voltaic.api.radiation.util.RadiationShielding;
+import voltaic.api.radiation.util.RadioactiveObject;
+import voltaic.client.guidebook.ScreenGuidebook;
+import voltaic.common.reloadlistener.RadiationShieldingRegister;
+import voltaic.common.reloadlistener.RadioactiveBlockRegister;
+import voltaic.common.reloadlistener.RadioactiveFluidRegister;
+import voltaic.common.reloadlistener.RadioactiveItemRegister;
 
 /**
  * Apparently with packets, certain class calls cannot be called within the packet itself because Java

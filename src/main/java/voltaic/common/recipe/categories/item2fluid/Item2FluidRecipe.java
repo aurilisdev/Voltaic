@@ -43,10 +43,7 @@ public abstract class Item2FluidRecipe extends AbstractMaterialRecipe {
     }
 
     public List<CountableIngredient> getCountedIngredients() {
-        List<CountableIngredient> list = new ArrayList<>();
-        for (CountableIngredient ing : inputItems) {
-            list.add(ing);
-        }
+        List<CountableIngredient> list = new ArrayList<>(inputItems);
         return list;
     }
 

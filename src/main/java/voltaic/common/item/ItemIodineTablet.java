@@ -1,8 +1,5 @@
 package voltaic.common.item;
 
-import voltaic.prefab.utilities.ItemUtils;
-import voltaic.registers.VoltaicEffects;
-
 import java.util.function.Supplier;
 
 import net.minecraft.advancements.CriteriaTriggers;
@@ -17,6 +14,8 @@ import net.minecraft.stats.Stats;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.world.World;
+import voltaic.prefab.utilities.ItemUtils;
+import voltaic.registers.VoltaicEffects;
 
 public class ItemIodineTablet extends ItemVoltaic {
 

@@ -118,7 +118,7 @@ public abstract class AbstractConnectBlock extends GenericEntityBlockWaterloggab
 		int flag = 0;
 		for (short i = 0; i < 6; i++) {
 			if (connections[i] != EnumConnectType.NONE) {
-				flag = flag | (1 << i);
+				flag = flag | 1 << i;
 			}
 		}
 		return flag;

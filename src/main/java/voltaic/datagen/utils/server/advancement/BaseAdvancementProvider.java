@@ -17,7 +17,7 @@ import voltaic.Voltaic;
 
 public abstract class BaseAdvancementProvider implements IDataProvider {
 	
-	private static final Gson GSON = (new GsonBuilder()).setPrettyPrinting().disableHtmlEscaping().create();
+	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 
 	public final String modID;
 	public final DataGenerator generator;

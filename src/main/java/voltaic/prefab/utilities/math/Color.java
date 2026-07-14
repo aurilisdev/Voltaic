@@ -52,7 +52,7 @@ public class Color {
 	}
 
 	public Color(int argb) {
-		this((argb >> 16 & 0xFF), (argb >> 8 & 0xFF), (argb & 0xFF), (argb >> 24 & 0xFF));
+		this(argb >> 16 & 0xFF, argb >> 8 & 0xFF, argb & 0xFF, argb >> 24 & 0xFF);
 	}
 
 	public Color(float r, float g, float b, float a) {
@@ -116,12 +116,12 @@ public class Color {
 	}
 
 	public Color multiply(Color other) {
-		return new Color((this.r * other.r) / 255, (this.g * other.g) / 255, (this.b * other.b) / 255, (this.a * other.a) / 255);
+		return new Color(this.r * other.r / 255, this.g * other.g / 255, this.b * other.b / 255, this.a * other.a / 255);
 	}
 
 	public Color blend(Color other, double amtOther) {
 		double amtThis = 1 - amtOther;
-		return new Color((int) ((r * amtThis + other.r * amtOther)), (int) ((g * amtThis + other.g * amtOther)), (int) ((b * amtThis + other.b * amtOther)), (int) ((a * amtThis + other.a * amtOther)));
+		return new Color((int) (r * amtThis + other.r * amtOther), (int) (g * amtThis + other.g * amtOther), (int) (b * amtThis + other.b * amtOther), (int) (a * amtThis + other.a * amtOther));
 	}
 
 	@Override
@@ -142,7 +142,7 @@ public class Color {
 	}
 
 	public static Color fromABGR(int abgr){
-		return new Color((abgr & 0xFF), (abgr >> 8 & 0xFF), (abgr >> 16 & 0xFF), (abgr >> 24 & 0xFF));
+		return new Color(abgr & 0xFF, abgr >> 8 & 0xFF, abgr >> 16 & 0xFF, abgr >> 24 & 0xFF);
 	}
 
 }

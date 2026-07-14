@@ -8,10 +8,9 @@ import net.minecraft.resources.IFutureReloadListener;
 import net.minecraft.resources.IResourceManager;
 
 public abstract class AbstractReloadListener<T> implements IFutureReloadListener {
+	@Override
 	public final CompletableFuture<Void> reload(IFutureReloadListener.IStage pStage, IResourceManager pResourceManager, IProfiler pPreparationsProfiler, IProfiler pReloadProfiler, Executor pBackgroundExecutor, Executor pGameExecutor) {
-		return CompletableFuture.supplyAsync(() -> {
-			return this.prepare(pResourceManager, pPreparationsProfiler);
-		}, pBackgroundExecutor).thenCompose(pStage::wait).thenAcceptAsync((p_215269_3_) -> {
+		return CompletableFuture.supplyAsync(() -> this.prepare(pResourceManager, pPreparationsProfiler), pBackgroundExecutor).thenCompose(pStage::wait).thenAcceptAsync(p_215269_3_ -> {
 			this.apply(p_215269_3_, pResourceManager, pReloadProfiler);
 		}, pGameExecutor);
 	}

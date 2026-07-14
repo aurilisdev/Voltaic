@@ -3,14 +3,14 @@ package voltaic.prefab.inventory.container.slot.itemhandler.type;
 import java.util.Arrays;
 import java.util.List;
 
+import net.minecraft.item.ItemStack;
+import net.minecraftforge.items.IItemHandler;
 import voltaic.common.item.ItemUpgrade;
 import voltaic.common.item.subtype.SubtypeItemUpgrade;
 import voltaic.prefab.inventory.container.slot.itemhandler.SlotItemHandlerGeneric;
 import voltaic.prefab.inventory.container.slot.utils.IUpgradeSlot;
 import voltaic.prefab.screen.component.types.ScreenComponentSlot.IconType;
 import voltaic.prefab.screen.component.types.ScreenComponentSlot.SlotType;
-import net.minecraft.item.ItemStack;
-import net.minecraftforge.items.IItemHandler;
 
 public class SlotItemHandlerUpgrade extends SlotItemHandlerGeneric implements IUpgradeSlot {
 

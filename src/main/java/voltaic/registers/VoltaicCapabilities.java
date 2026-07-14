@@ -7,10 +7,9 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.util.Direction;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.Capability.IStorage;
+import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
-
 import voltaic.api.electricity.CapabilityElectrodynamicStorage;
 import voltaic.api.electricity.ICapabilityElectrodynamic;
 import voltaic.api.misc.CapabilityLocationStorage;
@@ -91,7 +90,7 @@ public class VoltaicCapabilities {
 				instance.fromTag((CompoundNBT) nbt);
 			}
 			
-		}, () -> new CapabilityRadiationRecipient());
+		}, CapabilityRadiationRecipient::new);
 		
 		CapabilityManager.INSTANCE.register(IRadiationManager.class, new IStorage<IRadiationManager>() {
 
@@ -105,7 +104,7 @@ public class VoltaicCapabilities {
 				instance.fromTag((CompoundNBT) nbt);
 			}
 			
-		}, () -> new RadiationManager());
+		}, RadiationManager::new);
 		
 	}
 

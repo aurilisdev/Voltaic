@@ -1,13 +1,5 @@
 package voltaic.prefab.tile.types;
 
-import voltaic.client.model.block.modelproperties.ModelPropertyConnections;
-import voltaic.common.block.connect.EnumConnectType;
-import voltaic.prefab.properties.variant.SingleProperty;
-import voltaic.prefab.properties.PropertyManager;
-import voltaic.prefab.properties.types.PropertyTypes;
-import voltaic.prefab.tile.GenericTile;
-import voltaic.prefab.tile.components.type.ComponentPacketHandler;
-
 import javax.annotation.Nonnull;
 
 import net.minecraft.block.BlockState;
@@ -17,6 +9,13 @@ import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction;
 import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.client.model.data.ModelDataMap;
+import voltaic.client.model.block.modelproperties.ModelPropertyConnections;
+import voltaic.common.block.connect.EnumConnectType;
+import voltaic.prefab.properties.PropertyManager;
+import voltaic.prefab.properties.types.PropertyTypes;
+import voltaic.prefab.properties.variant.SingleProperty;
+import voltaic.prefab.tile.GenericTile;
+import voltaic.prefab.tile.components.type.ComponentPacketHandler;
 
 public abstract class GenericConnectTile extends GenericTile implements IConnectTile {
 	
@@ -133,7 +132,7 @@ public abstract class GenericConnectTile extends GenericTile implements IConnect
         }
         //return EnumConnectType.NONE;
 
-        return EnumConnectType.values()[(extracted >> (dir.ordinal() * 4))];
+        return EnumConnectType.values()[extracted >> dir.ordinal() * 4];
 
 
     }
@@ -167,7 +166,7 @@ public abstract class GenericConnectTile extends GenericTile implements IConnect
                     masked = 0;
                     break;
             }
-            connectionData = masked | (connections[dir.ordinal()].ordinal() << (dir.ordinal() * 4));
+            connectionData = masked | connections[dir.ordinal()].ordinal() << dir.ordinal() * 4;
         }
 
         this.connections.setValue(connectionData);
@@ -204,7 +203,7 @@ public abstract class GenericConnectTile extends GenericTile implements IConnect
                 masked = 0;
                 break;
         }
-        connectionData = masked | (connection.ordinal() << (dir.ordinal() * 4));
+        connectionData = masked | connection.ordinal() << dir.ordinal() * 4;
 
 
         this.connections.setValue(connectionData);
@@ -235,7 +234,7 @@ public abstract class GenericConnectTile extends GenericTile implements IConnect
 
     @Override
     public @Nonnull IModelData getModelData() {
-        return new ModelDataMap.Builder().withInitial(ModelPropertyConnections.INSTANCE, () -> readConnections()).build();
+        return new ModelDataMap.Builder().withInitial(ModelPropertyConnections.INSTANCE, this::readConnections).build();
     }
 
 

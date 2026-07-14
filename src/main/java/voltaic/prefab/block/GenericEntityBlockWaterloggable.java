@@ -2,7 +2,6 @@ package voltaic.prefab.block;
 
 import javax.annotation.Nullable;
 
-import voltaic.common.block.states.VoltaicBlockStates;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.IWaterLoggable;
@@ -14,6 +13,7 @@ import net.minecraft.tags.FluidTags;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
+import voltaic.common.block.states.VoltaicBlockStates;
 
 public abstract class GenericEntityBlockWaterloggable extends GenericEntityBlock implements IWaterLoggable {
 
@@ -32,7 +32,7 @@ public abstract class GenericEntityBlockWaterloggable extends GenericEntityBlock
 	@Override
 	public BlockState getStateForPlacement(BlockItemUseContext context) {
 		FluidState fluidstate = context.getLevel().getFluidState(context.getClickedPos());
-		return super.getStateForPlacement(context).setValue(VoltaicBlockStates.WATERLOGGED, (fluidstate.getType().is(FluidTags.WATER) && fluidstate.isSource()));
+		return super.getStateForPlacement(context).setValue(VoltaicBlockStates.WATERLOGGED, fluidstate.getType().is(FluidTags.WATER) && fluidstate.isSource());
 	}
 
 	@Override

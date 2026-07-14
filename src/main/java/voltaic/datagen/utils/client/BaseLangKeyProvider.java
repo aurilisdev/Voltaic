@@ -22,7 +22,7 @@ public abstract class BaseLangKeyProvider extends LanguageProvider {
 		this.modID = modID;
 	}
 
-	public void addItem(RegistryObject<? extends Item> item, String translation) {
+	public void addItem(RegistryObject<Item> item, String translation) {
 		add(item.get(), translation);
 	}
 
@@ -30,7 +30,7 @@ public abstract class BaseLangKeyProvider extends LanguageProvider {
 		add(item, translation);
 	}
 
-	public void addBlock(RegistryObject<? extends Block> block, String translation) {
+	public void addBlock(RegistryObject<Block> block, String translation) {
 		add(block.get(), translation);
 	}
 
@@ -42,7 +42,7 @@ public abstract class BaseLangKeyProvider extends LanguageProvider {
 		add("tooltip." + modID + "." + key, translation);
 	}
 
-	public void addFluid(RegistryObject<? extends Fluid> fluid, String translation){
+	public void addFluid(RegistryObject<Fluid> fluid, String translation){
 		addFluid(fluid.get(), translation);
 	}
 	public void addFluid(Fluid fluid, String translation) {

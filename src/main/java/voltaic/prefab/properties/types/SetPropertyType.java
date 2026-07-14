@@ -1,16 +1,18 @@
 package voltaic.prefab.properties.types;
 
-import com.mojang.serialization.Codec;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.NBTDynamicOps;
-import net.minecraft.network.PacketBuffer;
-import voltaic.api.codec.StreamCodec;
-
-import javax.annotation.Nonnull;
 import java.util.HashSet;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Function;
+
+import javax.annotation.Nonnull;
+
+import com.mojang.serialization.Codec;
+
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.NBTDynamicOps;
+import net.minecraft.network.PacketBuffer;
+import voltaic.api.codec.StreamCodec;
 
 public class SetPropertyType<TYPE, BUFFERTYPE extends PacketBuffer> implements IPropertyType<HashSet<TYPE>, BUFFERTYPE> {
 
@@ -26,11 +28,7 @@ public class SetPropertyType<TYPE, BUFFERTYPE extends PacketBuffer> implements I
 
         this.comparison = (set1, set2) -> {
 
-            if (set1 == null || set2 == null) {
-                return false;
-            }
-
-            if (set1.size() != set2.size()) {
+            if (set1 == null || set2 == null || set1.size() != set2.size()) {
                 return false;
             }
 

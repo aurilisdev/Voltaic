@@ -1,11 +1,11 @@
 package voltaic.api.particle;
 
-import voltaic.client.particle.GrindedParticle;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import voltaic.client.particle.GrindedParticle;
 
 public class ParticleAPI {
 

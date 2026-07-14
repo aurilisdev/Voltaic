@@ -1,21 +1,32 @@
 package voltaic.common.reloadlistener;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.function.Consumer;
+
+import org.apache.logging.log4j.Logger;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
-import voltaic.Voltaic;
-import voltaic.api.radiation.util.RadioactiveObject;
-import voltaic.common.packet.types.client.PacketSetClientRadioactiveFluids;
-import voltaic.prefab.reloadlistener.AbstractReloadListener;
+
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.profiler.IProfiler;
 import net.minecraft.resources.IResource;
 import net.minecraft.resources.IResourceManager;
 import net.minecraft.tags.FluidTags;
-import net.minecraft.tags.TagCollectionManager;
 import net.minecraft.tags.ITag.INamedTag;
+import net.minecraft.tags.TagCollectionManager;
 import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
@@ -24,13 +35,10 @@ import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.fml.network.PacketDistributor.PacketTarget;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
 import net.minecraftforge.registries.ForgeRegistries;
-
-import org.apache.logging.log4j.Logger;
-
-import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.util.*;
-import java.util.function.Consumer;
+import voltaic.Voltaic;
+import voltaic.api.radiation.util.RadioactiveObject;
+import voltaic.common.packet.types.client.PacketSetClientRadioactiveFluids;
+import voltaic.prefab.reloadlistener.AbstractReloadListener;
 
 public class RadioactiveFluidRegister extends AbstractReloadListener<JsonObject> {
 

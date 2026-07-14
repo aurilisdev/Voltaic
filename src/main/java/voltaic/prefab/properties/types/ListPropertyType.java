@@ -1,18 +1,20 @@
 package voltaic.prefab.properties.types;
 
-import com.mojang.serialization.Codec;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.NBTDynamicOps;
-import net.minecraft.network.PacketBuffer;
-import voltaic.api.codec.StreamCodec;
-
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Function;
+
+import javax.annotation.Nonnull;
+
+import com.mojang.serialization.Codec;
+
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.NBTDynamicOps;
+import net.minecraft.network.PacketBuffer;
+import voltaic.api.codec.StreamCodec;
 
 public class ListPropertyType <TYPE, BUFFERTYPE extends PacketBuffer> implements IPropertyType<List<TYPE>, BUFFERTYPE> {
 
@@ -28,11 +30,7 @@ public class ListPropertyType <TYPE, BUFFERTYPE extends PacketBuffer> implements
 
         this.comparison = (list1, list2) -> {
 
-            if (list1 == null || list2 == null) {
-                return false;
-            }
-
-            if (list1.size() != list2.size()) {
+            if (list1 == null || list2 == null || list1.size() != list2.size()) {
                 return false;
             }
 

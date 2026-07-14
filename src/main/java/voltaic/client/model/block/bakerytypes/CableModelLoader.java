@@ -18,10 +18,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.mojang.datafixers.util.Pair;
 
-import voltaic.client.model.block.ModelStateRotation;
-import voltaic.client.model.block.modelproperties.ModelPropertyConnections;
-import voltaic.common.block.connect.EnumConnectType;
-import voltaic.prefab.tile.types.IConnectTile;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.renderer.model.BakedQuad;
 import net.minecraft.client.renderer.model.BlockModel;
@@ -45,6 +41,10 @@ import net.minecraftforge.client.model.data.IDynamicBakedModel;
 import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.client.model.data.ModelDataMap;
 import net.minecraftforge.client.model.geometry.IModelGeometry;
+import voltaic.client.model.block.ModelStateRotation;
+import voltaic.client.model.block.modelproperties.ModelPropertyConnections;
+import voltaic.common.block.connect.EnumConnectType;
+import voltaic.prefab.tile.types.IConnectTile;
 
 public class CableModelLoader implements IModelLoader<CableModelLoader.WirePartGeometry> {
 
@@ -102,8 +102,7 @@ public class CableModelLoader implements IModelLoader<CableModelLoader.WirePartG
         
         @Override
         public Collection<RenderMaterial> getTextures(IModelConfiguration owner, Function<ResourceLocation, IUnbakedModel> modelGetter, Set<Pair<String, String>> missingTextureErrors) {
-        	Set<RenderMaterial> set = new HashSet<>();
-        	set.addAll(none.getMaterials(modelGetter, missingTextureErrors));
+        	Set<RenderMaterial> set = new HashSet<>(none.getMaterials(modelGetter, missingTextureErrors));
         	set.addAll(wire.getMaterials(modelGetter, missingTextureErrors));
         	set.addAll(inventory.getMaterials(modelGetter, missingTextureErrors));
         	return set;

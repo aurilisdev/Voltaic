@@ -1,7 +1,5 @@
 package voltaic.prefab.utilities.math;
 
-import voltaic.prefab.utilities.object.Location;
-
 import java.util.Arrays;
 
 import net.minecraft.entity.Entity;
@@ -11,6 +9,7 @@ import net.minecraft.util.math.RayTraceContext;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
+import voltaic.prefab.utilities.object.Location;
 
 public class MathUtils {
 

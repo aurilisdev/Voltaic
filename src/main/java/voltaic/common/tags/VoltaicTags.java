@@ -1,6 +1,5 @@
 package voltaic.common.tags;
 
-import voltaic.Voltaic;
 import net.minecraft.block.Block;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.Item;
@@ -8,6 +7,7 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.tags.ITag.INamedTag;
 import net.minecraft.tags.ItemTags;
+import voltaic.Voltaic;
 
 public class VoltaicTags {
 

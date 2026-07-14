@@ -1,5 +1,7 @@
 package voltaic.prefab.utilities;
 
+import java.util.List;
+
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
@@ -9,9 +11,9 @@ import voltaic.api.radiation.util.RadioactiveObject;
 import voltaic.common.reloadlistener.RadioactiveFluidRegister;
 import voltaic.common.reloadlistener.RadioactiveItemRegister;
 import voltaic.prefab.tile.GenericTile;
-import voltaic.prefab.tile.components.type.*;
-
-import java.util.List;
+import voltaic.prefab.tile.components.type.ComponentFluidHandlerMulti;
+import voltaic.prefab.tile.components.type.ComponentFluidHandlerSimple;
+import voltaic.prefab.tile.components.type.ComponentInventory;
 
 public class RadiationUtils {
 
@@ -43,7 +45,7 @@ public class RadiationUtils {
                 continue;
             }
 
-            totRadiation += (rads.amount() * fluid.getAmount());
+            totRadiation += rads.amount() * fluid.getAmount();
 
             totStrength = Math.max(totStrength, rads.strength());
 
@@ -79,7 +81,7 @@ public class RadiationUtils {
                 continue;
             }
 
-            totRadiation += (rads.amount() * item.getCount());
+            totRadiation += rads.amount() * item.getCount();
 
             totStrength = Math.max(totStrength, rads.strength());
 

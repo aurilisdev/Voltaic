@@ -1,9 +1,5 @@
 package voltaic.common.block;
 
-import voltaic.api.multiblock.subnodebased.child.IMultiblockChildBlock;
-import voltaic.api.multiblock.subnodebased.TileMultiSubnode;
-import voltaic.prefab.block.GenericEntityBlock;
-import voltaic.prefab.tile.GenericTile;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.SoundType;
@@ -18,6 +14,10 @@ import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import voltaic.api.multiblock.subnodebased.TileMultiSubnode;
+import voltaic.api.multiblock.subnodebased.child.IMultiblockChildBlock;
+import voltaic.prefab.block.GenericEntityBlock;
+import voltaic.prefab.tile.GenericTile;
 
 public class BlockMultiSubnode extends GenericEntityBlock implements IMultiblockChildBlock {
 

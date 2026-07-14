@@ -60,9 +60,7 @@ public class ItemUtils {
 		item.removeTagKey("Enchantments");
 		item.removeTagKey("StoredEnchantments");
 
-		Map<Enchantment, Integer> map = EnchantmentHelper.getEnchantments(item).entrySet().stream().filter((p_217012_0_) -> {
-			return p_217012_0_.getKey().isCurse();
-		}).collect(Collectors.toMap(Entry::getKey, Entry::getValue));
+		Map<Enchantment, Integer> map = EnchantmentHelper.getEnchantments(item).entrySet().stream().filter(p_217012_0_ -> p_217012_0_.getKey().isCurse()).collect(Collectors.toMap(Entry::getKey, Entry::getValue));
 		EnchantmentHelper.setEnchantments(map, item);
 	}
 

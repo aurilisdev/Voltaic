@@ -1,13 +1,13 @@
 package voltaic.registers;
 
-import voltaic.Voltaic;
-import voltaic.client.particle.fluiddrop.ParticleOptionFluidDrop;
-import voltaic.client.particle.lavawithphysics.ParticleOptionLavaWithPhysics;
-import voltaic.client.particle.plasmaball.ParticleOptionPlasmaBall;
 import net.minecraft.particles.ParticleType;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
+import voltaic.Voltaic;
+import voltaic.client.particle.fluiddrop.ParticleOptionFluidDrop;
+import voltaic.client.particle.lavawithphysics.ParticleOptionLavaWithPhysics;
+import voltaic.client.particle.plasmaball.ParticleOptionPlasmaBall;
 
 public class VoltaicParticles {
 

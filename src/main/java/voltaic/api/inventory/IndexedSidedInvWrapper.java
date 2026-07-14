@@ -4,11 +4,11 @@ import java.util.function.IntUnaryOperator;
 
 import javax.annotation.Nullable;
 
-import voltaic.prefab.tile.components.type.ComponentInventory;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Direction;
 import net.minecraftforge.items.IItemHandlerModifiable;
+import voltaic.prefab.tile.components.type.ComponentInventory;
 
 public class IndexedSidedInvWrapper implements IItemHandlerModifiable {
 
@@ -96,13 +96,7 @@ public class IndexedSidedInvWrapper implements IItemHandlerModifiable {
 
         int m;
         if (!stackInSlot.isEmpty()) {
-            if (stackInSlot.getCount() >= Math.min(stackInSlot.getMaxStackSize(), getSlotLimit(slot)))
-                return stack;
-
-            if (!ItemStack.isSame(stack, stackInSlot))
-                return stack;
-
-            if (!inv.canPlaceItemThroughFace(slot1, stack, side) || !inv.canPlaceItem(slot1, stack))
+            if (stackInSlot.getCount() >= Math.min(stackInSlot.getMaxStackSize(), getSlotLimit(slot)) || !ItemStack.isSame(stack, stackInSlot) || !inv.canPlaceItemThroughFace(slot1, stack, side) || !inv.canPlaceItem(slot1, stack))
                 return stack;
 
             m = Math.min(stack.getMaxStackSize(), getSlotLimit(slot)) - stackInSlot.getCount();
@@ -122,11 +116,10 @@ public class IndexedSidedInvWrapper implements IItemHandlerModifiable {
                     ItemStack copy = stack.split(m);
                     copy.grow(stackInSlot.getCount());
                     setInventorySlotContents(slot1, copy);
-                    return stack;
                 } else {
                     stack.shrink(m);
-                    return stack;
                 }
+		return stack;
             }
         } else {
             if (!inv.canPlaceItemThroughFace(slot1, stack, side) || !inv.canPlaceItem(slot1, stack))
@@ -139,11 +132,10 @@ public class IndexedSidedInvWrapper implements IItemHandlerModifiable {
                 stack = stack.copy();
                 if (!simulate) {
                     setInventorySlotContents(slot1, stack.split(m));
-                    return stack;
                 } else {
                     stack.shrink(m);
-                    return stack;
                 }
+		return stack;
             } else {
                 if (!simulate)
                     setInventorySlotContents(slot1, stack);
@@ -176,10 +168,7 @@ public class IndexedSidedInvWrapper implements IItemHandlerModifiable {
 
         ItemStack stackInSlot = inv.getItem(slot1);
 
-        if (stackInSlot.isEmpty())
-            return ItemStack.EMPTY;
-
-        if (!inv.canTakeItemThroughFace(slot1, stackInSlot, side))
+        if (stackInSlot.isEmpty() || !inv.canTakeItemThroughFace(slot1, stackInSlot, side))
             return ItemStack.EMPTY;
 
         if (simulate) {

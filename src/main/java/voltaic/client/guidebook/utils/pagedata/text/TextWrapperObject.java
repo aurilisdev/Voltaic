@@ -1,9 +1,9 @@
 package voltaic.client.guidebook.utils.pagedata.text;
 
+import net.minecraft.util.text.ITextComponent;
 import voltaic.client.guidebook.utils.pagedata.AbstractWrapperObject;
 import voltaic.prefab.utilities.VoltaicTextUtils;
 import voltaic.prefab.utilities.math.Color;
-import net.minecraft.util.text.ITextComponent;
 
 /**
  * A simple wrapper class that contains a segment of text along with basic formatting data for it

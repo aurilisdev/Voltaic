@@ -1,10 +1,20 @@
 package voltaic.prefab.tile.components.type;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.function.Predicate;
 
 import javax.annotation.Nullable;
 
+import net.minecraft.block.BlockState;
+import net.minecraft.fluid.Fluid;
+import net.minecraft.tags.ITag.INamedTag;
+import net.minecraft.tags.TagCollectionManager;
+import net.minecraft.util.Direction;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.capability.IFluidHandler;
 import voltaic.api.fluid.PropertyFluidTank;
 import voltaic.common.block.states.VoltaicBlockStates;
 import voltaic.prefab.tile.GenericTile;
@@ -12,16 +22,6 @@ import voltaic.prefab.tile.components.CapabilityInputType;
 import voltaic.prefab.tile.components.IComponentType;
 import voltaic.prefab.tile.components.utils.IComponentFluidHandler;
 import voltaic.prefab.utilities.BlockEntityUtils;
-import net.minecraft.block.BlockState;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.tags.FluidTags;
-import net.minecraft.tags.TagCollectionManager;
-import net.minecraft.tags.ITag.INamedTag;
-import net.minecraft.util.Direction;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.IFluidHandler;
 
 /**
  * Extension of PropertyFluidTank implementing directional I/O and the Component system
@@ -189,9 +189,7 @@ public class ComponentFluidHandlerSimple extends PropertyFluidTank implements IC
     public void onLoad() {
         IComponentFluidHandler.super.onLoad();
         if (validFluids != null) {
-            for (Fluid fluid : validFluids) {
-                validatorFluids.add(fluid);
-            }
+            Collections.addAll(validatorFluids, validFluids);
         }
         if (validFluidTags != null) {
             for (INamedTag<Fluid> tag : validFluidTags) {

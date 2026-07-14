@@ -11,9 +11,6 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 
-import voltaic.Voltaic;
-import voltaic.common.block.states.VoltaicBlockStates;
-import voltaic.prefab.utilities.math.Color;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.Minecraft;
@@ -45,6 +42,9 @@ import net.minecraft.util.math.vector.Quaternion;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.FluidStack;
+import voltaic.Voltaic;
+import voltaic.common.block.states.VoltaicBlockStates;
+import voltaic.prefab.utilities.math.Color;
 
 public class RenderingUtils {
 
@@ -274,7 +274,7 @@ public class RenderingUtils {
 		RenderSystem.enableBlend();
 		RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		RenderSystem.translatef((float) x, (float) y, 100.0F);
+		RenderSystem.translatef(x, y, 100.0F);
 		RenderSystem.translatef(8.0F, 8.0F, 0.0F);
 		RenderSystem.scalef(1.0F, -1.0F, 1.0F);
 		RenderSystem.scalef(scale, scale, scale);

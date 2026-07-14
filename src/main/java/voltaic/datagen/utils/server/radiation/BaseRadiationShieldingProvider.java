@@ -1,25 +1,26 @@
 package voltaic.datagen.utils.server.radiation;
 
+import java.io.IOException;
+import java.nio.file.Path;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
-import voltaic.Voltaic;
-import voltaic.api.radiation.util.RadiationShielding;
-import voltaic.common.reloadlistener.RadiationShieldingRegister;
+
 import net.minecraft.block.Block;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DirectoryCache;
 import net.minecraft.data.IDataProvider;
 import net.minecraft.tags.ITag.INamedTag;
 import net.minecraftforge.registries.ForgeRegistries;
-
-import java.io.IOException;
-import java.nio.file.Path;
+import voltaic.Voltaic;
+import voltaic.api.radiation.util.RadiationShielding;
+import voltaic.common.reloadlistener.RadiationShieldingRegister;
 
 public abstract class BaseRadiationShieldingProvider implements IDataProvider {
 	
-	private static final Gson GSON = (new GsonBuilder()).setPrettyPrinting().disableHtmlEscaping().create();
+	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 
     private final DataGenerator dataGenerator;
     private final String modID;

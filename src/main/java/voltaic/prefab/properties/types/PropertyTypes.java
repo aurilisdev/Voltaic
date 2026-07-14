@@ -5,11 +5,6 @@ import java.util.UUID;
 
 import com.mojang.serialization.Codec;
 
-import voltaic.api.codec.StreamCodec;
-import voltaic.prefab.utilities.BlockEntityUtils;
-import voltaic.prefab.utilities.CodecUtils;
-import voltaic.prefab.utilities.object.Location;
-import voltaic.prefab.utilities.object.TransferPack;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
@@ -19,6 +14,11 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraftforge.fluids.FluidStack;
+import voltaic.api.codec.StreamCodec;
+import voltaic.prefab.utilities.BlockEntityUtils;
+import voltaic.prefab.utilities.CodecUtils;
+import voltaic.prefab.utilities.object.Location;
+import voltaic.prefab.utilities.object.TransferPack;
 
 public class PropertyTypes {
 

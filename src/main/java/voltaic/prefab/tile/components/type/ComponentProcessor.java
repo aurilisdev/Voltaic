@@ -9,6 +9,12 @@ import javax.annotation.Nullable;
 
 import org.apache.logging.log4j.util.TriConsumer;
 
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.IRecipeType;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
+import net.minecraftforge.fluids.capability.templates.FluidTank;
 import voltaic.common.item.ItemUpgrade;
 import voltaic.common.item.subtype.SubtypeItemUpgrade;
 import voltaic.common.network.utils.FluidUtilities;
@@ -22,21 +28,15 @@ import voltaic.common.recipe.categories.item2item.Item2ItemRecipe;
 import voltaic.common.recipe.recipeutils.FluidIngredient;
 import voltaic.common.recipe.recipeutils.ProbableFluid;
 import voltaic.common.recipe.recipeutils.ProbableItem;
+import voltaic.prefab.properties.types.PropertyTypes;
 import voltaic.prefab.properties.variant.ArrayProperty;
 import voltaic.prefab.properties.variant.SingleProperty;
-import voltaic.prefab.properties.types.PropertyTypes;
 import voltaic.prefab.tile.GenericTile;
 import voltaic.prefab.tile.components.IComponent;
 import voltaic.prefab.tile.components.IComponentType;
 import voltaic.prefab.utilities.ItemUtils;
 import voltaic.prefab.utilities.NBTUtils;
 import voltaic.prefab.utilities.math.MathUtils;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipeType;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
-import net.minecraftforge.fluids.capability.templates.FluidTank;
 
 public class ComponentProcessor implements IComponent {
 
@@ -868,10 +868,7 @@ public class ComponentProcessor implements IComponent {
             ItemStack slotStack = slots.get(i);
             ItemStack biStack = biproducts[Math.min(i, biproducts.length - 1)];
             if (!slotStack.isEmpty()) {
-                if ((slotStack.getCount() + biStack.getCount() > slotStack.getMaxStackSize())) {
-                    return false;
-                }
-                if (!ItemUtils.testItems(slotStack.getItem(), biStack.getItem())) {
+                if (slotStack.getCount() + biStack.getCount() > slotStack.getMaxStackSize() || !ItemUtils.testItems(slotStack.getItem(), biStack.getItem())) {
                     return false;
                 }
             }

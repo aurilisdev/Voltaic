@@ -228,11 +228,11 @@ public class FluidIngredient extends Ingredient {
 				return false;
 			}
 			
-			if((tag != null && otherIng.tag == null) || (tag == null && otherIng.tag != null)) {
+			if(tag != null && otherIng.tag == null || tag == null && otherIng.tag != null) {
 				return false;
 			}
 			
-			if((fluid != null && otherIng.fluid == null) || (fluid == null && otherIng.fluid != null)) {
+			if(fluid != null && otherIng.fluid == null || fluid == null && otherIng.fluid != null) {
 				return false;
 			}
 

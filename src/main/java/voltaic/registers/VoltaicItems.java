@@ -1,17 +1,17 @@
 package voltaic.registers;
 
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemGroup;
+import net.minecraftforge.fml.ModList;
+import net.minecraftforge.fml.RegistryObject;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.ForgeRegistries;
 import voltaic.Voltaic;
 import voltaic.api.registration.BulkRegistryObject;
 import voltaic.common.item.ItemUpgrade;
 import voltaic.common.item.gear.ItemGuidebook;
 import voltaic.common.item.gear.ItemWrench;
 import voltaic.common.item.subtype.SubtypeItemUpgrade;
-import net.minecraft.item.Item;
-import net.minecraftforge.fml.RegistryObject;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraft.item.ItemGroup;
-import net.minecraftforge.fml.ModList;
 
 public class VoltaicItems {
 	public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, Voltaic.ID);

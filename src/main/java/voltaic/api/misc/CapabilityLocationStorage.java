@@ -5,13 +5,13 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 
-import voltaic.prefab.utilities.object.Location;
-import voltaic.registers.VoltaicCapabilities;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.util.LazyOptional;
+import voltaic.prefab.utilities.object.Location;
+import voltaic.registers.VoltaicCapabilities;
 
 public class CapabilityLocationStorage implements ILocationStorage, ICapabilitySerializable<CompoundNBT> {
 	

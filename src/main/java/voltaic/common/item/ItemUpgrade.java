@@ -22,9 +22,9 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import voltaic.common.item.subtype.SubtypeItemUpgrade;
+import voltaic.prefab.utilities.NBTUtils;
 import voltaic.prefab.utilities.VoltaicTextUtils;
 import voltaic.prefab.utilities.WorldUtils;
-import voltaic.prefab.utilities.NBTUtils;
 
 public class ItemUpgrade extends ItemVoltaic {
 	public final SubtypeItemUpgrade subtype;

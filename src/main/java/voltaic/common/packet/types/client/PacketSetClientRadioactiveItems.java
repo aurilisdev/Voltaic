@@ -1,8 +1,5 @@
 package voltaic.common.packet.types.client;
 
-import voltaic.api.codec.StreamCodec;
-import voltaic.api.radiation.util.RadioactiveObject;
-
 import java.util.HashMap;
 import java.util.function.Supplier;
 
@@ -10,6 +7,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent.Context;
+import voltaic.api.codec.StreamCodec;
+import voltaic.api.radiation.util.RadioactiveObject;
 
 public class PacketSetClientRadioactiveItems {
 	

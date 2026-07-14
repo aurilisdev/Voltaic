@@ -1,11 +1,11 @@
 package voltaic.registers;
 
-import voltaic.Voltaic;
-import voltaic.common.block.BlockMultiSubnode;
 import net.minecraft.block.Block;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
+import voltaic.Voltaic;
+import voltaic.common.block.BlockMultiSubnode;
 
 public class VoltaicBlocks {
 

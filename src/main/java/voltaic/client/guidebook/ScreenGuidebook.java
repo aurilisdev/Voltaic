@@ -413,7 +413,7 @@ public class ScreenGuidebook extends GenericScreen<ContainerGuidebook> {
 						int trueHeight = graphicWrapper.trueHeight - graphicWrapper.descriptorTopOffset + graphicWrapper.descriptorBottomOffset;
 
 						if (trueHeight > Y_PIXELS_PER_PAGE) {
-							throw new UnsupportedOperationException("The image cannot be more than " + (Y_PIXELS_PER_PAGE) + " pixels tall!");
+							throw new UnsupportedOperationException("The image cannot be more than " + Y_PIXELS_PER_PAGE + " pixels tall!");
 						}
 
 						if (graphicWrapper.allowNextToOthers && graphicWrapper.width <= graphicPixelWidthLeft) {
@@ -913,11 +913,7 @@ public class ScreenGuidebook extends GenericScreen<ContainerGuidebook> {
 					if (page.associatedChapter.module.isCat(module.getTitle())) {
 						for (TextWrapper wrapper : page.text) {
 
-							if (caseSensitive.isSelected() && wrapper.characters.getString().contains(text)) {
-
-								found.add(new SearchHit(wrapper.characters, page.getPage(), page.associatedChapter));
-
-							} else if (!caseSensitive.isSelected() && wrapper.characters.getString().toLowerCase(Locale.ROOT).contains(text.toLowerCase())) {
+							if (caseSensitive.isSelected() && wrapper.characters.getString().contains(text) || !caseSensitive.isSelected() && wrapper.characters.getString().toLowerCase(Locale.ROOT).contains(text.toLowerCase())) {
 
 								found.add(new SearchHit(wrapper.characters, page.getPage(), page.associatedChapter));
 
@@ -927,11 +923,7 @@ public class ScreenGuidebook extends GenericScreen<ContainerGuidebook> {
 
 						for (GraphicWrapper graphic : page.graphics) {
 							for (GraphicTextDescriptor descriptor : graphic.graphic.descriptors) {
-								if (caseSensitive.isSelected() && descriptor.text.getString().contains(text)) {
-
-									found.add(new SearchHit(descriptor.text, page.getPage(), page.associatedChapter));
-
-								} else if (!caseSensitive.isSelected() && descriptor.text.getString().toLowerCase(Locale.ROOT).contains(text.toLowerCase())) {
+								if (caseSensitive.isSelected() && descriptor.text.getString().contains(text) || !caseSensitive.isSelected() && descriptor.text.getString().toLowerCase(Locale.ROOT).contains(text.toLowerCase())) {
 
 									found.add(new SearchHit(descriptor.text, page.getPage(), page.associatedChapter));
 
@@ -1165,7 +1157,7 @@ public class ScreenGuidebook extends GenericScreen<ContainerGuidebook> {
 	}
 
 	public boolean isPointInRegionGraphic(int mouseX, int mouseY, int x, int y, int width, int height) {
-		return mouseX >= x && mouseY >= y && mouseX < (x + width) && mouseY < (y + height);
+		return mouseX >= x && mouseY >= y && mouseX < x + width && mouseY < y + height;
 	}
 
 	public static void setInitNotHappened() {

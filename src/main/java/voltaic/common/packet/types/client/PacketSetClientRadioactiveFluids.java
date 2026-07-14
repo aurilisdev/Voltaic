@@ -1,14 +1,14 @@
 package voltaic.common.packet.types.client;
 
-import voltaic.api.codec.StreamCodec;
-import voltaic.api.radiation.util.RadioactiveObject;
+import java.util.HashMap;
+import java.util.function.Supplier;
+
 import net.minecraft.fluid.Fluid;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.network.NetworkEvent.Context;
-
-import java.util.HashMap;
-import java.util.function.Supplier;
+import voltaic.api.codec.StreamCodec;
+import voltaic.api.radiation.util.RadioactiveObject;
 
 public class PacketSetClientRadioactiveFluids {
 

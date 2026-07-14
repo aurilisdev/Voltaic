@@ -1,13 +1,5 @@
 package voltaic.api.radiation;
 
-import voltaic.Voltaic;
-import voltaic.api.radiation.util.IHazmatSuit;
-import voltaic.api.radiation.util.IRadiationRecipient;
-import voltaic.api.radiation.util.RadioactiveObject;
-import voltaic.common.settings.VoltaicConstants;
-import voltaic.registers.VoltaicCapabilities;
-import voltaic.registers.VoltaicEffects;
-
 import javax.annotation.Nullable;
 
 import net.minecraft.entity.LivingEntity;
@@ -20,6 +12,13 @@ import net.minecraft.util.Direction;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.util.LazyOptional;
+import voltaic.Voltaic;
+import voltaic.api.radiation.util.IHazmatSuit;
+import voltaic.api.radiation.util.IRadiationRecipient;
+import voltaic.api.radiation.util.RadioactiveObject;
+import voltaic.common.settings.VoltaicConstants;
+import voltaic.registers.VoltaicCapabilities;
+import voltaic.registers.VoltaicEffects;
 
 public class CapabilityRadiationRecipient implements IRadiationRecipient, ICapabilitySerializable<CompoundNBT> {
 

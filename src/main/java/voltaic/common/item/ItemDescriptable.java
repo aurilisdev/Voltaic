@@ -1,5 +1,6 @@
 package voltaic.common.item;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -22,9 +23,7 @@ public class ItemDescriptable extends ItemVoltaic {
 	public void appendHoverText(ItemStack stack, World context, List<ITextComponent> tooltips, ITooltipFlag flag) {
 		super.appendHoverText(stack, context, tooltips, flag);
 		if (tooltips != null) {
-			for (ITextComponent tooltip : this.tooltips) {
-				tooltips.add(tooltip);
-			}
+			Collections.addAll(tooltips, this.tooltips);
 		}
 	}
 

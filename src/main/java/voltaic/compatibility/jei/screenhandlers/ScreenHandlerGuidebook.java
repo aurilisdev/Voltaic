@@ -5,14 +5,14 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
+import mezz.jei.api.gui.handlers.IGuiContainerHandler;
+import net.minecraft.client.renderer.Rectangle2d;
 import voltaic.client.guidebook.ScreenGuidebook;
 import voltaic.client.guidebook.utils.components.Page;
 import voltaic.client.guidebook.utils.components.Page.GraphicWrapper;
 import voltaic.client.guidebook.utils.components.Page.TextWrapper;
 import voltaic.client.guidebook.utils.pagedata.graphics.AbstractGraphicWrapper;
 import voltaic.client.guidebook.utils.pagedata.graphics.AbstractGraphicWrapper.GraphicTextDescriptor;
-import mezz.jei.api.gui.handlers.IGuiContainerHandler;
-import net.minecraft.client.renderer.Rectangle2d;
 
 public class ScreenHandlerGuidebook implements IGuiContainerHandler<ScreenGuidebook> {
 

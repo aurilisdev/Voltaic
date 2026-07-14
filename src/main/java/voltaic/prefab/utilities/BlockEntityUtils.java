@@ -1,8 +1,5 @@
 package voltaic.prefab.utilities;
 
-import voltaic.common.block.states.VoltaicBlockStates;
-import voltaic.prefab.tile.GenericTile;
-
 import javax.annotation.Nullable;
 
 import net.minecraft.item.ItemStack;
@@ -11,6 +8,8 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import voltaic.common.block.states.VoltaicBlockStates;
+import voltaic.prefab.tile.GenericTile;
 
 public class BlockEntityUtils {
 

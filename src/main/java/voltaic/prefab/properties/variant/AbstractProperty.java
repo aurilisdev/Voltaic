@@ -4,8 +4,8 @@ import net.minecraft.nbt.CompoundNBT;
 import voltaic.Voltaic;
 import voltaic.common.packet.NetworkHandler;
 import voltaic.common.packet.types.server.PacketSendUpdatePropertiesServer;
-import voltaic.prefab.properties.types.IPropertyType;
 import voltaic.prefab.properties.PropertyManager;
+import voltaic.prefab.properties.types.IPropertyType;
 
 public abstract class AbstractProperty<T, PROPERTYTYPE extends IPropertyType> {
 

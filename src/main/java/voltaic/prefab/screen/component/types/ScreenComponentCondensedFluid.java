@@ -4,11 +4,11 @@ import java.util.function.Supplier;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 
+import net.minecraftforge.fluids.FluidStack;
 import voltaic.prefab.properties.variant.SingleProperty;
 import voltaic.prefab.screen.component.ScreenComponentGeneric;
 import voltaic.prefab.screen.component.types.ScreenComponentSlot.IconType;
 import voltaic.prefab.utilities.RenderingUtils;
-import net.minecraftforge.fluids.FluidStack;
 
 public class ScreenComponentCondensedFluid extends ScreenComponentGeneric {
 

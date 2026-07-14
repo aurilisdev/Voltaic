@@ -2,12 +2,12 @@ package voltaic.prefab.tile.components;
 
 import javax.annotation.Nullable;
 
-import voltaic.prefab.tile.GenericTile;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
+import voltaic.prefab.tile.GenericTile;
 
 //renamed ever so slightly so it's not confused with the Vanilla class constantly when importing 
 public interface IComponent {

@@ -15,8 +15,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tags.ITag.INamedTag;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.tags.ItemTags;
+import net.minecraft.util.ResourceLocation;
 import voltaic.api.codec.StreamCodec;
 
 public class CountableIngredient extends Ingredient {
@@ -195,11 +195,11 @@ public class CountableIngredient extends Ingredient {
 				return false;
 			}
 			
-			if((tag != null && otherIng.tag == null) || (tag == null && otherIng.tag != null)) {
+			if(tag != null && otherIng.tag == null || tag == null && otherIng.tag != null) {
 				return false;
 			}
 			
-			if((item != null && otherIng.item == null) || (item == null && otherIng.item != null)) {
+			if(item != null && otherIng.item == null || item == null && otherIng.item != null) {
 				return false;
 			}
 

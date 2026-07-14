@@ -7,7 +7,13 @@ import net.minecraftforge.fml.network.NetworkDirection;
 import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
 import voltaic.Voltaic;
-import voltaic.common.packet.types.client.*;
+import voltaic.common.packet.types.client.PacketResetGuidebookPages;
+import voltaic.common.packet.types.client.PacketSetClientRadiationShielding;
+import voltaic.common.packet.types.client.PacketSetClientRadioactiveBlocks;
+import voltaic.common.packet.types.client.PacketSetClientRadioactiveFluids;
+import voltaic.common.packet.types.client.PacketSetClientRadioactiveItems;
+import voltaic.common.packet.types.client.PacketSpawnSmokeParticle;
+import voltaic.common.packet.types.client.PacketUpdateCariedItemClient;
 import voltaic.common.packet.types.server.PacketSendUpdatePropertiesServer;
 import voltaic.common.packet.types.server.PacketUpdateCarriedItemServer;
 

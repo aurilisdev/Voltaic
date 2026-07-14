@@ -11,10 +11,10 @@ public class ChatFormatter {
 
 	public static IFormattableTextComponent getChatDisplay(double value, IDisplayUnit unit, int decimalPlaces, boolean isShort) {
 		if (value < Long.MIN_VALUE + 10000) {
-			return new StringTextComponent("-").append(VoltaicTextUtils.gui("displayunit.infinity.name")).append(" ").append((isShort ? unit.getSymbol() : unit.getNamePlural()));
+			return new StringTextComponent("-").append(VoltaicTextUtils.gui("displayunit.infinity.name")).append(" ").append(isShort ? unit.getSymbol() : unit.getNamePlural());
 		}
 		if (value > Long.MAX_VALUE - 10000) {
-			return VoltaicTextUtils.gui("displayunit.infinity.name").append(" ").append((isShort ? unit.getSymbol() : unit.getNamePlural()));
+			return VoltaicTextUtils.gui("displayunit.infinity.name").append(" ").append(isShort ? unit.getSymbol() : unit.getNamePlural());
 		}
 		IFormattableTextComponent unitName;
 		if (isShort) {

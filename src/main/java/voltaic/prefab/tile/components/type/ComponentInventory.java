@@ -1,19 +1,13 @@
 package voltaic.prefab.tile.components.type;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
-import voltaic.api.inventory.IndexedSidedInvWrapper;
-import voltaic.common.block.states.VoltaicBlockStates;
-import voltaic.common.item.subtype.SubtypeItemUpgrade;
-import voltaic.prefab.properties.variant.ListProperty;
-import voltaic.prefab.properties.types.PropertyTypes;
-import voltaic.prefab.tile.GenericTile;
-import voltaic.prefab.tile.components.CapabilityInputType;
-import voltaic.prefab.tile.components.IComponent;
-import voltaic.prefab.tile.components.IComponentType;
-import voltaic.prefab.utilities.BlockEntityUtils;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.ISidedInventory;
@@ -26,10 +20,20 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.common.util.TriPredicate;
 import net.minecraftforge.items.IItemHandlerModifiable;
+import voltaic.api.inventory.IndexedSidedInvWrapper;
+import voltaic.common.block.states.VoltaicBlockStates;
+import voltaic.common.item.subtype.SubtypeItemUpgrade;
+import voltaic.prefab.properties.types.PropertyTypes;
+import voltaic.prefab.properties.variant.ListProperty;
+import voltaic.prefab.tile.GenericTile;
+import voltaic.prefab.tile.components.CapabilityInputType;
+import voltaic.prefab.tile.components.IComponent;
+import voltaic.prefab.tile.components.IComponentType;
+import voltaic.prefab.utilities.BlockEntityUtils;
 
 public class ComponentInventory implements IComponent, ISidedInventory {
 
-    protected static final int[] SLOTS_EMPTY = new int[] {};
+    protected static final int[] SLOTS_EMPTY = {};
     public static final String SAVE_KEY = "itemproperty";
 
     protected GenericTile holder = null;
@@ -148,9 +152,7 @@ public class ComponentInventory implements IComponent, ISidedInventory {
         if (relativeDirectionToSlotsMap[faceDir.ordinal()] == null) {
             relativeDirectionToSlotsMap[faceDir.ordinal()] = new HashSet<>();
         }
-        for (Integer sl : slot) {
-            relativeDirectionToSlotsMap[faceDir.ordinal()].add(sl);
-        }
+        Collections.addAll(relativeDirectionToSlotsMap[faceDir.ordinal()], slot);
         return this;
     }
 
@@ -610,9 +612,6 @@ public class ComponentInventory implements IComponent, ISidedInventory {
         private int builderBucketInputs = 0;
         private int builderBucketOutputs = 0;
         private int builderUpgrades = 0;
-        private int builderGasInputs = 0;
-        private int builderGasOutputs = 0;
-
         private int builderInputsPerProc = 0;
         private int builderOutputsPerProc = 0;
         private int builderBiprodsPerProc = 0;
@@ -647,12 +646,12 @@ public class ComponentInventory implements IComponent, ISidedInventory {
         }
 
         public InventoryBuilder gasInputs(int gasInputs) {
-            this.builderGasInputs = gasInputs;
+            int builderGasInputs = gasInputs;
             return this;
         }
 
         public InventoryBuilder gasOutputs(int gasOutputs) {
-            this.builderGasOutputs = gasOutputs;
+            int builderGasOutputs = gasOutputs;
             return this;
         }
 

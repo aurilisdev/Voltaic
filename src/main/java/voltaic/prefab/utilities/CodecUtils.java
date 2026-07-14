@@ -49,19 +49,9 @@ public class CodecUtils {
 			//
 			.apply(instance, Vector3d::new));
 
-	public static final Codec<UUID> UUID_CODEC = Codec.INT_STREAM.comapFlatMap((intstream) -> {
-		return Util.fixedSize(intstream, 4).map(CodecUtils::uuidFromIntArray);
-	}, (uuid) -> {
-		return Arrays.stream(uuidToIntArray(uuid));
-	});
+	public static final Codec<UUID> UUID_CODEC = Codec.INT_STREAM.comapFlatMap(intstream -> Util.fixedSize(intstream, 4).map(CodecUtils::uuidFromIntArray), uuid -> Arrays.stream(uuidToIntArray(uuid)));
 
-	public static final Codec<Vector3f> VECTOR3F_CODEC = Codec.FLOAT.listOf().comapFlatMap((list) -> {
-		return fixedSize(list, 3).map((floatlist) -> {
-			return new Vector3f(floatlist.get(0), floatlist.get(1), floatlist.get(2));
-		});
-	}, (vector) -> {
-		return ImmutableList.of(vector.x(), vector.y(), vector.z());
-	});
+	public static final Codec<Vector3f> VECTOR3F_CODEC = Codec.FLOAT.listOf().comapFlatMap(list -> fixedSize(list, 3).map(floatlist -> new Vector3f(floatlist.get(0), floatlist.get(1), floatlist.get(2))), vector -> ImmutableList.of(vector.x(), vector.y(), vector.z()));
 
 	public static <T> DataResult<List<T>> fixedSize(List<T> pList, int pExpectedSize) {
 		if (pList.size() != pExpectedSize) {
@@ -73,7 +63,7 @@ public class CodecUtils {
 	}
 
 	public static UUID uuidFromIntArray(int[] intArray) {
-		return new UUID((long) intArray[0] << 32 | (long) intArray[1] & 4294967295L, (long) intArray[2] << 32 | (long) intArray[3] & 4294967295L);
+		return new UUID((long) intArray[0] << 32 | intArray[1] & 4294967295L, (long) intArray[2] << 32 | intArray[3] & 4294967295L);
 	}
 
 	public static int[] uuidToIntArray(UUID pUuid) {

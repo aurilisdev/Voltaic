@@ -40,7 +40,7 @@ public class VoxelShapeProvider {
     public static final Direction[] HORIZONTAL_DIRECTIONS = {Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST};
 
     public static VoxelShape rotateShape(Direction from, Direction to, VoxelShape shape) {
-        VoxelShape[] buffer = new VoxelShape[] { shape, VoxelShapes.empty() };
+        VoxelShape[] buffer = { shape, VoxelShapes.empty() };
 
         int times = (to.get2DDataValue() - from.get2DDataValue() + 4) % 4;
         for (int i = 0; i < times; i++) {

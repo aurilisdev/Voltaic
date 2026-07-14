@@ -4,13 +4,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
 
-import voltaic.api.screen.ITexture;
-import voltaic.api.screen.component.ISlotTexture;
-import voltaic.prefab.inventory.container.slot.itemhandler.SlotItemHandlerGeneric;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.items.IItemHandler;
+import voltaic.api.screen.ITexture;
+import voltaic.api.screen.component.ISlotTexture;
+import voltaic.prefab.inventory.container.slot.itemhandler.SlotItemHandlerGeneric;
 
 public class SlotItemHandlerRestricted extends SlotItemHandlerGeneric {
 

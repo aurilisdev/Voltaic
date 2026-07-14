@@ -1,9 +1,5 @@
 package voltaic.common.item.gear;
 
-import voltaic.api.IWrenchItem;
-import voltaic.common.item.ItemVoltaic;
-import voltaic.prefab.tile.IWrenchable;
-
 import java.util.function.Supplier;
 
 import net.minecraft.block.Block;
@@ -17,6 +13,9 @@ import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import voltaic.api.IWrenchItem;
+import voltaic.common.item.ItemVoltaic;
+import voltaic.prefab.tile.IWrenchable;
 
 public class ItemWrench extends ItemVoltaic implements IWrenchItem {
 

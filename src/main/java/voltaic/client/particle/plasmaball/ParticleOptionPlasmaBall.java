@@ -5,13 +5,13 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import voltaic.api.codec.StreamCodec;
-import voltaic.prefab.utilities.CodecUtils;
-import voltaic.registers.VoltaicParticles;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.particles.IParticleData;
 import net.minecraft.particles.ParticleType;
 import net.minecraftforge.registries.ForgeRegistries;
+import voltaic.api.codec.StreamCodec;
+import voltaic.prefab.utilities.CodecUtils;
+import voltaic.registers.VoltaicParticles;
 
 public class ParticleOptionPlasmaBall extends ParticleType<ParticleOptionPlasmaBall> implements IParticleData {
 

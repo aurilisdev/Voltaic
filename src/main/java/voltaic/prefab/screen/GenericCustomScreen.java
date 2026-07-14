@@ -23,7 +23,7 @@ public abstract class GenericCustomScreen<T extends Container> extends Container
 
 	@Override
 	protected void renderBg(MatrixStack poseStack, float partialTicks, int mouseX, int mouseY) {
-		RenderingUtils.resetShaderColor();;
+		RenderingUtils.resetShaderColor();
 		RenderingUtils.bindTexture(getScreenBackground());
 		blit(poseStack, leftPos, topPos, 0, 0, imageWidth, imageHeight);
 	}

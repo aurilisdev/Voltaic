@@ -1,5 +1,8 @@
 package voltaic.datagen.utils.server.radiation;
 
+import java.io.IOException;
+import java.nio.file.Path;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
@@ -15,12 +18,9 @@ import voltaic.Voltaic;
 import voltaic.api.radiation.util.RadioactiveObject;
 import voltaic.common.reloadlistener.RadioactiveBlockRegister;
 
-import java.io.IOException;
-import java.nio.file.Path;
-
 public abstract class BaseRadioactiveBlocksProvider implements IDataProvider {
 	
-	private static final Gson GSON = (new GsonBuilder()).setPrettyPrinting().disableHtmlEscaping().create();
+	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 
 	private final DataGenerator dataGenerator;
     private final String modID;
