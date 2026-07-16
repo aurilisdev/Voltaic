@@ -76,22 +76,22 @@ public class GrindedParticle extends TextureSheetParticle {
 
     @Override
     protected float getU0() {
-	return sprite.getU((uCoord + 1.0F) / 4.0F);
+	return sprite.getU((uCoord + 1.0F) / 4.0F * 16);
     }
 
     @Override
     protected float getU1() {
-	return sprite.getU(uCoord / 4.0F);
+	return sprite.getU(uCoord / 4.0F * 16);
     }
 
     @Override
     protected float getV0() {
-	return sprite.getV(vCoord / 4.0F);
+	return sprite.getV(vCoord / 4.0F * 16);
     }
 
     @Override
     protected float getV1() {
-	return sprite.getV((vCoord + 1.0F) / 4.0F);
+	return sprite.getV((vCoord + 1.0F) / 4.0F * 16);
     }
 
     @Override
