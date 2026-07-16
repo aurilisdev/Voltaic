@@ -31,7 +31,7 @@ public class GrindedParticle extends TextureSheetParticle {
 		rCol = 0.6F;
 		gCol = 0.6F;
 		bCol = 0.6F;
-		quadSize /= 2.0F;
+		quadSize /= 3.0F;
 		uCoord = random.nextFloat() * 3.0F;
 		vCoord = random.nextFloat() * 3.0F;
 	}
@@ -60,6 +60,11 @@ public class GrindedParticle extends TextureSheetParticle {
 		return this;
 	}
 
+	    @Override
+	    public void tick() {
+		updateSprite(sourcePos.above());
+		super.tick();
+	    }
 	protected void multiplyColor(@Nullable BlockPos pos) {
 		int i = Minecraft.getInstance().getBlockColors().getColor(sourceState, level, pos, 0);
 		rCol *= (i >> 16 & 255) / 255.0F;

@@ -1,6 +1,7 @@
 package voltaic.common.item;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -92,8 +93,10 @@ public class ItemUpgrade extends ItemVoltaic {
 				if (player.isShiftKeyDown()) {
 					Vec3 look = player.getLookAngle();
 					Direction lookingDir = Direction.getNearest(look.x, look.y, look.z);
-					List<Direction> dirs = NBTUtils.readDirectionList(handStack);
-					dirs.add(lookingDir);
+					List<Direction> dirs = new ArrayList<Direction>(NBTUtils.readDirectionList(handStack));
+					if(!dirs.contains(lookingDir)) {
+					    dirs.add(lookingDir);
+					}
 					NBTUtils.clearDirectionList(handStack);
 					NBTUtils.writeDirectionList(dirs, handStack);
 				} else {

@@ -156,7 +156,7 @@
   "tooltip.voltaic.machine.voltage": "Voltage: %s",
   "tooltip.voltaic.maxpressure": "Max Pressure: %s",
   "tooltip.voltaic.maxtemperature": "Max Temp: %s",
-  "tooltip.voltaic.radiationshieldingamount": "Shielding Amount: %s",
+  "tooltip.voltaic.radiationshieldingblocked": "Radiation Blocked: %s",
   "tooltip.voltaic.radiationshieldinglevel": "Shielding Level: %s",
   "tooltip.voltaic.scannerpattern": "Sonar Pattern",
   "tooltip.voltaic.tankmaxin": "In %1$s : %2$s",

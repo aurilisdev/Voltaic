@@ -158,7 +158,7 @@ public class RadiationShieldingRegister extends SimplePreparableReloadListener<J
     }
 
     public static RadiationShielding getValue(Block block) {
-        return INSTANCE.radiationShieldingMap.getOrDefault(block, RadiationShielding.ZERO);
+	return INSTANCE.radiationShieldingMap.getOrDefault(block, RadiationShielding.NONE);
     }
 
     private static boolean isJson(final ResourceLocation filename) {

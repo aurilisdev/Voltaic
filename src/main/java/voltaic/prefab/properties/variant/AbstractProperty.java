@@ -16,6 +16,7 @@ public abstract class AbstractProperty<T, PROPERTYTYPE extends IPropertyType> {
     //set this if you want to update a property without having a tile tick
     //otherwise the property will be synced to the client upon change at the end of the tile's tick
     private boolean shouldUpdateOnChange = false;
+    @Deprecated(forRemoval = true, since = "This should've never been implemented as = true by defauylt. MUST BE REMOVED ASAP and replaced with a setUpdateServer instead. By default this allows dupes and hacks etc....")
     private boolean shouldUpdateServer = true;
     private final String name;
 

@@ -119,7 +119,6 @@ public abstract class GenericEntityBlock extends BaseEntityBlock implements IWre
 	}
 
 	// TODO get this to work
-
 	@Override
 	public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
 		if (level.getBlockEntity(pos) instanceof GenericTile generic) {
@@ -184,7 +183,18 @@ public abstract class GenericEntityBlock extends BaseEntityBlock implements IWre
 
 		return super.use(state, worldIn, pos, player, handIn, hit);
 	}
-
+	@Override
+	public void playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
+	    if (!level.isClientSide && player.isCreative()) {
+	        if (level.getBlockEntity(pos) instanceof GenericTile machine) {
+	            ComponentInventory inv = machine.getComponent(IComponentType.Inventory);
+	            if (inv != null) {
+	                Containers.dropContents(level, pos, inv.getItems());
+	            }
+	        }
+	    }
+	    super.playerWillDestroy(level, pos, state, player);
+	}
 	@Override
 	public int getDirectSignal(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
 		if (level.getBlockEntity(pos) instanceof GenericTile generic) {

@@ -23,42 +23,44 @@ public abstract class BaseRadiationShieldingProvider implements DataProvider {
     private final String loc;
 
     public BaseRadiationShieldingProvider(DataGenerator dataGenerator, String modID) {
-        this.dataGenerator = dataGenerator;
-        this.modID = modID;
-        loc = "data/" + Voltaic.ID + "/" + RadiationShieldingRegister.FOLDER + "/" + modID + "_" + RadiationShieldingRegister.FILE_NAME;
+	this.dataGenerator = dataGenerator;
+	this.modID = modID;
+	loc = "data/" + Voltaic.ID + "/" + RadiationShieldingRegister.FOLDER + "/" + modID + "_"
+		+ RadiationShieldingRegister.FILE_NAME;
     }
 
     @Override
     public void run(CachedOutput cache) {
-        JsonObject json = new JsonObject();
-        getRadiationShielding(json);
+	JsonObject json = new JsonObject();
+	getRadiationShielding(json);
 
-        Path parent = dataGenerator.getOutputFolder().resolve(loc + ".json");
-		try {
+	Path parent = dataGenerator.getOutputFolder().resolve(loc + ".json");
+	try {
 
-			DataProvider.saveStable(cache, json, parent);
+	    DataProvider.saveStable(cache, json, parent);
 
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+	} catch (IOException e) {
+	    e.printStackTrace();
+	}
     }
 
     public abstract void getRadiationShielding(JsonObject json);
 
-    public void addBlock(Block block, double radiationAmount, double radiationLevel, JsonObject json) {
-        JsonObject data = new JsonObject();
-        json.add(ForgeRegistries.BLOCKS.getKey(block).toString(), RadiationShielding.CODEC.encode(new RadiationShielding(radiationAmount, radiationLevel), JsonOps.INSTANCE, data).result().get());
+    public void addBlock(Block block, double transmission, double radiationLevel, JsonObject json) {
+	JsonObject data = new JsonObject();
+	json.add(ForgeRegistries.BLOCKS.getKey(block).toString(), RadiationShielding.CODEC
+		.encode(new RadiationShielding(transmission, radiationLevel), JsonOps.INSTANCE, data).result().get());
     }
 
-    public void addTag(TagKey<Block> tag, double radiationAmount, double radiationLevel, JsonObject json) {
-        JsonObject data = new JsonObject();
-        json.add("#" + tag.location().toString(), RadiationShielding.CODEC.encode(new RadiationShielding(radiationAmount, radiationLevel), JsonOps.INSTANCE, data).result().get());
+    public void addTag(TagKey<Block> tag, double transmission, double radiationLevel, JsonObject json) {
+	JsonObject data = new JsonObject();
+	json.add("#" + tag.location().toString(), RadiationShielding.CODEC
+		.encode(new RadiationShielding(transmission, radiationLevel), JsonOps.INSTANCE, data).result().get());
     }
 
     @Override
     public String getName() {
-        return modID + " Radiation Shielding Provider";
+	return modID + " Radiation Shielding Provider";
     }
-
 
 }

@@ -14,6 +14,6 @@ public class VoltaicRadiationShieldingProvider extends BaseRadiationShieldingPro
 
     @Override
     public void getRadiationShielding(JsonObject json) {
-        addBlock(Blocks.WATER, 5000, 1, json);
+	addBlock(Blocks.WATER, 0.70, 1, json);
     }
 }

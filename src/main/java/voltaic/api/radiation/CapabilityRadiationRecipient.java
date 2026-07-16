@@ -69,8 +69,9 @@ public class CapabilityRadiationRecipient implements IRadiationRecipient, ICapab
 	@Override
 	public void recieveRadiation(LivingEntity entity, double rads, double strength) {
 
-		if (rads <= 0) {
-			return;
+
+		if (rads <= RadiationManager.MIN_APPLIED_RADIATION) {
+		    return;
 		}
 
 		if (entity instanceof Player player && (player.isCreative() || player.isSpectator())) {
@@ -157,7 +158,7 @@ public class CapabilityRadiationRecipient implements IRadiationRecipient, ICapab
 	}
 
 	public static int getDurationFromRadiation(double radiation) {
-		return (int) Math.max(20.0, radiation / 100.0 * 20.0);
+	        return (int) Math.max(1, radiation / 100.0 * 20.0);
 	}
 
 	public static int getAmplitudeFromRadiation(double radiation, double strength) {
