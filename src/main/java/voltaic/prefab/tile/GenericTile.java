@@ -165,7 +165,7 @@ public abstract class GenericTile extends BlockEntity implements Nameable, IProp
 	return ClientboundBlockEntityDataPacket.create(this, (tile, registries) -> {
 	    CompoundTag tag = new CompoundTag();
 	    CompoundTag data = new CompoundTag();
-	    propertyManager.saveDirtyPropsToTag(data, registries);
+	    propertyManager.flushDirtyPropsToTag(data, registries);
 	    tag.put(PropertyManager.NBT_KEY, data);
 	    return tag;
 	});

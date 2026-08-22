@@ -45,10 +45,11 @@ public class PropertyManager {
 	return properties;
     }
 
-    public void saveDirtyPropsToTag(CompoundTag tag, HolderLookup.Provider registries) {
+    public void flushDirtyPropsToTag(CompoundTag tag, HolderLookup.Provider registries) {
 	for (AbstractProperty prop : dirtyPropertiesDirect) {
 	    prop.saveToTag(tag, registries);
 	}
+	clean();
     }
 
     public void saveAllPropsForClientSync(CompoundTag tag, HolderLookup.Provider registries) {
