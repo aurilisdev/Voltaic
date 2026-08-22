@@ -2,9 +2,9 @@ package voltaic.common.recipe.recipeutils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Stream;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.mojang.datafixers.util.Either;
@@ -33,195 +33,222 @@ public class FluidIngredient extends Ingredient {
     public static final Codec<FluidIngredient> CODEC_DIRECT_FLUID = RecordCodecBuilder.create(instance ->
     //
     instance.group(
-            //
-            ForgeRegistries.FLUIDS.getCodec().fieldOf("fluid").forGetter(instance0 -> instance0.fluid),
-            //
-            Codec.INT.fieldOf("amount").forGetter(instance0 -> instance0.amount)
+	    //
+	    ForgeRegistries.FLUIDS.getCodec().fieldOf("fluid").forGetter(instance0 -> instance0.fluid),
+	    //
+	    Codec.INT.fieldOf("amount").forGetter(instance0 -> instance0.amount)
 
     )
-            //
-            .apply(instance, FluidIngredient::new)
+	    //
+	    .apply(instance, FluidIngredient::new)
 
     );
 
     public static final Codec<FluidIngredient> CODEC_TAGGED_FLUID = RecordCodecBuilder.create(instance ->
     //
     instance.group(
-            //
-            TagKey.codec(ForgeRegistries.Keys.FLUIDS).fieldOf("tag").forGetter(instance0 -> instance0.tag),
-            //
-            Codec.INT.fieldOf("amount").forGetter(instance0 -> instance0.amount)
+	    //
+	    TagKey.codec(ForgeRegistries.Keys.FLUIDS).fieldOf("tag").forGetter(instance0 -> instance0.tag),
+	    //
+	    Codec.INT.fieldOf("amount").forGetter(instance0 -> instance0.amount)
 
     )
-            //
-            .apply(instance, FluidIngredient::new)
+	    //
+	    .apply(instance, FluidIngredient::new)
     //
 
     );
 
-    public static final Codec<FluidIngredient> CODEC = Codec.either(CODEC_TAGGED_FLUID, CODEC_DIRECT_FLUID).xmap(either -> either.map(tag -> tag, fluid -> fluid), value -> {
-        //
+    public static final Codec<FluidIngredient> CODEC = Codec.either(CODEC_TAGGED_FLUID, CODEC_DIRECT_FLUID)
+	    .xmap(either -> either.map(tag -> tag, fluid -> fluid), value -> {
 
-        if (value.tag != null) {
-            return Either.left(value);
-        } else if (value.fluid != null) {
-            return Either.right(value);
-        } else {
-            throw new UnsupportedOperationException("The Fluid Ingredient neither has a tag nor a direct fluid value defined!");
-        }
+		if (value.tag != null) {
+		    return Either.left(value);
+		} else if (value.fluid != null) {
+		    return Either.right(value);
+		} else {
+		    throw new UnsupportedOperationException(
+			    "The Fluid Ingredient neither has a tag nor a direct fluid value defined!");
+		}
 
-    });
+	    });
 
     public static final Codec<List<FluidIngredient>> LIST_CODEC = CODEC.listOf();
 
+    private static final byte TYPE_TAG = 0;
+    private static final byte TYPE_FLUID = 1;
+
     public static final StreamCodec<FriendlyByteBuf, FluidIngredient> STREAM_CODEC = new StreamCodec<>() {
 
-        @Override
-        public void encode(FriendlyByteBuf buf, FluidIngredient ing) {
-            List<FluidStack> fluidStacks = ing.getMatchingFluids();
-            buf.writeInt(fluidStacks.size());
-            for (FluidStack stack : fluidStacks) {
-                StreamCodec.FLUID_STACK.encode(buf, stack);
-            }
-        }
+	@Override
+	public void encode(FriendlyByteBuf buf, FluidIngredient ing) {
 
-        @Override
-        public FluidIngredient decode(FriendlyByteBuf buf) {
-            List<FluidStack> stacks = new ArrayList<>();
-            int count = buf.readInt();
-            for (int i = 0; i < count; i++) {
-                stacks.add(StreamCodec.FLUID_STACK.decode(buf));
-            }
-            return new FluidIngredient(stacks);
-        }
+	    if (ing.tag != null) {
+		buf.writeByte(TYPE_TAG);
+		buf.writeResourceLocation(ing.tag.location());
+		buf.writeInt(ing.amount);
+		return;
+	    }
+
+	    if (ing.fluid != null) {
+		buf.writeByte(TYPE_FLUID);
+		StreamCodec.FLUID_STACK.encode(buf, new FluidStack(ing.fluid, ing.amount));
+		return;
+	    }
+
+	    throw new IllegalStateException("FluidIngredient has no representation");
+	}
+
+	@Override
+	public FluidIngredient decode(FriendlyByteBuf buf) {
+
+	    return switch (buf.readByte()) {
+
+	    case TYPE_TAG -> new FluidIngredient(TagKey.create(ForgeRegistries.Keys.FLUIDS, buf.readResourceLocation()),
+		    buf.readInt());
+
+	    case TYPE_FLUID -> new FluidIngredient(StreamCodec.FLUID_STACK.decode(buf));
+
+	    default -> throw new IllegalStateException("Unknown FluidIngredient type");
+
+	    };
+	}
     };
 
     public static final StreamCodec<FriendlyByteBuf, List<FluidIngredient>> LIST_STREAM_CODEC = new StreamCodec<>() {
 
-        @Override
-        public void encode(FriendlyByteBuf buf, List<FluidIngredient> ings) {
-            buf.writeInt(ings.size());
-            for (FluidIngredient ing : ings) {
-                STREAM_CODEC.encode(buf, ing);
-            }
-        }
+	@Override
+	public void encode(FriendlyByteBuf buf, List<FluidIngredient> ings) {
+	    buf.writeInt(ings.size());
 
-        @Override
-        public List<FluidIngredient> decode(FriendlyByteBuf buf) {
-            int length = buf.readInt();
-            List<FluidIngredient> ings = new ArrayList<>();
-            for (int i = 0; i < length; i++) {
-                ings.add(STREAM_CODEC.decode(buf));
-            }
-            return ings;
-        }
+	    for (FluidIngredient ing : ings) {
+		STREAM_CODEC.encode(buf, ing);
+	    }
+	}
+
+	@Override
+	public List<FluidIngredient> decode(FriendlyByteBuf buf) {
+	    int length = buf.readInt();
+	    List<FluidIngredient> ings = new ArrayList<>();
+
+	    for (int i = 0; i < length; i++) {
+		ings.add(STREAM_CODEC.decode(buf));
+	    }
+
+	    return ings;
+	}
     };
 
-
-    @Nonnull
-    private List<FluidStack> fluidStacks;
+    @Nullable
+    public final TagKey<Fluid> tag;
 
     @Nullable
-    public TagKey<Fluid> tag;
-    @Nullable
-    private Fluid fluid;
-    private int amount;
+    private final Fluid fluid;
+
+    private final int amount;
+
+    private FluidIngredient(@Nullable TagKey<Fluid> tag, @Nullable Fluid fluid, int amount) {
+	super(Stream.empty());
+	this.tag = tag;
+	this.fluid = fluid;
+	this.amount = amount;
+    }
 
     public FluidIngredient(FluidStack fluidStack) {
-    	super(Stream.empty());
-        this.fluid = fluidStack.getFluid();
-        this.amount = fluidStack.getAmount();
+	this(null, fluidStack.getFluid(), fluidStack.getAmount());
     }
 
     public FluidIngredient(Fluid fluid, int amount) {
-        this(new FluidStack(fluid, amount));
-    }
-
-    public FluidIngredient(List<FluidStack> fluidStack) {
-    	super(Stream.empty());
-        fluidStacks = fluidStack;
-        FluidStack fluid = getFluidStack();
-        this.fluid = fluid.getFluid();
-        this.amount = fluid.getAmount();
+	this(null, fluid, amount);
     }
 
     public FluidIngredient(TagKey<Fluid> tag, int amount) {
-    	super(Stream.empty());
-        this.tag = tag;
-        this.amount = amount;
-
+	this(tag, null, amount);
     }
 
     @Override
     public boolean test(ItemStack stack) {
-        return false;
+	return false;
     }
 
     @Override
     public ItemStack[] getItems() {
-        return new ItemStack[] {};
+	return new ItemStack[] {};
     }
 
     @Override
     public boolean isSimple() {
-        return false;
+	return false;
     }
-    
-    public boolean testFluid(@Nullable FluidStack t) {
-        if(t == null || t.isEmpty()){
-            return false;
-        }
 
-        for (FluidStack stack : getMatchingFluids()) {
-            if (t.getAmount() >= stack.getAmount()) {
-                if (t.getFluid().isSame(stack.getFluid())) {
-                    return true;
-                }
-            }
-        }
-        return false;
+    public boolean testFluid(@Nullable FluidStack stack) {
+
+	if (stack == null || stack.isEmpty()) {
+	    return false;
+	}
+
+	if (stack.getAmount() < amount) {
+	    return false;
+	}
+
+	if (tag != null) {
+	    return ForgeRegistries.FLUIDS.tags().getTag(tag).contains(stack.getFluid());
+	}
+
+	if (fluid != null) {
+	    return stack.getFluid().isSame(fluid);
+	}
+
+	return false;
     }
 
     public List<FluidStack> getMatchingFluids() {
 
-        if (fluidStacks == null) {
+	if (tag != null) {
 
-            fluidStacks = new ArrayList<>();
+	    List<FluidStack> fluids = new ArrayList<>();
 
-            if (tag != null) {
+	    ForgeRegistries.FLUIDS.tags().getTag(tag).forEach(fluid -> {
+		fluids.add(new FluidStack(fluid, amount));
+	    });
 
-                ForgeRegistries.FLUIDS.tags().getTag(tag).forEach(h -> {
-                    fluidStacks.add(new FluidStack(h, amount));
-                });
+	    return fluids;
+	}
 
-            } else if (fluid != null) {
+	if (fluid != null) {
+	    return List.of(new FluidStack(fluid, amount));
+	}
 
-                fluidStacks.add(new FluidStack(fluid, amount));
-
-            } else {
-                throw new UnsupportedOperationException("Fluid Ingredient has neither a fluid nor a fluid tag defined");
-            }
-
-        }
-
-        return fluidStacks;
+	return List.of();
     }
 
-    public FluidStack getFluidStack() {
-        return getMatchingFluids().size() < 1 ? FluidStack.EMPTY : getMatchingFluids().get(0);
+    public int getAmount() {
+	return amount;
     }
 
     @Override
     public String toString() {
-        return "Fluid : " + getFluidStack().getFluid().toString() + ", Amt : " + amount;
+
+	if (tag != null) {
+	    return "Fluid Tag: #" + tag.location() + ", Amt: " + amount;
+	}
+
+	if (fluid != null) {
+	    return "Fluid: " + ForgeRegistries.FLUIDS.getKey(fluid) + ", Amt: " + amount;
+	}
+
+	return "Empty FluidIngredient";
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof FluidIngredient ing) {
-            return ing.getMatchingFluids().equals(getMatchingFluids()) && ing.amount == amount;
-        }
-        return false;
+	return this == obj || obj instanceof FluidIngredient other && amount == other.amount
+		&& Objects.equals(tag, other.tag) && Objects.equals(fluid, other.fluid);
+    }
+
+    @Override
+    public int hashCode() {
+	return Objects.hash(tag, fluid, amount);
     }
 
 }
