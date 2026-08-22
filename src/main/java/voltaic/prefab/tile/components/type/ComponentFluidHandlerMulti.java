@@ -321,8 +321,8 @@ public class ComponentFluidHandlerMulti implements IComponentFluidHandler {
 		if (inputTanks != null) {
 		    for (FluidIngredient ing : recipe.getFluidIngredients()) {
 			ing.getMatchingFluids().forEach(h -> inputFluidHolder.add(h.getFluid()));
-			if (ing.getFluidStack().getAmount() > maxFluidInput) {
-			    maxFluidInput = ing.getFluidStack().getAmount();
+			if (ing.getAmount() > maxFluidInput) {
+			    maxFluidInput = ing.getAmount();
 			}
 		    }
 		}

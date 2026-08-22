@@ -44,10 +44,11 @@ public class PropertyManager {
 	return properties;
     }
 
-    public void saveDirtyPropsToTag(CompoundTag tag) {
+    public void flushDirtyPropsToTag(CompoundTag tag) {
 	for (AbstractProperty prop : dirtyPropertiesDirect) {
 	    prop.saveToTag(tag);
 	}
+	clean();
     }
 
     public void saveAllPropsForClientSync(CompoundTag tag) {

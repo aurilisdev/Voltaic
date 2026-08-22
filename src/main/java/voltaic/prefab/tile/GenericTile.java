@@ -152,13 +152,13 @@ public abstract class GenericTile extends BlockEntity implements Nameable, IProp
     @Nullable
     @Override
     public Packet<ClientGamePacketListener> getUpdatePacket() {
-	return ClientboundBlockEntityDataPacket.create(this, tile -> {
-	    CompoundTag tag = new CompoundTag();
-	    CompoundTag data = new CompoundTag();
-	    propertyManager.saveDirtyPropsToTag(data);
-	    tag.put(PropertyManager.NBT_KEY, data);
-	    return tag;
-	});
+
+	final CompoundTag tag = new CompoundTag();
+	CompoundTag data = new CompoundTag();
+	propertyManager.flushDirtyPropsToTag(data);
+
+	tag.put(PropertyManager.NBT_KEY, data);
+	return ClientboundBlockEntityDataPacket.create(this, tile -> tag);
     }
 
     // Only fires on server side

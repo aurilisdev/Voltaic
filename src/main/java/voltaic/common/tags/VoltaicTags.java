@@ -42,6 +42,7 @@ public class VoltaicTags {
 	public static final TagKey<Item> DUST_LITHIUM = forgeTag("dusts/lithium");
 	public static final TagKey<Item> DUST_MOLYBDENUM = forgeTag("dusts/molybdenum");
 	public static final TagKey<Item> DUST_NETHERITE = forgeTag("dusts/netherite");
+	public static final TagKey<Item> DUST_NETHERITE_SCRAP = forgeTag("dusts/netherite_scrap");
 	public static final TagKey<Item> DUST_OBSIDIAN = forgeTag("dusts/obsidian");
 	public static final TagKey<Item> DUST_SALT = forgeTag("dusts/salt");
 	public static final TagKey<Item> DUST_SALTPETER = forgeTag("dusts/saltpeter");

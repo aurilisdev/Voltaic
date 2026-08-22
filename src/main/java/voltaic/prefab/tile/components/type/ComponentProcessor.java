@@ -895,7 +895,7 @@ public class ComponentProcessor implements IComponent {
 	List<FluidIngredient> fluidIngs = locRecipe.getFluidIngredients();
 	List<Integer> tankOrientation = locRecipe.getFluidArrangement();
 	for (int i = 0; i < handler.tankCount(true); i++) {
-	    tanks[tankOrientation.get(i)].drain(fluidIngs.get(i).getFluidStack().getAmount(), FluidAction.EXECUTE);
+	    tanks[tankOrientation.get(i)].drain(fluidIngs.get(i).getAmount(), FluidAction.EXECUTE);
 	}
 	dispenseExperience(inv, locRecipe.getXp());
 	setChanged();
@@ -963,7 +963,7 @@ public class ComponentProcessor implements IComponent {
 	List<FluidIngredient> fluidIngs = locRecipe.getFluidIngredients();
 	List<Integer> tankOrientation = locRecipe.getFluidArrangement();
 	for (int i = 0; i < handler.tankCount(true); i++) {
-	    tanks[tankOrientation.get(i)].drain(fluidIngs.get(i).getFluidStack().getAmount(), FluidAction.EXECUTE);
+	    tanks[tankOrientation.get(i)].drain(fluidIngs.get(i).getAmount(), FluidAction.EXECUTE);
 	}
 	dispenseExperience(inv, locRecipe.getXp());
 	setChanged();
@@ -1022,7 +1022,7 @@ public class ComponentProcessor implements IComponent {
 	List<FluidIngredient> fluidIngs = locRecipe.getFluidIngredients();
 	List<Integer> tankOrientation = locRecipe.getFluidArrangement();
 	for (int i = 0; i < handler.tankCount(true); i++) {
-	    tanks[tankOrientation.get(i)].drain(fluidIngs.get(i).getFluidStack().getAmount(), FluidAction.EXECUTE);
+	    tanks[tankOrientation.get(i)].drain(fluidIngs.get(i).getAmount(), FluidAction.EXECUTE);
 	}
 	dispenseExperience(inv, locRecipe.getXp());
 	setChanged();
@@ -1078,7 +1078,7 @@ public class ComponentProcessor implements IComponent {
 	List<FluidIngredient> fluidIngs = locRecipe.getFluidIngredients();
 	List<Integer> tankOrientation = locRecipe.getFluidArrangement();
 	for (int i = 0; i < handler.tankCount(true); i++) {
-	    tanks[tankOrientation.get(i)].drain(fluidIngs.get(i).getFluidStack().getAmount(), FluidAction.EXECUTE);
+	    tanks[tankOrientation.get(i)].drain(fluidIngs.get(i).getAmount(), FluidAction.EXECUTE);
 	}
 	dispenseExperience(inv, locRecipe.getXp());
 	setChanged();
@@ -1134,7 +1134,7 @@ public class ComponentProcessor implements IComponent {
 	List<FluidIngredient> fluidIngs = locRecipe.getFluidIngredients();
 	List<Integer> tankOrientation = locRecipe.getFluidArrangement();
 	for (int i = 0; i < fluidHandler.tankCount(true); i++) {
-	    tanks[tankOrientation.get(i)].drain(fluidIngs.get(i).getFluidStack().getAmount(), FluidAction.EXECUTE);
+	    tanks[tankOrientation.get(i)].drain(fluidIngs.get(i).getAmount(), FluidAction.EXECUTE);
 	}
 	dispenseExperience(inv, locRecipe.getXp());
 	setChanged();
@@ -1197,7 +1197,7 @@ public class ComponentProcessor implements IComponent {
 	List<FluidIngredient> fluidIngs = locRecipe.getFluidIngredients();
 	List<Integer> tankOrientation = locRecipe.getFluidArrangement();
 	for (int i = 0; i < fluidHandler.tankCount(true); i++) {
-	    tanks[tankOrientation.get(i)].drain(fluidIngs.get(i).getFluidStack().getAmount(), FluidAction.EXECUTE);
+	    tanks[tankOrientation.get(i)].drain(fluidIngs.get(i).getAmount(), FluidAction.EXECUTE);
 	}
 	dispenseExperience(inv, locRecipe.getXp());
 	setChanged();
@@ -1225,7 +1225,8 @@ public class ComponentProcessor implements IComponent {
 	    ItemStack slotStack = slots.get(i);
 	    ItemStack biStack = biproducts[Math.min(i, biproducts.length - 1)];
 	    if (!slotStack.isEmpty()) {
-		if ((slotStack.getCount() + biStack.getCount() > slotStack.getMaxStackSize()) || !ItemUtils.testItems(slotStack.getItem(), biStack.getItem())) {
+		if ((slotStack.getCount() + biStack.getCount() > slotStack.getMaxStackSize())
+			|| !ItemUtils.testItems(slotStack.getItem(), biStack.getItem())) {
 		    return false;
 		}
 	    }
