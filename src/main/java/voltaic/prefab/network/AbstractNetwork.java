@@ -59,7 +59,7 @@ public abstract class AbstractNetwork<C extends GenericRefreshingConnectTile<T, 
 		continue;
 	    }
 
-	    updateRecieverStatistics = updateReceiver(receiver.reciever(), receiver.removed(), receiver.dir());
+	    updateRecieverStatistics |= updateReceiver(receiver.reciever(), receiver.removed(), receiver.dir());
 	}
 
 	// check if we need to recheck the overall statistics
@@ -89,32 +89,25 @@ public abstract class AbstractNetwork<C extends GenericRefreshingConnectTile<T, 
      */
     private boolean updateReceiver(BlockEntity entity, boolean remove, Direction dir) {
 
-	HashSet<Direction> dirs;
+	Direction input = dir.getOpposite();
+	HashSet<Direction> inputs = acceptorInputMap.get(entity);
 
 	if (remove) {
+	    boolean changed = inputs != null && inputs.remove(input);
 
-	    if (!entity.isRemoved() && acceptorInputMap.containsKey(entity)) {
-
-		dirs = acceptorInputMap.get(entity);
-		dirs.remove(dir.getOpposite());
-		acceptorInputMap.put(entity, dirs);
-
-	    } else if (entity.isRemoved()) {
-
-		acceptorSet.remove(entity);
-		acceptorInputMap.remove(entity);
-		return true;
-
+	    if (entity.isRemoved() || inputs == null || inputs.isEmpty()) {
+		changed |= acceptorSet.remove(entity);
+		changed |= acceptorInputMap.remove(entity) != null;
 	    }
 
-	} else {
+	    return changed;
+	}
 
-	    acceptorSet.add(entity);
-	    dirs = acceptorInputMap.getOrDefault(entity, new HashSet<>());
-	    dirs.add(dir.getOpposite());
-	    acceptorInputMap.put(entity, dirs);
-	    updateRecieverStatistics(entity, dir);
+	acceptorSet.add(entity);
+	inputs = acceptorInputMap.computeIfAbsent(entity, key -> new HashSet<>());
 
+	if (inputs.add(input)) {
+	    updateRecieverStatistics(entity, input);
 	}
 
 	return false;
@@ -135,7 +128,7 @@ public abstract class AbstractNetwork<C extends GenericRefreshingConnectTile<T, 
 		continue;
 	    }
 
-	    updateConductorStatistics = updateConductor(conductor.conductor(), conductor.removed());
+	    updateConductorStatistics |= updateConductor(conductor.conductor(), conductor.removed());
 
 	}
 
@@ -229,8 +222,6 @@ public abstract class AbstractNetwork<C extends GenericRefreshingConnectTile<T, 
 		    dir = Direction.values()[i];
 
 		    acceptorSet.add(acceptor);
-
-		    updateRecieverStatistics(acceptor, dir);
 
 		    HashSet<Direction> directions = acceptorInputMap.getOrDefault(acceptor, new HashSet<>());
 
