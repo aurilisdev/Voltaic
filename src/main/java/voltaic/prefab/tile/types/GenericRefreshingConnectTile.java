@@ -24,9 +24,7 @@ public abstract class GenericRefreshingConnectTile<CABLETYPE, CONDUCTOR extends 
     private final EnumConnectType[] previousConnections = { EnumConnectType.NONE, EnumConnectType.NONE,
 	    EnumConnectType.NONE, EnumConnectType.NONE, EnumConnectType.NONE, EnumConnectType.NONE };
     protected final BlockEntity[] recieverConnections = new BlockEntity[6];
-    protected final BlockEntity[] prevRecieverConnections = new BlockEntity[6];
     protected final BlockEntity[] cableConnections = new BlockEntity[6];
-    protected final BlockEntity[] prevCableConnections = new BlockEntity[6];
     protected final HashSet<CONDUCTOR> connectionSet = new HashSet<>();
 
     private NETWORK network;
@@ -38,7 +36,6 @@ public abstract class GenericRefreshingConnectTile<CABLETYPE, CONDUCTOR extends 
     }
 
     public Pair<List<UpdatedReceiver>, List<UpdatedConductor<CONDUCTOR>>> updateAdjacent(Direction[] dirs) {
-
 	boolean flag = false;
 	int ordinal;
 	EnumConnectType prevConnection, connection;
@@ -47,49 +44,53 @@ public abstract class GenericRefreshingConnectTile<CABLETYPE, CONDUCTOR extends 
 	List<UpdatedConductor<CONDUCTOR>> updatedConductors = new ArrayList<>();
 
 	for (Direction dir : dirs) {
-
 	    ordinal = dir.ordinal();
 	    connection = connectionsArr[ordinal];
 	    prevConnection = previousConnections[ordinal];
 
 	    BlockEntity entity = level.getBlockEntity(worldPosition.relative(dir));
+	    BlockEntity previousEntity = switch (prevConnection) {
+	    case WIRE -> cableConnections[ordinal];
+	    case INVENTORY -> recieverConnections[ordinal];
+	    default -> null;
+	    };
+	    BlockEntity currentEntity = connection == EnumConnectType.NONE ? null : entity;
 
-	    if (prevConnection == connection) {
+	    if (prevConnection == connection && previousEntity == currentEntity) {
 		continue;
 	    }
 
-	    if (connection == EnumConnectType.NONE && prevConnection == EnumConnectType.WIRE) {
-		updatedConductors.add(new UpdatedConductor<>((CONDUCTOR) prevCableConnections[ordinal], true));
-	    } else if (connection == EnumConnectType.WIRE && prevConnection == EnumConnectType.NONE) {
-		updatedConductors.add(new UpdatedConductor<>((CONDUCTOR) entity, false));
-	    } else if (connection == EnumConnectType.NONE && prevConnection == EnumConnectType.INVENTORY) {
-		updatedRecievers.add(new UpdatedReceiver(prevRecieverConnections[ordinal], true, dir));
-	    } else if (connection == EnumConnectType.INVENTORY && prevConnection == EnumConnectType.NONE) {
-		updatedRecievers.add(new UpdatedReceiver(entity, false, dir));
+	    if (prevConnection == EnumConnectType.WIRE && previousEntity != null) {
+		updatedConductors.add(new UpdatedConductor<>((CONDUCTOR) previousEntity, true));
+	    } else if (prevConnection == EnumConnectType.INVENTORY && previousEntity != null) {
+		updatedRecievers.add(new UpdatedReceiver(previousEntity, true, dir));
 	    }
 
-	    prevCableConnections[ordinal] = cableConnections[ordinal];
-	    prevRecieverConnections[ordinal] = recieverConnections[ordinal];
-	    recieverConnections[ordinal] = null;
+	    if (connection == EnumConnectType.WIRE && currentEntity != null) {
+		updatedConductors.add(new UpdatedConductor<>((CONDUCTOR) currentEntity, false));
+	    } else if (connection == EnumConnectType.INVENTORY && currentEntity != null) {
+		updatedRecievers.add(new UpdatedReceiver(currentEntity, false, dir));
+	    }
+
 	    cableConnections[ordinal] = null;
+	    recieverConnections[ordinal] = null;
 
 	    if (connection == EnumConnectType.WIRE) {
-		cableConnections[ordinal] = entity;
+		cableConnections[ordinal] = currentEntity;
 	    } else if (connection == EnumConnectType.INVENTORY) {
-		recieverConnections[ordinal] = entity;
+		recieverConnections[ordinal] = currentEntity;
 	    }
+
 	    previousConnections[ordinal] = connection;
 	    flag = true;
-
 	}
 
 	if (flag) {
 	    connectionSet.clear();
 	    for (BlockEntity entity : cableConnections) {
-		if (entity == null) {
-		    continue;
+		if (entity != null) {
+		    connectionSet.add((CONDUCTOR) entity);
 		}
-		connectionSet.add((CONDUCTOR) entity);
 	    }
 	}
 
@@ -125,11 +126,13 @@ public abstract class GenericRefreshingConnectTile<CABLETYPE, CONDUCTOR extends 
 	if (isRemoved()) {
 	    return;
 	}
+
 	if (level == null) {
 	    if (!isQueued) {
 		isQueued = true;
 		Scheduler.schedule(1, () -> updateNetwork(dirs));
 	    }
+	    return;
 	}
 
 	isQueued = false;
@@ -141,83 +144,56 @@ public abstract class GenericRefreshingConnectTile<CABLETYPE, CONDUCTOR extends 
 	Pair<List<UpdatedReceiver>, List<UpdatedConductor<CONDUCTOR>>> changed = updateAdjacent(dirs);
 
 	if (changed.getSecond().isEmpty()) {
-
 	    if (network == null) {
 		createNetworkFromThis();
 	    }
-
-	    if (!changed.getFirst().isEmpty()) {
-
-		network.updateRecievers(changed.getFirst());
-
-	    }
-
 	} else {
-
 	    HashSet<NETWORK> adjacentNetworks = new HashSet<>();
 
 	    for (UpdatedConductor<CONDUCTOR> wire : changed.getSecond()) {
+		CONDUCTOR conductor = wire.conductor();
 
-		if (wire.conductor() == null || wire.conductor().isRemoved() || wire.conductor().getNetwork() == null) {
+		if (wire.removed() || conductor == null || conductor.isRemoved()) {
 		    continue;
 		}
 
-		adjacentNetworks.add(wire.conductor().getNetwork());
-
+		adjacentNetworks.add(conductor.getNetwork());
 	    }
 
 	    if (adjacentNetworks.isEmpty()) {
-
 		if (network == null) {
 		    createNetworkFromThis();
 		}
 
 		network.updateConductors(changed.getSecond());
+	    } else if (adjacentNetworks.size() > 1) {
+		if (network == null) {
+		    createNetworkFromThis();
+		}
 
+		adjacentNetworks.add(network);
+
+		NETWORK newNetwork = createInstance(adjacentNetworks);
+		network = newNetwork;
+		newNetwork.refreshNewNetwork();
 	    } else {
+		NETWORK adjacentNetwork = adjacentNetworks.iterator().next();
 
-		List<NETWORK> networks = new ArrayList<>(adjacentNetworks);
-
-		if (networks.size() > 1) {
-
-		    if (network == null) {
-
-			createNetworkFromThis();
-
-		    }
-
+		if (network == null) {
+		    network = adjacentNetwork;
+		    network.updateConductor((CONDUCTOR) this, false);
+		} else {
 		    adjacentNetworks.add(network);
 
 		    NETWORK newNetwork = createInstance(adjacentNetworks);
-
 		    network = newNetwork;
-
 		    newNetwork.refreshNewNetwork();
-
-		} else {
-
-		    if (network == null) {
-
-			network = networks.get(0);
-
-			network.updateConductor((CONDUCTOR) this, false);
-
-		    } else {
-
-			adjacentNetworks.add(network);
-
-			NETWORK newNetwork = createInstance(adjacentNetworks);
-
-			network = newNetwork;
-
-			newNetwork.refreshNewNetwork();
-
-		    }
-
 		}
-
 	    }
+	}
 
+	if (!changed.getFirst().isEmpty()) {
+	    network.updateRecievers(changed.getFirst());
 	}
     }
 
@@ -266,11 +242,9 @@ public abstract class GenericRefreshingConnectTile<CABLETYPE, CONDUCTOR extends 
     }
 
     public static record UpdatedReceiver(BlockEntity reciever, boolean removed, Direction dir) {
-
     }
 
     public static record UpdatedConductor<CONDUCTOR>(CONDUCTOR conductor, boolean removed) {
-
     }
 
 }

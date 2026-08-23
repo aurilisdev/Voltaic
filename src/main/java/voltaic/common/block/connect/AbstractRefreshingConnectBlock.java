@@ -66,9 +66,11 @@ public abstract class AbstractRefreshingConnectBlock<CONDUCTOR extends GenericCo
 	EnumConnectType connection = getConnection(world.getBlockState(neighbor), world.getBlockEntity(neighbor),
 		conductor, facing);
 
-	if (currConnection != connection && conductor.writeConnection(facing, connection)) {
-	    conductor.updateNetwork(facing);
+	if(currConnection != connection && !conductor.writeConnection(facing, connection)) {
+	    return;
 	}
+
+	conductor.updateNetwork(facing);
 
     }
 
