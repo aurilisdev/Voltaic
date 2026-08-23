@@ -1,6 +1,6 @@
 package voltaic.common.network;
 
-import java.util.ConcurrentModificationException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.UUID;
@@ -33,31 +33,24 @@ public class NetworkRegistry {
 	if (event.phase == Phase.START) {
 	    return;
 	}
-	try {
-	    for (UUID id : TO_REMOVE) {
-		NETWORKS.remove(id);
+	for (UUID id : TO_REMOVE) {
+	    NETWORKS.remove(id);
+	}
+	TO_REMOVE.clear();
+
+	for (ITickableNetwork net : new ArrayList<>(NETWORKS.values())) {
+	    if (net.getSize() == 0) {
+		deregister(net);
+	    } else {
+		net.tick();
 	    }
-	    TO_REMOVE.clear();
-	    for (ITickableNetwork net : NETWORKS.values()) {
-		if (net.getSize() == 0) {
-		    deregister(net);
-		} else {
-		    net.tick();
-		}
-	    }
-	} catch (ConcurrentModificationException exception) {
-	    exception.printStackTrace();
 	}
     }
 
     @SubscribeEvent
     public static void unloadServer(ServerStoppedEvent event) {
-	try {
-	    NETWORKS.clear();
-	    TO_REMOVE.clear();
-	} catch (ConcurrentModificationException exception) {
-	    exception.printStackTrace();
-	}
+	NETWORKS.clear();
+	TO_REMOVE.clear();
     }
 
 }
