@@ -50,7 +50,6 @@ public abstract class AbstractRefreshingConnectBlock<CONDUCTOR extends GenericCo
 
     @Override
     public void onNeighborChange(BlockState state, LevelReader world, BlockPos pos, BlockPos neighbor) {
-
 	super.onNeighborChange(state, world, pos, neighbor);
 
 	if (world.isClientSide()) {
@@ -69,10 +68,11 @@ public abstract class AbstractRefreshingConnectBlock<CONDUCTOR extends GenericCo
 	EnumConnectType connection = getConnection(world.getBlockState(neighbor), world.getBlockEntity(neighbor),
 		conductor, facing);
 
-	if (currConnection != connection && conductor.writeConnection(facing, connection)) {
-	    conductor.updateNetwork(facing);
+	if (currConnection != connection && !conductor.writeConnection(facing, connection)) {
+	    return;
 	}
 
+	conductor.updateNetwork(facing);
     }
 
     @Override
