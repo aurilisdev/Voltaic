@@ -1,6 +1,5 @@
 package voltaic.common.network;
 
-import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.UUID;
@@ -15,49 +14,56 @@ import voltaic.api.network.ITickableNetwork;
 
 @EventBusSubscriber(modid = Voltaic.ID, bus = EventBusSubscriber.Bus.FORGE)
 public class NetworkRegistry {
-	private static final HashMap<UUID, ITickableNetwork> NETWORKS = new HashMap<>();
-	private static final HashSet<UUID> TO_REMOVE = new HashSet<>();
+    private static final HashMap<UUID, ITickableNetwork> NETWORKS = new HashMap<>();
+    private static final HashMap<UUID, ITickableNetwork> PENDING_ADDITIONS = new HashMap<>();
+    private static final HashSet<UUID> PENDING_REMOVALS = new HashSet<>();
 
-	public static void register(ITickableNetwork network) {
-		NETWORKS.put(network.getId(), network);
+    public static void register(ITickableNetwork network) {
+	PENDING_ADDITIONS.put(network.getId(), network);
+    }
+
+    public static void deregister(ITickableNetwork network) {
+	UUID id = network.getId();
+
+	if (PENDING_ADDITIONS.remove(id) != null) {
+	    return;
 	}
 
-	public static void deregister(ITickableNetwork network) {
-		if (NETWORKS.containsKey(network.getId())) {
-			TO_REMOVE.add(network.getId());
-		}
+	if (NETWORKS.containsKey(id)) {
+	    PENDING_REMOVALS.add(id);
 	}
+    }
 
-	@SubscribeEvent
-	public static void update(ServerTickEvent event) {
-		if(event.phase == Phase.START) {
-			return;
-		}
-		try {
-			for(UUID id : TO_REMOVE) {
-				NETWORKS.remove(id);
-			}
-			TO_REMOVE.clear();
-            for (ITickableNetwork net : NETWORKS.values()) {
-                if (net.getSize() == 0) {
-                    deregister(net);
-                } else {
-                    net.tick();
-                }
-            }
-		} catch (ConcurrentModificationException exception) {
-			exception.printStackTrace();
-		}
+    @SubscribeEvent
+    public static void update(ServerTickEvent event) {
+	if (event.phase == Phase.START) {
+	    return;
 	}
-
-	@SubscribeEvent
-	public static void unloadServer(ServerStoppedEvent event) {
-		try {
-			NETWORKS.clear();
-			TO_REMOVE.clear();
-		} catch (ConcurrentModificationException exception) {
-			exception.printStackTrace();
-		}
+	for (UUID id : PENDING_REMOVALS) {
+	    NETWORKS.remove(id);
 	}
+	PENDING_REMOVALS.clear();
 
+	NETWORKS.putAll(PENDING_ADDITIONS);
+	PENDING_ADDITIONS.clear();
+
+	for (ITickableNetwork network : NETWORKS.values()) {
+	    if (PENDING_REMOVALS.contains(network.getId())) {
+		continue;
+	    }
+
+	    if (network.getSize() == 0) {
+		deregister(network);
+	    } else {
+		network.tick();
+	    }
+	}
+    }
+
+    @SubscribeEvent
+    public static void unloadServer(ServerStoppedEvent event) {
+	NETWORKS.clear();
+	PENDING_ADDITIONS.clear();
+	PENDING_REMOVALS.clear();
+    }
 }
