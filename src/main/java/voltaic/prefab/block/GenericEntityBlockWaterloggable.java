@@ -31,8 +31,12 @@ public abstract class GenericEntityBlockWaterloggable extends GenericEntityBlock
     @Nullable
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
+	BlockState superState = super.getStateForPlacement(context);
+	if (superState == null)
+	    return null;
+
 	FluidState fluidstate = context.getLevel().getFluidState(context.getClickedPos());
-	return super.getStateForPlacement(context).setValue(VoltaicBlockStates.WATERLOGGED,
+	return superState.setValue(VoltaicBlockStates.WATERLOGGED,
 		fluidstate.getType().is(FluidTags.WATER) && fluidstate.isSource());
     }
 

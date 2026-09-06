@@ -17,8 +17,8 @@ import voltaic.prefab.tile.components.type.ComponentProcessor;
 
 public abstract class Item2ItemRecipe extends VoltaicRecipe {
 
-    private List<CountableIngredient> inputItems;
-    private ItemStack outputItem;
+    private final List<CountableIngredient> inputItems;
+    private final ItemStack outputItem;
 
     public Item2ItemRecipe(String group, List<CountableIngredient> inputs, ItemStack output, double experience,
 	    int ticks, double usagePerTick, List<ProbableItem> itemBiproducts, List<ProbableFluid> fluidBiproducts,
@@ -31,7 +31,7 @@ public abstract class Item2ItemRecipe extends VoltaicRecipe {
     @Override
     public boolean matchesRecipe(ComponentProcessor pr, int procNumber) {
 	Pair<List<Integer>, Boolean> pair = areItemsValid(getCountedIngredients(),
-		((ComponentInventory) pr.getHolder().getComponent(IComponentType.Inventory))
+		((ComponentInventory) pr.getHolder().getComponent(IComponentType.Inventory).get())
 			.getInputsForProcessor(procNumber));
 	if (pair.getSecond()) {
 	    setItemArrangement(procNumber, pair.getFirst());

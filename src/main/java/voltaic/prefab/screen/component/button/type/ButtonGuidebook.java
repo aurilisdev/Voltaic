@@ -48,11 +48,16 @@ public class ButtonGuidebook extends ScreenComponentButton<ButtonGuidebook> {
     }
 
     public static enum GuidebookButtonTextures implements ITexture {
-	PAGE_LEFT_OFF(18, 10, 0, 0, 18, 10, "page_backward"), PAGE_LEFT_ON(18, 10, 0, 0, 18, 10, "page_backward_on"),
-	PAGE_RIGHT_OFF(18, 10, 0, 0, 18, 10, "page_forward"), PAGE_RIGHT_ON(18, 10, 0, 0, 18, 10, "page_forward_on"),
-	HOME_OFF(11, 10, 0, 0, 11, 10, "homeoff"), HOME_ON(11, 10, 0, 0, 11, 10, "homeon"),
-	CHAPTERS_OFF(11, 10, 0, 0, 11, 10, "chaptersoff"), CHAPTERS_ON(11, 10, 0, 0, 11, 10, "chapterson"),
-	SEARCH_OFF(11, 10, 0, 0, 11, 10, "searchoff"), SEARCH_ON(11, 10, 0, 0, 11, 10, "searchon");
+	PAGE_LEFT_OFF(18, 10, 0, 0, 18, 10, "page_backward"),
+	PAGE_LEFT_ON(18, 10, 0, 0, 18, 10, "page_backward_on"),
+	PAGE_RIGHT_OFF(18, 10, 0, 0, 18, 10, "page_forward"),
+	PAGE_RIGHT_ON(18, 10, 0, 0, 18, 10, "page_forward_on"),
+	HOME_OFF(11, 10, 0, 0, 11, 10, "homeoff"),
+	HOME_ON(11, 10, 0, 0, 11, 10, "homeon"),
+	CHAPTERS_OFF(11, 10, 0, 0, 11, 10, "chaptersoff"),
+	CHAPTERS_ON(11, 10, 0, 0, 11, 10, "chapterson"),
+	SEARCH_OFF(11, 10, 0, 0, 11, 10, "searchoff"),
+	SEARCH_ON(11, 10, 0, 0, 11, 10, "searchon");
 
 	private final int textureWidth;
 	private final int textureHeight;

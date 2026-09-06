@@ -27,7 +27,7 @@ public abstract class AbstractScreenComponentGauge extends ScreenComponentGeneri
 	onTooltip((graphics, component, xAxis, yAxis) -> {
 	    List<? extends FormattedCharSequence> tooltips = getTooltips();
 	    if (!tooltips.isEmpty()) {
-		graphics.renderTooltip(gui.getFontRenderer(), tooltips, xAxis, yAxis);
+		graphics.renderTooltip(requireScreen().getFontRenderer(), tooltips, xAxis, yAxis);
 	    }
 	});
     }
@@ -38,7 +38,7 @@ public abstract class AbstractScreenComponentGauge extends ScreenComponentGeneri
 	ResourceLocation texture = getTexture();
 	int scale = getScaledLevel();
 
-	if (texture != null && scale > 0) {
+	if (scale > 0) {
 	    ResourceLocation blocks = InventoryMenu.BLOCK_ATLAS;
 	    TextureAtlasSprite sprite = Minecraft.getInstance().getTextureAtlas(blocks).apply(texture);
 	    RenderingUtils.bindTexture(sprite.atlasLocation());
@@ -74,7 +74,8 @@ public abstract class AbstractScreenComponentGauge extends ScreenComponentGeneri
     protected abstract List<? extends FormattedCharSequence> getTooltips();
 
     public enum GaugeTextures implements ITexture {
-	BACKGROUND_DEFAULT(14, 49, 0, 0, 256, 256, TEXTURE), LEVEL_DEFAULT(14, 49, 14, 0, 256, 256, TEXTURE);
+	BACKGROUND_DEFAULT(14, 49, 0, 0, 256, 256, TEXTURE),
+	LEVEL_DEFAULT(14, 49, 14, 0, 256, 256, TEXTURE);
 
 	private final int textureWidth;
 	private final int textureHeight;

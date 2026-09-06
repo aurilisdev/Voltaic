@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.function.Consumer;
 
+import javax.annotation.Nullable;
+
 import org.apache.logging.log4j.Logger;
 
 import com.google.gson.Gson;
@@ -40,7 +42,21 @@ import voltaic.common.packet.types.client.PacketSetClientRadioactiveItems;
 
 public class RadioactiveItemRegister extends SimplePreparableReloadListener<JsonObject> {
 
-    public static RadioactiveItemRegister INSTANCE = null;
+    @Nullable
+    private static RadioactiveItemRegister instance;
+
+    public static RadioactiveItemRegister initialize() {
+	if (instance != null)
+	    throw new IllegalStateException("RadioactiveItemRegister has already been initialized");
+	return instance = new RadioactiveItemRegister();
+    }
+
+    public static RadioactiveItemRegister getInstance() {
+	RadioactiveItemRegister current = instance;
+	if (current == null)
+	    throw new IllegalStateException("RadioactiveItemRegister has not been initialized");
+	return current;
+    }
 
     public static final String FOLDER = "radiation";
     public static final String FILE_NAME = "radioactive_items";
@@ -154,16 +170,16 @@ public class RadioactiveItemRegister extends SimplePreparableReloadListener<Json
     }
 
     public void setClientValues(HashMap<Item, RadioactiveObject> mappedValues) {
-	this.radioactiveItemMap.clear();
-	this.radioactiveItemMap.putAll(mappedValues);
+	radioactiveItemMap.clear();
+	radioactiveItemMap.putAll(mappedValues);
     }
 
     public static HashMap<Item, RadioactiveObject> getValues() {
-	return INSTANCE.radioactiveItemMap;
+	return getInstance().radioactiveItemMap;
     }
 
     public static RadioactiveObject getValue(Item item) {
-	return INSTANCE.radioactiveItemMap.getOrDefault(item, RadioactiveObject.ZERO);
+	return getInstance().radioactiveItemMap.getOrDefault(item, RadioactiveObject.ZERO);
     }
 
     private static boolean isJson(final ResourceLocation filename) {

@@ -64,9 +64,8 @@ public class MathUtils {
 
     public static int nearestPowerOf10(double value, boolean roundUp) {
 	double power = Math.log10(value);
-	if (roundUp) {
+	if (roundUp)
 	    return (int) Math.ceil(power);
-	}
 	return (int) Math.floor(power);
     }
 

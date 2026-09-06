@@ -1,8 +1,7 @@
 package voltaic.prefab.tile.components;
 
-import javax.annotation.Nullable;
-
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import voltaic.prefab.tile.GenericTile;
 
@@ -11,13 +10,7 @@ public interface IComponent {
 
     IComponentType getType();
 
-    default void holder(GenericTile holder) {
-    }
-
-    @Nullable
-    default GenericTile getHolder() {
-	return null;
-    }
+    GenericTile getHolder();
 
     default void loadFromNBT(CompoundTag nbt) {
     }
@@ -28,15 +21,15 @@ public interface IComponent {
     default void remove() {
     }
 
-    default void onLoad() {
-	refresh();
+    default void onLoad(Level level) {
+	refresh(level);
     }
 
-    default void refreshIfUpdate(BlockState oldState, BlockState newState) {
+    default void refreshIfUpdate(Level level, BlockState oldState, BlockState newState) {
 
     }
 
-    default void refresh() {
+    default void refresh(Level level) {
 
     }
 

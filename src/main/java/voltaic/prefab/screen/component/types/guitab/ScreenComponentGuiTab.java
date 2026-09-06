@@ -2,8 +2,6 @@ package voltaic.prefab.screen.component.types.guitab;
 
 import java.util.List;
 
-import javax.annotation.Nonnull;
-
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
@@ -18,8 +16,7 @@ public class ScreenComponentGuiTab extends AbstractScreenComponentInfo {
     public static final ResourceLocation TEXTURE = Voltaic.rl("textures/screen/component/screentabs.png");
     private final ITexture iconType;
 
-    public ScreenComponentGuiTab(ITexture texture, ITexture icon, @Nonnull TextPropertySupplier infoHandler, int x,
-	    int y) {
+    public ScreenComponentGuiTab(ITexture texture, ITexture icon, TextPropertySupplier infoHandler, int x, int y) {
 	super(texture, infoHandler, x, y);
 	iconType = icon;
     }
@@ -32,9 +29,8 @@ public class ScreenComponentGuiTab extends AbstractScreenComponentInfo {
     @Override
     public void renderBackground(GuiGraphics graphics, int xAxis, int yAxis, int guiWidth, int guiHeight) {
 	super.renderBackground(graphics, xAxis, yAxis, guiWidth, guiHeight);
-	if (iconType == IconType.NONE) {
+	if (iconType == IconType.NONE)
 	    return;
-	}
 	int slotXOffset = (texture.imageWidth() - iconType.imageWidth()) / 2;
 	int slotYOffset = (texture.imageHeight() - iconType.imageHeight()) / 2;
 	graphics.blit(iconType.getLocation(), guiWidth + xLocation + slotXOffset, guiHeight + yLocation + slotYOffset,
@@ -43,7 +39,8 @@ public class ScreenComponentGuiTab extends AbstractScreenComponentInfo {
     }
 
     public enum GuiInfoTabTextures implements ITexture {
-	REGULAR(26, 26, 0, 0, 26, 26, "tab_regular"), REGULAR_RIGHT(26, 26, 0, 0, 26, 26, "tab_regular_right");
+	REGULAR(26, 26, 0, 0, 26, 26, "tab_regular"),
+	REGULAR_RIGHT(26, 26, 0, 0, 26, 26, "tab_regular_right");
 
 	private final int textureWidth;
 	private final int textureHeight;

@@ -3,6 +3,8 @@ package voltaic.api.item;
 import java.util.List;
 import java.util.Objects;
 
+import javax.annotation.Nullable;
+
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
@@ -95,9 +97,8 @@ public interface IItemElectric {
     }
 
     default TransferPack extractPower(ItemStack stack, double amount, boolean debug) {
-	if (getJoulesStored(stack) <= 0) {
+	if (getJoulesStored(stack) <= 0)
 	    return TransferPack.EMPTY;
-	}
 	double current = getJoulesStored(stack);
 	double extracted = Math.min(current, Math.min(getExtractLimit(stack), amount));
 	if (!debug) {
@@ -135,9 +136,8 @@ public interface IItemElectric {
     default void swapBatteryPackFirstItem(ItemStack tool, Player player) {
 	IItemElectric electricItem = (IItemElectric) tool.getItem();
 
-	if (electricItem.isEnergyStorageOnly() || electricItem.cannotHaveBatterySwapped()) {
+	if (electricItem.isEnergyStorageOnly() || electricItem.cannotHaveBatterySwapped())
 	    return;
-	}
 
 	Inventory inv = player.getInventory();
 
@@ -152,9 +152,8 @@ public interface IItemElectric {
 		    && electric.getElectricProperties().receive
 			    .getVoltage() == electricItem.getElectricProperties().receive.getVoltage()) {
 		ItemStack currBattery = electricItem.getCurrentBattery(tool);
-		if (currBattery.isEmpty()) {
+		if (currBattery.isEmpty())
 		    return;
-		}
 		double joulesStored = electricItem.getJoulesStored(tool);
 		electricItem.setCurrentBattery(tool, playerItem);
 		IItemElectric.setEnergyStored(tool, electric.getJoulesStored(playerItem));
@@ -178,45 +177,35 @@ public interface IItemElectric {
 
     static boolean overrideOtherStackedOnMe(ItemStack stack, ItemStack other, Slot slot, ClickAction action,
 	    Player player, SlotAccess access) {
-
-	if (action == null || action == ClickAction.PRIMARY || other.isEmpty()
-		|| ((IItemElectric) stack.getItem()).cannotHaveBatterySwapped()) {
+	if (action == ClickAction.PRIMARY || other.isEmpty()
+		|| ((IItemElectric) stack.getItem()).cannotHaveBatterySwapped())
 	    return false;
-	}
 
-	if (!(other.getItem() instanceof IItemElectric)
-		|| other.getItem() instanceof IItemElectric electric && !electric.isEnergyStorageOnly()) {
+	if (!(other.getItem() instanceof IItemElectric otherElectric) || !otherElectric.isEnergyStorageOnly())
 	    return false;
-	}
 
 	IItemElectric thisElectric = (IItemElectric) stack.getItem();
-	IItemElectric otherElectric = (IItemElectric) other.getItem();
 
-	if (otherElectric.getJoulesStored(other) == 0
-		|| otherElectric.getElectricProperties().receive
-			.getVoltage() != thisElectric.getElectricProperties().receive.getVoltage()
+	boolean mismatchedVoltages = otherElectric.getElectricProperties().receive
+		.getVoltage() != thisElectric.getElectricProperties().receive.getVoltage()
 		|| thisElectric.getElectricProperties().extract
-			.getVoltage() != otherElectric.getElectricProperties().extract.getVoltage()) {
+			.getVoltage() != otherElectric.getElectricProperties().extract.getVoltage();
+	if (otherElectric.getJoulesStored(other) == 0 || mismatchedVoltages)
 	    return false;
-	}
 
-	ItemStack currBattery = thisElectric.getCurrentBattery(stack);
-
+	ItemStack currentBattery = thisElectric.getCurrentBattery(stack);
 	double joulesStored = thisElectric.getJoulesStored(stack);
 
-	IItemElectric.setEnergyStored(currBattery, joulesStored);
-
-	access.set(currBattery);
+	IItemElectric.setEnergyStored(currentBattery, joulesStored);
+	access.set(currentBattery);
 
 	IItemElectric.setEnergyStored(stack, otherElectric.getJoulesStored(other));
-
 	thisElectric.setCurrentBattery(stack, other);
 
 	player.level().playLocalSound(player.getX(), player.getY(), player.getZ(),
 		VoltaicSounds.SOUND_BATTERY_SWAP.get(), SoundSource.PLAYERS, 0.25F, 1.0F, false);
 
 	return true;
-
     }
 
     default ItemStack getCurrentBattery(ItemStack tool) {
@@ -224,9 +213,8 @@ public interface IItemElectric {
 	ElectricItemData data = tool.getOrDefault(VoltaicDataComponentTypes.ELECTRIC_ITEM_DATA,
 		defaultData((IItemElectric) tool.getItem()));
 
-	if (data.battery.getItem() == Items.AIR) {
+	if (data.battery.getItem() == Items.AIR)
 	    return ItemStack.EMPTY;
-	}
 
 	return data.battery;
     }
@@ -310,11 +298,10 @@ public interface IItemElectric {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-	    if (obj instanceof ElectricItemData data) {
+	public boolean equals(@Nullable Object obj) {
+	    if (obj instanceof ElectricItemData data)
 		return joulesStored == data.joulesStored && maxJoules == data.maxJoules && voltage == data.voltage
 			&& recieveCap == data.recieveCap && extractCap == data.extractCap && battery == data.battery;
-	    }
 	    return false;
 	}
 

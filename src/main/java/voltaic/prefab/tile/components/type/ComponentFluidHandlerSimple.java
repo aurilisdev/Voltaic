@@ -6,11 +6,10 @@ import java.util.function.Predicate;
 
 import javax.annotation.Nullable;
 
-import org.jetbrains.annotations.NotNull;
-
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidStack;
@@ -39,16 +38,12 @@ import voltaic.prefab.utilities.BlockEntityUtils;
  */
 public class ComponentFluidHandlerSimple extends PropertyFluidTank implements IComponentFluidHandler {
 
-    @Nullable
-    public Direction[] inputDirections;
-    @Nullable
-    public Direction[] outputDirections;
-    @Nullable
-    private TagKey<Fluid>[] validFluidTags;
-    @Nullable
-    private Fluid[] validFluids;
+    public Direction[] inputDirections = {};
+    public Direction[] outputDirections = {};
+    private Fluid[] validFluids = {};
+    private TagKey<Fluid>[] validFluidTags = (TagKey<Fluid>[]) new TagKey<?>[0];
 
-    private HashSet<Fluid> validatorFluids = new HashSet<>();
+    private final HashSet<Fluid> validatorFluids = new HashSet<>();
 
     private IFluidHandler[] sidedOptionals = new IFluidHandler[6]; // Down Up North South West East
 
@@ -104,21 +99,8 @@ public class ComponentFluidHandlerSimple extends PropertyFluidTank implements IC
     }
 
     @Override
-    public boolean equals(Object obj) {
-	if (obj instanceof ComponentFluidHandlerSimple tank) {
-	    return tank.getFluid().equals(getFluid()) && tank.getCapacity() == getCapacity();
-	}
-	return false;
-    }
-
-    @Override
     public IComponentType getType() {
 	return IComponentType.FluidHandler;
-    }
-
-    @Override
-    public void holder(GenericTile holder) {
-	this.holder = holder;
     }
 
     @Override
@@ -127,80 +109,59 @@ public class ComponentFluidHandlerSimple extends PropertyFluidTank implements IC
     }
 
     @Override
-    public void refreshIfUpdate(BlockState oldState, BlockState newState) {
+    public void refreshIfUpdate(Level level, BlockState oldState, BlockState newState) {
 	if (isSided && oldState.hasProperty(VoltaicBlockStates.FACING)
 		&& newState.hasProperty(VoltaicBlockStates.FACING)
 		&& oldState.getValue(VoltaicBlockStates.FACING) != newState.getValue(VoltaicBlockStates.FACING)) {
-	    defineOptionals(newState.getValue(VoltaicBlockStates.FACING));
+	    defineOptionals(level, newState.getValue(VoltaicBlockStates.FACING));
 	}
     }
 
     @Override
-    public @org.jetbrains.annotations.Nullable IFluidHandler getCapability(
-	    @org.jetbrains.annotations.Nullable Direction side, CapabilityInputType type) {
-	if (!isSided) {
+    public @Nullable IFluidHandler getCapability(@Nullable Direction side, CapabilityInputType type) {
+	if (!isSided)
 	    return this;
-	}
-	if (side == null) {
+
+	if (side == null)
 	    return null;
-	}
 
 	return sidedOptionals[side.ordinal()];
     }
 
     @Override
-    public void refresh() {
-
-	defineOptionals(holder.getFacing());
-
+    public void refresh(Level level) {
+	defineOptionals(level, holder.getFacing());
     }
 
-    private void defineOptionals(Direction facing) {
-
-	holder.getLevel().invalidateCapabilities(holder.getBlockPos());
-
+    private void defineOptionals(Level level, Direction facing) {
+	level.invalidateCapabilities(holder.getBlockPos());
 	sidedOptionals = new IFluidHandler[6];
-
 	inputOptional = null;
-
 	outputOptional = null;
 
-	if (isSided) {
+	if (!isSided)
+	    return;
 
-	    // Input
-
-	    if (inputDirections != null) {
-		inputOptional = new InputTank(this);
-
-		for (Direction dir : inputDirections) {
-		    sidedOptionals[BlockEntityUtils.getRelativeSide(facing, dir).ordinal()] = inputOptional;
-		}
-	    }
-
-	    if (outputDirections != null) {
-		outputOptional = new OutputTank(this);
-
-		for (Direction dir : outputDirections) {
-		    sidedOptionals[BlockEntityUtils.getRelativeSide(facing, dir).ordinal()] = outputOptional;
-		}
-	    }
-
+	inputOptional = new InputTank(this);
+	for (Direction dir : inputDirections) {
+	    int index = BlockEntityUtils.getRelativeSide(facing, dir).ordinal();
+	    sidedOptionals[index] = inputOptional;
 	}
 
+	outputOptional = new OutputTank(this);
+	for (Direction dir : outputDirections) {
+	    int index = BlockEntityUtils.getRelativeSide(facing, dir).ordinal();
+	    sidedOptionals[index] = outputOptional;
+	}
     }
 
     @Override
-    public void onLoad() {
-	IComponentFluidHandler.super.onLoad();
-	if (validFluids != null) {
-	    Collections.addAll(validatorFluids, validFluids);
-	}
-	if (validFluidTags != null) {
-	    for (TagKey<Fluid> tag : validFluidTags) {
-		BuiltInRegistries.FLUID.getTag(tag).get().stream().forEach(holder -> {
-		    validatorFluids.add(holder.value());
-		});
-	    }
+    public void onLoad(Level level) {
+	IComponentFluidHandler.super.onLoad(level);
+	Collections.addAll(validatorFluids, validFluids);
+	for (TagKey<Fluid> tag : validFluidTags) {
+	    BuiltInRegistries.FLUID.getTag(tag).get().stream()
+		    .forEach(holder -> { validatorFluids.add(holder.value()); });
 	}
 	if (!validatorFluids.isEmpty()) {
 	    validator = fluidStack -> validatorFluids.contains(fluidStack.getFluid());
@@ -221,6 +182,13 @@ public class ComponentFluidHandlerSimple extends PropertyFluidTank implements IC
 	return new PropertyFluidTank[] { this };
     }
 
+    @Override
+    public boolean equals(@Nullable Object obj) {
+	if (obj instanceof ComponentFluidHandlerSimple tank)
+	    return tank.getFluid().equals(getFluid()) && tank.getCapacity() == getCapacity();
+	return false;
+    }
+
     private class InputTank extends ComponentFluidHandlerSimple {
 
 	public InputTank(ComponentFluidHandlerSimple property) {
@@ -228,12 +196,12 @@ public class ComponentFluidHandlerSimple extends PropertyFluidTank implements IC
 	}
 
 	@Override
-	public @NotNull FluidStack drain(FluidStack resource, FluidAction action) {
+	public FluidStack drain(FluidStack resource, FluidAction action) {
 	    return FluidStack.EMPTY;
 	}
 
 	@Override
-	public @NotNull FluidStack drain(int maxDrain, FluidAction action) {
+	public FluidStack drain(int maxDrain, FluidAction action) {
 	    return FluidStack.EMPTY;
 	}
 

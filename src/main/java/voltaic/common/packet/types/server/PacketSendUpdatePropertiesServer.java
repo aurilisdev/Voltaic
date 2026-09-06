@@ -7,6 +7,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import voltaic.common.packet.NetworkHandler;
 
@@ -20,11 +21,7 @@ public class PacketSendUpdatePropertiesServer implements CustomPacketPayload {
 
 	@Override
 	public void encode(FriendlyByteBuf buf, PacketSendUpdatePropertiesServer packet) {
-	    // buf.writeInt(packet.wrapper.index());
-	    // buf.writeResourceLocation(packet.wrapper.type().getId());
-	    // packet.wrapper.type().getPacketCodec().encode(buf, packet.wrapper.value());
-
-	    buf.writeNbt(packet.data == null ? new CompoundTag() : packet.data);
+	    buf.writeNbt(packet.data);
 	    buf.writeInt(packet.index);
 	    buf.writeBlockPos(packet.tilePos);
 
@@ -32,40 +29,27 @@ public class PacketSendUpdatePropertiesServer implements CustomPacketPayload {
 
 	@Override
 	public PacketSendUpdatePropertiesServer decode(FriendlyByteBuf buf) {
-	    return new PacketSendUpdatePropertiesServer(buf.readNbt(), buf.readInt(), buf.readBlockPos());
-	    // int index = buf.readInt();
-	    // IPropertyType type =
-	    // PropertyManager.REGISTERED_PROPERTIES.get(buf.readResourceLocation());
-
-	    // return new PacketSendUpdatePropertiesServer(new PropertyWrapper(index, type,
-	    // type.getPacketCodec().decode(buf), null), buf.readBlockPos());
+	    return new PacketSendUpdatePropertiesServer(
+		    buf.readNbt() instanceof CompoundTag tag ? tag : new CompoundTag(), buf.readInt(),
+		    buf.readBlockPos());
 	}
     };
 
     private final BlockPos tilePos;
-
-    private int index;
-
-    private CompoundTag data;
-    // private final PropertyWrapper wrapper;
+    private final int index;
+    private final CompoundTag data;
 
     public PacketSendUpdatePropertiesServer(CompoundTag data, int index, BlockPos tilePos) {
 	this.tilePos = tilePos;
 	this.index = index;
 	this.data = data;
-	// wrapper = new PropertyWrapper(property.getIndex(), property.getType(),
-	// property.get(), property);
     }
 
-    /*
-     * public PacketSendUpdatePropertiesServer(PropertyWrapper property, BlockPos
-     * tilePos) { this.tilePos = tilePos; wrapper = property; }
-     * 
-     */
-
     public static void handle(PacketSendUpdatePropertiesServer message, IPayloadContext context) {
-	ServerBarrierMethods.handleSendUpdatePropertiesServer(context.player().level(), message.tilePos, message.data,
-		message.index);
+	if (context.player().level() instanceof ServerLevel serverLevel) {
+	    ServerBarrierMethods.handleSendUpdatePropertiesServer(serverLevel, message.tilePos, message.data,
+		    message.index);
+	}
     }
 
     @Override

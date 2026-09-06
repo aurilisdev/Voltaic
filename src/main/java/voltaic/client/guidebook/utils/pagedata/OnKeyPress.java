@@ -1,5 +1,7 @@
 package voltaic.client.guidebook.utils.pagedata;
 
+import javax.annotation.Nullable;
+
 import voltaic.client.guidebook.ScreenGuidebook;
 
 public interface OnKeyPress {
@@ -14,7 +16,7 @@ public interface OnKeyPress {
 	}
 
 	@Override
-	public Object getJeiLookup() {
+	public @Nullable Object getJeiLookup() {
 	    return null;
 	}
     };
@@ -22,6 +24,6 @@ public interface OnKeyPress {
     public void onKeyPress(int keyCode, int scanCode, int modifiers, int x, int y, int xAxis, int yAxis,
 	    ScreenGuidebook screen);
 
-    public Object getJeiLookup();
+    public @Nullable Object getJeiLookup();
 
 }

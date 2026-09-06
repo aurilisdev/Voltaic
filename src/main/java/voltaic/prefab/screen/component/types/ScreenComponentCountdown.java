@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.DoubleSupplier;
 
+import javax.annotation.Nullable;
+
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
@@ -18,11 +20,12 @@ import voltaic.prefab.screen.component.utils.AbstractScreenComponentInfo;
 public class ScreenComponentCountdown extends AbstractScreenComponentInfo {
 
     private final DoubleSupplier progressInfoHandler;
-    private TextPropertySupplier tooltip;
+    private final @Nullable TextPropertySupplier tooltip;
 
     public static final ResourceLocation TEXTURE = Voltaic.rl("textures/screen/component/countdown.png");
 
-    public ScreenComponentCountdown(TextPropertySupplier tooltip, DoubleSupplier progressInfoHandler, int x, int y) {
+    public ScreenComponentCountdown(@Nullable TextPropertySupplier tooltip, DoubleSupplier progressInfoHandler, int x,
+	    int y) {
 	super(CountdownTextures.BACKGROUND_DEFAULT, AbstractScreenComponentInfo.EMPTY, x, y);
 	this.progressInfoHandler = progressInfoHandler;
 	this.tooltip = tooltip;
@@ -48,23 +51,21 @@ public class ScreenComponentCountdown extends AbstractScreenComponentInfo {
 
     @Override
     protected List<? extends FormattedCharSequence> getInfo(List<? extends FormattedCharSequence> list) {
-	if (tooltip != null) {
+	if (tooltip != null)
 	    return tooltip.getInfo();
-	}
 	return getTooltips();
     }
 
     private List<? extends FormattedCharSequence> getTooltips() {
 	List<FormattedCharSequence> tips = new ArrayList<>();
-	if (progressInfoHandler != null) {
-	    tips.add(ChatFormatter.getChatDisplayShort(100 * progressInfoHandler.getAsDouble(), DisplayUnits.PERCENTAGE)
-		    .withStyle(ChatFormatting.GRAY).getVisualOrderText());
-	}
+	tips.add(ChatFormatter.getChatDisplayShort(100 * progressInfoHandler.getAsDouble(), DisplayUnits.PERCENTAGE)
+		.withStyle(ChatFormatting.GRAY).getVisualOrderText());
 	return tips;
     }
 
     public enum CountdownTextures implements ITexture {
-	BACKGROUND_DEFAULT(60, 12, 0, 0, 256, 256, TEXTURE), COUNTDOWN_BAR_DEFAULT(58, 10, 0, 12, 256, 256, TEXTURE);
+	BACKGROUND_DEFAULT(60, 12, 0, 0, 256, 256, TEXTURE),
+	COUNTDOWN_BAR_DEFAULT(58, 10, 0, 12, 256, 256, TEXTURE);
 
 	private final int textureWidth;
 	private final int textureHeight;

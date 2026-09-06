@@ -1,5 +1,7 @@
 package voltaic.common.block;
 
+import javax.annotation.Nullable;
+
 import com.mojang.serialization.MapCodec;
 
 import net.minecraft.core.BlockPos;
@@ -39,22 +41,20 @@ public class BlockMachine extends GenericMachineBlock implements IMultiblockPare
 
     @Override
     public boolean propagatesSkylightDown(BlockState pState, BlockGetter pLevel, BlockPos pPos) {
-	if (machine.propegatesLightDown()) {
+	if (machine.propegatesLightDown())
 	    return true;
-	}
 	return super.propagatesSkylightDown(pState, pLevel, pPos);
     }
 
     @Override
     public boolean canSurvive(BlockState state, LevelReader worldIn, BlockPos pos) {
 
-	if (machine.isMultiblock()) {
+	if (machine.isMultiblock())
 	    return isValidMultiblockPlacement(state, worldIn, pos,
 		    machine.getSubnodes()
 			    .getSubnodes(state.hasProperty(VoltaicBlockStates.FACING)
 				    ? state.getValue(VoltaicBlockStates.FACING)
 				    : Direction.NORTH));
-	}
 	return super.canSurvive(state, worldIn, pos);
 
     }
@@ -68,18 +68,18 @@ public class BlockMachine extends GenericMachineBlock implements IMultiblockPare
     public int getLightEmission(BlockState state, BlockGetter world, BlockPos pos) {
 
 	if (machine.getLitBrightness() > 0 && state.hasProperty(VoltaicBlockStates.LIT)
-		&& state.getValue(VoltaicBlockStates.LIT)) {
+		&& state.getValue(VoltaicBlockStates.LIT))
 	    return machine.getLitBrightness();
-	}
 
 	return super.getLightEmission(state, world, pos);
     }
 
     @Override
-    public void setPlacedBy(Level worldIn, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
+    public void setPlacedBy(Level worldIn, BlockPos pos, BlockState state, @Nullable LivingEntity placer,
+	    ItemStack stack) {
 	super.setPlacedBy(worldIn, pos, state, placer, stack);
 	BlockEntity tile = worldIn.getBlockEntity(pos);
-	if (hasMultiBlock() && tile instanceof IMultiblockParentTile multi) {
+	if (hasMultiBlock() && tile instanceof IMultiblockParentTile multi && placer != null) {
 	    multi.onNodePlaced(worldIn, pos, state, placer, stack);
 	}
     }
@@ -87,8 +87,8 @@ public class BlockMachine extends GenericMachineBlock implements IMultiblockPare
     @Override
     public void onRemove(BlockState state, Level worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
 	BlockEntity tile = worldIn.getBlockEntity(pos);
-	if (!(state.getBlock() == newState.getBlock()
-		&& state.getValue(VoltaicBlockStates.FACING) != newState.getValue(VoltaicBlockStates.FACING))) {
+	if (state.getBlock() != newState.getBlock()
+		|| state.getValue(VoltaicBlockStates.FACING) == newState.getValue(VoltaicBlockStates.FACING)) {
 
 	    if (tile instanceof IMultiblockParentTile multi) {
 		multi.onNodeReplaced(worldIn, pos, true);
@@ -126,8 +126,13 @@ public class BlockMachine extends GenericMachineBlock implements IMultiblockPare
     }
 
     @Override
+    @Nullable
     public BlockState getStateForPlacement(BlockPlaceContext context) {
-	return super.getStateForPlacement(context).setValue(VoltaicBlockStates.LIT, false);
+	BlockState blockState = super.getStateForPlacement(context);
+	if (blockState == null)
+	    return null;
+
+	return blockState.setValue(VoltaicBlockStates.LIT, false);
     }
 
     @Override

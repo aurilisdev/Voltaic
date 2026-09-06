@@ -15,24 +15,19 @@ public final class ContainerUtils {
     public static ItemStack handleShiftClick(List<Slot> slots, Player player, int slotIndex) {
 	Slot sourceSlot = slots.get(slotIndex);
 	ItemStack inputStack = sourceSlot.getItem();
-	if (inputStack == null) {
-	    return null;
-	}
 
 	boolean sourceIsPlayer = sourceSlot.container == player.getInventory();
 
 	ItemStack copy = inputStack.copy();
 
 	if (sourceIsPlayer) {
-	    if (!mergeStack(player.getInventory(), false, sourceSlot, slots, false)) {
+	    if (!mergeStack(player.getInventory(), false, sourceSlot, slots, false))
 		return ItemStack.EMPTY;
-	    }
 	    return copy;
 	}
 	boolean isMachineOutput = !sourceSlot.mayPlace(inputStack);
-	if (!mergeStack(player.getInventory(), true, sourceSlot, slots, !isMachineOutput)) {
+	if (!mergeStack(player.getInventory(), true, sourceSlot, slots, !isMachineOutput))
 	    return ItemStack.EMPTY;
-	}
 	return copy;
     }
 

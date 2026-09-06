@@ -6,8 +6,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nullable;
 
 import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonDeserializationContext;
@@ -88,9 +87,8 @@ public class CableModelLoader implements IGeometryLoader<CableModelLoader.WirePa
 
 		ModelState transform = ModelStateRotation.ROTATIONS.get(dir);
 
-		wires[dir.ordinal()] = this.wire.bake(baker, this.wire, spriteGetter, transform, useBlockLight);
-		inventories[dir.ordinal()] = this.inventory.bake(baker, this.inventory, spriteGetter, transform,
-			useBlockLight);
+		wires[dir.ordinal()] = wire.bake(baker, wire, spriteGetter, transform, useBlockLight);
+		inventories[dir.ordinal()] = inventory.bake(baker, inventory, spriteGetter, transform, useBlockLight);
 
 	    }
 
@@ -101,9 +99,9 @@ public class CableModelLoader implements IGeometryLoader<CableModelLoader.WirePa
 	@Override
 	public void resolveParents(Function<ResourceLocation, UnbakedModel> modelGetter,
 		IGeometryBakingContext context) {
-	    this.none.resolveParents(modelGetter);
-	    this.wire.resolveParents(modelGetter);
-	    this.inventory.resolveParents(modelGetter);
+	    none.resolveParents(modelGetter);
+	    wire.resolveParents(modelGetter);
+	    inventory.resolveParents(modelGetter);
 	}
 
 	@Override
@@ -139,12 +137,12 @@ public class CableModelLoader implements IGeometryLoader<CableModelLoader.WirePa
 
 	@Override
 	public boolean useAmbientOcclusion() {
-	    return this.isAmbientOcclusion;
+	    return isAmbientOcclusion;
 	}
 
 	@Override
 	public boolean isGui3d() {
-	    return this.isGui3d;
+	    return isGui3d;
 	}
 
 	@Override
@@ -159,7 +157,7 @@ public class CableModelLoader implements IGeometryLoader<CableModelLoader.WirePa
 
 	@Override
 	public TextureAtlasSprite getParticleIcon() {
-	    return this.particle;
+	    return particle;
 	}
 
 	@Override
@@ -168,25 +166,23 @@ public class CableModelLoader implements IGeometryLoader<CableModelLoader.WirePa
 	}
 
 	@Override
-	public ChunkRenderTypeSet getRenderTypes(@NotNull BlockState state, @NotNull RandomSource rand,
-		@NotNull ModelData data) {
+	public ChunkRenderTypeSet getRenderTypes(BlockState state, RandomSource rand, ModelData data) {
 
 	    return none.getRenderTypes(state, rand, data);
 
 	}
 
 	@Override
-	public @NotNull List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side,
-		@NotNull RandomSource rand, @NotNull ModelData extraData, @Nullable RenderType renderType) {
+	public List<BakedQuad> getQuads(@org.jetbrains.annotations.Nullable BlockState state,
+		@org.jetbrains.annotations.Nullable Direction side, RandomSource rand, ModelData extraData,
+		@org.jetbrains.annotations.Nullable RenderType renderType) {
 	    @Nullable
 	    Supplier<EnumConnectType[]> m = extraData.get(ModelPropertyConnections.INSTANCE);
-	    if (m == null) {
+	    if (m == null)
 		return NO_QUADS;
-	    }
 	    EnumConnectType[] data = m.get();
-	    if (data == null) {
+	    if (data == null)
 		return NO_QUADS;
-	    }
 
 	    boolean none = false;
 
@@ -199,10 +195,10 @@ public class CableModelLoader implements IGeometryLoader<CableModelLoader.WirePa
 		    none = true;
 		    break;
 		case WIRE:
-		    quads.addAll(this.wires[i].getQuads(state, side, rand, extraData, renderType));
+		    quads.addAll(wires[i].getQuads(state, side, rand, extraData, renderType));
 		    break;
 		case INVENTORY:
-		    quads.addAll(this.inventories[i].getQuads(state, side, rand, extraData, renderType));
+		    quads.addAll(inventories[i].getQuads(state, side, rand, extraData, renderType));
 		    break;
 		default:
 		    none = true;
@@ -218,12 +214,10 @@ public class CableModelLoader implements IGeometryLoader<CableModelLoader.WirePa
 	}
 
 	@Override
-	public @NotNull ModelData getModelData(@NotNull BlockAndTintGetter level, @NotNull BlockPos pos,
-		@NotNull BlockState state, @NotNull ModelData modelData) {
-	    if (level.getBlockEntity(pos) instanceof IConnectTile tile) {
+	public ModelData getModelData(BlockAndTintGetter level, BlockPos pos, BlockState state, ModelData modelData) {
+	    if (level.getBlockEntity(pos) instanceof IConnectTile tile)
 		return ModelData.builder().with(ModelPropertyConnections.INSTANCE, () -> tile.readConnections())
 			.build();
-	    }
 	    return modelData;
 	}
 

@@ -26,15 +26,7 @@ import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
 import net.neoforged.neoforge.fluids.FluidStack;
 import voltaic.registers.VoltaicIngredients;
 
-/**
- * Extension of Ingredient that adds Fluid compatibility
- * 
- * @author skip999
- *
- */
 public class FluidIngredient implements Predicate<FluidStack>, ICustomIngredient {
-
-    // Mojank...
 
     public static final MapCodec<FluidIngredient> CODEC_DIRECT_FLUID = RecordCodecBuilder.mapCodec(instance ->
     //
@@ -70,14 +62,13 @@ public class FluidIngredient implements Predicate<FluidStack>, ICustomIngredient
 	    .xmap(either -> either.map(tag -> tag, fluid -> fluid), value -> {
 		//
 
-		if (value.tag != null) {
+		if (value.tag != null)
 		    return Either.left(value);
-		} else if (value.fluid != null) {
+		else if (value.fluid != null)
 		    return Either.right(value);
-		} else {
+		else
 		    throw new UnsupportedOperationException(
 			    "The Fluid Ingredient neither has a tag nor a direct fluid value defined!");
-		}
 
 	    });
 
@@ -90,17 +81,18 @@ public class FluidIngredient implements Predicate<FluidStack>, ICustomIngredient
 
 	@Override
 	public void encode(RegistryFriendlyByteBuf buf, FluidIngredient ing) {
-
-	    if (ing.tag != null) {
+	    TagKey<Fluid> tag = ing.tag;
+	    if (tag != null) {
 		buf.writeByte(TYPE_TAG);
-		buf.writeResourceLocation(ing.tag.location());
+		buf.writeResourceLocation(tag.location());
 		buf.writeInt(ing.amount);
 		return;
 	    }
 
-	    if (ing.fluid != null) {
+	    Fluid fluid = ing.fluid;
+	    if (fluid != null) {
 		buf.writeByte(TYPE_FLUID);
-		FluidStack.STREAM_CODEC.encode(buf, new FluidStack(ing.fluid, ing.amount));
+		FluidStack.STREAM_CODEC.encode(buf, new FluidStack(fluid, ing.amount));
 		return;
 	    }
 
@@ -189,31 +181,24 @@ public class FluidIngredient implements Predicate<FluidStack>, ICustomIngredient
 
     @Override
     public boolean test(@Nullable FluidStack stack) {
-	if (stack == null || stack.isEmpty()) {
+	if (stack == null || stack.isEmpty() || stack.getAmount() < amount)
 	    return false;
-	}
-	if (stack.getAmount() < amount) {
-	    return false;
-	}
-	if (tag != null) {
+	if (tag != null)
 	    return stack.is(tag);
-	}
-	if (fluid != null) {
+	Fluid fluid = this.fluid;
+	if (fluid != null)
 	    return stack.getFluid().isSame(fluid);
-	}
 	return false;
     }
 
     public List<FluidStack> getMatchingFluids() {
-	if (tag != null) {
+	if (tag != null)
 	    return BuiltInRegistries.FLUID.getTag(tag)
 		    .map(holders -> holders.stream().map(holder -> new FluidStack(holder, amount)).toList())
 		    .orElse(List.of());
-	}
 
-	if (fluid != null) {
+	if (fluid != null)
 	    return List.of(new FluidStack(fluid, amount));
-	}
 
 	return List.of();
     }
@@ -224,19 +209,17 @@ public class FluidIngredient implements Predicate<FluidStack>, ICustomIngredient
 
     @Override
     public String toString() {
-	if (tag != null) {
+	if (tag != null)
 	    return "Fluid Tag: #" + tag.location() + ", Amt: " + amount;
-	}
 
-	if (fluid != null) {
+	if (fluid != null)
 	    return "Fluid: " + BuiltInRegistries.FLUID.getKey(fluid) + ", Amt: " + amount;
-	}
 
 	return "Empty FluidIngredient";
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
 	return this == obj || obj instanceof FluidIngredient other && amount == other.amount
 		&& Objects.equals(tag, other.tag) && Objects.equals(fluid, other.fluid);
     }

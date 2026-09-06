@@ -1,5 +1,7 @@
 package voltaic.compatibility.jei.utils.label.types;
 
+import javax.annotation.Nullable;
+
 import net.minecraft.network.chat.Component;
 import voltaic.compatibility.jei.recipecategories.AbstractRecipeCategory;
 import voltaic.compatibility.jei.utils.label.AbstractLabelWrapper;
@@ -12,8 +14,7 @@ public class TemperatureLabelWrapper extends AbstractLabelWrapper {
     }
 
     @Override
-    public Component getComponent(AbstractRecipeCategory<?> category, Object recipe) {
-	// TODO Auto-generated method stub
+    public @Nullable Component getComponent(AbstractRecipeCategory<?> category, Object recipe) {
 	return null;
     }
 

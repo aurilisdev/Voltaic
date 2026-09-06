@@ -55,13 +55,13 @@ public class ScreenComponentGeneric extends AbstractScreenComponent {
 
     @Override
     public void renderBackground(GuiGraphics graphics, int xAxis, int yAxis, int guiWidth, int guiHeight) {
-	if (!isVisible()) {
+	if (!isVisible())
 	    return;
-	}
 	RenderingUtils.setShaderColor(color);
 	graphics.blit(texture.getLocation(), guiWidth + xLocation, guiHeight + yLocation, texture.textureU(),
 		texture.textureV(), texture.textureWidth(), texture.textureHeight(), texture.imageWidth(),
 		texture.imageHeight());
+	ITexture icon = this.icon;
 	if (icon != null) {
 	    int xOffset = (texture.imageWidth() - icon.imageWidth()) / 2;
 	    int yOffset = (texture.imageHeight() - icon.imageHeight()) / 2;

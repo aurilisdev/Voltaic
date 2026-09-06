@@ -2,8 +2,6 @@ package voltaic.api.fluid;
 
 import java.util.function.Predicate;
 
-import org.jetbrains.annotations.NotNull;
-
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.neoforged.neoforge.fluids.FluidStack;
@@ -28,19 +26,19 @@ public class PropertyFluidTank extends FluidTank {
     public PropertyFluidTank(int capacity, GenericTile holder, String key) {
 	super(capacity);
 	this.holder = holder;
-	fluidStackProperty = holder.property(
-		new SingleProperty<>(PropertyTypes.FLUID_STACK, "propertyfluidtankstack" + key, FluidStack.EMPTY));
-	capacityProperty = holder
-		.property(new SingleProperty<>(PropertyTypes.INTEGER, "propertyfluidtankcapacity" + key, capacity));
+	fluidStackProperty = holder.property(new SingleProperty<>(holder.getPropertyManager(),
+		PropertyTypes.FLUID_STACK, "propertyfluidtankstack" + key, FluidStack.EMPTY));
+	capacityProperty = holder.property(new SingleProperty<>(holder.getPropertyManager(), PropertyTypes.INTEGER,
+		"propertyfluidtankcapacity" + key, capacity));
     }
 
     public PropertyFluidTank(int capacity, Predicate<FluidStack> validator, GenericTile holder, String key) {
 	super(capacity, validator);
 	this.holder = holder;
-	fluidStackProperty = holder.property(
-		new SingleProperty<>(PropertyTypes.FLUID_STACK, "propertyfluidtankstack" + key, FluidStack.EMPTY));
-	capacityProperty = holder
-		.property(new SingleProperty<>(PropertyTypes.INTEGER, "propertyfluidtankcapacity" + key, capacity));
+	fluidStackProperty = holder.property(new SingleProperty<>(holder.getPropertyManager(),
+		PropertyTypes.FLUID_STACK, "propertyfluidtankstack" + key, FluidStack.EMPTY));
+	capacityProperty = holder.property(new SingleProperty<>(holder.getPropertyManager(), PropertyTypes.INTEGER,
+		"propertyfluidtankcapacity" + key, capacity));
     }
 
     protected PropertyFluidTank(PropertyFluidTank other) {
@@ -90,7 +88,6 @@ public class PropertyFluidTank extends FluidTank {
     }
 
     @Override
-    @NotNull
     public FluidStack getFluid() {
 	return fluidStackProperty.getValue();
     }
@@ -102,16 +99,13 @@ public class PropertyFluidTank extends FluidTank {
 
     @Override
     public int fill(FluidStack resource, FluidAction action) {
-	if (resource.isEmpty() || !isFluidValid(resource)) {
+	if (resource.isEmpty() || !isFluidValid(resource))
 	    return 0;
-	}
 	if (action.simulate()) {
-	    if (getFluid().isEmpty()) {
+	    if (getFluid().isEmpty())
 		return Math.min(getCapacity(), resource.getAmount());
-	    }
-	    if (!FluidStack.isSameFluidSameComponents(getFluid(), resource)) {
+	    if (!FluidStack.isSameFluidSameComponents(getFluid(), resource))
 		return 0;
-	    }
 	    return Math.min(getCapacity() - getFluidAmount(), resource.getAmount());
 	}
 	if (isEmpty()) {
@@ -119,9 +113,8 @@ public class PropertyFluidTank extends FluidTank {
 	    onContentsChanged();
 	    return getFluidAmount();
 	}
-	if (!FluidStack.isSameFluidSameComponents(getFluid(), resource)) {
+	if (!FluidStack.isSameFluidSameComponents(getFluid(), resource))
 	    return 0;
-	}
 	int filled = getCapacity() - getFluidAmount();
 
 	if (resource.getAmount() < filled) {
@@ -137,16 +130,13 @@ public class PropertyFluidTank extends FluidTank {
 	return filled;
     }
 
-    @NotNull
     @Override
     public FluidStack drain(FluidStack resource, FluidAction action) {
-	if (resource.isEmpty() || !FluidStack.isSameFluidSameComponents(getFluid(), resource)) {
+	if (resource.isEmpty() || !FluidStack.isSameFluidSameComponents(getFluid(), resource))
 	    return FluidStack.EMPTY;
-	}
 	return drain(resource.getAmount(), action);
     }
 
-    @NotNull
     @Override
     public FluidStack drain(int maxDrain, FluidAction action) {
 	int drained = maxDrain;
@@ -179,9 +169,7 @@ public class PropertyFluidTank extends FluidTank {
 
     @Override
     protected void onContentsChanged() {
-	if (holder != null) {
-	    holder.onFluidTankChange(this);
-	}
+	holder.onFluidTankChange(this);
     }
 
 }

@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nullable;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -17,6 +17,7 @@ import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.common.util.TriPredicate;
 import net.neoforged.neoforge.items.IItemHandler;
@@ -24,6 +25,7 @@ import net.neoforged.neoforge.items.IItemHandlerModifiable;
 import voltaic.api.inventory.IndexedSidedInvWrapper;
 import voltaic.common.block.states.VoltaicBlockStates;
 import voltaic.common.item.subtype.SubtypeItemUpgrade;
+import voltaic.prefab.properties.PropertyManager;
 import voltaic.prefab.properties.types.PropertyTypes;
 import voltaic.prefab.properties.variant.ListProperty;
 import voltaic.prefab.tile.GenericTile;
@@ -36,21 +38,14 @@ public class ComponentInventory implements IComponent, WorldlyContainer {
 
     protected static final int[] SLOTS_EMPTY = {};
     public static final String SAVE_KEY = "itemproperty";
-
-    protected GenericTile holder = null;
-
+    protected GenericTile holder;
     private final ListProperty<ItemStack> items;
-
     protected TriPredicate<Integer, ItemStack, ComponentInventory> itemValidTest = (x, y, i) -> true;
-
     protected HashSet<Player> viewing = new HashSet<>();
-
     public HashSet<Integer>[] relativeDirectionToSlotsMap = new HashSet[6]; // Down Up North South West East
-
     protected int inventorySize;
-
+    @Nullable
     protected Function<Direction, Collection<Integer>> getSlotsFunction;
-
     private final IItemHandlerModifiable[] sidedOptionals = IndexedSidedInvWrapper.create(this, Direction.values());
 
     private static int[][] createArr() {
@@ -87,9 +82,7 @@ public class ComponentInventory implements IComponent, WorldlyContainer {
     private int biprodsPerProc = 0;
 
     private BiConsumer<ComponentInventory, Integer> onChanged = (componentInventory, slot) -> {
-	if (holder != null) {
-	    holder.onInventoryChange(componentInventory, slot);
-	}
+	holder.onInventoryChange(componentInventory, slot);
     };
 
     protected SubtypeItemUpgrade[] validUpgrades = SubtypeItemUpgrade.values();
@@ -99,11 +92,10 @@ public class ComponentInventory implements IComponent, WorldlyContainer {
     }
 
     public ComponentInventory(GenericTile holder, InventoryBuilder builder) {
-	holder(holder);
-
-	if (!holder.getBlockState().hasProperty(VoltaicBlockStates.FACING)) {
+	this.holder = holder;
+	PropertyManager manager = holder.getPropertyManager();
+	if (!holder.getBlockState().hasProperty(VoltaicBlockStates.FACING))
 	    throw new UnsupportedOperationException("The tile " + holder + " must have the FACING direction property!");
-	}
 
 	if (builder.builderSize > 0) {
 	    inventorySize = builder.builderSize;
@@ -133,14 +125,9 @@ public class ComponentInventory implements IComponent, WorldlyContainer {
 	    items.add(ItemStack.EMPTY);
 	}
 
-	this.items = holder.property(new ListProperty<>(PropertyTypes.ITEM_STACK_LIST, "machineinventory", items))
-		.setNoUpdateServer();
+	this.items = holder
+		.property(new ListProperty<>(manager, PropertyTypes.ITEM_STACK_LIST, "machineinventory", items));
 
-    }
-
-    @Override
-    public void holder(GenericTile holder) {
-	this.holder = holder;
     }
 
     @Override
@@ -220,62 +207,47 @@ public class ComponentInventory implements IComponent, WorldlyContainer {
 
     @Nullable
     public IItemHandler getCapability(@Nullable Direction side, CapabilityInputType type) {
-	if (side == null) {
+	if (side == null)
 	    return null;
-	}
 	return sidedOptionals[side.ordinal()];
     }
 
     @Override
-    public void refresh() {
-
-	defineOptionals(holder.getFacing());
-
+    public void refreshIfUpdate(Level level, BlockState oldState, BlockState newState) {
+	if (oldState.hasProperty(VoltaicBlockStates.FACING) && newState.hasProperty(VoltaicBlockStates.FACING)
+		&& oldState.getValue(VoltaicBlockStates.FACING) != newState.getValue(VoltaicBlockStates.FACING)) {
+	    defineOptionals(level, newState.getValue(VoltaicBlockStates.FACING));
+	}
     }
 
     @Override
-    public void refreshIfUpdate(BlockState oldState, BlockState newState) {
-	if (oldState.hasProperty(VoltaicBlockStates.FACING) && newState.hasProperty(VoltaicBlockStates.FACING)
-		&& oldState.getValue(VoltaicBlockStates.FACING) != newState.getValue(VoltaicBlockStates.FACING)) {
-	    defineOptionals(newState.getValue(VoltaicBlockStates.FACING));
-	}
+    public void refresh(Level level) {
+	defineOptionals(level, holder.getFacing());
     }
 
-    private void defineOptionals(Direction facing) {
-
-	holder.getLevel().invalidateCapabilities(holder.getBlockPos());
+    private void defineOptionals(Level level, Direction facing) {
+	level.invalidateCapabilities(holder.getBlockPos());
 
 	slotsForFace = new int[6][];
-
 	Direction relative;
 
 	for (Direction dir : Direction.values()) {
-
 	    relative = BlockEntityUtils.getRelativeSide(facing, dir);
-
 	    HashSet<Integer> slots = relativeDirectionToSlotsMap[dir.ordinal()];
 
 	    if (slots == null) {
-
 		slotsForFace[relative.ordinal()] = SLOTS_EMPTY;
-
 	    } else {
-
 		int[] arr = new int[slots.size()];
-
 		int i = 0;
 
 		for (Integer integer : slots) {
-		    arr[i] = integer;
-		    i++;
+		    arr[i++] = integer;
 		}
 
 		slotsForFace[relative.ordinal()] = arr;
-
 	    }
-
 	}
-
     }
 
     @Override
@@ -286,9 +258,8 @@ public class ComponentInventory implements IComponent, WorldlyContainer {
     @Override
     public boolean isEmpty() {
 	for (ItemStack itemstack : items.getValue()) {
-	    if (!itemstack.isEmpty()) {
+	    if (!itemstack.isEmpty())
 		return false;
-	    }
 	}
 	return true;
     }
@@ -300,20 +271,15 @@ public class ComponentInventory implements IComponent, WorldlyContainer {
 
     @Override
     public ItemStack removeItem(int index, int count) {
-
-	if (index < 0 || index >= items.getValue().size() || count <= 0 || items.getValue().get(index).isEmpty()) {
+	if (index < 0 || index >= items.getValue().size() || count <= 0 || items.getValue().get(index).isEmpty())
 	    return ItemStack.EMPTY;
-	}
 
 	ItemStack indexItem = items.getValue().get(index);
 	ItemStack taken = indexItem.split(count);
 
 	items.setValue(indexItem, index);
 
-	// items.forceDirty();
-
 	setChanged(index);
-
 	return taken;
     }
 
@@ -324,26 +290,25 @@ public class ComponentInventory implements IComponent, WorldlyContainer {
 
     @Override
     public void setItem(int index, ItemStack stack) {
-
-	if (index < 0 || index >= items.getValue().size() || ItemStack.matches(items.getValue().get(index), stack)) {
+	if (index < 0 || index >= items.getValue().size() || ItemStack.matches(items.getValue().get(index), stack))
 	    return;
-	}
 
 	if (stack.getCount() > getMaxStackSize()) {
 	    stack.setCount(getMaxStackSize());
 	}
 
 	items.setValue(stack, index);
-
-	// items.forceDirty();
-
 	setChanged(index);
     }
 
     @Override
     public boolean stillValid(Player player) {
 	BlockPos pos = holder.getBlockPos();
-	return holder.getLevel().getBlockEntity(pos) == holder
+	Level level = holder.getLevel();
+	if (level == null)
+	    return false;
+
+	return level.getBlockEntity(pos) == holder
 		&& player.distanceToSqr(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5) <= 64;
     }
 
@@ -360,11 +325,9 @@ public class ComponentInventory implements IComponent, WorldlyContainer {
     }
 
     @Override
-    public int[] getSlotsForFace(Direction side) {
-	if (getSlotsFunction != null) {
+    public int[] getSlotsForFace(@Nullable Direction side) {
+	if (getSlotsFunction != null)
 	    return getSlotsFunction.apply(side).stream().mapToInt(i -> i).toArray();
-	}
-
 	return side == null ? SLOTS_EMPTY : slotsForFace[side.ordinal()];
     }
 
@@ -374,7 +337,7 @@ public class ComponentInventory implements IComponent, WorldlyContainer {
     }
 
     @Override
-    public boolean canPlaceItemThroughFace(int index, ItemStack itemStackIn, Direction direction) {
+    public boolean canPlaceItemThroughFace(int index, ItemStack itemStackIn, @Nullable Direction direction) {
 	ArrayList<Integer> test = new ArrayList<>();
 	for (int i : getSlotsForFace(direction)) {
 	    test.add(i);
@@ -405,20 +368,12 @@ public class ComponentInventory implements IComponent, WorldlyContainer {
     }
 
     @Override
-    public void remove() {
-	// Not required
-    }
-
-    @Override
-    // this is only called through someone instance checking of this class....
     public void setChanged() {
 	setChanged(-1);
     }
 
     public void setChanged(int slot) {
-	if (onChanged != null) {
-	    onChanged.accept(this, slot);
-	}
+	onChanged.accept(this, slot);
     }
 
     public int inputs() {
@@ -608,41 +563,36 @@ public class ComponentInventory implements IComponent, WorldlyContainer {
 
     public boolean hasItemsInOutput() {
 	for (ItemStack stack : getOutputContents()) {
-	    if (!stack.isEmpty()) {
+	    if (!stack.isEmpty())
 		return true;
-	    }
 	}
 	for (ItemStack stack : getItemBiContents()) {
-	    if (!stack.isEmpty()) {
+	    if (!stack.isEmpty())
 		return true;
-	    }
 	}
 	return false;
     }
 
     public boolean areInputsEmpty() {
 	for (ItemStack stack : getInputContents()) {
-	    if (stack.isEmpty()) {
+	    if (stack.isEmpty())
 		return false;
-	    }
 	}
 	return false;
     }
 
     public boolean hasInputRoom() {
 	for (ItemStack stack : getInputContents()) {
-	    if (stack.getMaxStackSize() > stack.getCount()) {
+	    if (stack.getMaxStackSize() > stack.getCount())
 		return true;
-	    }
 	}
 	return false;
     }
 
     public boolean isUpgradeValid(SubtypeItemUpgrade upgrade) {
 	for (SubtypeItemUpgrade subtype : validUpgrades) {
-	    if (subtype == upgrade) {
+	    if (subtype == upgrade)
 		return true;
-	    }
 	}
 	return false;
     }
@@ -671,42 +621,42 @@ public class ComponentInventory implements IComponent, WorldlyContainer {
 	}
 
 	public InventoryBuilder inputs(int inputs) {
-	    this.builderInputs = inputs;
+	    builderInputs = inputs;
 	    return this;
 	}
 
 	public InventoryBuilder outputs(int outputs) {
-	    this.builderOutputs = outputs;
+	    builderOutputs = outputs;
 	    return this;
 	}
 
 	public InventoryBuilder biproducts(int biproducts) {
-	    this.builderBiproducts = biproducts;
+	    builderBiproducts = biproducts;
 	    return this;
 	}
 
 	public InventoryBuilder bucketInputs(int bucketInputs) {
-	    this.builderBucketInputs = bucketInputs;
+	    builderBucketInputs = bucketInputs;
 	    return this;
 	}
 
 	public InventoryBuilder bucketOutputs(int bucketOutputs) {
-	    this.builderBucketOutputs = bucketOutputs;
+	    builderBucketOutputs = bucketOutputs;
 	    return this;
 	}
 
 	public InventoryBuilder gasInputs(int gasInputs) {
-	    this.builderGasInputs = gasInputs;
+	    builderGasInputs = gasInputs;
 	    return this;
 	}
 
 	public InventoryBuilder gasOutputs(int gasOutputs) {
-	    this.builderGasOutputs = gasOutputs;
+	    builderGasOutputs = gasOutputs;
 	    return this;
 	}
 
 	public InventoryBuilder upgrades(int upgrades) {
-	    this.builderUpgrades = upgrades;
+	    builderUpgrades = upgrades;
 	    return this;
 	}
 
@@ -722,13 +672,13 @@ public class ComponentInventory implements IComponent, WorldlyContainer {
 	 */
 	public InventoryBuilder processors(int procCount, int inputsPerProc, int outputsPerProc, int biprodsPerProc) {
 
-	    this.builderInputsPerProc = inputsPerProc;
-	    this.builderOutputsPerProc = outputsPerProc;
-	    this.builderBiprodsPerProc = biprodsPerProc;
+	    builderInputsPerProc = inputsPerProc;
+	    builderOutputsPerProc = outputsPerProc;
+	    builderBiprodsPerProc = biprodsPerProc;
 
-	    this.builderInputs = procCount * inputsPerProc;
-	    this.builderOutputs = procCount * outputsPerProc;
-	    this.builderBiproducts = procCount * biprodsPerProc;
+	    builderInputs = procCount * inputsPerProc;
+	    builderOutputs = procCount * outputsPerProc;
+	    builderBiproducts = procCount * biprodsPerProc;
 
 	    return this;
 	}
@@ -741,7 +691,7 @@ public class ComponentInventory implements IComponent, WorldlyContainer {
 	 * @return The mutated builder
 	 */
 	public InventoryBuilder forceSize(int size) {
-	    this.builderSize = size;
+	    builderSize = size;
 	    return this;
 	}
 

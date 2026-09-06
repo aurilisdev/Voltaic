@@ -1,15 +1,11 @@
 package voltaic.prefab.properties.types;
 
+import javax.annotation.Nullable;
+
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.codec.StreamCodec;
 import voltaic.prefab.properties.variant.AbstractProperty;
-
-/**
- * Interface to allow for custom property types in dependent mods
- *
- * @author skip999
- */
 
 public interface IPropertyType<TYPE, BUFFERTYPE> {
 
@@ -21,6 +17,7 @@ public interface IPropertyType<TYPE, BUFFERTYPE> {
 
     public void writeToTag(TagWriter<TYPE> writer);
 
+    @Nullable
     public TYPE readFromTag(TagReader<TYPE> reader);
 
     public static final record TagWriter<TYPE>(AbstractProperty<TYPE, ? extends IPropertyType> prop, CompoundTag tag,

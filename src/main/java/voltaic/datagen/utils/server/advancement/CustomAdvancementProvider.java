@@ -25,27 +25,26 @@ public class CustomAdvancementProvider implements DataProvider {
 
     public CustomAdvancementProvider(PackOutput pOutput, CompletableFuture<HolderLookup.Provider> pRegistries,
 	    List<AdvancementSubProvider> pSubProviders) {
-	this.pathProvider = pOutput.createPathProvider(PackOutput.Target.DATA_PACK, "advancements");
-	this.subProviders = pSubProviders;
-	this.registries = pRegistries;
+	pathProvider = pOutput.createPathProvider(PackOutput.Target.DATA_PACK, "advancements");
+	subProviders = pSubProviders;
+	registries = pRegistries;
     }
 
     @Override
     public CompletableFuture<?> run(CachedOutput output) {
-	return this.registries.thenCompose(provider -> {
+	return registries.thenCompose(provider -> {
 	    Set<ResourceLocation> set = new HashSet<>();
 	    List<CompletableFuture<?>> list = new ArrayList<>();
 	    Consumer<AdvancementHolder> consumer = holder -> {
-		if (!set.add(holder.id())) {
+		if (!set.add(holder.id()))
 		    throw new IllegalStateException("Duplicate advancement " + holder.id());
-		}
-		Path path = this.pathProvider.json(holder.id());
+		Path path = pathProvider.json(holder.id());
 		list.add(DataProvider.saveStable(output, provider, Advancement.CODEC, holder.value(), path));// TODO:
 													     // make
 													     // conditional
 	    };
 
-	    for (AdvancementSubProvider advancementsubprovider : this.subProviders) {
+	    for (AdvancementSubProvider advancementsubprovider : subProviders) {
 		advancementsubprovider.generate(provider, consumer);
 	    }
 

@@ -89,8 +89,9 @@ public class ScreenComponentButton<T extends ScreenComponentButton<?>> extends S
 	    RenderingUtils.setShaderColor(color);
 	    RenderSystem.enableBlend();
 	    RenderSystem.enableDepthTest();
-	    graphics.blitSprite(VANILLA_BUTTON_SPRITES.get(isActive(), this.isHovered() || isPressed),
-		    this.xLocation + guiWidth, this.yLocation + guiHeight, this.width, this.height);
+	    graphics.blitSprite(VANILLA_BUTTON_SPRITES.get(isActive(), isHovered() || isPressed), xLocation + guiWidth,
+		    yLocation + guiHeight, width, height);
+	    ITexture icon = this.icon;
 	    if (icon != null) {
 		int xOffset = (width - icon.imageWidth()) / 2;
 		int yOffset = (height - icon.imageHeight()) / 2;
@@ -100,8 +101,8 @@ public class ScreenComponentButton<T extends ScreenComponentButton<?>> extends S
 	    }
 	    Font font = minecraft.font;
 	    if (label != null) {
-		graphics.drawCenteredString(font, label.get(), this.xLocation + guiWidth + this.width / 2,
-			this.yLocation + guiHeight + (this.height - 8) / 2, color.color());
+		graphics.drawCenteredString(font, label.get(), xLocation + guiWidth + width / 2,
+			yLocation + guiHeight + (height - 8) / 2, color.color());
 	    }
 	    RenderingUtils.resetShaderColor();
 	} else {
@@ -110,12 +111,10 @@ public class ScreenComponentButton<T extends ScreenComponentButton<?>> extends S
     }
 
     public int getVanillaYImage(boolean isMouseOver) {
-	if (!isVisible()) {
+	if (!isVisible())
 	    return 0;
-	}
-	if (isMouseOver) {
+	if (isMouseOver)
 	    return 2;
-	}
 
 	return 1;
     }
@@ -149,16 +148,17 @@ public class ScreenComponentButton<T extends ScreenComponentButton<?>> extends S
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-	if (!isActiveAndVisible() || (keyCode != 257 && keyCode != 32 && keyCode != 335)) {
+	if (!isActiveAndVisible() || keyCode != 257 && keyCode != 32 && keyCode != 335)
 	    return false;
-	}
 	this.playDownSound(Minecraft.getInstance().getSoundManager());
 	this.onPress();
 	return true;
     }
 
     public void onPress() {
-	onPress.onPress(this);
+	if (onPress != null) {
+	    onPress.onPress(this);
+	}
 	playDownSound(Minecraft.getInstance().getSoundManager());
     }
 

@@ -36,7 +36,7 @@ public abstract class BaseRecipeBuilder<T extends VoltaicRecipe, A extends BaseR
 
     public BaseRecipeBuilder(RecipeCategory category, String parent, String name, String group, double experience,
 	    int processTime, double usagePerTick) {
-	this.id = ResourceLocation.fromNamespaceAndPath(parent, category.category() + "/" + name);
+	id = ResourceLocation.fromNamespaceAndPath(parent, category.category() + "/" + name);
 	this.group = group;
 	this.experience = experience;
 	this.processTime = processTime;
@@ -91,13 +91,20 @@ public abstract class BaseRecipeBuilder<T extends VoltaicRecipe, A extends BaseR
     }
 
     @Override
-    public RecipeBuilder group(String pGroupName) {
+    public RecipeBuilder group(@Nullable String pGroupName) {
 	return this;
     }
 
     public enum RecipeCategory {
-	ITEM_2_ITEM, ITEM_2_FLUID, FLUID_ITEM_2_ITEM, FLUID_ITEM_2_FLUID, FLUID_2_ITEM, FLUID_2_FLUID, FLUID_2_GAS,
-	FLUID_ITEM_2_GAS, CHEMICAL_REACTOR;
+	ITEM_2_ITEM,
+	ITEM_2_FLUID,
+	FLUID_ITEM_2_ITEM,
+	FLUID_ITEM_2_FLUID,
+	FLUID_2_ITEM,
+	FLUID_2_FLUID,
+	FLUID_2_GAS,
+	FLUID_ITEM_2_GAS,
+	CHEMICAL_REACTOR;
 
 	public String category() {
 	    return toString().toLowerCase(Locale.ROOT).replaceAll("_", "");

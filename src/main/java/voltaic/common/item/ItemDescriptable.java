@@ -11,7 +11,7 @@ import net.minecraft.world.item.TooltipFlag;
 
 public class ItemDescriptable extends ItemVoltaic {
 
-    private Component[] tooltips;
+    private final Component[] tooltips;
 
     public ItemDescriptable(Properties properties, Holder<CreativeModeTab> creativeTab, Component... tooltips) {
 	super(properties, creativeTab);
@@ -21,9 +21,7 @@ public class ItemDescriptable extends ItemVoltaic {
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltips, TooltipFlag flag) {
 	super.appendHoverText(stack, context, tooltips, flag);
-	if (tooltips != null) {
-	    Collections.addAll(tooltips, this.tooltips);
-	}
+	Collections.addAll(tooltips, this.tooltips);
     }
 
 }

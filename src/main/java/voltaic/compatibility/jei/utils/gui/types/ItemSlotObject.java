@@ -1,5 +1,7 @@
 package voltaic.compatibility.jei.utils.gui.types;
 
+import javax.annotation.Nullable;
+
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import voltaic.api.screen.ITexture;
 import voltaic.api.screen.component.ISlotTexture;
@@ -7,8 +9,8 @@ import voltaic.compatibility.jei.utils.gui.ScreenObject;
 
 public class ItemSlotObject extends ScreenObject {
 
-    private RecipeIngredientRole role;
-    private ScreenObject icon = null;
+    private final RecipeIngredientRole role;
+    private @Nullable ScreenObject icon = null;
 
     public ItemSlotObject(ISlotTexture slotTexture, int x, int y, RecipeIngredientRole role) {
 	super(slotTexture, x, y);
@@ -23,7 +25,7 @@ public class ItemSlotObject extends ScreenObject {
 	this.role = role;
     }
 
-    public ScreenObject getIcon() {
+    public @Nullable ScreenObject getIcon() {
 	return icon;
     }
 

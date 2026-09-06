@@ -30,7 +30,7 @@ public class ItemBoneMeal extends BoneMealItem implements CreativeTabSupplier {
 
     @Override
     public boolean hasCreativeTab() {
-	return creativeTab != null;
+	return true;
     }
 
 }

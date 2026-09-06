@@ -10,11 +10,11 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.resources.ResourceLocation;
 import voltaic.prefab.utilities.CodecUtils;
 import voltaic.registers.VoltaicParticles;
 
 public class ParticleOptionPlasmaBall extends ParticleType<ParticleOptionPlasmaBall> implements ParticleOptions {
-
     public float scale;
     public float gravity;
     public int maxAge;
@@ -41,42 +41,6 @@ public class ParticleOptionPlasmaBall extends ParticleType<ParticleOptionPlasmaB
 		    instance0 -> instance0.b, ByteBufCodecs.INT, instance0 -> instance0.a, (scale, gravity, age, r, g,
 			    b, a) -> new ParticleOptionPlasmaBall().setParameters(scale, gravity, age, r, g, b, a));
 
-    /*
-     * public static final ParticleOptions.Deserializer<ParticleOptionPlasmaBall>
-     * DESERIALIZER = new ParticleOptions.Deserializer<>() {
-     * 
-     * @Override public ParticleOptionPlasmaBall
-     * fromCommand(ParticleType<ParticleOptionPlasmaBall> type, StringReader reader)
-     * throws CommandSyntaxException { ParticleOptionPlasmaBall particle = new
-     * ParticleOptionPlasmaBall();
-     * 
-     * reader.expect(' '); float scale = reader.readFloat();
-     * 
-     * reader.expect(' '); float gravity = reader.readFloat();
-     * 
-     * reader.expect(' '); int maxAge = reader.readInt();
-     * 
-     * reader.expect(' '); int r = reader.readInt();
-     * 
-     * reader.expect(' '); int g = reader.readInt();
-     * 
-     * reader.expect(' '); int b = reader.readInt();
-     * 
-     * reader.expect(' '); int a = reader.readInt();
-     * 
-     * return particle.setParameters(scale, gravity, maxAge, r, g, b, a);
-     * 
-     * }
-     * 
-     * @Override public ParticleOptionPlasmaBall
-     * fromNetwork(ParticleType<ParticleOptionPlasmaBall> type, FriendlyByteBuf
-     * buffer) { return new
-     * ParticleOptionPlasmaBall().setParameters(buffer.readFloat(),
-     * buffer.readFloat(), buffer.readInt(), buffer.readInt(), buffer.readInt(),
-     * buffer.readInt(), buffer.readInt()); } };
-     * 
-     */
-
     public ParticleOptionPlasmaBall() {
 	super(false);
     }
@@ -99,8 +63,10 @@ public class ParticleOptionPlasmaBall extends ParticleType<ParticleOptionPlasmaB
 
     @Override
     public String toString() {
-	return BuiltInRegistries.PARTICLE_TYPE.getKey(getType()).toString() + ", scale: " + scale + ", gravity: "
-		+ gravity + ", maxage: " + maxAge + ", r: " + r + ", g: " + g + ", b: " + b + ", a: " + a;
+	ResourceLocation key = BuiltInRegistries.PARTICLE_TYPE.getKey(getType());
+
+	return (key == null ? "unregistered" : key.toString()) + ", scale: " + scale + ", gravity: " + gravity
+		+ ", maxage: " + maxAge + ", r: " + r + ", g: " + g + ", b: " + b + ", a: " + a;
     }
 
     @Override

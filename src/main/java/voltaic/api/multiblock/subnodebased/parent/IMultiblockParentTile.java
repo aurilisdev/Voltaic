@@ -1,6 +1,6 @@
 package voltaic.api.multiblock.subnodebased.parent;
 
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nullable;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -11,6 +11,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -84,29 +85,30 @@ public interface IMultiblockParentTile {
 
     IMultiblockParentBlock.SubnodeWrapper getSubNodes();
 
-    default void onSubnodeNeighborChange(TileMultiSubnode subnode, BlockPos subnodeChangingNeighbor,
+    default void onSubnodeNeighborChange(LevelReader reader, TileMultiSubnode subnode, BlockPos subnodeChangingNeighbor,
 	    boolean blockStateTrigger) {
-
     }
 
-    default InteractionResult onSubnodeUseWithoutItem(Player player, BlockHitResult hit, TileMultiSubnode subnode) {
+    default InteractionResult onSubnodeUseWithoutItem(Level level, Player player, BlockHitResult hit,
+	    TileMultiSubnode subnode) {
 	return InteractionResult.FAIL;
     }
 
-    default ItemInteractionResult onSubnodeUseWithItem(ItemStack used, Player player, InteractionHand hand,
+    default ItemInteractionResult onSubnodeUseWithItem(Level level, ItemStack used, Player player, InteractionHand hand,
 	    BlockHitResult hit, TileMultiSubnode subnode) {
 	return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
     }
 
-    default void onSubnodePlace(TileMultiSubnode subnode, BlockState oldSubnodeState, boolean isSubnodeMoving) {
+    default void onSubnodePlace(TileMultiSubnode subnode, Level level, BlockState oldSubnodeState,
+	    boolean isSubnodeMoving) {
 
     }
 
-    default int getSubdnodeComparatorSignal(TileMultiSubnode subnode) {
+    default int getSubdnodeComparatorSignal(Level level, TileMultiSubnode subnode) {
 	return 0;
     }
 
-    void onSubnodeDestroyed(TileMultiSubnode subnode);
+    void onSubnodeDestroyed(Level level, TileMultiSubnode subnode);
 
     Direction getFacingDirection();
 

@@ -28,9 +28,8 @@ public class RadiationTooltipHandler {
     public static void renderTooltip(RenderTooltipEvent.GatherComponents event) {
 	if (Screen.hasShiftDown()) {
 	    ItemStack stack = event.getItemStack();
-	    if (stack.isEmpty()) {
+	    if (stack.isEmpty())
 		return;
-	    }
 	    if (stack.getItem() instanceof BlockItem blockItem) {
 
 		RadiationShielding shielding = RadiationShieldingRegister.getValue(blockItem.getBlock());
@@ -40,9 +39,8 @@ public class RadiationTooltipHandler {
 		    shielding = RadiationShielding.getDefault(EmptyBlockGetter.INSTANCE, BlockPos.ZERO, state);
 		}
 
-		if (shielding == RadiationShielding.NONE || shielding.transmission() >= 1.0) {
+		if (shielding == RadiationShielding.NONE || shielding.transmission() >= 1.0)
 		    return;
-		}
 
 		double blocked = (1.0 - shielding.transmission()) * 100.0;
 

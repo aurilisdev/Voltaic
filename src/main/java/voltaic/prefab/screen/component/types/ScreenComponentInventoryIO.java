@@ -33,7 +33,7 @@ public class ScreenComponentInventoryIO extends ScreenComponentGeneric {
     public ScreenComponentInventoryIO(int x, int y, Direction side) {
 	super(InventoryIOTextures.DEFAULT, x, y);
 	onTooltip((graphics, component, xAxis, yAxis) -> {
-	    graphics.renderTooltip(gui.getFontRenderer(), getLabelFromDir(), xAxis, yAxis);
+	    graphics.renderTooltip(requireScreen().getFontRenderer(), getLabelFromDir(), xAxis, yAxis);
 	});
 	this.side = side;
     }
@@ -42,43 +42,37 @@ public class ScreenComponentInventoryIO extends ScreenComponentGeneric {
     public void renderBackground(GuiGraphics graphics, int xAxis, int yAxis, int guiWidth, int guiHeight) {
 	super.renderBackground(graphics, xAxis, yAxis, guiWidth, guiHeight);
 
-	GenericScreen<?> screen = (GenericScreen<?>) gui;
+	GenericScreen<?> screen = (GenericScreen<?>) requireScreen();
 
 	GenericContainerBlockEntity<?> container = (GenericContainerBlockEntity<?>) screen.getMenu();
 
-	GenericTile tile = (GenericTile) container.getSafeHost();
-
-	if (tile == null || !tile.hasComponent(IComponentType.Inventory)) {
+	GenericTile tile = (GenericTile) container.getSafeHost().orElse(null);
+	if (tile == null || !tile.hasComponent(IComponentType.Inventory))
 	    return;
-	}
 
-	ComponentInventory inv = tile.getComponent(IComponentType.Inventory);
+	ComponentInventory inv = tile.<ComponentInventory>getComponent(IComponentType.Inventory).orElse(null);
 
 	HashSet<Integer> slots = inv.relativeDirectionToSlotsMap[side.ordinal()];
 
-	if (slots == null) {
+	if (slots == null)
 	    return;
-	}
 
 	List<Color> uniqueColors = new ArrayList<>();
 
 	slots.forEach(slot -> {
 	    SlotGeneric generic = (SlotGeneric) container.slots.get(slot);
-
-	    if (generic.ioColor == null) {
+	    if (generic.ioColor == null)
 		return;
-	    }
+
 	    for (Color col : uniqueColors) {
-		if (col.equals(generic.ioColor)) {
+		if (col.equals(generic.ioColor))
 		    return;
-		}
 	    }
 	    uniqueColors.add(generic.ioColor);
 	});
 
-	if (uniqueColors.isEmpty()) {
+	if (uniqueColors.isEmpty())
 	    return;
-	}
 
 	if (uniqueColors.size() <= 16) {
 	    fillSquare(graphics, uniqueColors, xLocation + guiWidth, yLocation + guiHeight);
@@ -165,7 +159,7 @@ public class ScreenComponentInventoryIO extends ScreenComponentGeneric {
 	    this.textureV = textureV;
 	    this.imageWidth = imageWidth;
 	    this.imageHeight = imageHeight;
-	    this.loc = Voltaic.rl("textures/screen/component/io/" + name + ".png");
+	    loc = Voltaic.rl("textures/screen/component/io/" + name + ".png");
 	}
 
 	@Override

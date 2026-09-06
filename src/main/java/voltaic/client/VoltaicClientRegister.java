@@ -98,8 +98,7 @@ public class VoltaicClientRegister {
 
     @SubscribeEvent
     public static void registerClientReloadListeners(RegisterClientReloadListenersEvent event) {
-	event.registerReloadListener(AtlasHolderVoltaicCustom.INSTANCE = new AtlasHolderVoltaicCustom(
-		Minecraft.getInstance().getTextureManager()));
+	event.registerReloadListener(AtlasHolderVoltaicCustom.initialize(Minecraft.getInstance().getTextureManager()));
 	event.registerReloadListener(new ReloadListenerResetGuidebook());
     }
 

@@ -9,9 +9,8 @@ public interface IMeasurementUnit {
     }
 
     default Component getName(boolean isSymbol) {
-	if (isSymbol) {
+	if (isSymbol)
 	    return getSymbol();
-	}
 
 	return getName();
     }

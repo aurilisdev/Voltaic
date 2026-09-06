@@ -27,17 +27,15 @@ public interface IItemTemperate {
      * @return The actual amount the item was cooled
      */
     default double loseHeat(ItemStack stack, double amount, double minTemp, boolean debug) {
-	if (getTemperature(stack) < 0) {
+	if (getTemperature(stack) < 0)
 	    return 0;
-	}
 
 	double currTemp = getTemperature(stack);
 
 	double room = currTemp - minTemp;
 
-	if (room < 0) {
+	if (room < 0)
 	    return 0;
-	}
 
 	double taken = room > amount ? amount : room;
 
@@ -60,9 +58,8 @@ public interface IItemTemperate {
 
 	double currTemp = getTemperature(stack);
 
-	if (amount < 0) {
+	if (amount < 0)
 	    return currTemp;
-	}
 
 	double newTemp = currTemp + amount;
 

@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
+import javax.annotation.Nullable;
+
 import org.apache.logging.log4j.Logger;
 
 import com.google.gson.Gson;
@@ -40,7 +42,21 @@ import voltaic.common.packet.types.client.PacketSetClientRadioactiveBlocks;
 
 public class RadioactiveBlockRegister extends SimplePreparableReloadListener<JsonObject> {
 
-    public static RadioactiveBlockRegister INSTANCE = null;
+    @Nullable
+    private static RadioactiveBlockRegister instance;
+
+    public static RadioactiveBlockRegister initialize() {
+	if (instance != null)
+	    throw new IllegalStateException("RadioactiveBlockRegister has already been initialized");
+	return instance = new RadioactiveBlockRegister();
+    }
+
+    public static RadioactiveBlockRegister getInstance() {
+	RadioactiveBlockRegister current = instance;
+	if (current == null)
+	    throw new IllegalStateException("RadioactiveBlockRegister has not been initialized");
+	return current;
+    }
 
     public static final String FOLDER = "radiation";
     public static final String FILE_NAME = "radioactive_blocks";
@@ -154,16 +170,16 @@ public class RadioactiveBlockRegister extends SimplePreparableReloadListener<Jso
     }
 
     public void setClientValues(HashMap<Block, RadioactiveObject> mappedValues) {
-	this.radioactiveBlockMap.clear();
-	this.radioactiveBlockMap.putAll(mappedValues);
+	radioactiveBlockMap.clear();
+	radioactiveBlockMap.putAll(mappedValues);
     }
 
     public static HashMap<Block, RadioactiveObject> getValues() {
-	return INSTANCE.radioactiveBlockMap;
+	return getInstance().radioactiveBlockMap;
     }
 
     public static RadioactiveObject getValue(Block block) {
-	return INSTANCE.radioactiveBlockMap.getOrDefault(block, RadioactiveObject.ZERO);
+	return getInstance().radioactiveBlockMap.getOrDefault(block, RadioactiveObject.ZERO);
     }
 
     private static boolean isJson(final ResourceLocation filename) {

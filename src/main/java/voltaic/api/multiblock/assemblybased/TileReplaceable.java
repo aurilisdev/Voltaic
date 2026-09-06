@@ -1,5 +1,7 @@
 package voltaic.api.multiblock.assemblybased;
 
+import javax.annotation.Nullable;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -12,7 +14,7 @@ import voltaic.prefab.tile.GenericTile;
 public abstract class TileReplaceable extends GenericTile {
 
     protected final SingleProperty<Integer> disguisedBlock = property(
-	    new SingleProperty<>(PropertyTypes.INTEGER, "disguisedblock", 0));
+	    new SingleProperty<>(getPropertyManager(), PropertyTypes.INTEGER, "disguisedblock", 0));
 
     public TileReplaceable(BlockEntityType<?> tileEntityTypeIn, BlockPos worldPos, BlockState blockState) {
 	super(tileEntityTypeIn, worldPos, blockState);
@@ -25,7 +27,7 @@ public abstract class TileReplaceable extends GenericTile {
 	disguisedBlock.setValue(Block.BLOCK_STATE_REGISTRY.getId(state));
     }
 
-    public BlockState getDisguise() {
+    public @Nullable BlockState getDisguise() {
 	return Block.BLOCK_STATE_REGISTRY.byId(disguisedBlock.getValue());
     }
 

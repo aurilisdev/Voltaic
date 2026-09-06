@@ -2,6 +2,8 @@ package voltaic.prefab.screen.component.types;
 
 import java.util.function.Consumer;
 
+import javax.annotation.Nullable;
+
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 import voltaic.Voltaic;
@@ -14,8 +16,8 @@ public class ScreenComponentHorizontalSlider extends ScreenComponentGeneric {
 
     private boolean isHeld = false;
 
-    private Consumer<Integer> sliderDragConsumer;
-    private Consumer<Integer> sliderClickConsumer;
+    private @Nullable Consumer<Integer> sliderDragConsumer;
+    private @Nullable Consumer<Integer> sliderClickConsumer;
 
     public ScreenComponentHorizontalSlider(int x, int y, int width) {
 	super(x, y, Math.max(width, 30), 14);
@@ -34,7 +36,7 @@ public class ScreenComponentHorizontalSlider extends ScreenComponentGeneric {
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
 	if (isValidClick(button)) {
-	    this.onMouseDrag(mouseX, mouseY, dragX, dragY);
+	    onMouseDrag(mouseX, mouseY, dragX, dragY);
 	    return true;
 	}
 	return false;
@@ -44,16 +46,16 @@ public class ScreenComponentHorizontalSlider extends ScreenComponentGeneric {
     public void onMouseDrag(double mouseX, double mouseY, double dragX, double dragY) {
 	isHeld = true;
 	if (sliderDragConsumer != null) {
-	    sliderDragConsumer.accept((int) (mouseX - this.gui.getGuiWidth()));
+	    sliderDragConsumer.accept((int) (mouseX - requireScreen().getGuiWidth()));
 	}
 	super.onMouseDrag(mouseX, mouseY, dragX, dragY);
     }
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-	if (!isHeld && isPointInSlider(this.xLocation, this.yLocation, mouseX - this.gui.getGuiWidth(),
-		mouseY - this.gui.getGuiHeight(), this.width, this.height) && sliderClickConsumer != null) {
-	    sliderClickConsumer.accept((int) (mouseX - this.gui.getGuiWidth()));
+	if (!isHeld && isPointInSlider(xLocation, yLocation, mouseX - requireScreen().getGuiWidth(),
+		mouseY - requireScreen().getGuiHeight(), width, height) && sliderClickConsumer != null) {
+	    sliderClickConsumer.accept((int) (mouseX - requireScreen().getGuiWidth()));
 	}
 	return super.mouseClicked(mouseX, mouseY, button);
     }
@@ -163,37 +165,37 @@ public class ScreenComponentHorizontalSlider extends ScreenComponentGeneric {
 
 	@Override
 	public ResourceLocation getLocation() {
-	    return this.loc;
+	    return loc;
 	}
 
 	@Override
 	public int imageHeight() {
-	    return this.imageHeight;
+	    return imageHeight;
 	}
 
 	@Override
 	public int imageWidth() {
-	    return this.imageWidth;
+	    return imageWidth;
 	}
 
 	@Override
 	public int textureHeight() {
-	    return this.textureHeight;
+	    return textureHeight;
 	}
 
 	@Override
 	public int textureU() {
-	    return this.textureU;
+	    return textureU;
 	}
 
 	@Override
 	public int textureV() {
-	    return this.textureV;
+	    return textureV;
 	}
 
 	@Override
 	public int textureWidth() {
-	    return this.textureWidth;
+	    return textureWidth;
 	}
 
     }

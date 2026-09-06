@@ -62,9 +62,8 @@ public class BlockMultiSubnode extends GenericEntityBlock implements IMultiblock
     @Override
     public ItemStack getCloneItemStack(BlockState state, HitResult target, LevelReader level, BlockPos pos,
 	    Player player) {
-	if (level.getBlockEntity(pos) instanceof TileMultiSubnode subnode) {
+	if (level.getBlockEntity(pos) instanceof TileMultiSubnode subnode)
 	    return new ItemStack(level.getBlockState(subnode.parentPos.getValue()).getBlock());
-	}
 	return super.getCloneItemStack(state, target, level, pos, player);
     }
 
@@ -81,7 +80,7 @@ public class BlockMultiSubnode extends GenericEntityBlock implements IMultiblock
     @Override
     public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
 	if (newState.isAir() && level.getBlockEntity(pos) instanceof GenericTile generic) {
-	    generic.onBlockDestroyed();
+	    generic.onBlockDestroyed(level);
 	}
 	super.onRemove(state, level, pos, newState, isMoving);
     }
@@ -90,7 +89,7 @@ public class BlockMultiSubnode extends GenericEntityBlock implements IMultiblock
     public void onPlace(BlockState newState, Level level, BlockPos pos, BlockState oldState, boolean isMoving) {
 	super.onPlace(newState, level, pos, oldState, isMoving);
 	if (level.getBlockEntity(pos) instanceof GenericTile generic) {
-	    generic.onPlace(oldState, isMoving);
+	    generic.onPlace(level, oldState, isMoving);
 	}
     }
 

@@ -16,9 +16,8 @@ public class ScreenComponentCustomRender extends AbstractScreenComponent {
 
     @Override
     public void renderBackground(GuiGraphics graphics, int xAxis, int yAxis, int guiWidth, int guiHeight) {
-	if (!isVisible()) {
+	if (!isVisible())
 	    return;
-	}
 	graphicsConsumer.accept(graphics);
     }
 

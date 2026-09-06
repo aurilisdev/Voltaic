@@ -3,7 +3,8 @@ package voltaic.common.settings;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
 public class VoltaicConfig {
-    public static VoltaicConfig INSTANCE;
+    public static final VoltaicConfig INSTANCE = new VoltaicConfig();
+
     public ModConfigSpec.BooleanValue DISPENSE_GUIDEBOOK;
     public ModConfigSpec.DoubleValue BACKGROUND_RADIATION_DISSIPATION;
     public ModConfigSpec.DoubleValue IODINE_RESISTANCE_THRESHOLD;
@@ -13,7 +14,7 @@ public class VoltaicConfig {
     public ModConfigSpec.IntValue ORE_RADIATION_ADMIT_RATE;
     public ModConfigSpec SPEC;
 
-    public VoltaicConfig() {
+    private VoltaicConfig() {
 	var builder = new ModConfigSpec.Builder();
 
 	builder.push("common");

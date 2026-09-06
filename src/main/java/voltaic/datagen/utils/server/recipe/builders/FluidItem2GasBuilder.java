@@ -23,11 +23,11 @@ public class FluidItem2GasBuilder<T extends FluidItem2GasRecipe> extends BaseRec
 
     private final GasStack output;
 
-    private List<ItemStack> itemIngredients = new ArrayList<>();
-    private List<Pair<TagKey<Item>, Integer>> tagItemIngredients = new ArrayList<>();
+    private final List<ItemStack> itemIngredients = new ArrayList<>();
+    private final List<Pair<TagKey<Item>, Integer>> tagItemIngredients = new ArrayList<>();
 
-    private List<FluidStack> fluidIngredients = new ArrayList<>();
-    private List<Pair<TagKey<Fluid>, Integer>> tagFluidIngredients = new ArrayList<>();
+    private final List<FluidStack> fluidIngredients = new ArrayList<>();
+    private final List<Pair<TagKey<Fluid>, Integer>> tagFluidIngredients = new ArrayList<>();
 
     public FluidItem2GasBuilder(FluidItem2GasRecipe.Factory<T> factory, GasStack output, RecipeCategory category,
 	    String parent, String name, String group, double experience, int processTime, double usagePerTick) {

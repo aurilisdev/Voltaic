@@ -2,6 +2,8 @@ package voltaic.common.blockitem;
 
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import net.minecraft.core.Holder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -22,9 +24,10 @@ import voltaic.registers.VoltaicCapabilities;
 
 public class BlockItemVoltaic extends BlockItem implements CreativeTabSupplier {
 
+    @Nullable
     private final Holder<CreativeModeTab> creativeTab;
 
-    public BlockItemVoltaic(Block block, Properties properties, Holder<CreativeModeTab> creativeTab) {
+    public BlockItemVoltaic(Block block, Properties properties, @Nullable Holder<CreativeModeTab> creativeTab) {
 	super(block, properties);
 	this.creativeTab = creativeTab;
     }
@@ -36,6 +39,10 @@ public class BlockItemVoltaic extends BlockItem implements CreativeTabSupplier {
 
     @Override
     public boolean isAllowedInCreativeTab(CreativeModeTab tab) {
+	Holder<CreativeModeTab> creativeTab = this.creativeTab;
+	if (creativeTab == null)
+	    return false;
+
 	return creativeTab.value() == tab;
     }
 
@@ -50,14 +57,12 @@ public class BlockItemVoltaic extends BlockItem implements CreativeTabSupplier {
 
 	Level world = entity.level();
 
-	if (world.isClientSide || VoltaicConfig.INSTANCE.RADIATION_SYSTEM_ENABLED.isFalse()) {
+	if (world.isClientSide || VoltaicConfig.INSTANCE.RADIATION_SYSTEM_ENABLED.isFalse())
 	    return super.onEntityItemUpdate(stack, entity);
-	}
 
 	RadioactiveObject rad = RadioactiveItemRegister.getValue(stack.getItem());
-	if (rad.amount() <= 0) {
+	if (rad.amount() <= 0)
 	    return false;
-	}
 	double amount = stack.getCount() * rad.amount();
 	int range = (int) (Math.sqrt(amount) / (5 * Math.sqrt(2)) * 1.25);
 	RadiationSystem.addRadiationSource(world, new SimpleRadiationSource(amount, rad.strength(), range, true, 0,
@@ -69,17 +74,15 @@ public class BlockItemVoltaic extends BlockItem implements CreativeTabSupplier {
     public void inventoryTick(ItemStack stack, Level world, Entity entity, int itemSlot, boolean isSelected) {
 	super.inventoryTick(stack, world, entity, itemSlot, isSelected);
 
-	if (VoltaicConfig.INSTANCE.RADIATION_SYSTEM_ENABLED.isFalse()) {
+	if (VoltaicConfig.INSTANCE.RADIATION_SYSTEM_ENABLED.isFalse())
 	    return;
-	}
 
 	RadioactiveObject rad = RadioactiveItemRegister.getValue(stack.getItem());
 
 	if (rad.amount() > 0 && entity instanceof LivingEntity living) {
 	    IRadiationRecipient cap = living.getCapability(VoltaicCapabilities.CAPABILITY_RADIATIONRECIPIENT);
-	    if (cap == null) {
+	    if (cap == null)
 		return;
-	    }
 	    cap.recieveRadiation(living, stack.getCount() * rad.amount(), rad.strength());
 	}
     }

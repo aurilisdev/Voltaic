@@ -21,7 +21,7 @@ public class MachineProperties {
     }
 
     public MachineProperties setLitBrightness(int brightness) {
-	this.litBrightness = brightness;
+	litBrightness = brightness;
 	return setUsesLit();
     }
 

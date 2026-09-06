@@ -8,12 +8,11 @@ import java.util.function.BiConsumer;
 
 import javax.annotation.Nullable;
 
-import org.jetbrains.annotations.NotNull;
-
 import net.minecraft.core.Direction;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import voltaic.api.gas.Gas;
 import voltaic.api.gas.GasAction;
@@ -35,34 +34,25 @@ import voltaic.registers.VoltaicGases;
 
 public class ComponentGasHandlerMulti implements IComponentGasHandler {
 
-    private GenericTile holder;
-
-    @Nullable
-    public Direction[] inputDirections;
-    @Nullable
-    public Direction[] outputDirections;
+    private final GenericTile holder;
 
     private boolean isSided = false;
 
+    public Direction[] inputDirections = {};
+    public Direction[] outputDirections = {};
     private PropertyGasTank[] inputTanks = {};
     private PropertyGasTank[] outputTanks = {};
+    private TagKey<Gas>[] validInputGasTags = (TagKey<Gas>[]) new TagKey<?>[0];
+    private TagKey<Gas>[] validOutputGasTags = (TagKey<Gas>[]) new TagKey<?>[0];
+    private Gas[] validInputGases = {};
+    private Gas[] validOutputGases = {};
+    private final HashSet<Gas> inputValidatorGases = new HashSet<>();
+    private final HashSet<Gas> outputValidatorGases = new HashSet<>();
+
+    private IGasHandler[] sidedOptionals = new IGasHandler[6]; // Down Up North South West East
 
     @Nullable
     private RecipeType<? extends AbstractMaterialRecipe> recipeType;
-
-    @Nullable
-    private TagKey<Gas>[] validInputGasTags;
-    @Nullable
-    private Gas[] validInputGases;
-    private HashSet<Gas> inputValidatorGases = new HashSet<>();
-
-    @Nullable
-    private TagKey<Gas>[] validOutputGasTags;
-    @Nullable
-    private Gas[] validOutputGases;
-    private HashSet<Gas> outputValidatorGases = new HashSet<>();
-
-    private IGasHandler[] sidedOptionals = new IGasHandler[6]; // Down Up North South West East
 
     @Nullable
     private IGasHandler inputOptional = null;
@@ -72,25 +62,21 @@ public class ComponentGasHandlerMulti implements IComponentGasHandler {
     public ComponentGasHandlerMulti(GenericTile holder) {
 	this.holder = holder;
 
-	if (!holder.getBlockState().hasProperty(VoltaicBlockStates.FACING)) {
+	if (!holder.getBlockState().hasProperty(VoltaicBlockStates.FACING))
 	    throw new UnsupportedOperationException("The tile " + holder + " must have the FACING direction property!");
-	}
     }
 
     public ComponentGasHandlerMulti setInputTanks(int count, int[] capacity, int[] maxTemperature, int[] maxPressure) {
 	inputTanks = new PropertyGasTank[count];
-	if (capacity.length < count) {
+	if (capacity.length < count)
 	    throw new UnsupportedOperationException(
 		    "The number of capacities does not match the number of input tanks");
-	}
-	if (maxPressure.length < count) {
+	if (maxPressure.length < count)
 	    throw new UnsupportedOperationException(
 		    "The number of max temperatures does not match the number of input tanks");
-	}
-	if (maxTemperature.length < count) {
+	if (maxTemperature.length < count)
 	    throw new UnsupportedOperationException(
 		    "The number of max pressures does not match the number of input tanks");
-	}
 	for (int i = 0; i < count; i++) {
 	    inputTanks[i] = new PropertyGasTank(holder, "input" + i, capacity[i], maxTemperature[i], maxPressure[i]);
 	}
@@ -99,18 +85,15 @@ public class ComponentGasHandlerMulti implements IComponentGasHandler {
 
     public ComponentGasHandlerMulti setOutputTanks(int count, int[] capacity, int[] maxTemperature, int[] maxPressure) {
 	outputTanks = new PropertyGasTank[count];
-	if (capacity.length < count) {
+	if (capacity.length < count)
 	    throw new UnsupportedOperationException(
 		    "The number of capacities does not match the number of output tanks");
-	}
-	if (maxPressure.length < count) {
+	if (maxPressure.length < count)
 	    throw new UnsupportedOperationException(
 		    "The number of max temperatures does not match the number of output tanks");
-	}
-	if (maxTemperature.length < count) {
+	if (maxTemperature.length < count)
 	    throw new UnsupportedOperationException(
 		    "The number of max pressures does not match the number of output tanks");
-	}
 	for (int i = 0; i < count; i++) {
 	    outputTanks[i] = new PropertyGasTank(holder, "output" + i, capacity[i], maxTemperature[i], maxPressure[i]);
 	}
@@ -173,140 +156,105 @@ public class ComponentGasHandlerMulti implements IComponentGasHandler {
     }
 
     public int tankCount(boolean input) {
-	if (input) {
-	    return inputTanks == null ? 0 : inputTanks.length;
-	}
-	return outputTanks == null ? 0 : outputTanks.length;
+	return input ? inputTanks.length : outputTanks.length;
     }
 
     public GasStack getGasInTank(int tank, boolean input) {
-	if (input) {
-	    return inputTanks[tank].getGas();
-	}
-	return outputTanks[tank].getGas();
+	return (input ? inputTanks : outputTanks)[tank].getGas();
     }
 
     @Nullable
     public PropertyGasTank getTankFromGas(Gas gas, boolean isInput) {
 	if (isInput) {
 	    for (PropertyGasTank tank : inputTanks) {
-		if (tank.getGas().getGas().equals(gas)) {
+		if (tank.getGas().getGas().equals(gas))
 		    return tank;
-		}
 	    }
 	    for (PropertyGasTank tank : inputTanks) {
-		if (tank.isEmpty()) {
+		if (tank.isEmpty())
 		    return tank;
-		}
 	    }
 	}
 	for (PropertyGasTank tank : outputTanks) {
-	    if (tank.getGas().getGas().equals(gas)) {
+	    if (tank.getGas().getGas().equals(gas))
 		return tank;
-	    }
 	}
 	for (PropertyGasTank tank : outputTanks) {
-	    if (tank.isEmpty()) {
+	    if (tank.isEmpty())
 		return tank;
-	    }
 	}
 
 	return null;
     }
 
     public int getTankCapacity(int tank, boolean input) {
-	if (input) {
+	if (input)
 	    return inputTanks[tank].getCapacity();
-	}
 	return outputTanks[tank].getCapacity();
     }
 
-    public boolean isGasValid(int tank, @NotNull GasStack stack, boolean input) {
-	if (input) {
+    public boolean isGasValid(int tank, GasStack stack, boolean input) {
+	if (input)
 	    return inputTanks[tank].isGasValid(stack);
-	}
 	return outputTanks[tank].isGasValid(stack);
     }
 
     public int fill(int tank, GasStack resource, GasAction action, boolean input) {
-	if (input) {
+	if (input)
 	    return inputTanks[tank].fill(resource, action);
-	}
 	return outputTanks[tank].fill(resource, action);
     }
 
-    public @NotNull GasStack drain(int tank, GasStack resource, GasAction action, boolean input) {
-	if (input) {
+    public GasStack drain(int tank, GasStack resource, GasAction action, boolean input) {
+	if (input)
 	    return inputTanks[tank].drain(resource, action);
-	}
 	return outputTanks[tank].drain(resource, action);
     }
 
-    public @NotNull GasStack drain(int tank, int maxDrain, GasAction action, boolean input) {
-	if (input) {
+    public GasStack drain(int tank, int maxDrain, GasAction action, boolean input) {
+	if (input)
 	    return inputTanks[tank].drain(maxDrain, action);
-	}
 	return outputTanks[tank].drain(maxDrain, action);
     }
 
     @Override
-    public @org.jetbrains.annotations.Nullable IGasHandler getCapability(
-	    @org.jetbrains.annotations.Nullable Direction direction, CapabilityInputType mode) {
-	if (direction == null || !isSided) {
+    @Nullable
+    public IGasHandler getCapability(@Nullable Direction direction, CapabilityInputType mode) {
+	if (direction == null || !isSided)
 	    return null;
-	}
 	return sidedOptionals[direction.ordinal()];
     }
 
     @Override
-    public void refreshIfUpdate(BlockState oldState, BlockState newState) {
+    public void refreshIfUpdate(Level level, BlockState oldState, BlockState newState) {
 	if (isSided && oldState.hasProperty(VoltaicBlockStates.FACING)
 		&& newState.hasProperty(VoltaicBlockStates.FACING)
 		&& oldState.getValue(VoltaicBlockStates.FACING) != newState.getValue(VoltaicBlockStates.FACING)) {
-	    defineOptionals(newState.getValue(VoltaicBlockStates.FACING));
+	    defineOptionals(level, newState.getValue(VoltaicBlockStates.FACING));
 	}
     }
 
     @Override
-    public void refresh() {
-
-	defineOptionals(holder.getFacing());
-
+    public void refresh(Level level) {
+	defineOptionals(level, holder.getFacing());
     }
 
-    private void defineOptionals(Direction facing) {
-
-	holder.getLevel().invalidateCapabilities(holder.getBlockPos());
+    private void defineOptionals(Level level, Direction facing) {
+	level.invalidateCapabilities(holder.getBlockPos());
 
 	sidedOptionals = new IGasHandler[6];
-
 	inputOptional = null;
-
 	outputOptional = null;
 
-	// Input
-
-	if (inputDirections != null) {
-	    inputOptional = new InputTankDispatcher(inputTanks);
-
-	    for (Direction dir : inputDirections) {
-		sidedOptionals[BlockEntityUtils.getRelativeSide(facing, dir).ordinal()] = inputOptional;
-	    }
+	inputOptional = new InputTankDispatcher(inputTanks);
+	for (Direction dir : inputDirections) {
+	    sidedOptionals[BlockEntityUtils.getRelativeSide(facing, dir).ordinal()] = inputOptional;
 	}
 
-	if (outputDirections != null) {
-	    outputOptional = new OutputTankDispatcher(outputTanks);
-
-	    for (Direction dir : outputDirections) {
-		sidedOptionals[BlockEntityUtils.getRelativeSide(facing, dir).ordinal()] = outputOptional;
-	    }
+	outputOptional = new OutputTankDispatcher(outputTanks);
+	for (Direction dir : outputDirections) {
+	    sidedOptionals[BlockEntityUtils.getRelativeSide(facing, dir).ordinal()] = outputOptional;
 	}
-
-    }
-
-    @Override
-    public void holder(GenericTile holder) {
-	this.holder = holder;
     }
 
     @Override
@@ -315,8 +263,10 @@ public class ComponentGasHandlerMulti implements IComponentGasHandler {
     }
 
     @Override
-    public void onLoad() {
-	IComponentGasHandler.super.onLoad();
+    public void onLoad(Level level) {
+	IComponentGasHandler.super.onLoad(level);
+
+	RecipeType<? extends AbstractMaterialRecipe> recipeType = this.recipeType;
 	if (recipeType != null) {
 	    List<RecipeHolder<VoltaicRecipe>> recipes = VoltaicRecipe.findRecipesbyType(recipeType, holder.getLevel());
 
@@ -337,51 +287,46 @@ public class ComponentGasHandlerMulti implements IComponentGasHandler {
 
 	    for (RecipeHolder<VoltaicRecipe> iRecipe : recipes) {
 		AbstractMaterialRecipe recipe = (AbstractMaterialRecipe) iRecipe.value();
-		if (inputTanks != null) {
-		    for (GasIngredient ing : recipe.getGasIngredients()) {
-			ing.getMatchingGases().forEach(h -> inputGasHolder.add(h.getGas()));
-			GasStack gas = ing.getGasStack();
-			if (gas.getAmount() > maxGasInputAmount) {
-			    maxGasInputAmount = gas.getAmount();
-			}
-			if (gas.getTemperature() > maxGasInputTemperature) {
-			    maxGasInputTemperature = gas.getTemperature();
-			}
-			if (gas.getPressure() > maxGasInputPressure) {
-			    maxGasInputPressure = gas.getPressure();
-			}
+		for (GasIngredient ing : recipe.getGasIngredients()) {
+		    ing.getMatchingGases().forEach(h -> inputGasHolder.add(h.getGas()));
+		    GasStack gas = ing.getGasStack();
+		    if (gas.getAmount() > maxGasInputAmount) {
+			maxGasInputAmount = gas.getAmount();
+		    }
+		    if (gas.getTemperature() > maxGasInputTemperature) {
+			maxGasInputTemperature = gas.getTemperature();
+		    }
+		    if (gas.getPressure() > maxGasInputPressure) {
+			maxGasInputPressure = gas.getPressure();
 		    }
 		}
 
-		if (outputTanks != null) {
-		    GasStack output = recipe.getGasRecipeOutput();
-		    outputGasHolder.add(output.getGas());
-		    if (output.getAmount() > maxGasOutputAmount) {
-			maxGasOutputAmount = output.getAmount();
-		    }
-		    if (output.getTemperature() > maxGasOutputTemperature) {
-			maxGasOutputTemperature = output.getTemperature();
-		    }
-		    if (output.getPressure() > maxGasOutputPressure) {
-			maxGasOutputPressure = output.getPressure();
-		    }
+		GasStack output = recipe.getGasRecipeOutput();
+		outputGasHolder.add(output.getGas());
+		if (output.getAmount() > maxGasOutputAmount) {
+		    maxGasOutputAmount = output.getAmount();
+		}
+		if (output.getTemperature() > maxGasOutputTemperature) {
+		    maxGasOutputTemperature = output.getTemperature();
+		}
+		if (output.getPressure() > maxGasOutputPressure) {
+		    maxGasOutputPressure = output.getPressure();
+		}
 
-		    if (recipe.hasGasBiproducts()) {
+		if (recipe.hasGasBiproducts()) {
 
-			for (GasStack stack : recipe.getFullGasBiStacks()) {
+		    for (GasStack stack : recipe.getFullGasBiStacks()) {
 
-			    outputGasHolder.add(stack.getGas());
+			outputGasHolder.add(stack.getGas());
 
-			    if (stack.getAmount() > maxGasBiproductAmount) {
-				maxGasBiproductAmount = stack.getAmount();
-			    }
-			    if (stack.getTemperature() > maxGasBiproductTemperature) {
-				maxGasBiproductTemperature = stack.getTemperature();
-			    }
-			    if (stack.getPressure() > maxGasBiproudctPressure) {
-				maxGasBiproudctPressure = stack.getPressure();
-			    }
-
+			if (stack.getAmount() > maxGasBiproductAmount) {
+			    maxGasBiproductAmount = stack.getAmount();
+			}
+			if (stack.getTemperature() > maxGasBiproductTemperature) {
+			    maxGasBiproductTemperature = stack.getTemperature();
+			}
+			if (stack.getPressure() > maxGasBiproudctPressure) {
+			    maxGasBiproudctPressure = stack.getPressure();
 			}
 
 		    }
@@ -483,25 +428,15 @@ public class ComponentGasHandlerMulti implements IComponentGasHandler {
 	    }
 
 	} else {
-	    if (validInputGases != null) {
-		Collections.addAll(inputValidatorGases, validInputGases);
+	    Collections.addAll(inputValidatorGases, validInputGases);
+	    for (TagKey<Gas> tag : validInputGasTags) {
+		VoltaicGases.GAS_REGISTRY.getTag(tag).get().stream()
+			.forEach(holder -> { inputValidatorGases.add(holder.value()); });
 	    }
-	    if (validInputGasTags != null) {
-		for (TagKey<Gas> tag : validInputGasTags) {
-		    VoltaicGases.GAS_REGISTRY.getTag(tag).get().stream().forEach(holder -> {
-			inputValidatorGases.add(holder.value());
-		    });
-		}
-	    }
-	    if (validOutputGases != null) {
-		Collections.addAll(outputValidatorGases, validOutputGases);
-	    }
-	    if (validOutputGasTags != null) {
-		for (TagKey<Gas> tag : validOutputGasTags) {
-		    VoltaicGases.GAS_REGISTRY.getTag(tag).get().stream().forEach(holder -> {
-			outputValidatorGases.add(holder.value());
-		    });
-		}
+	    Collections.addAll(outputValidatorGases, validOutputGases);
+	    for (TagKey<Gas> tag : validOutputGasTags) {
+		VoltaicGases.GAS_REGISTRY.getTag(tag).get().stream()
+			.forEach(holder -> { outputValidatorGases.add(holder.value()); });
 	    }
 	}
 	if (!inputValidatorGases.isEmpty()) {
@@ -533,7 +468,7 @@ public class ComponentGasHandlerMulti implements IComponentGasHandler {
 
     private class InputTankDispatcher implements IGasHandler {
 
-	private PropertyGasTank[] tanks;
+	private final PropertyGasTank[] tanks;
 
 	public InputTankDispatcher(PropertyGasTank[] tanks) {
 	    this.tanks = tanks;
@@ -572,14 +507,12 @@ public class ComponentGasHandlerMulti implements IComponentGasHandler {
 	@Override
 	public int fill(GasStack gas, GasAction action) {
 	    for (PropertyGasTank tank : tanks) {
-		if (tank.getGas().is(gas.getGas())) {
+		if (tank.getGas().is(gas.getGas()))
 		    return tank.fill(gas, action);
-		}
 	    }
 	    for (PropertyGasTank tank : tanks) {
-		if (tank.isEmpty()) {
+		if (tank.isEmpty())
 		    return tank.fill(gas, action);
-		}
 	    }
 	    return 0;
 	}
@@ -608,7 +541,7 @@ public class ComponentGasHandlerMulti implements IComponentGasHandler {
 
     private class OutputTankDispatcher implements IGasHandler {
 
-	private PropertyGasTank[] tanks;
+	private final PropertyGasTank[] tanks;
 
 	public OutputTankDispatcher(PropertyGasTank[] tanks) {
 	    this.tanks = tanks;
@@ -652,9 +585,8 @@ public class ComponentGasHandlerMulti implements IComponentGasHandler {
 	@Override
 	public GasStack drain(GasStack gas, GasAction action) {
 	    for (PropertyGasTank tank : tanks) {
-		if (tank.getGas().is(gas.getGas())) {
+		if (tank.getGas().is(gas.getGas()))
 		    return tank.drain(gas, action);
-		}
 	    }
 	    return GasStack.EMPTY;
 	}

@@ -14,9 +14,8 @@ public class ItemUtils {
     public static boolean testItems(Item comparator, Item... itemsToCompare) {
 	ItemStack stack = new ItemStack(comparator);
 	for (Item item : itemsToCompare) {
-	    if (stack.getItem() == item) {
+	    if (stack.getItem() == item)
 		return true;
-	    }
 	}
 	return false;
     }
@@ -39,9 +38,8 @@ public class ItemUtils {
 
     public static boolean isIngredientMember(Ingredient ing, Item item) {
 	for (ItemStack stack : ing.getItems()) {
-	    if (testItems(item, stack.getItem())) {
+	    if (testItems(item, stack.getItem()))
 		return true;
-	    }
 	}
 	return false;
     }

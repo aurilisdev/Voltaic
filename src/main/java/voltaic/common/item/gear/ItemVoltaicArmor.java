@@ -47,7 +47,7 @@ public class ItemVoltaicArmor extends ArmorItem implements CreativeTabSupplier {
 
     @Override
     public boolean hasCreativeTab() {
-	return creativeTab != null;
+	return true;
     }
 
 }

@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
 
+import javax.annotation.Nullable;
+
 import net.minecraft.world.Container;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -13,9 +15,9 @@ import voltaic.api.screen.component.ISlotTexture;
 import voltaic.prefab.inventory.container.slot.item.SlotGeneric;
 
 public class SlotRestricted extends SlotGeneric {
-
-    private List<Item> whitelist;
+    @Nullable
     private List<Class<?>> classes;
+    @Nullable
     private List<ItemCapability<?, Void>> validCapabilities;
 
     private Predicate<ItemStack> mayPlace = stack -> false;
@@ -34,19 +36,19 @@ public class SlotRestricted extends SlotGeneric {
     }
 
     public SlotRestricted setRestriction(Item... items) {
-	whitelist = Arrays.asList(items);
-	mayPlace = stack -> whitelist.contains(stack.getItem());
+	List<Item> pwhitelist = Arrays.asList(items);
+	mayPlace = stack -> pwhitelist.contains(stack.getItem());
 	return this;
     }
 
     public SlotRestricted setRestriction(Class<?>... items) {
 	classes = Arrays.asList(items);
 	mayPlace = stack -> {
-	    if (classes != null) {
-		for (Class<?> cl : classes) {
-		    if (cl.isInstance(stack.getItem())) {
+	    List<Class<?>> pClasses = classes;
+	    if (pClasses != null) {
+		for (Class<?> cl : pClasses) {
+		    if (cl.isInstance(stack.getItem()))
 			return true;
-		    }
 		}
 	    }
 	    return false;
@@ -59,9 +61,8 @@ public class SlotRestricted extends SlotGeneric {
 	mayPlace = stack -> {
 	    if (validCapabilities != null) {
 		for (ItemCapability<?, Void> cap : validCapabilities) {
-		    if (stack.getCapability(cap) != null) {
+		    if (stack.getCapability(cap) != null)
 			return true;
-		    }
 		}
 	    }
 	    return false;

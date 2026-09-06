@@ -1,7 +1,5 @@
 package voltaic.prefab.utilities;
 
-import org.jetbrains.annotations.NotNull;
-
 import net.neoforged.neoforge.energy.IEnergyStorage;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
@@ -78,7 +76,7 @@ public class CapabilityUtils {
 	}
 
 	@Override
-	public @NotNull FluidStack getFluidInTank(int tank) {
+	public FluidStack getFluidInTank(int tank) {
 	    return FluidStack.EMPTY;
 	}
 
@@ -88,7 +86,7 @@ public class CapabilityUtils {
 	}
 
 	@Override
-	public boolean isFluidValid(int tank, @NotNull FluidStack stack) {
+	public boolean isFluidValid(int tank, FluidStack stack) {
 	    return false;
 	}
 
@@ -98,12 +96,12 @@ public class CapabilityUtils {
 	}
 
 	@Override
-	public @NotNull FluidStack drain(FluidStack resource, FluidAction action) {
+	public FluidStack drain(FluidStack resource, FluidAction action) {
 	    return FluidStack.EMPTY;
 	}
 
 	@Override
-	public @NotNull FluidStack drain(int maxDrain, FluidAction action) {
+	public FluidStack drain(int maxDrain, FluidAction action) {
 	    return FluidStack.EMPTY;
 	}
 

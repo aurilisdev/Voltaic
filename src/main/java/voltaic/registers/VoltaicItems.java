@@ -43,9 +43,8 @@ public class VoltaicItems {
 			public boolean hasCreativeTab() {
 			    if (super.hasCreativeTab()) {
 				for (String modId : subtype.modIds) {
-				    if (ModList.get().isLoaded(modId)) {
+				    if (ModList.get().isLoaded(modId))
 					return true;
-				    }
 				}
 			    }
 			    return false;

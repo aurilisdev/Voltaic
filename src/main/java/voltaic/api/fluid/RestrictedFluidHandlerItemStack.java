@@ -2,8 +2,6 @@ package voltaic.api.fluid;
 
 import java.util.function.Predicate;
 
-import org.jetbrains.annotations.NotNull;
-
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
@@ -22,7 +20,6 @@ public class RestrictedFluidHandlerItemStack implements IFluidHandlerItem {
 
     private Predicate<FluidStack> isFluidValid = stack -> true;
 
-    @NotNull
     protected ItemStack container;
     protected int capacity;
 
@@ -42,7 +39,7 @@ public class RestrictedFluidHandlerItemStack implements IFluidHandlerItem {
     }
 
     @Override
-    public @NotNull FluidStack getFluidInTank(int tank) {
+    public FluidStack getFluidInTank(int tank) {
 	return getFluid();
     }
 
@@ -52,15 +49,14 @@ public class RestrictedFluidHandlerItemStack implements IFluidHandlerItem {
     }
 
     @Override
-    public boolean isFluidValid(int tank, @NotNull FluidStack stack) {
+    public boolean isFluidValid(int tank, FluidStack stack) {
 	return isFluidValid.test(stack);
     }
 
     @Override
     public int fill(FluidStack resource, FluidAction action) {
-	if (container.getCount() != 1 || resource.isEmpty() || !isFluidValid(1, resource)) {
+	if (container.getCount() != 1 || resource.isEmpty() || !isFluidValid(1, resource))
 	    return 0;
-	}
 
 	FluidStack contained = getFluid();
 	if (contained.isEmpty()) {
@@ -89,24 +85,21 @@ public class RestrictedFluidHandlerItemStack implements IFluidHandlerItem {
     }
 
     @Override
-    public @NotNull FluidStack drain(FluidStack resource, FluidAction action) {
+    public FluidStack drain(FluidStack resource, FluidAction action) {
 	if (container.getCount() != 1 || resource.isEmpty()
-		|| !FluidStack.isSameFluidSameComponents(getFluid(), resource)) {
+		|| !FluidStack.isSameFluidSameComponents(getFluid(), resource))
 	    return FluidStack.EMPTY;
-	}
 	return drain(resource.getAmount(), action);
     }
 
     @Override
-    public @NotNull FluidStack drain(int maxDrain, FluidAction action) {
-	if (container.getCount() != 1 || maxDrain <= 0) {
+    public FluidStack drain(int maxDrain, FluidAction action) {
+	if (container.getCount() != 1 || maxDrain <= 0)
 	    return FluidStack.EMPTY;
-	}
 
 	FluidStack contained = getFluid();
-	if (contained.isEmpty()) {
+	if (contained.isEmpty())
 	    return FluidStack.EMPTY;
-	}
 
 	final int drainAmount = Math.min(contained.getAmount(), maxDrain);
 
@@ -125,11 +118,10 @@ public class RestrictedFluidHandlerItemStack implements IFluidHandlerItem {
     }
 
     @Override
-    public @NotNull ItemStack getContainer() {
+    public ItemStack getContainer() {
 	return container;
     }
 
-    @NotNull
     public FluidStack getFluid() {
 	return container.getOrDefault(VoltaicDataComponentTypes.FLUID_STACK, FluidStackComponent.EMPTY).fluid;
     }

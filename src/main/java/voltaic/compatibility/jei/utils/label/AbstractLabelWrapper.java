@@ -1,15 +1,17 @@
 package voltaic.compatibility.jei.utils.label;
 
+import javax.annotation.Nullable;
+
 import net.minecraft.network.chat.Component;
 import voltaic.compatibility.jei.recipecategories.AbstractRecipeCategory;
 import voltaic.prefab.utilities.math.Color;
 
 public abstract class AbstractLabelWrapper {
 
-    private Color color;
-    private int yPos;
-    private int xPos;
-    private boolean xIsEnd;
+    private final Color color;
+    private final int yPos;
+    private final int xPos;
+    private final boolean xIsEnd;
 
     public AbstractLabelWrapper(Color color, int yPos, int xPos, boolean xIsEnd) {
 	this.color = color;
@@ -34,5 +36,5 @@ public abstract class AbstractLabelWrapper {
 	return xIsEnd;
     }
 
-    public abstract Component getComponent(AbstractRecipeCategory<?> category, Object recipe);
+    public abstract @Nullable Component getComponent(AbstractRecipeCategory<?> category, Object recipe);
 }

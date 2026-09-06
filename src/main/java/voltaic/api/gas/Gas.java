@@ -26,17 +26,16 @@ public class Gas {
     public static final int MINIMUM_FREEZE_TEMP = 260;
 
     private final Holder<Item> container;
+    private final Holder<Fluid> condensedFluid; // set to empty if gas does not condense
     private final Component description;
     private final int condensationTemp; // Degrees Kelvin; set to 0 if this gas does not condense
-    @Nullable
-    private final Holder<Fluid> condensedFluid; // set to empty if gas does not condense
     private final Color color;
 
     public Gas(Holder<Item> container, Component description, Color color) {
 	this.container = container;
 	this.description = description;
-	this.condensationTemp = 0;
-	this.condensedFluid = new Holder.Direct<>(Fluids.EMPTY);
+	condensationTemp = 0;
+	condensedFluid = new Holder.Direct<>(Fluids.EMPTY);
 	this.color = color;
     }
 
@@ -71,7 +70,7 @@ public class Gas {
     }
 
     public boolean noCondensedFluid() {
-	return condensedFluid == null || condensedFluid.value() == Fluids.EMPTY;
+	return condensedFluid.value() == Fluids.EMPTY;
     }
 
     public Fluid getCondensedFluid() {
@@ -83,10 +82,9 @@ public class Gas {
     }
 
     @Override
-    public boolean equals(Object obj) {
-	if (obj instanceof Gas other) {
+    public boolean equals(@Nullable Object obj) {
+	if (obj instanceof Gas other)
 	    return other == this;
-	}
 	return false;
     }
 

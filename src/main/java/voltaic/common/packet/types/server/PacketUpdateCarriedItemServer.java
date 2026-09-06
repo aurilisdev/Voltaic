@@ -8,6 +8,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import voltaic.common.packet.NetworkHandler;
@@ -33,8 +34,10 @@ public class PacketUpdateCarriedItemServer implements CustomPacketPayload {
     }
 
     public static void handle(PacketUpdateCarriedItemServer message, IPayloadContext context) {
-	ServerBarrierMethods.handleUpdateCarriedItemServer(context.player().level(), message.carriedItem,
-		message.tilePos, message.playerId);
+	if (context.player().level() instanceof ServerLevel serverLevel) {
+	    ServerBarrierMethods.handleUpdateCarriedItemServer(serverLevel, message.carriedItem, message.tilePos,
+		    message.playerId);
+	}
     }
 
     @Override

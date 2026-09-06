@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
@@ -103,9 +105,8 @@ public class WorldUtils {
 			}
 			BlockPos currentBlockPos = new BlockPos(x + startPos.getX(), y + startPos.getY(),
 				z + startPos.getZ());
-			if (compareStates(world.getBlockState(currentBlockPos), caseBlocks)) {
+			if (compareStates(world.getBlockState(currentBlockPos), caseBlocks))
 			    return currentBlockPos;
-			}
 		    }
 		}
 	    }
@@ -115,9 +116,8 @@ public class WorldUtils {
 
     private static boolean compareStates(BlockState state, Block... caseBlocks) {
 	for (Block caseBlock : caseBlocks) {
-	    if (state.is(caseBlock)) {
+	    if (state.is(caseBlock))
 		return true;
-	    }
 	}
 	return false;
     }
@@ -158,6 +158,9 @@ public class WorldUtils {
     public static void fastRemoveBlockExplosion(ServerLevel level, BlockPos pos) {
 	if (!level.isOutsideBuildHeight(pos)) {
 	    LevelChunk chunk = getChunk(level, pos);
+	    if (chunk == null)
+		return;
+
 	    LevelChunkSection storage = getBlockStorage(pos);
 	    BlockState oldState = chunk.getBlockState(pos);
 	    Block block = oldState.getBlock();
@@ -177,14 +180,22 @@ public class WorldUtils {
 	}
     }
 
+    @Nullable
     private static LevelChunkSection getBlockStorage(BlockPos pos) {
 	LevelChunk chunk = getChunk(null, pos);
+	if (chunk == null)
+	    return null;
+
 	return chunk.getSection(chunk.getSectionIndex(pos.getY()));
     }
 
-    private static LevelChunk getChunk(ServerLevel level, BlockPos pos) {
+    @Nullable
+    private static LevelChunk getChunk(@Nullable ServerLevel level, BlockPos pos) {
 	ChunkPos cp = new ChunkPos(pos);
 	if (!chunkCache.containsKey(cp)) {
+	    if (level == null)
+		return null;
+
 	    chunkCache.put(cp, level.getChunk(pos.getX() >> 4, pos.getZ() >> 4));
 	}
 	return chunkCache.get(cp);
@@ -195,14 +206,18 @@ public class WorldUtils {
 		Mth.square(a.getX() - b.getX()) + Mth.square(a.getY() - b.getY()) + Mth.square(a.getZ() - b.getZ()));
     }
 
-    public static Direction getDirectionFromPosDelta(BlockPos from, BlockPos to) {
+    public static @Nullable Direction getDirectionFromPosDelta(BlockPos from, BlockPos to) {
 	BlockPos delta = to.subtract(from);
 	return Direction.fromDelta(delta.getX(), delta.getY(), delta.getZ());
     }
 
     public static boolean shouldUpdateFromRedstoneChange(Level world, BlockPos ourPos, BlockPos neighborPos) {
 	int bestSignal = world.getBestNeighborSignal(ourPos);
-	int neighborSignal = world.getSignal(neighborPos, getDirectionFromPosDelta(ourPos, neighborPos));
+	Direction dirFromPosDelta = getDirectionFromPosDelta(ourPos, neighborPos);
+	if (dirFromPosDelta == null)
+	    return true;
+
+	int neighborSignal = world.getSignal(neighborPos, dirFromPosDelta);
 
 	return bestSignal == neighborSignal;
     }

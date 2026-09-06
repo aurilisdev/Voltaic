@@ -1,13 +1,14 @@
 package voltaic.prefab.tile.components.type;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nullable;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -19,6 +20,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import voltaic.api.electricity.ICapabilityElectrodynamic;
 import voltaic.api.item.IItemElectric;
 import voltaic.common.block.states.VoltaicBlockStates;
+import voltaic.prefab.properties.PropertyManager;
 import voltaic.prefab.properties.types.PropertyTypes;
 import voltaic.prefab.properties.variant.SingleProperty;
 import voltaic.prefab.tile.GenericTile;
@@ -43,6 +45,7 @@ public class ComponentElectrodynamic implements IComponent, ICapabilityElectrody
     protected Supplier<Double> minimumVoltageFunction = ICapabilityElectrodynamic.super::getMinimumVoltage;
     protected Supplier<Double> maximumVoltageFunction = ICapabilityElectrodynamic.super::getMaximumVoltage;
 
+    @Nullable
     protected Consumer<Double> setJoules = null;
     protected HashSet<Direction> relativeOutputDirections = new HashSet<>(); // Leave empty for universal input
     protected HashSet<Direction> relativeInputDirections = new HashSet<>(); // Leave empty for universal output
@@ -66,20 +69,15 @@ public class ComponentElectrodynamic implements IComponent, ICapabilityElectrody
     private ICapabilityElectrodynamic outputOptional = null;
 
     public ComponentElectrodynamic(GenericTile source, boolean isProducer, boolean isReceiver) {
-
+	holder = source;
+	PropertyManager manager = holder.getPropertyManager();
 	producesEnergy = isProducer;
 	acceptsEnergy = isReceiver;
 
-	holder(source);
-	voltage = source
-		.property(new SingleProperty<>(PropertyTypes.DOUBLE, "voltage", VoltaicCapabilities.DEFAULT_VOLTAGE));
-	maxJoules = source.property(new SingleProperty<>(PropertyTypes.DOUBLE, "maxJoules", 0.0));
-	joules = source.property(new SingleProperty<>(PropertyTypes.DOUBLE, "joules", 0.0));
-    }
-
-    @Override
-    public void holder(GenericTile holder) {
-	this.holder = holder;
+	voltage = source.property(
+		new SingleProperty<>(manager, PropertyTypes.DOUBLE, "voltage", VoltaicCapabilities.DEFAULT_VOLTAGE));
+	maxJoules = source.property(new SingleProperty<>(manager, PropertyTypes.DOUBLE, "maxJoules", 0.0));
+	joules = source.property(new SingleProperty<>(manager, PropertyTypes.DOUBLE, "joules", 0.0));
     }
 
     @Override
@@ -118,87 +116,77 @@ public class ComponentElectrodynamic implements IComponent, ICapabilityElectrody
 	joules(joules);
     }
 
-    public ICapabilityElectrodynamic getCapability(Direction side, CapabilityInputType type) {
-	if (!isSided) {
+    @Nullable
+    public ICapabilityElectrodynamic getCapability(@Nullable Direction side, CapabilityInputType type) {
+	if (!isSided)
 	    return this;
-	}
-	if (side == null) {
+
+	if (side == null)
 	    return null;
-	}
 
 	return sidedOptionals[side.ordinal()];
     }
 
     @Override
-    public void refreshIfUpdate(BlockState oldState, BlockState newState) {
+    public void refreshIfUpdate(Level level, BlockState oldState, BlockState newState) {
 	if (isSided && oldState.hasProperty(VoltaicBlockStates.FACING)
 		&& newState.hasProperty(VoltaicBlockStates.FACING)
 		&& oldState.getValue(VoltaicBlockStates.FACING) != newState.getValue(VoltaicBlockStates.FACING)) {
-	    defineOptionals(newState.getValue(VoltaicBlockStates.FACING));
+	    defineOptionals(level, newState.getValue(VoltaicBlockStates.FACING));
 	}
     }
 
     @Override
-    public void refresh() {
-
-	defineOptionals(holder.getFacing());
-
+    public void refresh(Level level) {
+	defineOptionals(level, holder.getFacing());
     }
 
-    private void defineOptionals(Direction facing) {
-
-	holder.getLevel().invalidateCapabilities(holder.getBlockPos());
-
+    private void defineOptionals(Level level, Direction facing) {
+	level.invalidateCapabilities(holder.getBlockPos());
 	sidedOptionals = new ICapabilityElectrodynamic[6];
-
 	inputOptional = null;
-
 	outputOptional = null;
 
-	if (isSided) {
+	if (!isSided)
+	    return;
 
-	    // Input
+	if (!relativeInputDirections.isEmpty()) {
+	    inputOptional = new InputCapabilityDispatcher(this);
 
-	    if (!relativeInputDirections.isEmpty()) {
-		inputOptional = new InputCapabilityDispatcher(this);
-
-		for (Direction dir : relativeInputDirections) {
-		    sidedOptionals[BlockEntityUtils.getRelativeSide(facing, dir).ordinal()] = inputOptional;
-		}
+	    for (Direction dir : relativeInputDirections) {
+		int index = BlockEntityUtils.getRelativeSide(facing, dir).ordinal();
+		sidedOptionals[index] = inputOptional;
 	    }
+	}
 
-	    if (!relativeOutputDirections.isEmpty()) {
-		outputOptional = new OutputCapabilityDispatcher(this);
+	if (!relativeOutputDirections.isEmpty()) {
+	    outputOptional = new OutputCapabilityDispatcher(this);
 
-		for (Direction dir : relativeOutputDirections) {
-		    sidedOptionals[BlockEntityUtils.getRelativeSide(facing, dir).ordinal()] = outputOptional;
-		}
+	    for (Direction dir : relativeOutputDirections) {
+		int index = BlockEntityUtils.getRelativeSide(facing, dir).ordinal();
+		sidedOptionals[index] = outputOptional;
 	    }
-
 	}
     }
 
     @Override
     public TransferPack extractPower(TransferPack transfer, boolean debug) {
-	if (isEnergyProducer()) {
+	if (isEnergyProducer())
 	    return functionExtractPower.apply(transfer, debug);
-	}
 	return TransferPack.EMPTY;
     }
 
     @Override
     public TransferPack receivePower(TransferPack transfer, boolean debug) {
-	if (isEnergyReceiver()) {
+	if (isEnergyReceiver())
 	    return functionReceivePower.apply(transfer, debug);
-	}
 	return TransferPack.EMPTY;
     }
 
     @Override
     public TransferPack getConnectedLoad(LoadProfile loadProfile, Direction dir) {
-	if (isEnergyReceiver()) {
+	if (isEnergyReceiver())
 	    return connectedLoadFunction.apply(loadProfile, dir);
-	}
 	return TransferPack.EMPTY;
     }
 
@@ -249,7 +237,7 @@ public class ComponentElectrodynamic implements IComponent, ICapabilityElectrody
     }
 
     public ComponentElectrodynamic getConnectedLoad(BiFunction<LoadProfile, Direction, TransferPack> supplier) {
-	this.connectedLoadFunction = supplier;
+	connectedLoadFunction = supplier;
 	return this;
     }
 
@@ -285,7 +273,11 @@ public class ComponentElectrodynamic implements IComponent, ICapabilityElectrody
 
     public ComponentElectrodynamic drainElectricItem(int slot) {
 	if (holder.hasComponent(IComponentType.Inventory)) {
-	    ComponentInventory inventory = holder.getComponent(IComponentType.Inventory);
+	    Optional<ComponentInventory> oInv = holder.getComponent(IComponentType.Inventory);
+	    if (oInv.isEmpty())
+		return this;
+
+	    ComponentInventory inventory = oInv.get();
 	    ItemStack stack = inventory.getItem(slot);
 	    if (stack.getItem() instanceof IItemElectric electric) {
 		TransferPack pack = functionReceivePower
@@ -299,13 +291,15 @@ public class ComponentElectrodynamic implements IComponent, ICapabilityElectrody
     }
 
     public ComponentElectrodynamic fillElectricItem(int slot) {
-	if (holder.hasComponent(IComponentType.Inventory)) {
-	    ComponentInventory inventory = holder.getComponent(IComponentType.Inventory);
-	    ItemStack stack = inventory.getItem(slot);
-	    if (stack.getItem() instanceof IItemElectric electric) {
-		functionExtractPower.apply(electric.receivePower(stack,
-			TransferPack.joulesVoltage(joules.getValue(), voltage.getValue()), false), false);
-	    }
+	Optional<ComponentInventory> oInv = holder.getComponent(IComponentType.Inventory);
+	if (oInv.isEmpty())
+	    return this;
+
+	ComponentInventory inventory = oInv.get();
+	ItemStack stack = inventory.getItem(slot);
+	if (stack.getItem() instanceof IItemElectric electric) {
+	    functionExtractPower.apply(electric.receivePower(stack,
+		    TransferPack.joulesVoltage(joules.getValue(), voltage.getValue()), false), false);
 	}
 	return this;
     }
@@ -327,10 +321,13 @@ public class ComponentElectrodynamic implements IComponent, ICapabilityElectrody
 
     @Override
     public void overVoltage(TransferPack transfer) {
-	Level world = holder.getLevel();
+	Level level = holder.getLevel();
+	if (level == null)
+	    return;
+
 	BlockPos pos = holder.getBlockPos();
-	world.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
-	world.explode(null, pos.getX(), pos.getY(), pos.getZ(),
+	level.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
+	level.explode(null, pos.getX(), pos.getY(), pos.getZ(),
 		(float) Math.log10(10 + transfer.getVoltage() / getVoltage()), ExplosionInteraction.BLOCK);
     }
 
@@ -346,14 +343,12 @@ public class ComponentElectrodynamic implements IComponent, ICapabilityElectrody
 
     @Override
     public void onChange() {
-	if (holder != null) {
-	    holder.onEnergyChange(this);
-	}
+	holder.onEnergyChange(this);
     }
 
     private static class InputCapabilityDispatcher implements ICapabilityElectrodynamic {
 
-	private ComponentElectrodynamic parent;
+	private final ComponentElectrodynamic parent;
 
 	public InputCapabilityDispatcher(ComponentElectrodynamic parent) {
 	    this.parent = parent;
@@ -433,7 +428,7 @@ public class ComponentElectrodynamic implements IComponent, ICapabilityElectrody
 
     private static class OutputCapabilityDispatcher implements ICapabilityElectrodynamic {
 
-	private ComponentElectrodynamic parent;
+	private final ComponentElectrodynamic parent;
 
 	public OutputCapabilityDispatcher(ComponentElectrodynamic parent) {
 	    this.parent = parent;

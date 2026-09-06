@@ -2,11 +2,13 @@ package voltaic.prefab.properties.variant;
 
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.network.PacketDistributor;
 import voltaic.Voltaic;
 import voltaic.common.packet.types.server.PacketSendUpdatePropertiesServer;
 import voltaic.prefab.properties.PropertyManager;
 import voltaic.prefab.properties.types.IPropertyType;
+import voltaic.prefab.tile.GenericTile;
 
 public abstract class AbstractProperty<T, PROPERTYTYPE extends IPropertyType> {
 
@@ -18,8 +20,7 @@ public abstract class AbstractProperty<T, PROPERTYTYPE extends IPropertyType> {
     // otherwise the property will be synced to the client upon change at the end of
     // the tile's tick
     private boolean shouldUpdateOnChange = false;
-    @Deprecated(forRemoval = true, since = "This should've never been implemented as = true by defauylt. MUST BE REMOVED ASAP and replaced with a setUpdateServer instead. By default this allows dupes and hacks etc....")
-    private boolean shouldUpdateServer = true;
+    private boolean shouldUpdateServer = false;
     private final String name;
 
     private boolean isDirty = true;
@@ -28,11 +29,9 @@ public abstract class AbstractProperty<T, PROPERTYTYPE extends IPropertyType> {
 
     private int index = 0;
 
-    public AbstractProperty(PROPERTYTYPE type, String name, T defaultValue) {
+    public AbstractProperty(PropertyManager manager, PROPERTYTYPE type, String name, T defaultValue) {
+	this.manager = manager;
 	this.type = type;
-	if (name == null || name.length() == 0) {
-	    throw new RuntimeException("The property's name cannot be null or empty");
-	}
 	this.name = name;
 	value = defaultValue;
     }
@@ -68,14 +67,12 @@ public abstract class AbstractProperty<T, PROPERTYTYPE extends IPropertyType> {
 	return (A) this;
     }
 
-    @Deprecated(forRemoval = false, since = "Added to remember to remove the default = true.")
     public boolean shouldUpdateServer() {
 	return shouldUpdateServer;
     }
 
-    @Deprecated(forRemoval = true, since = "This should've never been implemented. MUST BE REMOVED ASAP and replaced with a setUpdateServer instead. By default this allows dupes and hacks etc....")
-    public <A extends AbstractProperty<T, PROPERTYTYPE>> A setNoUpdateServer() {
-	shouldUpdateServer = false;
+    public <A extends AbstractProperty<T, PROPERTYTYPE>> A setUpdateServer() {
+	shouldUpdateServer = true;
 	return (A) this;
     }
 
@@ -158,13 +155,18 @@ public abstract class AbstractProperty<T, PROPERTYTYPE extends IPropertyType> {
      */
     @Deprecated(since = "This should be used when working with arrays")
     public void forceDirtyForManager() {
-	if (!manager.getOwner().getLevel().isClientSide()) {
+	GenericTile owningEntity = manager.getOwner();
+	Level level = owningEntity.getLevel();
+	if (level == null)
+	    return;
+
+	if (!level.isClientSide()) {
 	    manager.setDirty(this);
 	} else {
 	    CompoundTag data = new CompoundTag();
-	    saveToTag(data, manager.getOwner().getLevel().registryAccess());
-	    PacketDistributor.sendToServer(
-		    new PacketSendUpdatePropertiesServer(data, index(), manager.getOwner().getBlockPos()));
+	    saveToTag(data, level.registryAccess());
+	    PacketDistributor
+		    .sendToServer(new PacketSendUpdatePropertiesServer(data, index(), owningEntity.getBlockPos()));
 	}
     }
 
@@ -173,10 +175,14 @@ public abstract class AbstractProperty<T, PROPERTYTYPE extends IPropertyType> {
     }
 
     public void updateServer() {
+	GenericTile owningEntity = manager.getOwner();
+	Level level = owningEntity.getLevel();
+	if (level == null)
+	    return;
+
 	CompoundTag data = new CompoundTag();
-	saveToTag(data, manager.getOwner().getLevel().registryAccess());
-	PacketDistributor
-		.sendToServer(new PacketSendUpdatePropertiesServer(data, index(), manager.getOwner().getBlockPos()));
+	saveToTag(data, level.registryAccess());
+	PacketDistributor.sendToServer(new PacketSendUpdatePropertiesServer(data, index(), owningEntity.getBlockPos()));
     }
 
 }

@@ -6,6 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.fluids.FluidStack;
@@ -26,7 +27,7 @@ public class ScreenComponentCondensedFluid extends ScreenComponentGeneric {
 
     public ScreenComponentCondensedFluid(Supplier<SingleProperty<FluidStack>> fluidStackSupplier, int x, int y) {
 	super(IconType.FLUID_DARK, x, y);
-	this.fluidPropertySupplier = fluidStackSupplier;
+	fluidPropertySupplier = fluidStackSupplier;
     }
 
     @Override
@@ -36,9 +37,8 @@ public class ScreenComponentCondensedFluid extends ScreenComponentGeneric {
 
 	SingleProperty<FluidStack> fluidProperty = fluidPropertySupplier.get();
 
-	if (fluidProperty == null || fluidProperty.getValue().isEmpty()) {
+	if (fluidProperty == null || fluidProperty.getValue().isEmpty())
 	    return;
-	}
 
 	IconType fluidFull = IconType.FLUID_BLUE;
 
@@ -50,9 +50,7 @@ public class ScreenComponentCondensedFluid extends ScreenComponentGeneric {
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
 	if (isActiveAndVisible() && isValidClick(button) && isInClickRegion(mouseX, mouseY)) {
-
 	    onMouseClick(mouseX, mouseY);
-
 	    return true;
 	}
 	return false;
@@ -69,46 +67,39 @@ public class ScreenComponentCondensedFluid extends ScreenComponentGeneric {
 
     @Override
     public void onMouseClick(double mouseX, double mouseY) {
-
-	SingleProperty<FluidStack> fluidProperty = fluidPropertySupplier.get();
-
-	if (fluidProperty == null || fluidProperty.getValue().isEmpty()) {
+	SingleProperty<FluidStack> property = fluidPropertySupplier.get();
+	if (property == null || property.getValue().isEmpty())
 	    return;
-	}
 
-	FluidStack fluidStack = fluidProperty.getValue();
-
-	GenericScreen<?> screen = (GenericScreen<?>) gui;
-
-	GenericTile owner = (GenericTile) ((GenericContainerBlockEntity<?>) screen.getMenu()).getSafeHost();
-
-	if (owner == null) {
+	GenericScreen<?> screen = (GenericScreen<?>) requireScreen();
+	GenericContainerBlockEntity<?> menu = (GenericContainerBlockEntity<?>) screen.getMenu();
+	GenericTile owner = (GenericTile) menu.getSafeHost().orElse(null);
+	if (owner == null)
 	    return;
-	}
 
-	ItemStack stack = screen.getMenu().getCarried();
+	Minecraft minecraft = Minecraft.getInstance();
+	Player player = minecraft.player;
+	if (player == null)
+	    return;
 
+	ItemStack stack = menu.getCarried();
 	IFluidHandlerItem handler = stack.getCapability(Capabilities.FluidHandler.ITEM);
-
-	if (handler == null) {
+	if (handler == null)
 	    return;
-	}
 
-	int taken = handler.fill(fluidStack, FluidAction.EXECUTE);
-
-	if (taken <= 0) {
+	FluidStack fluid = property.getValue();
+	int taken = handler.fill(fluid, FluidAction.EXECUTE);
+	if (taken <= 0)
 	    return;
-	}
 
-	fluidStack.shrink(taken);
-
-	Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.BUCKET_FILL, 1.0F));
+	fluid.shrink(taken);
+	minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.BUCKET_FILL, 1.0F));
 
 	stack = handler.getContainer();
+	menu.setCarried(stack);
 
-	PacketDistributor.sendToServer(new PacketUpdateCarriedItemServer(stack.copy(), owner.getBlockPos(),
-		Minecraft.getInstance().player.getUUID()));
-
+	PacketDistributor
+		.sendToServer(new PacketUpdateCarriedItemServer(stack.copy(), owner.getBlockPos(), player.getUUID()));
     }
 
 }

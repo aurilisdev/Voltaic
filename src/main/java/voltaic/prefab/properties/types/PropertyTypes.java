@@ -195,9 +195,8 @@ public class PropertyTypes {
     public static final SinglePropertyType<FluidStack, RegistryFriendlyByteBuf> FLUID_STACK = new SinglePropertyType<>(
 	    //
 	    (thisStack, otherStack) -> {
-		if (thisStack.getAmount() != otherStack.getAmount()) {
+		if (thisStack.getAmount() != otherStack.getAmount())
 		    return false;
-		}
 		return thisStack.getFluid().isSame(otherStack.getFluid());
 	    },
 	    //

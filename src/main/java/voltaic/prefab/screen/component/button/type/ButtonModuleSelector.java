@@ -23,9 +23,9 @@ public class ButtonModuleSelector extends ButtonSpecificPage {
 
 	if (selected && isVisible()) {
 	    ITexture texture = GuidebookButtonTextures.CHECKBOX_ON;
-	    graphics.blit(texture.getLocation(), this.xLocation + guiWidth, this.yLocation + guiHeight,
-		    texture.textureU(), texture.textureV(), texture.textureWidth(), texture.textureHeight(),
-		    texture.imageWidth(), texture.imageHeight());
+	    graphics.blit(texture.getLocation(), xLocation + guiWidth, yLocation + guiHeight, texture.textureU(),
+		    texture.textureV(), texture.textureWidth(), texture.textureHeight(), texture.imageWidth(),
+		    texture.imageHeight());
 	} else {
 	    super.renderBackground(graphics, xAxis, yAxis, guiWidth, guiHeight);
 	}
@@ -41,7 +41,8 @@ public class ButtonModuleSelector extends ButtonSpecificPage {
     }
 
     public static enum GuidebookButtonTextures implements ITexture {
-	CHECKBOX_OFF(9, 9, 0, 0, 9, 9, "checkboxoff"), CHECKBOX_ON(9, 9, 0, 0, 9, 9, "checkboxon");
+	CHECKBOX_OFF(9, 9, 0, 0, 9, 9, "checkboxoff"),
+	CHECKBOX_ON(9, 9, 0, 0, 9, 9, "checkboxon");
 
 	private final int textureWidth;
 	private final int textureHeight;

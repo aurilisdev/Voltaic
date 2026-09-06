@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.mojang.datafixers.util.Either;
@@ -75,14 +74,13 @@ public class GasIngredient implements Predicate<GasStack>, ICustomIngredient {
 	    .xmap(either -> either.map(tag -> tag, gas -> gas), value -> {
 		//
 
-		if (value.tag != null) {
+		if (value.tag != null)
 		    return Either.left(value);
-		} else if (value.gas != null) {
+		else if (value.gas != null)
 		    return Either.right(value);
-		} else {
+		else
 		    throw new UnsupportedOperationException(
 			    "The Gas Ingredient neither has a tag nor a direct gas value defined!");
-		}
 
 	    });
 
@@ -131,13 +129,12 @@ public class GasIngredient implements Predicate<GasStack>, ICustomIngredient {
 	}
     };
 
-    @Nonnull
-    private List<GasStack> gasStacks;
-
     @Nullable
     private TagKey<Gas> tag;
     @Nullable
     private Gas gas;
+    @Nullable
+    private List<GasStack> gasStacks;
     private int amount;
     private int temperature;
     private int pressure;
@@ -147,19 +144,19 @@ public class GasIngredient implements Predicate<GasStack>, ICustomIngredient {
     }
 
     public GasIngredient(GasStack gasStack) {
-	this.gas = gasStack.getGas();
-	this.amount = gasStack.getAmount();
-	this.temperature = gasStack.getTemperature();
-	this.pressure = gasStack.getPressure();
+	gas = gasStack.getGas();
+	amount = gasStack.getAmount();
+	temperature = gasStack.getTemperature();
+	pressure = gasStack.getPressure();
     }
 
     public GasIngredient(List<GasStack> stacks) {
 	gasStacks = stacks;
 	GasStack gas = getGasStack();
 	this.gas = gas.getGas();
-	this.amount = gas.getAmount();
-	this.temperature = gas.getTemperature();
-	this.pressure = gas.getPressure();
+	amount = gas.getAmount();
+	temperature = gas.getTemperature();
+	pressure = gas.getPressure();
     }
 
     public GasIngredient(TagKey<Gas> tag, int amount, int temperature, int pressure) {
@@ -176,7 +173,7 @@ public class GasIngredient implements Predicate<GasStack>, ICustomIngredient {
 
     @Override
     public Stream<ItemStack> getItems() {
-	return null;
+	return Stream.empty();
     }
 
     @Override
@@ -190,23 +187,19 @@ public class GasIngredient implements Predicate<GasStack>, ICustomIngredient {
     }
 
     public boolean testGas(@Nullable GasStack gas, boolean checkTemperature, boolean checkPressure) {
-	if (gas == null || gas.isEmpty()) {
+	if (gas == null || gas.isEmpty())
 	    return false;
-	}
 	for (GasStack g : getMatchingGases()) {
 	    if (gas.getAmount() >= g.getAmount()) {
 		if (g.isSameGas(gas)) {
-		    if (!checkTemperature && !checkPressure) {
+		    if (!checkTemperature && !checkPressure)
 			return true;
-		    }
 		    boolean sameTemp = g.isSameTemperature(gas);
 		    boolean samePres = g.isSamePressure(gas);
-		    if (!checkTemperature) {
+		    if (!checkTemperature)
 			return samePres;
-		    }
-		    if (checkPressure) {
+		    if (checkPressure)
 			return sameTemp && samePres;
-		    }
 		    return sameTemp;
 		}
 	    }
@@ -220,21 +213,21 @@ public class GasIngredient implements Predicate<GasStack>, ICustomIngredient {
     }
 
     public List<GasStack> getMatchingGases() {
+	List<GasStack> cached = gasStacks;
+	if (cached != null)
+	    return cached;
 
-	if (gasStacks == null) {
-	    gasStacks = new ArrayList<>();
-	    if (tag != null) {
-		VoltaicGases.GAS_REGISTRY.getTag(tag).get().forEach(h -> {
-		    gasStacks.add(new GasStack(h.value(), amount, temperature, pressure));
-		});
-	    } else if (gas != null) {
-		gasStacks.add(new GasStack(gas, amount, temperature, pressure));
-	    } else {
-		throw new UnsupportedOperationException("Gas Ingredient has neither a gas nor a gas tag defined");
-	    }
+	List<GasStack> matchingGases = new ArrayList<>();
+	if (tag != null) {
+	    VoltaicGases.GAS_REGISTRY.getTag(tag).ifPresent(holders -> holders
+		    .forEach(holder -> matchingGases.add(new GasStack(holder.value(), amount, temperature, pressure))));
+	} else if (gas != null) {
+	    matchingGases.add(new GasStack(gas, amount, temperature, pressure));
+	} else {
+	    throw new UnsupportedOperationException("Gas ingredient has neither a gas nor a gas tag defined");
 	}
-
-	return gasStacks;
+	gasStacks = matchingGases;
+	return matchingGases;
 
     }
 
@@ -244,16 +237,15 @@ public class GasIngredient implements Predicate<GasStack>, ICustomIngredient {
     }
 
     @Override
-    public boolean equals(Object obj) {
-	if (obj instanceof GasIngredient ing) {
+    public boolean equals(@Nullable Object obj) {
+	if (obj instanceof GasIngredient ing)
 	    return ing.getMatchingGases().equals(getMatchingGases()) && ing.amount == amount && ing.pressure == pressure
 		    && ing.temperature == temperature;
-	}
 	return false;
     }
 
     @Override
-    public boolean test(GasStack gasStack) {
+    public boolean test(@Nullable GasStack gasStack) {
 	return testGas(gasStack, true, true);
     }
 }

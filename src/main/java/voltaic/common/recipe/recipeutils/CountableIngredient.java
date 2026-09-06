@@ -67,8 +67,7 @@ public class CountableIngredient implements ICustomIngredient {
 
     private final Ingredient ingredient;
 
-    @Nullable
-    private ItemStack[] countedItems;
+    private ItemStack[] countedItems = {};
 
     public CountableIngredient(ItemStack stack) {
 	this(Ingredient.of(stack), stack.getCount());
@@ -87,7 +86,7 @@ public class CountableIngredient implements ICustomIngredient {
 
     @Override
     public Stream<ItemStack> getItems() {
-	if (countedItems == null) {
+	if (countedItems.length == 0) {
 	    ItemStack[] items = ingredient.getItems().clone();
 	    for (ItemStack item : items) {
 		item.setCount(stackSize);
@@ -98,7 +97,7 @@ public class CountableIngredient implements ICustomIngredient {
     }
 
     public ItemStack[] getItemsArray() {
-	if (countedItems == null) {
+	if (countedItems.length == 0) {
 	    ItemStack[] items = ingredient.getItems().clone();
 	    for (ItemStack item : items) {
 		item.setCount(stackSize);
@@ -128,12 +127,9 @@ public class CountableIngredient implements ICustomIngredient {
     }
 
     @Override
-    public boolean equals(Object obj) {
-	if (obj instanceof CountableIngredient otherIng) {
-
+    public boolean equals(@Nullable Object obj) {
+	if (obj instanceof CountableIngredient otherIng)
 	    return otherIng.stackSize == stackSize && ingredient.equals(otherIng.ingredient);
-
-	}
 	return false;
     }
 

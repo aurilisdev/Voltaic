@@ -42,7 +42,7 @@ public class ModelStateRotation implements ModelState {
 	q.setAngleAxis(-z * d2r, 0F, 0F, 1F);
 	q.mul(new Quaternionf().setAngleAxis(-y * d2r, 0F, 1F, 0F));
 	q.mul(new Quaternionf().setAngleAxis(-x * d2r, 1F, 0F, 0F));
-	this.transformation = new Transformation(null, q, null, null);
+	transformation = new Transformation(null, q, null, null);
     }
 
     @Override

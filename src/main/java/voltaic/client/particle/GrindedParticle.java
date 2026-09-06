@@ -2,8 +2,6 @@ package voltaic.client.particle;
 
 import javax.annotation.Nullable;
 
-import org.jetbrains.annotations.NotNull;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.ParticleRenderType;
@@ -19,7 +17,7 @@ import net.neoforged.api.distmarker.OnlyIn;
 public class GrindedParticle extends TextureSheetParticle {
 
     private final BlockState sourceState;
-    private BlockPos sourcePos;
+    private @Nullable BlockPos sourcePos;
     private final float uCoord;
     private final float vCoord;
 
@@ -38,32 +36,31 @@ public class GrindedParticle extends TextureSheetParticle {
     }
 
     @Override
-    public @NotNull ParticleRenderType getRenderType() {
+    public ParticleRenderType getRenderType() {
 	return ParticleRenderType.TERRAIN_SHEET;
     }
 
     public GrindedParticle setBlockPos(BlockPos pos) {
 	updateSprite(pos);
 	sourcePos = pos;
-	if (sourceState.is(Blocks.GRASS_BLOCK)) {
+	if (sourceState.is(Blocks.GRASS_BLOCK))
 	    return this;
-	}
 	multiplyColor(pos);
 	return this;
     }
 
     public GrindedParticle init() {
 	sourcePos = new BlockPos((int) Math.floor(x), (int) Math.floor(y), (int) Math.floor(z));
-	if (sourceState.is(Blocks.GRASS_BLOCK)) {
+	if (sourceState.is(Blocks.GRASS_BLOCK))
 	    return this;
-	}
 	multiplyColor(sourcePos);
 	return this;
     }
 
     @Override
     public void tick() {
-	updateSprite(sourcePos.above());
+	if (sourcePos != null)
+	    updateSprite(sourcePos.above());
 	super.tick();
     }
 
@@ -103,9 +100,6 @@ public class GrindedParticle extends TextureSheetParticle {
     }
 
     private void updateSprite(BlockPos pos) {
-	if (pos != null) {
-	    setSprite(Minecraft.getInstance().getBlockRenderer().getBlockModelShaper().getTexture(sourceState, level,
-		    pos));
-	}
+	setSprite(Minecraft.getInstance().getBlockRenderer().getBlockModelShaper().getTexture(sourceState, level, pos));
     }
 }

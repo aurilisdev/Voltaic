@@ -17,16 +17,16 @@ public class ParticleFluidDrop extends TextureSheetParticle {
 	    double zSpeed, ParticleOptionFluidDrop options, SpriteSet set) {
 	super(level, x, y, z, xSpeed, ySpeed, zSpeed);
 	sprites = set;
-	this.friction = 0.96F;
-	this.speedUpWhenYMotionIsBlocked = true;
-	this.xd = 0;
-	this.yd = ySpeed;
-	this.zd = 0;
+	friction = 0.96F;
+	speedUpWhenYMotionIsBlocked = true;
+	xd = 0;
+	yd = ySpeed;
+	zd = 0;
 	// this.quadSize = this.quadSize * 0.75F * options.scale;
 	setSpriteFromAge(sprites);
 	setColor(options.r, options.g, options.b);
-	int i = (int) (8.0 / (this.random.nextDouble() * 0.8 + 0.2));
-	this.lifetime = (int) Math.max(i * options.scale, 1.0F);
+	int i = (int) (8.0 / (random.nextDouble() * 0.8 + 0.2));
+	lifetime = (int) Math.max(i * options.scale, 1.0F);
     }
 
     @Override
@@ -36,13 +36,13 @@ public class ParticleFluidDrop extends TextureSheetParticle {
 
     @Override
     public float getQuadSize(float scaleFactor) {
-	return this.quadSize * Mth.clamp((this.age + scaleFactor) / this.lifetime * 32.0F, 0.0F, 1.0F);
+	return quadSize * Mth.clamp((age + scaleFactor) / lifetime * 32.0F, 0.0F, 1.0F);
     }
 
     @Override
     public void tick() {
 	super.tick();
-	this.setSpriteFromAge(this.sprites);
+	setSpriteFromAge(sprites);
     }
 
     public static class Factory implements ParticleProvider<ParticleOptionFluidDrop>,

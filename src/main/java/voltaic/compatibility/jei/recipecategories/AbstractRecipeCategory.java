@@ -142,15 +142,15 @@ public abstract class AbstractRecipeCategory<T> implements IRecipeCategory<T> {
 			    .drawableBuilder(texture.getLocation(), texture.textureU(), texture.textureV(),
 				    slot.getWidth(), slot.getHeight())
 			    .setTextureSize(texture.imageWidth(), texture.imageHeight()).build()));
-	    if (slot.getIcon() != null) {
-		ScreenObject icon = slot.getIcon();
-		texture = icon.getTexture();
-		staticDrawables.add(new StaticWrapper(icon.getX(), icon.getY(),
-			guiHelper
-				.drawableBuilder(texture.getLocation(), texture.textureU(), texture.textureV(),
-					icon.getWidth(), icon.getHeight())
-				.setTextureSize(texture.imageWidth(), texture.imageHeight()).build()));
-	    }
+	    ScreenObject icon = slot.getIcon();
+	    if (icon == null)
+		return;
+
+	    staticDrawables.add(new StaticWrapper(icon.getX(), icon.getY(),
+		    guiHelper
+			    .drawableBuilder(texture.getLocation(), texture.textureU(), texture.textureV(),
+				    icon.getWidth(), icon.getHeight())
+			    .setTextureSize(texture.imageWidth(), texture.imageHeight()).build()));
 	}
     }
 
@@ -166,15 +166,16 @@ public abstract class AbstractRecipeCategory<T> implements IRecipeCategory<T> {
 			    .drawableBuilder(texture.getLocation(), texture.textureU(), texture.textureV(),
 				    slot.getWidth(), slot.getHeight())
 			    .setTextureSize(texture.imageWidth(), texture.imageHeight()).build()));
-	    if (slot.getIcon() != null) {
-		ScreenObject icon = slot.getIcon();
-		texture = icon.getTexture();
-		staticDrawables.add(new StaticWrapper(icon.getX(), icon.getY(),
-			guiHelper
-				.drawableBuilder(texture.getLocation(), texture.textureU(), texture.textureV(),
-					icon.getWidth(), icon.getHeight())
-				.setTextureSize(texture.imageWidth(), texture.imageHeight()).build()));
-	    }
+	    ScreenObject icon = slot.getIcon();
+	    if (icon == null)
+		return;
+
+	    texture = icon.getTexture();
+	    staticDrawables.add(new StaticWrapper(icon.getX(), icon.getY(),
+		    guiHelper
+			    .drawableBuilder(texture.getLocation(), texture.textureU(), texture.textureV(),
+				    icon.getWidth(), icon.getHeight())
+			    .setTextureSize(texture.imageWidth(), texture.imageHeight()).build()));
 	}
     }
 
@@ -275,7 +276,9 @@ public abstract class AbstractRecipeCategory<T> implements IRecipeCategory<T> {
 	SlotDataWrapper wrapper;
 	for (int i = 0; i < inputSlotWrappers.length; i++) {
 	    wrapper = inputSlotWrappers[i];
-	    builder.addSlot(wrapper.role(), wrapper.x(), wrapper.y()).addItemStacks(inputs.get(i));
+	    if (wrapper != null) {
+		builder.addSlot(wrapper.role(), wrapper.x(), wrapper.y()).addItemStacks(inputs.get(i));
+	    }
 	}
     }
 
@@ -283,8 +286,10 @@ public abstract class AbstractRecipeCategory<T> implements IRecipeCategory<T> {
 	SlotDataWrapper wrapper;
 	for (int i = 0; i < outputSlotWrappers.length; i++) {
 	    wrapper = outputSlotWrappers[i];
-	    if (i < outputs.size()) {
-		builder.addSlot(wrapper.role(), wrapper.x(), wrapper.y()).addItemStack(outputs.get(i));
+	    if (wrapper != null) {
+		if (i < outputs.size()) {
+		    builder.addSlot(wrapper.role(), wrapper.x(), wrapper.y()).addItemStack(outputs.get(i));
+		}
 	    }
 	}
     }
@@ -445,7 +450,7 @@ public abstract class AbstractRecipeCategory<T> implements IRecipeCategory<T> {
 	Font font = Minecraft.getInstance().font;
 	for (AbstractLabelWrapper wrap : labels) {
 	    Component text = wrap.getComponent(this, recipe);
-	    if (wrap.xIsEnd()) {
+	    if (text != null && wrap.xIsEnd()) {
 		graphics.drawString(font, text, wrap.getXPos() - font.width(text.getVisualOrderText()), wrap.getYPos(),
 			wrap.getColor().color(), false);
 	    } else {

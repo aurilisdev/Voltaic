@@ -3,7 +3,9 @@ package voltaic.common.block.connect;
 import java.util.Locale;
 
 public enum EnumConnectType {
-    NONE, WIRE, INVENTORY;
+    NONE,
+    WIRE,
+    INVENTORY;
 
     @Override
     public String toString() {

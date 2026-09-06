@@ -10,6 +10,7 @@ import voltaic.Voltaic;
 import voltaic.api.multiblock.assemblybased.TileMultiblockSlave;
 import voltaic.api.multiblock.subnodebased.TileMultiSubnode;
 
+@SuppressWarnings("null")
 public class VoltaicTiles {
     public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPES = DeferredRegister
 	    .create(Registries.BLOCK_ENTITY_TYPE, Voltaic.ID);

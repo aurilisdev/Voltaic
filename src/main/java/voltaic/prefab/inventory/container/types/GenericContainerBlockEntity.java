@@ -1,6 +1,6 @@
 package voltaic.prefab.inventory.container.types;
 
-import javax.annotation.Nullable;
+import java.util.Optional;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.Container;
@@ -17,18 +17,9 @@ public abstract class GenericContainerBlockEntity<T extends BlockEntity> extends
 	super(type, id, playerinv, inventory, inventorydata);
     }
 
-    @Nullable
-    public T getSafeHost() {
-	try {
-	    return getUnsafeHost();
-	} catch (Exception e) {
-	    return null;
-	}
-    }
-
-    @Nullable
-    public T getUnsafeHost() {
-	return (T) getLevel().getBlockEntity(new BlockPos(getData().get(0), getData().get(1), getData().get(2)));
+    public Optional<T> getSafeHost() {
+	return Optional.ofNullable(getLevel()).flatMap(level -> Optional.ofNullable(
+		(T) level.getBlockEntity(new BlockPos(getData().get(0), getData().get(1), getData().get(2)))));
     }
 
     @Override

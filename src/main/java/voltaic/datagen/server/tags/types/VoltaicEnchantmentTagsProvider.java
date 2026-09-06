@@ -2,7 +2,7 @@ package voltaic.datagen.server.tags.types;
 
 import java.util.concurrent.CompletableFuture;
 
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nullable;
 
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;

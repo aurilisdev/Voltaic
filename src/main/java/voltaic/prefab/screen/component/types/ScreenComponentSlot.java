@@ -3,6 +3,8 @@ package voltaic.prefab.screen.component.types;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -26,6 +28,7 @@ public class ScreenComponentSlot extends ScreenComponentGeneric {
 
     private final ISlotTexture slotType;
     private final ITexture iconType;
+    @Nullable
     private TextSupplier tooltip;
 
     private final Slot slot;
@@ -36,10 +39,10 @@ public class ScreenComponentSlot extends ScreenComponentGeneric {
 	this.iconType = iconType;
 	this.slot = slot;
 	onTooltip((graphics, component, xAxis, yAxis) -> {
-	    if (tooltip == null) {
-		return;
+	    TextSupplier pTooltip = tooltip;
+	    if (pTooltip != null) {
+		graphics.renderTooltip(requireScreen().getFontRenderer(), pTooltip.getText(), xAxis, yAxis);
 	    }
-	    graphics.renderTooltip(gui.getFontRenderer(), tooltip.getText(), xAxis, yAxis);
 	});
     }
 
@@ -66,9 +69,9 @@ public class ScreenComponentSlot extends ScreenComponentGeneric {
     public void renderBackground(GuiGraphics graphics, final int xAxis, final int yAxis, final int guiWidth,
 	    final int guiHeight) {
 	super.renderBackground(graphics, xAxis, yAxis, guiWidth, guiHeight);
-	if (iconType == IconType.NONE) {
+	if (iconType == IconType.NONE)
 	    return;
-	}
+
 	int slotXOffset = (slotType.imageWidth() - iconType.imageWidth()) / 2;
 	int slotYOffset = (slotType.imageHeight() - iconType.imageHeight()) / 2;
 	graphics.blit(iconType.getLocation(), guiWidth + xLocation + slotXOffset, guiHeight + yLocation + slotYOffset,
@@ -78,9 +81,8 @@ public class ScreenComponentSlot extends ScreenComponentGeneric {
 
     @Override
     public void renderForeground(GuiGraphics graphics, int xAxis, int yAxis, int guiWidth, int guiHeight) {
-	if (!slot.isActive()) {
+	if (!slot.isActive())
 	    return;
-	}
 	super.renderForeground(graphics, xAxis, yAxis, guiWidth, guiHeight);
 	if (isHoveredOrFocused()) {
 
@@ -91,7 +93,7 @@ public class ScreenComponentSlot extends ScreenComponentGeneric {
 		for (SubtypeItemUpgrade item : upgrade.getUpgrades()) {
 		    tooltips.add(item.name.withStyle(ChatFormatting.GRAY).getVisualOrderText());
 		}
-		graphics.renderTooltip(gui.getFontRenderer(), tooltips, xAxis, yAxis);
+		graphics.renderTooltip(requireScreen().getFontRenderer(), tooltips, xAxis, yAxis);
 	    }
 	}
     }
@@ -184,28 +186,25 @@ public class ScreenComponentSlot extends ScreenComponentGeneric {
     }
 
     public enum IconType implements ITexture {
-
-	NONE(0, 0, 0, 0, 0, 0, null), //
-	ENERGY_DARK(10, 10, 0, 0, 10, 10, "electricity_dark"), //
-	FLUID_DARK(14, 14, 0, 0, 14, 14, "fluid_dark"), //
-	GAS_DARK(16, 16, 0, 0, 16, 16, "gas_dark"), //
-	UPGRADE_DARK(12, 12, 0, 0, 12, 12, "upgrade_dark"), //
-	DRILL_HEAD_DARK(12, 12, 0, 0, 12, 12, "drill_head_dark"), //
-	TRASH_CAN_DARK(10, 10, 0, 0, 10, 10, "trash_can_dark"), //
-	FIBERGLASS_SHEET_DARK(16, 16, 0, 0, 16, 16, "fiberglasssheet_dark"), //
-
-	ENERGY_GREEN(14, 14, 0, 0, 14, 14, "electricity_green"), //
-	ENCHANTMENT(16, 16, 0, 0, 16, 16, "enchantment"), //
-	FLUID_BLUE(16, 16, 0, 0, 16, 16, "fluid_blue"), //
-	MINING_LOCATION(18, 18, 0, 0, 18, 18, "mining_location"), //
-	QUARRY_COMPONENTS(18, 18, 0, 0, 18, 18, "quarry_components"), //
-	TEMPERATURE(14, 14, 0, 0, 14, 14, "temperature"), //
-	THERMOMETER(16, 16, 0, 0, 16, 16, "thermometer"), //
-	PRESSURE_GAUGE(10, 10, 0, 0, 10, 10, "pressuredial"), //
-	INVENTORY_IO(16, 16, 0, 0, 16, 16, "inventoryio"), //
-	SONAR_PROFILE(16, 16, 0, 0, 16, 16, "sonarpattern"), //
-	CUBE_OUTLINE(16, 16, 0, 0, 16, 16, "cubeoutline") //
-	; //
+	NONE(0, 0, 0, 0, 0, 0, "none"),
+	ENERGY_DARK(10, 10, 0, 0, 10, 10, "electricity_dark"),
+	FLUID_DARK(14, 14, 0, 0, 14, 14, "fluid_dark"),
+	GAS_DARK(16, 16, 0, 0, 16, 16, "gas_dark"),
+	UPGRADE_DARK(12, 12, 0, 0, 12, 12, "upgrade_dark"),
+	DRILL_HEAD_DARK(12, 12, 0, 0, 12, 12, "drill_head_dark"),
+	TRASH_CAN_DARK(10, 10, 0, 0, 10, 10, "trash_can_dark"),
+	FIBERGLASS_SHEET_DARK(16, 16, 0, 0, 16, 16, "fiberglasssheet_dark"),
+	ENERGY_GREEN(14, 14, 0, 0, 14, 14, "electricity_green"),
+	ENCHANTMENT(16, 16, 0, 0, 16, 16, "enchantment"),
+	FLUID_BLUE(16, 16, 0, 0, 16, 16, "fluid_blue"),
+	MINING_LOCATION(18, 18, 0, 0, 18, 18, "mining_location"),
+	QUARRY_COMPONENTS(18, 18, 0, 0, 18, 18, "quarry_components"),
+	TEMPERATURE(14, 14, 0, 0, 14, 14, "temperature"),
+	THERMOMETER(16, 16, 0, 0, 16, 16, "thermometer"),
+	PRESSURE_GAUGE(10, 10, 0, 0, 10, 10, "pressuredial"),
+	INVENTORY_IO(16, 16, 0, 0, 16, 16, "inventoryio"),
+	SONAR_PROFILE(16, 16, 0, 0, 16, 16, "sonarpattern"),
+	CUBE_OUTLINE(16, 16, 0, 0, 16, 16, "cubeoutline");
 
 	private final int textureWidth;
 	private final int textureHeight;

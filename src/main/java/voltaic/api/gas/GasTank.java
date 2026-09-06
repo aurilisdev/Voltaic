@@ -2,7 +2,7 @@ package voltaic.api.gas;
 
 import java.util.function.Predicate;
 
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -14,7 +14,6 @@ public class GasTank implements IGasTank, IGasHandler {
     private int capacity;
     private int maxTemperature;
     private int maxPressure;
-    @Nonnull
     private GasStack gas = GasStack.EMPTY;
 
     public GasTank(int capacity, int maxTemperature, int maxPressure) {
@@ -82,9 +81,8 @@ public class GasTank implements IGasTank, IGasHandler {
     @Override
     public int fill(GasStack resource, GasAction action) {
 
-	if (resource.isEmpty() || !isGasValid(resource)) {
+	if (resource.isEmpty() || !isGasValid(resource))
 	    return 0;
-	}
 
 	if (isEmpty()) {
 
@@ -123,15 +121,13 @@ public class GasTank implements IGasTank, IGasHandler {
 	    return accepted;
 
 	}
-	if (!getGas().isSameGas(resource)) {
+	if (!getGas().isSameGas(resource))
 	    return 0;
-	}
 
 	int canTake = GasStack.getMaximumAcceptance(getGas(), resource, getCapacity());
 
-	if (canTake == 0) {
+	if (canTake == 0)
 	    return 0;
-	}
 
 	if (action == GasAction.EXECUTE) {
 
@@ -172,9 +168,8 @@ public class GasTank implements IGasTank, IGasHandler {
     @Override
     public GasStack drain(int amount, GasAction action) {
 
-	if (isEmpty() || amount == 0) {
+	if (isEmpty() || amount == 0)
 	    return GasStack.EMPTY;
-	}
 
 	int taken = Math.min(getGas().getAmount(), amount);
 
@@ -206,9 +201,8 @@ public class GasTank implements IGasTank, IGasHandler {
     public GasStack drain(GasStack resource, GasAction action) {
 
 	if (resource.isEmpty() || !getGas().isSameGas(resource) || !getGas().isSamePressure(resource)
-		|| !getGas().isSameTemperature(resource)) {
+		|| !getGas().isSameTemperature(resource))
 	    return GasStack.EMPTY;
-	}
 
 	return drain(resource.getAmount(), action);
     }
@@ -216,17 +210,15 @@ public class GasTank implements IGasTank, IGasHandler {
     @Override
     public int heat(int tank, int deltaTemperature, GasAction action) {
 
-	if (getGas().isAbsoluteZero() && deltaTemperature < 0) {
+	if (getGas().isAbsoluteZero() && deltaTemperature < 0)
 	    return -1;
-	}
 
 	GasStack updated = getGas().copy();
 
 	updated.heat(deltaTemperature);
 
-	if (updated.getAmount() > getCapacity()) {
+	if (updated.getAmount() > getCapacity())
 	    return -1;
-	}
 
 	if (action == GasAction.EXECUTE) {
 
@@ -250,19 +242,15 @@ public class GasTank implements IGasTank, IGasHandler {
     @Override
     public int bringPressureTo(int tank, int atm, GasAction action) {
 
-	if (getGas().isVacuum() && atm < GasStack.VACUUM) {
+	if (getGas().isVacuum() && atm < GasStack.VACUUM)
 	    return -1;
-	}
 
 	GasStack updated = getGas().copy();
 
 	updated.bringPressureTo(atm);
 
-	if (updated.getAmount() > getCapacity()) {
-
+	if (updated.getAmount() > getCapacity())
 	    return -1;
-
-	}
 
 	if (action == GasAction.EXECUTE) {
 
@@ -358,13 +346,10 @@ public class GasTank implements IGasTank, IGasHandler {
     }
 
     @Override
-    public boolean equals(Object obj) {
-	if (obj instanceof GasTank other) {
-
+    public boolean equals(@Nullable Object obj) {
+	if (obj instanceof GasTank other)
 	    return getGas().equals(obj) && getCapacity() == other.getCapacity()
 		    && getMaxTemperature() == other.getMaxTemperature() && getMaxPressure() == other.getMaxPressure();
-
-	}
 	return false;
     }
 

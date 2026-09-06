@@ -52,9 +52,8 @@ public abstract class BaseItemModelsProvider extends ItemModelProvider {
     }
 
     public ItemModelBuilder layeredBuilder(String name, Parent parent, ResourceLocation... textures) {
-	if (textures == null || textures.length == 0) {
+	if (textures.length == 0)
 	    throw new UnsupportedOperationException("You need to provide at least one texture");
-	}
 	ItemModelBuilder builder = withExistingParent(name, parent.loc());
 	int counter = 0;
 	for (ResourceLocation location : textures) {
@@ -70,7 +69,7 @@ public abstract class BaseItemModelsProvider extends ItemModelProvider {
     }
 
     public DynamicFluidContainerModelBuilder<ItemModelBuilder> getBucketModel(String name, Parent parent) {
-	return withExistingParent(name, parent.loc).customLoader(DynamicFluidContainerModelBuilder::begin);
+	return withExistingParent(name, parent.loc()).customLoader(DynamicFluidContainerModelBuilder::begin);
     }
 
     public ItemModelBuilder simpleBlockItem(Block block, ModelFile model) {
@@ -111,7 +110,9 @@ public abstract class BaseItemModelsProvider extends ItemModelProvider {
 
     public enum Parent {
 
-	GENERATED(), HANDHELD(), FORGE_DEFAULT("neoforge", "item/default");
+	GENERATED(),
+	HANDHELD(),
+	FORGE_DEFAULT("neoforge", "item/default");
 
 	@Nullable
 	private final ResourceLocation loc;

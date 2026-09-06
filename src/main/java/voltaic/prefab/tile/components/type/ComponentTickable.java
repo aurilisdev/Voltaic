@@ -1,8 +1,6 @@
 package voltaic.prefab.tile.components.type;
 
-import java.util.function.Consumer;
-
-import javax.annotation.Nonnull;
+import java.util.function.BiConsumer;
 
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -12,11 +10,11 @@ import voltaic.prefab.tile.components.IComponentType;
 
 public class ComponentTickable implements IComponent {
 
-    private GenericTile holder;
+    private final GenericTile holder;
 
-    protected Consumer<ComponentTickable> tickCommon;
-    protected Consumer<ComponentTickable> tickClient;
-    protected Consumer<ComponentTickable> tickServer;
+    protected BiConsumer<Level, ComponentTickable> tickClient = (level, tickable) -> {};
+    protected BiConsumer<Level, ComponentTickable> tickCommon = (level, tickable) -> {};
+    protected BiConsumer<Level, ComponentTickable> tickServer = (level, tickable) -> {};
 
     private long ticks = 0;
 
@@ -25,60 +23,36 @@ public class ComponentTickable implements IComponent {
     }
 
     @Override
-    public void holder(GenericTile holder) {
-	this.holder = holder;
-    }
-
-    @Override
     public GenericTile getHolder() {
 	return holder;
     }
 
-    public ComponentTickable tickCommon(@Nonnull Consumer<ComponentTickable> consumer) {
-	Consumer<ComponentTickable> safe = consumer;
-	if (tickCommon != null) {
-	    safe = safe.andThen(tickCommon);
-	}
-	tickCommon = safe;
+    public ComponentTickable tickCommon(BiConsumer<Level, ComponentTickable> consumer) {
+	tickCommon = consumer.andThen(tickCommon);
 	return this;
     }
 
-    public ComponentTickable tickClient(@Nonnull Consumer<ComponentTickable> consumer) {
-	Consumer<ComponentTickable> safe = consumer;
-	if (tickClient != null) {
-	    safe = safe.andThen(tickClient);
-	}
-	tickClient = safe;
+    public ComponentTickable tickClient(BiConsumer<Level, ComponentTickable> consumer) {
+	tickClient = consumer.andThen(tickClient);
 	return this;
     }
 
-    public ComponentTickable tickServer(@Nonnull Consumer<ComponentTickable> consumer) {
-	Consumer<ComponentTickable> safe = consumer;
-	if (tickServer != null) {
-	    safe = safe.andThen(tickServer);
-	}
-	tickServer = safe;
+    public ComponentTickable tickServer(BiConsumer<Level, ComponentTickable> consumer) {
+	tickServer = consumer.andThen(tickServer);
 	return this;
     }
 
-    public void tickCommon() {
+    public void tickCommon(Level level) {
 	ticks++;
-	if (tickCommon != null) {
-	    tickCommon.accept(this);
-	}
+	tickCommon.accept(level, this);
     }
 
-    public void tickServer() {
-	if (tickServer != null) {
-	    tickServer.accept(this);
-	}
-
+    public void tickServer(Level level) {
+	tickServer.accept(level, this);
     }
 
-    public void tickClient() {
-	if (tickClient != null) {
-	    tickClient.accept(this);
-	}
+    public void tickClient(Level level) {
+	tickClient.accept(level, this);
     }
 
     public long getTicks() {
@@ -86,32 +60,18 @@ public class ComponentTickable implements IComponent {
     }
 
     public void performTick(Level level) {
-
-	if (level == null) {
-	    return;
-	}
-
-	tickCommon();
-
+	tickCommon(level);
 	if (level.isClientSide) {
-
-	    tickClient();
-
+	    tickClient(level);
 	} else {
-
-	    tickServer();
-
-	    if (holder != null && (holder.getPropertyManager().isDirty() || holder.isChanged)) {
-
+	    tickServer(level);
+	    if (holder.getPropertyManager().isDirty() || holder.isChanged) {
 		holder.setChanged();
-
-		holder.getLevel().sendBlockUpdated(holder.getBlockPos(), holder.getBlockState(), holder.getBlockState(),
+		level.sendBlockUpdated(holder.getBlockPos(), holder.getBlockState(), holder.getBlockState(),
 			Block.UPDATE_CLIENTS);
-
 		holder.isChanged = false;
 	    }
 	}
-
     }
 
     @Override

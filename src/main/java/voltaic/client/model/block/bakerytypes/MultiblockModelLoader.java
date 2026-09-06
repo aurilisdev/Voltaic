@@ -4,8 +4,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nullable;
 
 import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonDeserializationContext;
@@ -87,10 +86,10 @@ public class MultiblockModelLoader implements IGeometryLoader<MultiblockModelLoa
 		ModelState transform = ModelStateRotation.ROTATIONS.get(dir);
 
 		if (model.customData.getCustomGeometry() != null) {
-		    models[dir.ordinal()] = this.model.customData.getCustomGeometry().bake(context, baker, spriteGetter,
+		    models[dir.ordinal()] = model.customData.getCustomGeometry().bake(context, baker, spriteGetter,
 			    transform, overrides);
 		} else {
-		    models[dir.ordinal()] = this.model.bake(baker, model, spriteGetter, transform, context.isGui3d());
+		    models[dir.ordinal()] = model.bake(baker, model, spriteGetter, transform, context.isGui3d());
 		}
 
 	    }
@@ -102,7 +101,7 @@ public class MultiblockModelLoader implements IGeometryLoader<MultiblockModelLoa
 	@Override
 	public void resolveParents(Function<ResourceLocation, UnbakedModel> modelGetter,
 		IGeometryBakingContext context) {
-	    this.model.resolveParents(modelGetter);
+	    model.resolveParents(modelGetter);
 	}
 
 	@Override
@@ -156,20 +155,19 @@ public class MultiblockModelLoader implements IGeometryLoader<MultiblockModelLoa
 	}
 
 	@Override
-	public ChunkRenderTypeSet getRenderTypes(@NotNull BlockState state, @NotNull RandomSource rand,
-		@NotNull ModelData data) {
+	public ChunkRenderTypeSet getRenderTypes(BlockState state, RandomSource rand, ModelData data) {
 	    return renderType == null ? models[0].getRenderTypes(state, rand, data) : renderType;
 
 	}
 
 	@Override
-	public @NotNull List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side,
-		@NotNull RandomSource rand, @NotNull ModelData extraData, @Nullable RenderType renderType) {
+	public List<BakedQuad> getQuads(@org.jetbrains.annotations.Nullable BlockState state,
+		@org.jetbrains.annotations.Nullable Direction side, RandomSource rand, ModelData extraData,
+		@org.jetbrains.annotations.Nullable RenderType renderType) {
 	    ModelPropertySlaveNode.SlaveNodeWrapper data = extraData.get(ModelPropertySlaveNode.INSTANCE);
 
-	    if (data == null || !MultiblockSlaveNode.hasModel(data.id())) {
+	    if (data == null || !MultiblockSlaveNode.hasModel(data.id()))
 		return NO_QUADS;
-	    }
 
 	    return models[data.facing().ordinal()].getQuads(state, side, rand, extraData, renderType);
 	}

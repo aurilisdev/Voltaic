@@ -5,7 +5,7 @@ import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import com.mojang.serialization.Codec;
 
@@ -22,23 +22,20 @@ public class ArrayPropertyType<TYPE, BUFFERTYPE extends ByteBuf> implements IPro
     private final Consumer<TagWriter<TYPE[]>> writeToNbt;
     private final Function<TagReader<TYPE[]>, TYPE[]> readFromNbt;
 
-    public ArrayPropertyType(@Nonnull BiPredicate<TYPE, TYPE> singleComparison,
-	    StreamCodec<BUFFERTYPE, TYPE> singlePacketCodec, Codec<TYPE> singleNbtCodec, TYPE[] defaultArr,
-	    TYPE defaultValue) {
+    public ArrayPropertyType(BiPredicate<TYPE, TYPE> singleComparison, StreamCodec<BUFFERTYPE, TYPE> singlePacketCodec,
+	    Codec<TYPE> singleNbtCodec, TYPE[] defaultArr, TYPE defaultValue) {
 
 	this.singleComparison = singleComparison;
 
-	this.comparison = (arr1, arr2) -> {
+	comparison = (arr1, arr2) -> {
 
-	    if (arr1 == null || arr2 == null || (arr1.length != arr2.length)) {
+	    if (arr1 == null || arr2 == null || arr1.length != arr2.length)
 		return false;
-	    }
 
 	    for (int i = 0; i < arr1.length; i++) {
 
-		if (!singleComparison.test(arr1[i], arr2[i])) {
+		if (!singleComparison.test(arr1[i], arr2[i]))
 		    return false;
-		}
 
 	    }
 
@@ -112,15 +109,13 @@ public class ArrayPropertyType<TYPE, BUFFERTYPE extends ByteBuf> implements IPro
 
 	    CompoundTag data = reader.tag().getCompound(reader.prop().getName());
 
-	    if (!data.contains("size")) {
+	    if (!data.contains("size"))
 		return reader.prop().getValue();
-	    }
 
 	    int size = data.getInt("size");
 
-	    if (size <= 0) {
+	    if (size <= 0)
 		return Arrays.copyOf(defaultArr, defaultArr.length);
-	    }
 
 	    TYPE[] newArr = Arrays.copyOf(defaultArr, size);
 
@@ -152,6 +147,7 @@ public class ArrayPropertyType<TYPE, BUFFERTYPE extends ByteBuf> implements IPro
     }
 
     @Override
+    @Nullable
     public TYPE[] readFromTag(TagReader<TYPE[]> reader) {
 	return readFromNbt.apply(reader);
     }

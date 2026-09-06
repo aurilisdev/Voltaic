@@ -22,11 +22,11 @@ public class FluidItem2ItemBuilder<T extends FluidItem2ItemRecipe>
 
     private final ItemStack output;
 
-    private List<ItemStack> itemIngredients = new ArrayList<>();
-    private List<Pair<TagKey<Item>, Integer>> tagItemIngredients = new ArrayList<>();
+    private final List<ItemStack> itemIngredients = new ArrayList<>();
+    private final List<Pair<TagKey<Item>, Integer>> tagItemIngredients = new ArrayList<>();
 
-    private List<FluidStack> fluidIngredients = new ArrayList<>();
-    private List<Pair<TagKey<Fluid>, Integer>> tagFluidIngredients = new ArrayList<>();
+    private final List<FluidStack> fluidIngredients = new ArrayList<>();
+    private final List<Pair<TagKey<Fluid>, Integer>> tagFluidIngredients = new ArrayList<>();
 
     public FluidItem2ItemBuilder(FluidItem2ItemRecipe.Factory<T> factory, ItemStack output, RecipeCategory category,
 	    String parent, String name, String group, double experience, int processTime, double usagePerTick) {

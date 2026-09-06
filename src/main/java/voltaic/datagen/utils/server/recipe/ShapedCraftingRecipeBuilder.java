@@ -24,15 +24,15 @@ import net.neoforged.neoforge.common.crafting.ICustomIngredient;
 
 public class ShapedCraftingRecipeBuilder implements RecipeBuilder {
 
-    private ResourceLocation id;
+    private final Item item;
+    private final int count;
+    private final List<String> patterns = new ArrayList<>();
+    private final Map<Character, Ingredient> keys = new HashMap<>();
 
-    private Item item;
-    private int count;
-    private List<String> patterns = new ArrayList<>();
-    private Map<Character, Ingredient> keys = new HashMap<>();
-    @Nullable
-    private ICondition[] recipeConditions;
+    private ICondition[] recipeConditions = {};
     private String group = "";
+
+    private @Nullable ResourceLocation id;
 
     private ShapedCraftingRecipeBuilder(Item item, int count) {
 	this.item = item;
@@ -44,13 +44,11 @@ public class ShapedCraftingRecipeBuilder implements RecipeBuilder {
     }
 
     public ShapedCraftingRecipeBuilder addPattern(String pattern) {
-	if (pattern.length() > 3) {
+	if (pattern.length() > 3)
 	    throw new UnsupportedOperationException(
 		    "The pattern " + pattern + " is more than 3 characters long and is not valid!");
-	}
-	if (patterns.size() > 3) {
+	if (patterns.size() > 3)
 	    throw new UnsupportedOperationException("Already 3 patterns present");
-	}
 	patterns.add(pattern);
 	return this;
     }
@@ -91,9 +89,8 @@ public class ShapedCraftingRecipeBuilder implements RecipeBuilder {
 
     public ShapedCraftingRecipeBuilder complete(String parent, String name, RecipeOutput output) {
 	for (Character character : keys.keySet()) {
-	    if (isKeyNotUsed(character)) {
+	    if (isKeyNotUsed(character))
 		throw new UnsupportedOperationException("The key " + character + " is defined by never used!");
-	    }
 	}
 	id = ResourceLocation.fromNamespaceAndPath(parent, name);
 	save(output);
@@ -103,9 +100,8 @@ public class ShapedCraftingRecipeBuilder implements RecipeBuilder {
     private boolean isKeyNotUsed(char character) {
 	for (String str : patterns) {
 	    for (char ch : str.toCharArray()) {
-		if (ch == character) {
+		if (ch == character)
 		    return false;
-		}
 	    }
 	}
 	return true;
@@ -122,8 +118,8 @@ public class ShapedCraftingRecipeBuilder implements RecipeBuilder {
     }
 
     @Override
-    public ShapedCraftingRecipeBuilder group(String group) {
-	this.group = group;
+    public ShapedCraftingRecipeBuilder group(@Nullable String group) {
+	this.group = group == null ? "" : group;
 	return this;
     }
 
@@ -133,24 +129,24 @@ public class ShapedCraftingRecipeBuilder implements RecipeBuilder {
     }
 
     @Override
-    public void save(RecipeOutput output, ResourceLocation altName) {
-	if (recipeConditions != null) {
-	    output.withConditions(recipeConditions).accept(id, new ShapedRecipe(group, CraftingBookCategory.MISC,
-		    ShapedRecipePattern.of(keys, patterns), new ItemStack(item, count)), null);
-	} else {
-	    output.accept(id, new ShapedRecipe(group, CraftingBookCategory.MISC, ShapedRecipePattern.of(keys, patterns),
-		    new ItemStack(item, count)), null);
-	}
+    public void save(RecipeOutput output, ResourceLocation id) {
+	if (recipeConditions.length > 0)
+	    output = output.withConditions(recipeConditions);
+	output.accept(id, new ShapedRecipe(group, CraftingBookCategory.MISC, ShapedRecipePattern.of(keys, patterns),
+		new ItemStack(item, count)), null);
     }
 
     @Override
     public void save(RecipeOutput output) {
-	this.save(output, id);
+	ResourceLocation recipeId = id;
+	if (recipeId == null)
+	    throw new IllegalStateException("Recipe ID has not been set");
+
+	save(output, recipeId);
     }
 
     @Override
-    public void save(RecipeOutput output, String group) {
-	this.save(output, id);
+    public void save(RecipeOutput output, String name) {
+	save(output, ResourceLocation.parse(name));
     }
-
 }

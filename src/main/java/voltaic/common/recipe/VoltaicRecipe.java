@@ -94,17 +94,14 @@ public abstract class VoltaicRecipe implements Recipe<VoltaicRecipe>, RecipeInpu
 	return gasBiproducts.size() != 0;
     }
 
-    @Nullable
     public List<ProbableItem> getItemBiproducts() {
 	return itemBiproducts;
     }
 
-    @Nullable
     public List<ProbableFluid> getFluidBiproducts() {
 	return fluidBiproducts;
     }
 
-    @Nullable
     public List<ProbableGas> getGasBiproducts() {
 	return gasBiproducts;
     }
@@ -169,7 +166,7 @@ public abstract class VoltaicRecipe implements Recipe<VoltaicRecipe>, RecipeInpu
 	fluidArrangement = arrangement;
     }
 
-    public List<Integer> getFluidArrangement() {
+    public @Nullable List<Integer> getFluidArrangement() {
 	return fluidArrangement;
     }
 
@@ -177,13 +174,13 @@ public abstract class VoltaicRecipe implements Recipe<VoltaicRecipe>, RecipeInpu
 	gasArrangement = arrangement;
     }
 
-    public List<Integer> getGasArrangement() {
+    public @Nullable List<Integer> getGasArrangement() {
 	return gasArrangement;
     }
 
     public static List<RecipeHolder<VoltaicRecipe>> findRecipesbyType(RecipeType<? extends VoltaicRecipe> typeIn,
-	    Level world) {
-	return world != null ? world.getRecipeManager().getAllRecipesFor((RecipeType<VoltaicRecipe>) typeIn)
+	    @Nullable Level level) {
+	return level != null ? level.getRecipeManager().getAllRecipesFor((RecipeType<VoltaicRecipe>) typeIn)
 		: Collections.emptyList();
     }
 
@@ -191,9 +188,8 @@ public abstract class VoltaicRecipe implements Recipe<VoltaicRecipe>, RecipeInpu
     public static VoltaicRecipe getRecipe(ComponentProcessor pr, List<RecipeHolder<VoltaicRecipe>> cachedRecipes,
 	    int index) {
 	for (RecipeHolder<VoltaicRecipe> recipe : cachedRecipes) {
-	    if (recipe.value().matchesRecipe(pr, index)) {
+	    if (recipe.value().matchesRecipe(pr, index))
 		return recipe.value();
-	    }
 	}
 	return null;
     }

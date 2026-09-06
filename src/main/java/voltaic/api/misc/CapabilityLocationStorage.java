@@ -20,24 +20,19 @@ public class CapabilityLocationStorage implements ILocationStorage, INBTSerializ
 
     @Override
     public CompoundTag serializeNBT(HolderLookup.Provider provider) {
-	if (VoltaicCapabilities.CAPABILITY_LOCATIONSTORAGE_ITEM != null) {
-	    CompoundTag nbt = new CompoundTag();
-	    nbt.putInt("size", locations.size());
-	    for (int i = 0; i < locations.size(); i++) {
-		locations.get(i).writeToNBT(nbt, VoltaicCapabilities.LOCATION_KEY + i);
-	    }
-	    return nbt;
+	CompoundTag nbt = new CompoundTag();
+	nbt.putInt("size", locations.size());
+	for (int i = 0; i < locations.size(); i++) {
+	    locations.get(i).writeToNBT(nbt, VoltaicCapabilities.LOCATION_KEY + i);
 	}
-	return new CompoundTag();
+	return nbt;
     }
 
     @Override
     public void deserializeNBT(HolderLookup.Provider provider, CompoundTag nbt) {
-	if (VoltaicCapabilities.CAPABILITY_LOCATIONSTORAGE_ITEM != null) {
-	    locations.clear();
-	    for (int i = 0; i < nbt.getInt("size"); i++) {
-		locations.add(Location.readFromNBT(nbt, VoltaicCapabilities.LOCATION_KEY + i));
-	    }
+	locations.clear();
+	for (int i = 0; i < nbt.getInt("size"); i++) {
+	    locations.add(Location.readFromNBT(nbt, VoltaicCapabilities.LOCATION_KEY + i));
 	}
     }
 

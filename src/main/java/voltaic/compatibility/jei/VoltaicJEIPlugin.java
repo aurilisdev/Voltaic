@@ -3,8 +3,6 @@ package voltaic.compatibility.jei;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.jetbrains.annotations.NotNull;
-
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.recipe.RecipeType;
@@ -38,7 +36,7 @@ public class VoltaicJEIPlugin implements IModPlugin {
     private static final List<RecipeType<?>> DO2O_CLICK_AREAS = new ArrayList<>();
 
     @Override
-    public @NotNull ResourceLocation getPluginUid() {
+    public ResourceLocation getPluginUid() {
 	return ID;
     }
 

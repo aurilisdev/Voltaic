@@ -1,5 +1,9 @@
 package voltaic.datagen.utils.client.model;
 
+import java.util.Objects;
+
+import javax.annotation.Nullable;
+
 import com.google.gson.JsonObject;
 
 import net.neoforged.neoforge.client.model.generators.CustomLoaderBuilder;
@@ -16,8 +20,11 @@ public class WireModelBuilder<T extends ModelBuilder<T>> extends CustomLoaderBui
 	return new WireModelBuilder<>(parent, existingFileHelper);
     }
 
+    @Nullable
     private ModelFile none;
+    @Nullable
     private ModelFile wire;
+    @Nullable
     private ModelFile inventory;
 
     protected WireModelBuilder(T parent, ExistingFileHelper existingFileHelper) {
@@ -38,15 +45,15 @@ public class WireModelBuilder<T extends ModelBuilder<T>> extends CustomLoaderBui
 	json = super.toJson(json);
 
 	JsonObject noneElement = new JsonObject();
-	noneElement.addProperty("parent", none.getLocation().toString());
+	noneElement.addProperty("parent", Objects.requireNonNull(none).getLocation().toString());
 	json.add(EnumConnectType.NONE.toString(), noneElement);
 
 	JsonObject wireElement = new JsonObject();
-	wireElement.addProperty("parent", wire.getLocation().toString());
+	wireElement.addProperty("parent", Objects.requireNonNull(wire).getLocation().toString());
 	json.add(EnumConnectType.WIRE.toString(), wireElement);
 
 	JsonObject inventoryElement = new JsonObject();
-	inventoryElement.addProperty("parent", inventory.getLocation().toString());
+	inventoryElement.addProperty("parent", Objects.requireNonNull(inventory).getLocation().toString());
 	json.add(EnumConnectType.INVENTORY.toString(), inventoryElement);
 
 	return json;

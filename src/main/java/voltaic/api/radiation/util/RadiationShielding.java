@@ -21,15 +21,13 @@ public record RadiationShielding(double transmission, double level) {
     public static final StreamCodec<ByteBuf, RadiationShielding> STREAM_CODEC = ByteBufCodecs.fromCodec(CODEC);
 
     public static RadiationShielding getDefault(BlockGetter world, BlockPos pos, BlockState state) {
-	if (state.isAir() || state.getCollisionShape(world, pos).isEmpty()) {
+	if (state.isAir() || state.getCollisionShape(world, pos).isEmpty())
 	    return RadiationShielding.NONE;
-	}
 
 	double hardness = state.getDestroySpeed(world, pos);
 
-	if (hardness <= 0 || !Double.isFinite(hardness)) {
+	if (hardness <= 0 || !Double.isFinite(hardness))
 	    return RadiationShielding.NONE;
-	}
 
 	double blocked = Math.min(0.20, Math.log1p(hardness) * 0.04);
 	double transmission = 1.0 - blocked;

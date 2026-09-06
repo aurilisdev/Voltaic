@@ -4,13 +4,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
+import javax.annotation.Nullable;
+
 import org.apache.commons.lang3.StringUtils;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.tags.TagKey;
@@ -41,84 +42,36 @@ public class EnchantmentIngredient implements ICustomIngredient {
     private final boolean isStrict;
 
     public EnchantmentIngredient(Ingredient base, List<TagKey<Enchantment>> enchantments, boolean isStrict) {
-	this.ingredient = base;
+	ingredient = base;
 	this.enchantments = enchantments;
 	this.isStrict = isStrict;
     }
 
     @Override
     public boolean test(ItemStack stack) {
-
-	boolean isBase = ingredient.test(stack);
-
-	if (!isBase) {
+	if (!ingredient.test(stack))
 	    return false;
-	}
 
-	if (isStrict) {
+	if (isStrict)
+	    return matchesExactly(stack.getTagEnchantments())
+		    || matchesExactly(stack.getOrDefault(DataComponents.STORED_ENCHANTMENTS, ItemEnchantments.EMPTY));
 
-	    ItemEnchantments current = stack.getTagEnchantments();
-	    if (current.isEmpty() || current.keySet().size() != enchantments.size()) {
-		return false;
-	    }
+	ItemEnchantments stored = stack.getOrDefault(DataComponents.STORED_ENCHANTMENTS, ItemEnchantments.EMPTY);
 
-	    boolean foundMatch = false;
-	    boolean hasStored = stack.has(DataComponents.STORED_ENCHANTMENTS);
-
-	    for (Holder<Enchantment> enchant : current.keySet()) {
-		for (TagKey<Enchantment> tag : enchantments) {
-		    if (enchant.is(tag)) {
-			foundMatch = true;
-			break;
-		    }
-		}
-		if (!foundMatch && !hasStored) {
-		    return false;
-		}
-		foundMatch = false;
-	    }
-
-	    current = stack.get(DataComponents.STORED_ENCHANTMENTS);
-
-	    if (current.isEmpty() || current.keySet().size() != enchantments.size()) {
-		return false;
-	    }
-
-	    foundMatch = false;
-
-	    for (Holder<Enchantment> enchant : current.keySet()) {
-		for (TagKey<Enchantment> tag : enchantments) {
-		    if (enchant.is(tag)) {
-			foundMatch = true;
-			break;
-		    }
-		}
-		if (!foundMatch && !hasStored) {
-		    return false;
-		}
-		foundMatch = false;
-	    }
-
-	    return true;
-
-	}
-	for (TagKey<Enchantment> enchantment : enchantments) {
-	    if (EnchantmentHelper.hasTag(stack, enchantment)) {
+	for (TagKey<Enchantment> tag : enchantments) {
+	    if (EnchantmentHelper.hasTag(stack, tag)
+		    || stored.keySet().stream().anyMatch(enchantment -> enchantment.is(tag)))
 		return true;
-	    }
-
-	    if (!stack.has(DataComponents.STORED_ENCHANTMENTS)) {
-		continue;
-	    }
-
-	    for (var enchantmentHolder : stack.get(DataComponents.STORED_ENCHANTMENTS).keySet()) {
-		if (enchantmentHolder.is(enchantment)) {
-		    return true;
-		}
-	    }
 	}
 
 	return false;
+    }
+
+    private boolean matchesExactly(ItemEnchantments current) {
+	if (current.isEmpty() || current.keySet().size() != enchantments.size())
+	    return false;
+
+	return current.keySet().stream().allMatch(enchantment -> enchantments.stream().anyMatch(enchantment::is));
     }
 
     @Override
@@ -143,11 +96,10 @@ public class EnchantmentIngredient implements ICustomIngredient {
     }
 
     @Override
-    public boolean equals(Object obj) {
-	if (obj instanceof EnchantmentIngredient ing) {
+    public boolean equals(@Nullable Object obj) {
+	if (obj instanceof EnchantmentIngredient ing)
 	    return ing.isStrict == isStrict && ing.ingredient.equals(ingredient)
 		    && ing.enchantments.equals(enchantments);
-	}
 	return false;
     }
 }

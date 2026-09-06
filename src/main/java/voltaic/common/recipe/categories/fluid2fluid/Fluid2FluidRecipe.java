@@ -16,8 +16,8 @@ import voltaic.prefab.tile.components.type.ComponentProcessor;
 
 public abstract class Fluid2FluidRecipe extends AbstractMaterialRecipe {
 
-    private List<FluidIngredient> inputFluidIngredients;
-    private FluidStack outputFluidStack;
+    private final List<FluidIngredient> inputFluidIngredients;
+    private final FluidStack outputFluidStack;
 
     public Fluid2FluidRecipe(String recipeGroup, List<FluidIngredient> inputFluids, FluidStack outputFluid,
 	    double experience, int ticks, double usagePerTick, List<ProbableItem> itemBiproducts,
@@ -29,13 +29,12 @@ public abstract class Fluid2FluidRecipe extends AbstractMaterialRecipe {
 
     @Override
     public boolean matchesRecipe(ComponentProcessor pr, int procNumber) {
-	Pair<List<Integer>, Boolean> pair = areFluidsValid(getFluidIngredients(),
-		pr.getHolder().<ComponentFluidHandlerMulti>getComponent(IComponentType.FluidHandler).getInputTanks());
-	if (pair.getSecond()) {
-	    setFluidArrangement(pair.getFirst());
-	    return true;
-	}
-	return false;
+	ComponentFluidHandlerMulti handler = pr.getHolder().requireComponent(IComponentType.FluidHandler);
+	Pair<List<Integer>, Boolean> pair = areFluidsValid(getFluidIngredients(), handler.getInputTanks());
+	if (!pair.getSecond())
+	    return false;
+	setFluidArrangement(pair.getFirst());
+	return true;
     }
 
     @Override

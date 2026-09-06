@@ -90,7 +90,7 @@ public class ScreenComponentEditBox extends ScreenComponentGeneric {
     }
 
     public ScreenComponentEditBox setFormatter(BiFunction<String, Integer, FormattedCharSequence> textFormatter) {
-	this.formatter = textFormatter;
+	formatter = textFormatter;
 	return this;
     }
 
@@ -98,16 +98,16 @@ public class ScreenComponentEditBox extends ScreenComponentGeneric {
      * Sets the text of the textbox, and moves the cursor to the end.
      */
     public ScreenComponentEditBox setValue(String text) {
-	if (this.filter.test(text)) {
-	    if (text.length() > this.maxLength) {
-		this.value = text.substring(0, this.maxLength);
+	if (filter.test(text)) {
+	    if (text.length() > maxLength) {
+		value = text.substring(0, maxLength);
 	    } else {
-		this.value = text;
+		value = text;
 	    }
 
-	    this.moveCursorToEnd();
-	    this.setHighlightPos(this.cursorPos);
-	    this.onValueChange(text);
+	    moveCursorToEnd();
+	    setHighlightPos(cursorPos);
+	    onValueChange(text);
 	}
 	return this;
     }
@@ -116,20 +116,20 @@ public class ScreenComponentEditBox extends ScreenComponentGeneric {
      * Returns the contents of the textbox
      */
     public String getValue() {
-	return this.value;
+	return value;
     }
 
     /**
      * Returns the text between the cursor and selectionEnd.
      */
     public String getHighlighted() {
-	int min = Math.min(this.cursorPos, this.highlightPos);
-	int max = Math.max(this.cursorPos, this.highlightPos);
-	return this.value.substring(min, max);
+	int min = Math.min(cursorPos, highlightPos);
+	int max = Math.max(cursorPos, highlightPos);
+	return value.substring(min, max);
     }
 
     public ScreenComponentEditBox setFilter(Predicate<String> validator) {
-	this.filter = validator;
+	filter = validator;
 	return this;
     }
 
@@ -142,9 +142,9 @@ public class ScreenComponentEditBox extends ScreenComponentGeneric {
      * if there is a selection.
      */
     public void insertText(String textToWrite) {
-	int min = Math.min(this.cursorPos, this.highlightPos);
-	int max = Math.max(this.cursorPos, this.highlightPos);
-	int length = this.maxLength - this.value.length() - (min - max);
+	int min = Math.min(cursorPos, highlightPos);
+	int max = Math.max(cursorPos, highlightPos);
+	int length = maxLength - value.length() - (min - max);
 	String filtered = StringUtil.filterText(textToWrite);
 	int filteredLength = filtered.length();
 	if (length < filteredLength) {
@@ -152,27 +152,27 @@ public class ScreenComponentEditBox extends ScreenComponentGeneric {
 	    filteredLength = length;
 	}
 
-	String updated = new StringBuilder(this.value).replace(min, max, filtered).toString();
-	if (this.filter.test(updated)) {
-	    this.value = updated;
-	    this.setCursorPosition(min + filteredLength);
-	    this.setHighlightPos(this.cursorPos);
-	    this.onValueChange(this.value);
+	String updated = new StringBuilder(value).replace(min, max, filtered).toString();
+	if (filter.test(updated)) {
+	    value = updated;
+	    setCursorPosition(min + filteredLength);
+	    setHighlightPos(cursorPos);
+	    onValueChange(value);
 	}
     }
 
     private void onValueChange(String newText) {
-	if (this.responder != null) {
-	    this.responder.accept(newText);
+	if (responder != null) {
+	    responder.accept(newText);
 	}
 
     }
 
     private void deleteText(int count) {
 	if (Screen.hasControlDown()) {
-	    this.deleteWords(count);
+	    deleteWords(count);
 	} else {
-	    this.deleteChars(count);
+	    deleteChars(count);
 	}
 
     }
@@ -183,11 +183,11 @@ public class ScreenComponentEditBox extends ScreenComponentGeneric {
      * instead.
      */
     public void deleteWords(int num) {
-	if (!this.value.isEmpty()) {
-	    if (this.highlightPos != this.cursorPos) {
-		this.insertText("");
+	if (!value.isEmpty()) {
+	    if (highlightPos != cursorPos) {
+		insertText("");
 	    } else {
-		this.deleteChars(this.getWordPosition(num) - this.cursorPos);
+		deleteChars(this.getWordPosition(num) - cursorPos);
 	    }
 	}
     }
@@ -198,18 +198,18 @@ public class ScreenComponentEditBox extends ScreenComponentGeneric {
      * instead.
      */
     public void deleteChars(int num) {
-	if (!this.value.isEmpty()) {
-	    if (this.highlightPos != this.cursorPos) {
-		this.insertText("");
+	if (!value.isEmpty()) {
+	    if (highlightPos != cursorPos) {
+		insertText("");
 	    } else {
-		int cursorPos = this.getCursorPos(num);
+		int cursorPos = getCursorPos(num);
 		int min = Math.min(cursorPos, this.cursorPos);
 		int max = Math.max(cursorPos, this.cursorPos);
 		if (min != max) {
-		    String updated = new StringBuilder(this.value).delete(min, max).toString();
-		    if (this.filter.test(updated)) {
-			this.value = updated;
-			this.moveCursorTo(min);
+		    String updated = new StringBuilder(value).delete(min, max).toString();
+		    if (filter.test(updated)) {
+			value = updated;
+			moveCursorTo(min);
 		    }
 		}
 	    }
@@ -221,7 +221,7 @@ public class ScreenComponentEditBox extends ScreenComponentGeneric {
      * from the cursor position.
      */
     public int getWordPosition(int numWords) {
-	return this.getWordPosition(numWords, this.getCursorPosition());
+	return this.getWordPosition(numWords, getCursorPosition());
     }
 
     /**
@@ -243,21 +243,21 @@ public class ScreenComponentEditBox extends ScreenComponentGeneric {
 
 	for (int i = 0; i < absNoWords; ++i) {
 	    if (!noWords) {
-		int lengthOfText = this.value.length();
-		originalPos = this.value.indexOf(32, originalPos);
+		int lengthOfText = value.length();
+		originalPos = value.indexOf(32, originalPos);
 		if (originalPos == -1) {
 		    originalPos = lengthOfText;
 		} else {
-		    while (skipSpaces && originalPos < lengthOfText && this.value.charAt(originalPos) == ' ') {
+		    while (skipSpaces && originalPos < lengthOfText && value.charAt(originalPos) == ' ') {
 			++originalPos;
 		    }
 		}
 	    } else {
-		while (skipSpaces && originalPos > 0 && this.value.charAt(originalPos - 1) == ' ') {
+		while (skipSpaces && originalPos > 0 && value.charAt(originalPos - 1) == ' ') {
 		    --originalPos;
 		}
 
-		while (originalPos > 0 && this.value.charAt(originalPos - 1) != ' ') {
+		while (originalPos > 0 && value.charAt(originalPos - 1) != ' ') {
 		    --originalPos;
 		}
 	    }
@@ -271,79 +271,78 @@ public class ScreenComponentEditBox extends ScreenComponentGeneric {
      * selection
      */
     public void moveCursor(int delta) {
-	this.moveCursorTo(this.getCursorPos(delta));
+	moveCursorTo(getCursorPos(delta));
     }
 
     private int getCursorPos(int delta) {
-	return Util.offsetByCodepoints(this.value, this.cursorPos, delta);
+	return Util.offsetByCodepoints(value, cursorPos, delta);
     }
 
     /**
      * Sets the current position of the cursor.
      */
     public void moveCursorTo(int pos) {
-	this.setCursorPosition(pos);
-	if (!this.shiftPressed) {
-	    this.setHighlightPos(this.cursorPos);
+	setCursorPosition(pos);
+	if (!shiftPressed) {
+	    setHighlightPos(cursorPos);
 	}
 
-	this.onValueChange(this.value);
+	onValueChange(value);
     }
 
     public void setCursorPosition(int pos) {
-	this.cursorPos = Mth.clamp(pos, 0, this.value.length());
+	cursorPos = Mth.clamp(pos, 0, value.length());
     }
 
     /**
      * Moves the cursor to the very start of this text box.
      */
     public void moveCursorToStart() {
-	this.moveCursorTo(0);
+	moveCursorTo(0);
     }
 
     /**
      * Moves the cursor to the very end of this text box.
      */
     public void moveCursorToEnd() {
-	this.moveCursorTo(this.value.length());
+	moveCursorTo(value.length());
     }
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-	if (!this.canConsumeInput()) {
+	if (!canConsumeInput())
 	    return false;
-	}
-	this.shiftPressed = Screen.hasShiftDown();
+	shiftPressed = Screen.hasShiftDown();
 	if (Screen.isSelectAll(keyCode)) {
-	    this.moveCursorToEnd();
-	    this.setHighlightPos(0);
+	    moveCursorToEnd();
+	    setHighlightPos(0);
 	    return true;
 	}
 	if (Screen.isCopy(keyCode)) {
-	    Minecraft.getInstance().keyboardHandler.setClipboard(this.getHighlighted());
+	    Minecraft.getInstance().keyboardHandler.setClipboard(getHighlighted());
 	    return true;
 	}
 	if (Screen.isPaste(keyCode)) {
-	    if (this.isEditable) {
-		this.insertText(Minecraft.getInstance().keyboardHandler.getClipboard());
+	    if (isEditable) {
+		insertText(Minecraft.getInstance().keyboardHandler.getClipboard());
 	    }
 
 	    return true;
 	}
 	if (Screen.isCut(keyCode)) {
-	    Minecraft.getInstance().keyboardHandler.setClipboard(this.getHighlighted());
-	    if (this.isEditable) {
-		this.insertText("");
+	    Minecraft.getInstance().keyboardHandler.setClipboard(getHighlighted());
+	    if (isEditable) {
+		insertText("");
 	    }
 
 	    return true;
 	}
 	switch (keyCode) {
 	case 259:
-	    if (this.isEditable) {
-		this.shiftPressed = false;
-		this.deleteText(-1);
-		this.shiftPressed = Screen.hasShiftDown();
+	    if (isEditable) {
+		shiftPressed = false;
+		deleteText(-1);
+		shiftPressed = Screen.hasShiftDown();
 	    }
 
 	    return true;
@@ -355,49 +354,48 @@ public class ScreenComponentEditBox extends ScreenComponentGeneric {
 	default:
 	    return false;
 	case 261:
-	    if (this.isEditable) {
-		this.shiftPressed = false;
-		this.deleteText(1);
-		this.shiftPressed = Screen.hasShiftDown();
+	    if (isEditable) {
+		shiftPressed = false;
+		deleteText(1);
+		shiftPressed = Screen.hasShiftDown();
 	    }
 
 	    return true;
 	case 262:
 	    if (Screen.hasControlDown()) {
-		this.moveCursorTo(this.getWordPosition(1));
+		moveCursorTo(this.getWordPosition(1));
 	    } else {
-		this.moveCursor(1);
+		moveCursor(1);
 	    }
 
 	    return true;
 	case 263:
 	    if (Screen.hasControlDown()) {
-		this.moveCursorTo(this.getWordPosition(-1));
+		moveCursorTo(this.getWordPosition(-1));
 	    } else {
-		this.moveCursor(-1);
+		moveCursor(-1);
 	    }
 
 	    return true;
 	case 268:
-	    this.moveCursorToStart();
+	    moveCursorToStart();
 	    return true;
 	case 269:
-	    this.moveCursorToEnd();
+	    moveCursorToEnd();
 	    return true;
 	}
     }
 
     public boolean canConsumeInput() {
-	return this.isVisible() && this.isFocused() && this.isEditable();
+	return isVisible() && isFocused() && isEditable();
     }
 
     @Override
     public boolean charTyped(char codePoint, int modifiers) {
-	if (!this.canConsumeInput() || !StringUtil.isAllowedChatCharacter(codePoint)) {
+	if (!canConsumeInput() || !StringUtil.isAllowedChatCharacter(codePoint))
 	    return false;
-	}
-	if (this.isEditable) {
-	    this.insertText(Character.toString(codePoint));
+	if (isEditable) {
+	    insertText(Character.toString(codePoint));
 	}
 
 	return true;
@@ -405,19 +403,18 @@ public class ScreenComponentEditBox extends ScreenComponentGeneric {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-	if (!this.isVisible()) {
+	if (!isVisible())
 	    return false;
-	}
 	boolean mouseOver = isMouseOver(mouseX, mouseY);
-	if (this.canLoseFocus) {
-	    this.setFocus(mouseOver);
+	if (canLoseFocus) {
+	    setFocus(mouseOver);
 	}
 
-	if (this.isFocused() && mouseOver && button == 0) {
-	    int exitBoxXPos = Mth.floor(mouseX) - this.xLocation - (int) gui.getGuiWidth() - 4;
+	if (isFocused() && mouseOver && button == 0) {
+	    int exitBoxXPos = Mth.floor(mouseX) - xLocation - (int) requireScreen().getGuiWidth() - 4;
 
-	    String text = this.font.plainSubstrByWidth(this.value.substring(this.displayPos), this.getInnerWidth());
-	    this.moveCursorTo(this.font.plainSubstrByWidth(text, exitBoxXPos).length() + this.displayPos);
+	    String text = font.plainSubstrByWidth(value.substring(displayPos), getInnerWidth());
+	    moveCursorTo(font.plainSubstrByWidth(text, exitBoxXPos).length() + displayPos);
 	    return true;
 	}
 	return false;
@@ -427,7 +424,7 @@ public class ScreenComponentEditBox extends ScreenComponentGeneric {
      * Sets focus to this gui element
      */
     public ScreenComponentEditBox setFocus(boolean isFocused) {
-	this.setFocused(isFocused);
+	setFocused(isFocused);
 	return this;
     }
 
@@ -435,27 +432,25 @@ public class ScreenComponentEditBox extends ScreenComponentGeneric {
      * Increments the cursor counter
      */
     public void tick() {
-	++this.frame;
+	++frame;
     }
 
     @Override
     public void renderBackground(GuiGraphics graphics, int xAxis, int yAxis, int guiWidth, int guiHeight) {
 
-	drawExpandedBox(graphics, texture.getLocation(), this.xLocation + guiWidth, this.yLocation + guiHeight, width,
-		height);
+	drawExpandedBox(graphics, texture.getLocation(), xLocation + guiWidth, yLocation + guiHeight, width, height);
 
-	Color textColor = this.isEditable ? this.textColor : this.textColorUneditable;
-	int highlightedSize = this.cursorPos - this.displayPos;
-	int highlightedLength = this.highlightPos - this.displayPos;
+	Color textColor = isEditable ? this.textColor : textColorUneditable;
+	int highlightedSize = cursorPos - displayPos;
+	int highlightedLength = highlightPos - displayPos;
 
-	String displayedText = this.font.plainSubstrByWidth(this.value.substring(this.displayPos),
-		this.getInnerWidth());
+	String displayedText = font.plainSubstrByWidth(value.substring(displayPos), getInnerWidth());
 
 	boolean isHighlightedValid = highlightedSize >= 0 && highlightedSize <= displayedText.length();
-	boolean blinkCursor = this.isFocused() && this.frame / 6 % 2 == 0 && isHighlightedValid;
+	boolean blinkCursor = isFocused() && frame / 6 % 2 == 0 && isHighlightedValid;
 
-	int textStartX = this.xLocation + guiWidth + 4;
-	int textStartY = this.yLocation + guiHeight + (this.height - 8) / 2;
+	int textStartX = xLocation + guiWidth + 4;
+	int textStartY = yLocation + guiHeight + (height - 8) / 2;
 
 	int textStartPre = textStartX;
 
@@ -465,28 +460,28 @@ public class ScreenComponentEditBox extends ScreenComponentGeneric {
 
 	if (!displayedText.isEmpty()) {
 	    String highlightedText = isHighlightedValid ? displayedText.substring(0, highlightedSize) : displayedText;
-	    textStartPre = graphics.drawString(font, this.formatter.apply(highlightedText, this.displayPos), textStartX,
+	    textStartPre = graphics.drawString(font, formatter.apply(highlightedText, displayPos), textStartX,
 		    textStartY, textColor.color());
 	}
 
-	boolean isCursorPastLength = this.cursorPos < this.value.length() || this.value.length() >= this.getMaxLength();
+	boolean isCursorPastLength = cursorPos < value.length() || value.length() >= getMaxLength();
 
 	int textStartPreCopy = textStartPre;
 
 	if (!isHighlightedValid) {
-	    textStartPreCopy = highlightedSize > 0 ? textStartX + this.width : textStartX;
+	    textStartPreCopy = highlightedSize > 0 ? textStartX + width : textStartX;
 	} else if (isCursorPastLength) {
 	    textStartPreCopy = textStartPre - 1;
 	    --textStartPre;
 	}
 
 	if (!displayedText.isEmpty() && isHighlightedValid && highlightedSize < displayedText.length()) {
-	    graphics.drawString(font, this.formatter.apply(displayedText.substring(highlightedSize), this.cursorPos),
+	    graphics.drawString(font, formatter.apply(displayedText.substring(highlightedSize), cursorPos),
 		    textStartPre, textStartY, textColor.color());
 	}
 
-	if (!isCursorPastLength && this.suggestion != null) {
-	    graphics.drawString(font, this.suggestion, textStartPreCopy - 1, textStartY, -8355712);
+	if (!isCursorPastLength && suggestion != null) {
+	    graphics.drawString(font, suggestion, textStartPreCopy - 1, textStartY, -8355712);
 	}
 
 	if (blinkCursor) {
@@ -499,8 +494,8 @@ public class ScreenComponentEditBox extends ScreenComponentGeneric {
 	}
 
 	if (highlightedLength != highlightedSize) {
-	    int l1 = textStartX + this.font.width(displayedText.substring(0, highlightedLength));
-	    this.renderHighlight(graphics, textStartPreCopy, textStartY - 1, l1 - 1, textStartY + 1 + 9, guiWidth,
+	    int l1 = textStartX + font.width(displayedText.substring(0, highlightedLength));
+	    renderHighlight(graphics, textStartPreCopy, textStartY - 1, l1 - 1, textStartY + 1 + 9, guiWidth,
 		    guiHeight);
 	}
 
@@ -523,12 +518,12 @@ public class ScreenComponentEditBox extends ScreenComponentGeneric {
 	    pMaxY = j;
 	}
 
-	if (pMaxX > this.xLocation + this.width + guiWidth) {
-	    pMaxX = this.yLocation + this.width;
+	if (pMaxX > xLocation + width + guiWidth) {
+	    pMaxX = yLocation + width;
 	}
 
-	if (pMinX > this.xLocation + this.width + guiWidth) {
-	    pMinX = this.xLocation + this.width;
+	if (pMinX > xLocation + width + guiWidth) {
+	    pMinX = xLocation + width;
 	}
 
 	graphics.fill(RenderType.guiTextHighlight(), pMinX, pMinY, pMaxX, pMaxY, -16776961);
@@ -539,10 +534,10 @@ public class ScreenComponentEditBox extends ScreenComponentGeneric {
      * longer than this length, the current text will be trimmed.
      */
     public ScreenComponentEditBox setMaxLength(int length) {
-	this.maxLength = length;
-	if (this.value.length() > length) {
-	    this.value = this.value.substring(0, length);
-	    this.onValueChange(this.value);
+	maxLength = length;
+	if (value.length() > length) {
+	    value = value.substring(0, length);
+	    onValueChange(value);
 	}
 	return this;
 
@@ -553,14 +548,14 @@ public class ScreenComponentEditBox extends ScreenComponentGeneric {
      * textbox.
      */
     public int getMaxLength() {
-	return this.maxLength;
+	return maxLength;
     }
 
     /**
      * Returns the current position of the cursor.
      */
     public int getCursorPosition() {
-	return this.cursorPos;
+	return cursorPos;
     }
 
     /**
@@ -568,7 +563,7 @@ public class ScreenComponentEditBox extends ScreenComponentGeneric {
      * used if this text box is disabled.
      */
     public ScreenComponentEditBox setTextColor(Color pColor) {
-	this.textColor = pColor;
+	textColor = pColor;
 	return this;
     }
 
@@ -577,18 +572,18 @@ public class ScreenComponentEditBox extends ScreenComponentGeneric {
      * disabled.
      */
     public ScreenComponentEditBox setTextColorUneditable(Color pColor) {
-	this.textColorUneditable = pColor;
+	textColorUneditable = pColor;
 	return this;
     }
 
     protected void onFocusedChanged(boolean pFocused) {
 	if (pFocused) {
-	    this.frame = 0;
+	    frame = 0;
 	}
     }
 
     private boolean isEditable() {
-	return this.isEditable;
+	return isEditable;
     }
 
     /**
@@ -596,7 +591,7 @@ public class ScreenComponentEditBox extends ScreenComponentGeneric {
      * in.
      */
     public void setEditable(boolean pEnabled) {
-	this.isEditable = pEnabled;
+	isEditable = pEnabled;
     }
 
     /**
@@ -604,7 +599,7 @@ public class ScreenComponentEditBox extends ScreenComponentGeneric {
      * enabled.
      */
     public int getInnerWidth() {
-	return this.width - 8;
+	return width - 8;
     }
 
     /**
@@ -613,31 +608,28 @@ public class ScreenComponentEditBox extends ScreenComponentGeneric {
      * the bounds of the current text, it will be put back inside.
      */
     public void setHighlightPos(int position) {
-	int length = this.value.length();
-	this.highlightPos = Mth.clamp(position, 0, length);
-	if (this.font != null) {
-	    if (this.displayPos > length) {
-		this.displayPos = length;
-	    }
-
-	    int innerWidth = this.getInnerWidth();
-
-	    String text = this.font.plainSubstrByWidth(this.value.substring(this.displayPos), innerWidth);
-
-	    int textStartX = text.length() + this.displayPos;
-	    if (this.highlightPos == this.displayPos) {
-		this.displayPos -= this.font.plainSubstrByWidth(this.value, innerWidth, true).length();
-	    }
-
-	    if (this.highlightPos > textStartX) {
-		this.displayPos += this.highlightPos - textStartX;
-	    } else if (this.highlightPos <= this.displayPos) {
-		this.displayPos -= this.displayPos - this.highlightPos;
-	    }
-
-	    this.displayPos = Mth.clamp(this.displayPos, 0, length);
+	int length = value.length();
+	highlightPos = Mth.clamp(position, 0, length);
+	if (displayPos > length) {
+	    displayPos = length;
 	}
 
+	int innerWidth = getInnerWidth();
+
+	String text = font.plainSubstrByWidth(value.substring(displayPos), innerWidth);
+
+	int textStartX = text.length() + displayPos;
+	if (highlightPos == displayPos) {
+	    displayPos -= font.plainSubstrByWidth(value, innerWidth, true).length();
+	}
+
+	if (highlightPos > textStartX) {
+	    displayPos += highlightPos - textStartX;
+	} else if (highlightPos <= displayPos) {
+	    displayPos -= displayPos - highlightPos;
+	}
+
+	displayPos = Mth.clamp(displayPos, 0, length);
     }
 
     /**
@@ -653,12 +645,12 @@ public class ScreenComponentEditBox extends ScreenComponentGeneric {
     }
 
     public int getScreenX(int charNum) {
-	return (int) (charNum > this.value.length() ? this.xLocation + gui.getGuiWidth()
-		: this.xLocation + gui.getGuiWidth() + this.font.width(this.value.substring(0, charNum)));
+	return (int) (charNum > value.length() ? xLocation + requireScreen().getGuiWidth()
+		: xLocation + requireScreen().getGuiWidth() + font.width(value.substring(0, charNum)));
     }
 
     public void setX(int xPos) {
-	this.xLocation = xPos;
+	xLocation = xPos;
     }
 
     public static void drawExpandedBox(GuiGraphics graphics, ResourceLocation texture, int x, int y, int boxWidth,
@@ -793,9 +785,8 @@ public class ScreenComponentEditBox extends ScreenComponentGeneric {
     public static Predicate<String> getValidator(char[] validChars) {
 	return string -> {
 
-	    if (string.isEmpty()) {
+	    if (string.isEmpty())
 		return true;
-	    }
 
 	    boolean flag = false;
 
@@ -806,9 +797,8 @@ public class ScreenComponentEditBox extends ScreenComponentGeneric {
 			break;
 		    }
 		}
-		if (!flag) {
+		if (!flag)
 		    return false;
-		}
 		flag = false;
 	    }
 	    return true;

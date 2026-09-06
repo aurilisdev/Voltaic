@@ -74,16 +74,21 @@ public class ScreenComponentProgress extends ScreenComponentGeneric {
     }
 
     public enum ProgressTextures implements ITexture {
-	ARROW_RIGHT_OFF(22, 16, 0, 0, 44, 16, "arrow_right"), ARROW_RIGHT_ON(22, 16, 22, 0, 44, 16, "arrow_right"),
+	ARROW_RIGHT_OFF(22, 16, 0, 0, 44, 16, "arrow_right"),
+	ARROW_RIGHT_ON(22, 16, 22, 0, 44, 16, "arrow_right"),
 	ARROW_RIGHT_BIG_OFF(64, 15, 0, 0, 64, 30, "arrow_right_big"),
-	ARROW_RIGHT_BIG_ON(64, 15, 0, 15, 64, 30, "arrow_right_big"), ARROW_LEFT_ON(22, 16, 0, 0, 44, 16, "arrow_left"),
-	ARROW_LEFT_OFF(22, 16, 22, 0, 44, 16, "arrow_left"), FLAME_ON(14, 14, 0, 0, 14, 28, "flame"),
-	FLAME_OFF(14, 14, 0, 14, 14, 28, "flame"), BATTER_CHARGE_RIGHT_OFF(19, 10, 0, 0, 38, 10, "battery_charge"),
+	ARROW_RIGHT_BIG_ON(64, 15, 0, 15, 64, 30, "arrow_right_big"),
+	ARROW_LEFT_ON(22, 16, 0, 0, 44, 16, "arrow_left"),
+	ARROW_LEFT_OFF(22, 16, 22, 0, 44, 16, "arrow_left"),
+	FLAME_ON(14, 14, 0, 0, 14, 28, "flame"),
+	FLAME_OFF(14, 14, 0, 14, 14, 28, "flame"),
+	BATTER_CHARGE_RIGHT_OFF(19, 10, 0, 0, 38, 10, "battery_charge"),
 	BATTER_CHARGE_RIGHT_ON(19, 10, 19, 0, 38, 10, "battery_charge"),
 	COMPRESS_ARROW_OFF(15, 9, 0, 0, 15, 9, "compressarrow"),
 	DECOMPRESS_ARROW_OFF(15, 9, 0, 0, 15, 9, "decompressarrow"),
 	FEYNMAN_DIAGRAM_OFF(65, 46, 0, 0, 65, 92, "feynman_diagram"),
-	FEYNMAN_DIAGRAM_ON(65, 46, 0, 46, 65, 92, "feynman_diagram"), FAN_OFF(17, 17, 0, 0, 34, 17, "fan"),
+	FEYNMAN_DIAGRAM_ON(65, 46, 0, 46, 65, 92, "feynman_diagram"),
+	FAN_OFF(17, 17, 0, 0, 34, 17, "fan"),
 	FAN_ON(17, 17, 17, 0, 34, 17, "fan"),;
 
 	private final int textureWidth;
