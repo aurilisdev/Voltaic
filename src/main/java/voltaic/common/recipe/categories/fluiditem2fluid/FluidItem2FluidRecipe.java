@@ -18,9 +18,9 @@ import voltaic.prefab.tile.components.type.ComponentProcessor;
 
 public abstract class FluidItem2FluidRecipe extends AbstractMaterialRecipe {
 
-    private List<FluidIngredient> fluidIngredients;
-    private List<CountableIngredient> ingredients;
-    private FluidStack outputStack;
+    private final List<FluidIngredient> fluidIngredients;
+    private final List<CountableIngredient> ingredients;
+    private final FluidStack outputStack;
 
     public FluidItem2FluidRecipe(String group, List<CountableIngredient> inputItems, List<FluidIngredient> inputFluids,
 	    FluidStack outputFluid, double experience, int ticks, double usagePerTick,
@@ -33,13 +33,12 @@ public abstract class FluidItem2FluidRecipe extends AbstractMaterialRecipe {
 
     @Override
     public boolean matchesRecipe(ComponentProcessor pr, int procNumber) {
-
 	Pair<List<Integer>, Boolean> itemPair = areItemsValid(getCountedIngredients(),
-		((ComponentInventory) pr.getHolder().getComponent(IComponentType.Inventory))
+		((ComponentInventory) pr.getHolder().getComponent(IComponentType.Inventory).get())
 			.getInputsForProcessor(procNumber));
 	if (itemPair.getSecond()) {
 	    Pair<List<Integer>, Boolean> fluidPair = areFluidsValid(getFluidIngredients(), pr.getHolder()
-		    .<ComponentFluidHandlerMulti>getComponent(IComponentType.FluidHandler).getInputTanks());
+		    .<ComponentFluidHandlerMulti>getComponent(IComponentType.FluidHandler).get().getInputTanks());
 	    if (fluidPair.getSecond()) {
 		setItemArrangement(procNumber, itemPair.getFirst());
 		setFluidArrangement(fluidPair.getFirst());
@@ -59,6 +58,7 @@ public abstract class FluidItem2FluidRecipe extends AbstractMaterialRecipe {
 	return fluidIngredients;
     }
 
+    @Override
     public List<CountableIngredient> getCountedIngredients() {
 	return ingredients;
     }

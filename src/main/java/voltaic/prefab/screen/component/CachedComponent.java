@@ -3,6 +3,8 @@ package voltaic.prefab.screen.component;
 import java.util.Objects;
 import java.util.function.Function;
 
+import javax.annotation.Nullable;
+
 import net.minecraft.network.chat.Component;
 
 /**
@@ -12,13 +14,16 @@ import net.minecraft.network.chat.Component;
 public class CachedComponent<S> {
 
     private final Function<S, Component> builder;
+    @Nullable
     private S lastState;
+    @Nullable
     private Component cached;
 
     public CachedComponent(Function<S, Component> builder) {
-	this.builder = Objects.requireNonNull(builder, "builder");
+	this.builder = builder;
     }
 
+    @Nullable
     public Component get(S state) {
 	if (cached == null || !Objects.equals(lastState, state)) {
 	    lastState = state;

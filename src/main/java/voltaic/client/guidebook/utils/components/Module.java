@@ -3,6 +3,8 @@ package voltaic.client.guidebook.utils.components;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import net.minecraft.network.chat.MutableComponent;
 import voltaic.client.guidebook.utils.pagedata.OnClick;
 import voltaic.client.guidebook.utils.pagedata.OnKeyPress;
@@ -43,15 +45,15 @@ public abstract class Module {
 
     public abstract MutableComponent getTitle();
 
-    public OnTooltip onTooltip() {
+    public @Nullable OnTooltip onTooltip() {
 	return null;
     }
 
-    public OnClick onClick() {
+    public @Nullable OnClick onClick() {
 	return null;
     }
 
-    public OnKeyPress onKeyPress() {
+    public @Nullable OnKeyPress onKeyPress() {
 	return null;
     }
 

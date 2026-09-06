@@ -3,6 +3,8 @@ package voltaic.client.guidebook.utils.components;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -20,7 +22,6 @@ public class Page {
     private final int pageNumber;
     public List<TextWrapper> text = new ArrayList<>();
     public List<GraphicWrapper> graphics = new ArrayList<>();
-    public Chapter associatedChapter;
 
     public List<TextWrapper> tooltipText = new ArrayList<>();
     public List<GraphicWrapper> tooltipGraphics = new ArrayList<>();
@@ -30,8 +31,10 @@ public class Page {
 
     public List<TextWrapper> keyPressText = new ArrayList<>();
     public List<GraphicWrapper> keyPressGraphics = new ArrayList<>();
+    public @Nullable final Chapter associatedChapter;
 
-    public Page(int pageNumber) {
+    public Page(@Nullable Chapter associatedChapter, int pageNumber) {
+	this.associatedChapter = associatedChapter;
 	this.pageNumber = pageNumber;
     }
 
@@ -41,6 +44,9 @@ public class Page {
 
     public void renderAdditionalText(GuiGraphics graphics, int refX, int refY, int xPageShift, Font font, int textWidth,
 	    int textStartX) {
+	Chapter associatedChapter = this.associatedChapter;
+	if (associatedChapter == null)
+	    return;
 
 	Module currMod = associatedChapter.module;
 	Component moduleTitle = currMod.getTitle().withStyle(ChatFormatting.BOLD);
@@ -61,12 +67,12 @@ public class Page {
     }
 
     public record TextWrapper(int x, int y, FormattedText characters, Color color, boolean centered,
-	    OnTooltip onTooltip, OnClick onClick, OnKeyPress onKeyPress) {
+	    @Nullable OnTooltip onTooltip, @Nullable OnClick onClick, @Nullable OnKeyPress onKeyPress) {
 
     }
 
-    public record GraphicWrapper(int x, int y, AbstractGraphicWrapper<?> graphic, OnTooltip onTooltip, OnClick onClick,
-	    OnKeyPress onKeyPress) {
+    public record GraphicWrapper(int x, int y, AbstractGraphicWrapper<?> graphic, @Nullable OnTooltip onTooltip,
+	    @Nullable OnClick onClick, @Nullable OnKeyPress onKeyPress) {
 
     }
 
@@ -74,8 +80,8 @@ public class Page {
 
 	public Module associatedModule;
 
-	public ChapterPage(int pageNumber, Module module) {
-	    super(pageNumber);
+	public ChapterPage(@Nullable Chapter associatedChapter, int pageNumber, Module module) {
+	    super(associatedChapter, pageNumber);
 	    associatedModule = module;
 	}
 
@@ -99,8 +105,8 @@ public class Page {
 
     public static class ModulePage extends Page {
 
-	public ModulePage(int pageNumber) {
-	    super(pageNumber);
+	public ModulePage(@Nullable Chapter associatedChapter, int pageNumber) {
+	    super(associatedChapter, pageNumber);
 	}
 
 	@Override
@@ -116,8 +122,8 @@ public class Page {
 
     public static class CoverPage extends Page {
 
-	public CoverPage(int pageNumber) {
-	    super(pageNumber);
+	public CoverPage(@Nullable Chapter associatedChapter, int pageNumber) {
+	    super(associatedChapter, pageNumber);
 	}
 
 	@Override

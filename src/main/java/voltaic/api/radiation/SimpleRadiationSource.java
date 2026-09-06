@@ -76,7 +76,7 @@ public class SimpleRadiationSource implements IRadiationSource {
 	this.shouldLinger = shouldLinger;
 	this.shouldCombine = shouldCombine;
 	boundingBox = new AABB(location).inflate(distance);
-	this.chunkPos = new ChunkPos(location);
+	chunkPos = new ChunkPos(location);
     }
 
     @Override
@@ -139,7 +139,7 @@ public class SimpleRadiationSource implements IRadiationSource {
     }
 
     public boolean shouldCombine() {
-	return this.shouldCombine;
+	return shouldCombine;
     }
 
     public AABB getBoundingBox() {

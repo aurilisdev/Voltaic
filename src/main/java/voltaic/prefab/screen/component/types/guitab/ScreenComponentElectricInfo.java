@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
+import javax.annotation.Nullable;
+
 import net.minecraft.ChatFormatting;
 import net.minecraft.util.FormattedCharSequence;
 import net.neoforged.api.distmarker.Dist;
@@ -26,6 +28,7 @@ import voltaic.prefab.utilities.object.TransferPack;
 @OnlyIn(Dist.CLIENT)
 public class ScreenComponentElectricInfo extends ScreenComponentGuiTab {
 
+    @Nullable
     private Function<ComponentElectrodynamic, Double> wattage = null;
 
     public ScreenComponentElectricInfo(TextPropertySupplier infoHandler, int x, int y) {
@@ -47,86 +50,75 @@ public class ScreenComponentElectricInfo extends ScreenComponentGuiTab {
 
     @Override
     protected List<? extends FormattedCharSequence> getInfo(List<? extends FormattedCharSequence> list) {
-	if (infoHandler == EMPTY) {
+	if (infoHandler == EMPTY)
 	    return getElectricInformation();
-	}
 	return super.getInfo(list);
     }
 
     private List<? extends FormattedCharSequence> getElectricInformation() {
 	ArrayList<FormattedCharSequence> list = new ArrayList<>();
-	if (gui instanceof GenericScreen<?> menu) {
-	    if (((GenericContainerBlockEntity<?>) menu.getMenu()).getUnsafeHost() instanceof GenericTile tile) {
-		if (tile.getComponent(IComponentType.Electrodynamic) instanceof ComponentElectrodynamic electro) {
-		    if (tile instanceof IElectricGenerator generator) {
-			TransferPack transfer = generator.getProduced();
-			list.add(VoltaicTextUtils
-				.gui("machine.current",
-					ChatFormatter.getChatDisplayShort(transfer.getAmps(), DisplayUnits.AMPERE)
-						.withStyle(ChatFormatting.GRAY))
-				.withStyle(ChatFormatting.DARK_GRAY).getVisualOrderText());
-			list.add(VoltaicTextUtils
-				.gui("machine.output",
-					ChatFormatter.getChatDisplayShort(transfer.getWatts(), DisplayUnits.WATT)
-						.withStyle(ChatFormatting.GRAY))
-				.withStyle(ChatFormatting.DARK_GRAY).getVisualOrderText());
-			list.add(
-				VoltaicTextUtils
-					.gui("machine.voltage",
-						ChatFormatter.getChatDisplayShort(transfer.getVoltage(),
-							DisplayUnits.VOLTAGE).withStyle(ChatFormatting.GRAY))
-					.withStyle(ChatFormatting.DARK_GRAY).getVisualOrderText());
-		    } else {
-			double satisfaction = 0;
-			if (wattage == null) {
-			    double perTick = tile.hasComponent(IComponentType.Processor)
-				    ? tile.<ComponentProcessor>getComponent(IComponentType.Processor).getTotalUsage()
-					    * tile.<ComponentProcessor>getComponent(
-						    IComponentType.Processor).operatingSpeed.getValue()
-				    : 0.0;
-			    list.add(VoltaicTextUtils
-				    .gui("machine.usage",
-					    ChatFormatter.getChatDisplayShort(perTick * 20, DisplayUnits.WATT)
-						    .withStyle(ChatFormatting.GRAY))
-				    .withStyle(ChatFormatting.DARK_GRAY).getVisualOrderText());
-			    if (perTick == 0) {
-				satisfaction = 1;
-			    } else if (electro.getJoulesStored() > 0) {
-				satisfaction = electro.getJoulesStored() >= perTick ? 1
-					: electro.getJoulesStored() / perTick;
-			    }
-			} else {
-			    double watts = wattage.apply(electro);
-			    double perTick = watts / 20.0;
-
-			    if (perTick == 0) {
-				satisfaction = 1;
-			    } else if (electro.getJoulesStored() > 0) {
-				satisfaction = electro.getJoulesStored() >= perTick ? 1
-					: electro.getJoulesStored() / perTick;
-			    }
-
-			    list.add(VoltaicTextUtils
-				    .gui("machine.usage",
-					    ChatFormatter.getChatDisplayShort(watts, DisplayUnits.WATT)
-						    .withStyle(ChatFormatting.GRAY))
-				    .withStyle(ChatFormatting.DARK_GRAY).getVisualOrderText());
-			}
-			list.add(VoltaicTextUtils
-				.gui("machine.voltage",
-					ChatFormatter.getChatDisplayShort(electro.getVoltage(), DisplayUnits.VOLTAGE)
-						.withStyle(ChatFormatting.GRAY))
-				.withStyle(ChatFormatting.DARK_GRAY).getVisualOrderText());
-			list.add(
-				VoltaicTextUtils
-					.gui("machine.satisfaction",
-						ChatFormatter.getChatDisplayShort(satisfaction * 100.0,
-							DisplayUnits.PERCENTAGE).withStyle(ChatFormatting.GRAY))
-					.withStyle(ChatFormatting.DARK_GRAY).getVisualOrderText());
-		    }
-		}
-	    }
-	}
+	if (!(gui instanceof GenericScreen<?> screen)
+		|| !(screen.getMenu() instanceof GenericContainerBlockEntity<?> menu))
+	    return list;
+	menu.getSafeHost().filter(GenericTile.class::isInstance).map(GenericTile.class::cast).ifPresent(
+		tile -> tile.<ComponentElectrodynamic>getComponent(IComponentType.Electrodynamic).ifPresent(electro -> {
+		    if (tile instanceof IElectricGenerator generator)
+			addGeneratorInformation(list, generator);
+		    else
+			addProcessorInformation(list, tile, electro);
+		}));
 	return list;
+    }
+
+    private void addProcessorInformation(ArrayList<FormattedCharSequence> list, GenericTile tile,
+	    ComponentElectrodynamic electro) {
+	Function<ComponentElectrodynamic, Double> wattageFunction = wattage;
+	double watts;
+	double perTick;
+	if (wattageFunction == null) {
+	    perTick = tile.<ComponentProcessor>getComponent(IComponentType.Processor)
+		    .map(processor -> processor.getTotalUsage() * processor.operatingSpeed.getValue()).orElse(0.0);
+	    watts = perTick * 20.0;
+	} else {
+	    watts = wattageFunction.apply(electro);
+	    perTick = watts / 20.0;
+	}
+	double stored = electro.getJoulesStored();
+	double satisfaction = perTick == 0 ? 1 : stored > 0 ? Math.min(1, stored / perTick) : 0;
+	list.add(
+		VoltaicTextUtils
+			.gui("machine.usage",
+				ChatFormatter.getChatDisplayShort(watts, DisplayUnits.WATT)
+					.withStyle(ChatFormatting.GRAY))
+			.withStyle(ChatFormatting.DARK_GRAY).getVisualOrderText());
+	list.add(VoltaicTextUtils
+		.gui("machine.voltage",
+			ChatFormatter.getChatDisplayShort(electro.getVoltage(), DisplayUnits.VOLTAGE)
+				.withStyle(ChatFormatting.GRAY))
+		.withStyle(ChatFormatting.DARK_GRAY).getVisualOrderText());
+	list.add(VoltaicTextUtils
+		.gui("machine.satisfaction",
+			ChatFormatter.getChatDisplayShort(satisfaction * 100.0, DisplayUnits.PERCENTAGE)
+				.withStyle(ChatFormatting.GRAY))
+		.withStyle(ChatFormatting.DARK_GRAY).getVisualOrderText());
+    }
+
+    private static void addGeneratorInformation(ArrayList<FormattedCharSequence> list, IElectricGenerator generator) {
+	TransferPack transfer = generator.getProduced();
+	list.add(VoltaicTextUtils
+		.gui("machine.current",
+			ChatFormatter.getChatDisplayShort(transfer.getAmps(), DisplayUnits.AMPERE)
+				.withStyle(ChatFormatting.GRAY))
+		.withStyle(ChatFormatting.DARK_GRAY).getVisualOrderText());
+	list.add(VoltaicTextUtils
+		.gui("machine.output",
+			ChatFormatter.getChatDisplayShort(transfer.getWatts(), DisplayUnits.WATT)
+				.withStyle(ChatFormatting.GRAY))
+		.withStyle(ChatFormatting.DARK_GRAY).getVisualOrderText());
+	list.add(VoltaicTextUtils
+		.gui("machine.voltage",
+			ChatFormatter.getChatDisplayShort(transfer.getVoltage(), DisplayUnits.VOLTAGE)
+				.withStyle(ChatFormatting.GRAY))
+		.withStyle(ChatFormatting.DARK_GRAY).getVisualOrderText());
     }
 }

@@ -1,7 +1,5 @@
 package voltaic.api.gas;
 
-import javax.annotation.Nonnull;
-
 /**
  * An implementation of a Gas Handler capability modeled after IFluidHandler
  * 
@@ -47,7 +45,7 @@ public interface IGasHandler {
      * @param gas  : The gas being checked
      * @return Whether or not the checked tank could EVER accept the checked gas
      */
-    boolean isGasValid(int tank, @Nonnull GasStack gas);
+    boolean isGasValid(int tank, GasStack gas);
 
     /**
      * @param gas    : The gas to fill

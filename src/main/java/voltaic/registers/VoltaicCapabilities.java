@@ -1,7 +1,5 @@
 package voltaic.registers;
 
-import org.jetbrains.annotations.Nullable;
-
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -27,7 +25,7 @@ public class VoltaicCapabilities {
     public static final double DEFAULT_VOLTAGE = 120.0;
     public static final String LOCATION_KEY = "location";
 
-    public static final BlockCapability<ICapabilityElectrodynamic, @Nullable Direction> CAPABILITY_ELECTRODYNAMIC_BLOCK = BlockCapability
+    public static final BlockCapability<ICapabilityElectrodynamic, Direction> CAPABILITY_ELECTRODYNAMIC_BLOCK = BlockCapability
 	    .createSided(Voltaic.rl("electrodynamicblock"), ICapabilityElectrodynamic.class);
 
     public static final ItemCapability<ILocationStorage, Void> CAPABILITY_LOCATIONSTORAGE_ITEM = ItemCapability
@@ -35,7 +33,7 @@ public class VoltaicCapabilities {
 
     public static final ItemCapability<IGasHandlerItem, Void> CAPABILITY_GASHANDLER_ITEM = ItemCapability
 	    .createVoid(Voltaic.rl("gashandleritem"), IGasHandlerItem.class);
-    public static final BlockCapability<IGasHandler, @Nullable Direction> CAPABILITY_GASHANDLER_BLOCK = BlockCapability
+    public static final BlockCapability<IGasHandler, Direction> CAPABILITY_GASHANDLER_BLOCK = BlockCapability
 	    .createSided(Voltaic.rl("gashandlerblock"), IGasHandler.class);
 
     public static final EntityCapability<IRadiationRecipient, Void> CAPABILITY_RADIATIONRECIPIENT = EntityCapability

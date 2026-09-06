@@ -23,9 +23,8 @@ public class BlockMultiblockSlave extends GenericMachineBlock {
 
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
-	if (worldIn.getBlockEntity(pos) instanceof TileMultiblockSlave slave) {
+	if (worldIn.getBlockEntity(pos) instanceof TileMultiblockSlave slave)
 	    return slave.getShape();
-	}
 	return Shapes.block();
     }
 

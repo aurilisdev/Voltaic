@@ -50,6 +50,9 @@ public class TickableSoundTile<T extends BlockEntity & ITickableSound> extends A
 	    stop();
 	}
 	Player player = Minecraft.getInstance().player;
+	if (player == null)
+	    return;
+
 	double distance = WorldUtils.distanceBetweenPositions(player.blockPosition(), tile.getBlockPos());
 	if (distance <= 1) {
 	    volume = initialVolume;

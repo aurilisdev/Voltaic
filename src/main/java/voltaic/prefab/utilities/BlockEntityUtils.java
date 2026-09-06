@@ -1,5 +1,7 @@
 package voltaic.prefab.utilities;
 
+import javax.annotation.Nullable;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
@@ -22,43 +24,37 @@ public class BlockEntityUtils {
     };
 
     public static Direction getRelativeSide(Direction facingDirection, Direction relativeDirection) {
-	if (facingDirection == null || relativeDirection == null) {
-	    return Direction.UP;
-	}
 	return Direction.values()[RELATIVE_MATRIX[facingDirection.ordinal()][relativeDirection.ordinal()]];
     }
 
     public static void updateLit(GenericTile tile, Boolean value) {
-	Level world = tile.getLevel();
+	Level level = tile.getLevel();
+	if (level == null)
+	    return;
+
 	BlockPos pos = tile.getBlockPos();
 	if (tile.getBlockState().hasProperty(VoltaicBlockStates.LIT)) {
-	    world.setBlockAndUpdate(pos, world.getBlockState(pos).setValue(VoltaicBlockStates.LIT, value));
+	    level.setBlockAndUpdate(pos, level.getBlockState(pos).setValue(VoltaicBlockStates.LIT, value));
 	}
     }
 
     public static boolean isLit(GenericTile tile) {
-	if (tile.getBlockState().hasProperty(VoltaicBlockStates.LIT)) {
+	if (tile.getBlockState().hasProperty(VoltaicBlockStates.LIT))
 	    return tile.getBlockState().getValue(VoltaicBlockStates.LIT);
-	}
 	return false;
     }
 
-    public static Direction directionFromPos(BlockPos thisPos, BlockPos otherPos) {
+    public static @Nullable Direction directionFromPos(BlockPos thisPos, BlockPos otherPos) {
 	return Direction.fromDelta(otherPos.getX() - thisPos.getX(), otherPos.getY() - thisPos.getY(),
 		otherPos.getZ() - thisPos.getZ());
     }
 
-    /**
-     * This enum is used as a wrapper for the Vanilla directions to make the
-     * directions used by machine IO a little easier to understand. The perspectives
-     * are defined from that of the machine i.e. the front of the machine is facing
-     * north.
-     *
-     *
-     * @author skip999
-     */
     public static enum MachineDirection {
-	BOTTOM(Direction.DOWN), TOP(Direction.UP), FRONT(Direction.NORTH), BACK(Direction.SOUTH), LEFT(Direction.WEST),
+	BOTTOM(Direction.DOWN),
+	TOP(Direction.UP),
+	FRONT(Direction.NORTH),
+	BACK(Direction.SOUTH),
+	LEFT(Direction.WEST),
 	RIGHT(Direction.EAST);
 
 	public final Direction mappedDir;

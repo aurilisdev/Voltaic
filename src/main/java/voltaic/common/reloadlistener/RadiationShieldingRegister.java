@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
+import javax.annotation.Nullable;
+
 import org.apache.logging.log4j.Logger;
 
 import com.google.gson.Gson;
@@ -40,7 +42,21 @@ import voltaic.common.packet.types.client.PacketSetClientRadiationShielding;
 
 public class RadiationShieldingRegister extends SimplePreparableReloadListener<JsonObject> {
 
-    public static RadiationShieldingRegister INSTANCE = null;
+    @Nullable
+    private static RadiationShieldingRegister instance;
+
+    public static RadiationShieldingRegister initialize() {
+	if (instance != null)
+	    throw new IllegalStateException("RadiationShieldingRegister has already been initialized");
+	return instance = new RadiationShieldingRegister();
+    }
+
+    public static RadiationShieldingRegister getInstance() {
+	RadiationShieldingRegister current = instance;
+	if (current == null)
+	    throw new IllegalStateException("RadiationShieldingRegister has not been initialized");
+	return current;
+    }
 
     public static final String FOLDER = "radiation";
     public static final String FILE_NAME = "radiation_shielding";
@@ -154,16 +170,16 @@ public class RadiationShieldingRegister extends SimplePreparableReloadListener<J
     }
 
     public void setClientValues(HashMap<Block, RadiationShielding> mappedValues) {
-	this.radiationShieldingMap.clear();
-	this.radiationShieldingMap.putAll(mappedValues);
+	radiationShieldingMap.clear();
+	radiationShieldingMap.putAll(mappedValues);
     }
 
     public static HashMap<Block, RadiationShielding> getValues() {
-	return INSTANCE.radiationShieldingMap;
+	return getInstance().radiationShieldingMap;
     }
 
     public static RadiationShielding getValue(Block block) {
-	return INSTANCE.radiationShieldingMap.getOrDefault(block, RadiationShielding.NONE);
+	return getInstance().radiationShieldingMap.getOrDefault(block, RadiationShielding.NONE);
     }
 
     private static boolean isJson(final ResourceLocation filename) {

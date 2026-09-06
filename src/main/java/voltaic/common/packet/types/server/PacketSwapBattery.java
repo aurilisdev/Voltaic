@@ -7,6 +7,7 @@ import net.minecraft.core.UUIDUtil;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import voltaic.common.packet.NetworkHandler;
 
@@ -24,7 +25,9 @@ public class PacketSwapBattery implements CustomPacketPayload {
     }
 
     public static void handle(PacketSwapBattery message, IPayloadContext context) {
-	ServerBarrierMethods.handleSwapBattery(context.player().level(), message.playerId);
+	if (context.player().level() instanceof ServerLevel serverLevel) {
+	    ServerBarrierMethods.handleSwapBattery(serverLevel, message.playerId);
+	}
     }
 
     @Override

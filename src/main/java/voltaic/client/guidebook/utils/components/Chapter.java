@@ -3,6 +3,8 @@ package voltaic.client.guidebook.utils.components;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import net.minecraft.network.chat.MutableComponent;
 import voltaic.client.guidebook.utils.pagedata.AbstractWrapperObject;
 import voltaic.client.guidebook.utils.pagedata.OnClick;
@@ -47,15 +49,15 @@ public abstract class Chapter {
 	pageData.add(TextWrapperObject.BLANK_LINE);
     }
 
-    public OnTooltip onTooltip() {
+    public @Nullable OnTooltip onTooltip() {
 	return null;
     }
 
-    public OnClick onClick() {
+    public @Nullable OnClick onClick() {
 	return null;
     }
 
-    public OnKeyPress onKeyPress() {
+    public @Nullable OnKeyPress onKeyPress() {
 	return null;
     }
 

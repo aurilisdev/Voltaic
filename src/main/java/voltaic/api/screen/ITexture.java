@@ -27,7 +27,7 @@ public interface ITexture {
     ResourceLocation getLocation();
 
     enum Textures implements ITexture {
-	NONE(0, 0, 0, 0, 0, 0, null),
+	NONE(0, 0, 0, 0, 0, 0, Voltaic.rl("nulltexture")),
 	CONDENSER_COLUMN(32, 47, 0, 0, 32, 47, Voltaic.rl("textures/screen/component/condensercolumn.png")),
 	TRANSFORMER_SYMBOL(25, 33, 0, 0, 25, 33, Voltaic.rl("textures/screen/component/transformercoil.png")),
 	WHITE(10, 10, 0, 0, 10, 10, Voltaic.forgerl("textures/white.png"));

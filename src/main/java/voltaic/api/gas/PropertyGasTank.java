@@ -27,22 +27,21 @@ public class PropertyGasTank extends GasTank {
     protected SingleProperty<Integer> maxTemperatureProperty;
     protected SingleProperty<Integer> maxPressureProperty;
 
-    protected BiConsumer<GasTank, GenericTile> onGasCondensed = (gas, tile) -> {
-    };
+    protected BiConsumer<GasTank, GenericTile> onGasCondensed = (gas, tile) -> {};
 
     public PropertyGasTank(GenericTile holder, String key, int capacity, int maxTemperature, int maxPressure) {
 	super(capacity, maxTemperature, maxPressure);
 
 	this.holder = holder;
 
-	gasProperty = holder
-		.property(new SingleProperty<>(PropertyTypes.GAS_STACK, "propertygastankstack" + key, GasStack.EMPTY));
-	capacityProperty = holder
-		.property(new SingleProperty<>(PropertyTypes.INTEGER, "propertygastankcapacity" + key, capacity));
-	maxTemperatureProperty = holder.property(
-		new SingleProperty<>(PropertyTypes.INTEGER, "propertygastankmaxtemperature" + key, maxTemperature));
-	maxPressureProperty = holder
-		.property(new SingleProperty<>(PropertyTypes.INTEGER, "propertygastankmaxpressure" + key, maxPressure));
+	gasProperty = holder.property(new SingleProperty<>(holder.getPropertyManager(), PropertyTypes.GAS_STACK,
+		"propertygastankstack" + key, GasStack.EMPTY));
+	capacityProperty = holder.property(new SingleProperty<>(holder.getPropertyManager(), PropertyTypes.INTEGER,
+		"propertygastankcapacity" + key, capacity));
+	maxTemperatureProperty = holder.property(new SingleProperty<>(holder.getPropertyManager(),
+		PropertyTypes.INTEGER, "propertygastankmaxtemperature" + key, maxTemperature));
+	maxPressureProperty = holder.property(new SingleProperty<>(holder.getPropertyManager(), PropertyTypes.INTEGER,
+		"propertygastankmaxpressure" + key, maxPressure));
     }
 
     public PropertyGasTank(GenericTile holder, String key, int capacity, int maxTemperature, int maxPressure,
@@ -51,21 +50,21 @@ public class PropertyGasTank extends GasTank {
 
 	this.holder = holder;
 
-	gasProperty = holder
-		.property(new SingleProperty<>(PropertyTypes.GAS_STACK, "propertygastankstack" + key, GasStack.EMPTY));
-	capacityProperty = holder
-		.property(new SingleProperty<>(PropertyTypes.INTEGER, "propertygastankcapacity" + key, capacity));
-	maxTemperatureProperty = holder.property(
-		new SingleProperty<>(PropertyTypes.INTEGER, "propertygastankmaxtemperature" + key, maxTemperature));
-	maxPressureProperty = holder
-		.property(new SingleProperty<>(PropertyTypes.INTEGER, "propertygastankmaxpressure" + key, maxPressure));
+	gasProperty = holder.property(new SingleProperty<>(holder.getPropertyManager(), PropertyTypes.GAS_STACK,
+		"propertygastankstack" + key, GasStack.EMPTY));
+	capacityProperty = holder.property(new SingleProperty<>(holder.getPropertyManager(), PropertyTypes.INTEGER,
+		"propertygastankcapacity" + key, capacity));
+	maxTemperatureProperty = holder.property(new SingleProperty<>(holder.getPropertyManager(),
+		PropertyTypes.INTEGER, "propertygastankmaxtemperature" + key, maxTemperature));
+	maxPressureProperty = holder.property(new SingleProperty<>(holder.getPropertyManager(), PropertyTypes.INTEGER,
+		"propertygastankmaxpressure" + key, maxPressure));
 
     }
 
     protected PropertyGasTank(PropertyGasTank other) {
 	super(other.getCapacity(), other.getMaxTemperature(), other.getMaxPressure(), other.isGasValid);
 
-	this.holder = other.holder;
+	holder = other.holder;
 
 	gasProperty = other.gasProperty;
 	capacityProperty = other.capacityProperty;
@@ -131,36 +130,34 @@ public class PropertyGasTank extends GasTank {
 
     @Override
     public void onChange() {
-	if (holder != null) {
-	    gasProperty.forceDirtyForManager();
-	    holder.onGasTankChange(this);
-	}
+	gasProperty.forceDirtyForManager();
+	holder.onGasTankChange(this);
     }
 
     @Override
     public void onOverheat() {
-	if (holder != null) {
-	    Level world = holder.getLevel();
-	    BlockPos pos = holder.getBlockPos();
-	    world.setBlockAndUpdate(pos, Blocks.LAVA.defaultBlockState());
-	}
+	Level level = holder.getLevel();
+	if (level == null)
+	    return;
+
+	BlockPos pos = holder.getBlockPos();
+	level.setBlockAndUpdate(pos, Blocks.LAVA.defaultBlockState());
     }
 
     @Override
     public void onOverpressure() {
-	if (holder != null) {
-	    Level world = holder.getLevel();
-	    BlockPos pos = holder.getBlockPos();
-	    world.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
-	    world.explode(null, pos.getX(), pos.getY(), pos.getZ(), 2.0F, ExplosionInteraction.BLOCK);
-	}
+	Level level = holder.getLevel();
+	if (level == null)
+	    return;
+
+	BlockPos pos = holder.getBlockPos();
+	level.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
+	level.explode(null, pos.getX(), pos.getY(), pos.getZ(), 2.0F, ExplosionInteraction.BLOCK);
     }
 
     @Override
     public void onGasCondensed() {
-	if (holder != null) {
-	    onGasCondensed.accept(this, holder);
-	}
+	onGasCondensed.accept(this, holder);
     }
 
     public PropertyGasTank[] asArray() {

@@ -8,32 +8,38 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class VoxelShapeProvider {
 
-    private final VoxelShape omni;
-    private final VoxelShape[] shapes;
+    private final @Nullable VoxelShape omni;
+    private final @Nullable VoxelShape[] shapes;
 
-    public static final VoxelShapeProvider DEFAULT = new VoxelShapeProvider(Shapes.block(), null);
+    public static final VoxelShapeProvider DEFAULT = new VoxelShapeProvider(Shapes.block());
 
-    private VoxelShapeProvider(VoxelShape omni, VoxelShape[] shapes) {
+    private VoxelShapeProvider(VoxelShape omni) {
 	this.omni = omni;
+	shapes = null;
+    }
+
+    private VoxelShapeProvider(VoxelShape[] shapes) {
+	omni = null;
 	this.shapes = shapes;
     }
 
-    public VoxelShape getShape(@Nullable Direction dir) {
-	if (omni != null) {
+    public VoxelShape getShape(Direction dir) {
+	if (omni != null)
 	    return omni;
-	} else if (dir == Direction.UP || dir == Direction.DOWN) {
+	else if (dir == Direction.UP || dir == Direction.DOWN)
 	    return Shapes.block();
-	} else {
+	else if (shapes != null)
 	    return shapes[dir.ordinal()];
-	}
+	throw new IllegalStateException(
+		"VoxelShapeProvider has no shape data. This indicates an invalid provider state.");
     }
 
     public static VoxelShapeProvider createOmni(VoxelShape shape) {
-	return new VoxelShapeProvider(shape, null);
+	return new VoxelShapeProvider(shape);
     }
 
     public static VoxelShapeProvider createDirectional(Direction startDirection, VoxelShape shape) {
-	return new VoxelShapeProvider(null, createShapes(shape, startDirection));
+	return new VoxelShapeProvider(createShapes(shape, startDirection));
     }
 
     public static final Direction[] HORIZONTAL_DIRECTIONS = { Direction.NORTH, Direction.SOUTH, Direction.WEST,

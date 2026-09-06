@@ -1,5 +1,7 @@
 package voltaic.datagen.utils.client.model;
 
+import javax.annotation.Nullable;
+
 import com.google.gson.JsonObject;
 
 import net.neoforged.neoforge.client.model.generators.CustomLoaderBuilder;
@@ -15,7 +17,7 @@ public class SlaveNodeModelBuilder<T extends ModelBuilder<T>> extends CustomLoad
 	return new SlaveNodeModelBuilder<>(parent, existingFileHelper);
     }
 
-    private ModelFile model;
+    private @Nullable ModelFile model;
 
     protected SlaveNodeModelBuilder(T parent, ExistingFileHelper existingFileHelper) {
 	super(SlaveNodeModelLoader.ID, parent, existingFileHelper, false);
@@ -29,8 +31,10 @@ public class SlaveNodeModelBuilder<T extends ModelBuilder<T>> extends CustomLoad
 
     @Override
     public JsonObject toJson(JsonObject json) {
+	ModelFile model = this.model;
+	if (model == null)
+	    throw new IllegalStateException("No model defined for slave node model");
 	json = super.toJson(json);
-
 	JsonObject modelElement = new JsonObject();
 	modelElement.addProperty("parent", model.getLocation().toString());
 	json.add("model", modelElement);

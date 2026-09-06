@@ -6,8 +6,6 @@ import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import javax.annotation.Nonnull;
-
 import com.mojang.serialization.Codec;
 
 import io.netty.buffer.ByteBuf;
@@ -23,22 +21,20 @@ public class ListPropertyType<TYPE, BUFFERTYPE extends ByteBuf> implements IProp
     private final Consumer<TagWriter<List<TYPE>>> writeToNbt;
     private final Function<TagReader<List<TYPE>>, List<TYPE>> readFromNbt;
 
-    public ListPropertyType(@Nonnull BiPredicate<TYPE, TYPE> singleComparison,
-	    StreamCodec<BUFFERTYPE, TYPE> singlePacketCodec, Codec<TYPE> singleNbtCodec, TYPE defaultValue) {
+    public ListPropertyType(BiPredicate<TYPE, TYPE> singleComparison, StreamCodec<BUFFERTYPE, TYPE> singlePacketCodec,
+	    Codec<TYPE> singleNbtCodec, TYPE defaultValue) {
 
 	this.singleComparison = singleComparison;
 
-	this.comparison = (list1, list2) -> {
+	comparison = (list1, list2) -> {
 
-	    if (list1 == null || list2 == null || (list1.size() != list2.size())) {
+	    if (list1 == null || list2 == null || list1.size() != list2.size())
 		return false;
-	    }
 
 	    for (int i = 0; i < list1.size(); i++) {
 
-		if (!singleComparison.test(list1.get(i), list2.get(i))) {
+		if (!singleComparison.test(list1.get(i), list2.get(i)))
 		    return false;
-		}
 
 	    }
 
@@ -109,15 +105,13 @@ public class ListPropertyType<TYPE, BUFFERTYPE extends ByteBuf> implements IProp
 
 	    CompoundTag data = reader.tag().getCompound(reader.prop().getName());
 
-	    if (!data.contains("size")) {
+	    if (!data.contains("size"))
 		return reader.prop().getValue();
-	    }
 
 	    int size = data.getInt("size");
 
-	    if (size <= 0) {
+	    if (size <= 0)
 		return new ArrayList<>();
-	    }
 
 	    List<TYPE> list = new ArrayList<>(size);
 

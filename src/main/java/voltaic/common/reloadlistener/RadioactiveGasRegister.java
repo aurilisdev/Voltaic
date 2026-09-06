@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
+import javax.annotation.Nullable;
+
 import org.apache.logging.log4j.Logger;
 
 import com.google.gson.Gson;
@@ -40,7 +42,21 @@ import voltaic.registers.VoltaicGases;
 
 public class RadioactiveGasRegister extends SimplePreparableReloadListener<JsonObject> {
 
-    public static RadioactiveGasRegister INSTANCE = null;
+    @Nullable
+    private static RadioactiveGasRegister instance;
+
+    public static RadioactiveGasRegister initialize() {
+	if (instance != null)
+	    throw new IllegalStateException("RadioactiveGasRegister has already been initialized");
+	return instance = new RadioactiveGasRegister();
+    }
+
+    public static RadioactiveGasRegister getInstance() {
+	RadioactiveGasRegister current = instance;
+	if (current == null)
+	    throw new IllegalStateException("RadioactiveGasRegister has not been initialized");
+	return current;
+    }
 
     public static final String FOLDER = "radiation";
     public static final String FILE_NAME = "radioactive_gases";
@@ -154,16 +170,16 @@ public class RadioactiveGasRegister extends SimplePreparableReloadListener<JsonO
     }
 
     public void setClientValues(HashMap<Gas, RadioactiveObject> mappedValues) {
-	this.radioactiveGasMap.clear();
-	this.radioactiveGasMap.putAll(mappedValues);
+	radioactiveGasMap.clear();
+	radioactiveGasMap.putAll(mappedValues);
     }
 
     public static HashMap<Gas, RadioactiveObject> getValues() {
-	return INSTANCE.radioactiveGasMap;
+	return getInstance().radioactiveGasMap;
     }
 
     public static RadioactiveObject getValue(Gas gas) {
-	return INSTANCE.radioactiveGasMap.getOrDefault(gas, RadioactiveObject.ZERO);
+	return getInstance().radioactiveGasMap.getOrDefault(gas, RadioactiveObject.ZERO);
     }
 
     private static boolean isJson(final ResourceLocation filename) {

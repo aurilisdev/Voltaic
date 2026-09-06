@@ -42,6 +42,10 @@ public abstract class AbstractMaterialRecipe extends VoltaicRecipe {
 	return Collections.emptyList();
     }
 
+    public List<CountableIngredient> getCountedIngredients() {
+	return Collections.emptyList();
+    }
+
     public ItemStack getItemRecipeOutput() {
 	return ItemStack.EMPTY;
     }

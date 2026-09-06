@@ -23,20 +23,18 @@ import net.neoforged.neoforge.common.conditions.ICondition;
  */
 public class SingleItemRecipeBuilder implements RecipeBuilder {
 
-    @Nullable
-    private ICondition[] conditions;
-
-    private ResourceLocation id;
-
     private final Item result;
     private final Ingredient ingredient;
     private final int count;
     private String group = "";
     private final SingleItemRecipe.Factory<?> factory;
+    private ICondition[] conditions = {};
+
+    private @Nullable ResourceLocation id;
 
     public SingleItemRecipeBuilder(Factory<?> factory, Ingredient ing, Item result, int count) {
 	this.factory = factory;
-	this.ingredient = ing;
+	ingredient = ing;
 	this.result = result;
 	this.count = count;
     }
@@ -51,33 +49,13 @@ public class SingleItemRecipeBuilder implements RecipeBuilder {
     }
 
     @Override
-    public void save(RecipeOutput output) {
-	this.save(output, id);
-    }
-
-    @Override
-    public void save(RecipeOutput output, ResourceLocation altName) {
-	if (conditions != null) {
-	    output.withConditions(conditions).accept(id,
-		    factory.create(group, ingredient, new ItemStack(result, count)), null);
-	} else {
-	    output.accept(id, factory.create(group, ingredient, new ItemStack(result, count)), null);
-	}
-    }
-
-    @Override
-    public void save(RecipeOutput output, String name) {
-	this.save(output, id);
-    }
-
-    @Override
     public RecipeBuilder unlockedBy(String pName, Criterion<?> pCriterion) {
 	return this;
     }
 
     @Override
-    public SingleItemRecipeBuilder group(String group) {
-	this.group = group;
+    public SingleItemRecipeBuilder group(@Nullable String group) {
+	this.group = group == null ? "" : group;
 	return this;
     }
 
@@ -89,6 +67,27 @@ public class SingleItemRecipeBuilder implements RecipeBuilder {
     @Override
     public Item getResult() {
 	return result;
+    }
+
+    @Override
+    public void save(RecipeOutput output, ResourceLocation id) {
+	if (conditions.length > 0)
+	    output = output.withConditions(conditions);
+	output.accept(id, factory.create(group, ingredient, new ItemStack(result, count)), null);
+
+    }
+
+    @Override
+    public void save(RecipeOutput output) {
+	ResourceLocation recipeId = id;
+	if (recipeId == null)
+	    throw new IllegalStateException("Recipe ID has not been set");
+	save(output, recipeId);
+    }
+
+    @Override
+    public void save(RecipeOutput output, String name) {
+	save(output, ResourceLocation.parse(name));
     }
 
 }

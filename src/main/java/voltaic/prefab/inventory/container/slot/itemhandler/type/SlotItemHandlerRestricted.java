@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
 
+import javax.annotation.Nullable;
+
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.capabilities.ItemCapability;
@@ -14,8 +16,9 @@ import voltaic.prefab.inventory.container.slot.itemhandler.SlotItemHandlerGeneri
 
 public class SlotItemHandlerRestricted extends SlotItemHandlerGeneric {
 
-    private List<Item> whitelist;
+    @Nullable
     private List<Class<?>> classes;
+    @Nullable
     private List<ItemCapability<?, Void>> validCapabilities;
 
     private Predicate<ItemStack> mayPlace = stack -> false;
@@ -31,7 +34,7 @@ public class SlotItemHandlerRestricted extends SlotItemHandlerGeneric {
     }
 
     public SlotItemHandlerRestricted setRestriction(Item... items) {
-	whitelist = Arrays.asList(items);
+	List<Item> whitelist = Arrays.asList(items);
 	mayPlace = stack -> whitelist.contains(stack.getItem());
 	return this;
     }
@@ -41,9 +44,8 @@ public class SlotItemHandlerRestricted extends SlotItemHandlerGeneric {
 	mayPlace = stack -> {
 	    if (classes != null) {
 		for (Class<?> cl : classes) {
-		    if (cl.isInstance(stack.getItem())) {
+		    if (cl.isInstance(stack.getItem()))
 			return true;
-		    }
 		}
 	    }
 	    return false;
@@ -56,9 +58,8 @@ public class SlotItemHandlerRestricted extends SlotItemHandlerGeneric {
 	mayPlace = stack -> {
 	    if (validCapabilities != null) {
 		for (ItemCapability<?, Void> cap : validCapabilities) {
-		    if (stack.getCapability(cap) != null) {
+		    if (stack.getCapability(cap) != null)
 			return true;
-		    }
 		}
 	    }
 	    return false;

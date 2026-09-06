@@ -4,7 +4,7 @@ import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
@@ -15,9 +15,6 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.network.codec.StreamCodec;
 
 public class SinglePropertyType<TYPE, BUFFERTYPE> implements IPropertyType<TYPE, BUFFERTYPE> {
-
-    // .ifSuccess(tag -> writer.tag().put(writer.prop().getName(), tag))
-
     private final BiPredicate<TYPE, TYPE> comparison;
 
     private final Consumer<TagWriter<TYPE>> writeToNbt;
@@ -25,9 +22,8 @@ public class SinglePropertyType<TYPE, BUFFERTYPE> implements IPropertyType<TYPE,
     private final Function<TagReader<TYPE>, TYPE> readFromNbt;
     private final StreamCodec<BUFFERTYPE, TYPE> packetCodec;
 
-    public SinglePropertyType(@Nonnull BiPredicate<TYPE, TYPE> comparison, StreamCodec<BUFFERTYPE, TYPE> packetCodec,
+    public SinglePropertyType(BiPredicate<TYPE, TYPE> comparison, StreamCodec<BUFFERTYPE, TYPE> packetCodec,
 	    Codec<TYPE> nbtCodec) {
-
 	this(comparison,
 		//
 		packetCodec,
@@ -48,13 +44,12 @@ public class SinglePropertyType<TYPE, BUFFERTYPE> implements IPropertyType<TYPE,
 
     }
 
-    public SinglePropertyType(@Nonnull BiPredicate<TYPE, TYPE> comparison, StreamCodec<BUFFERTYPE, TYPE> packetCodec,
+    public SinglePropertyType(BiPredicate<TYPE, TYPE> comparison, StreamCodec<BUFFERTYPE, TYPE> packetCodec,
 	    Consumer<TagWriter<TYPE>> tagWriter, Function<TagReader<TYPE>, TYPE> tagReader) {
-
 	this.comparison = comparison;
 	this.packetCodec = packetCodec;
-	this.writeToNbt = tagWriter;
-	this.readFromNbt = tagReader;
+	writeToNbt = tagWriter;
+	readFromNbt = tagReader;
     }
 
     @Override
@@ -68,6 +63,7 @@ public class SinglePropertyType<TYPE, BUFFERTYPE> implements IPropertyType<TYPE,
     }
 
     @Override
+    @Nullable
     public TYPE readFromTag(TagReader<TYPE> reader) {
 	return readFromNbt.apply(reader);
     }

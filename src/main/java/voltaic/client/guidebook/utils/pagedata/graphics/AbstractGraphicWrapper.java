@@ -51,7 +51,7 @@ public abstract class AbstractGraphicWrapper<T extends AbstractGraphicWrapper<?>
 	this.height = height;
 	this.trueHeight = trueHeight;
 
-	if (descriptors != null && descriptors.length > 0) {
+	if (descriptors.length > 0) {
 	    this.descriptors = descriptors;
 	    int highestDescriptor = 0;
 	    int lowestDescriptor = height + yOffset;

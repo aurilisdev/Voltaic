@@ -106,9 +106,8 @@ public interface ICapabilityElectrodynamic {
      */
     default TransferPack extractPower(TransferPack transfer, boolean debug) {
 
-	if (!isEnergyProducer()) {
+	if (!isEnergyProducer())
 	    return TransferPack.EMPTY;
-	}
 
 	double taken = Math.min(transfer.getJoules(), getJoulesStored());
 	if (!debug && taken > 0) {
@@ -132,9 +131,8 @@ public interface ICapabilityElectrodynamic {
      */
     default TransferPack receivePower(TransferPack transfer, boolean debug) {
 
-	if (!isEnergyReceiver()) {
+	if (!isEnergyReceiver())
 	    return TransferPack.EMPTY;
-	}
 
 	double received = Math.max(0, Math.min(transfer.getJoules(), getMaxJoulesStored() - getJoulesStored()));
 	if (!debug && received > 0) {
@@ -158,20 +156,25 @@ public interface ICapabilityElectrodynamic {
      */
     default void overVoltage(TransferPack transfer) {
 	if (this instanceof BlockEntity tile) {
-	    Level world = tile.getLevel();
+
+	    Level level = tile.getLevel();
+	    if (level == null)
+		return;
+
 	    BlockPos pos = tile.getBlockPos();
-	    world.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
-	    world.explode(null, pos.getX(), pos.getY(), pos.getZ(),
+	    level.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
+	    level.explode(null, pos.getX(), pos.getY(), pos.getZ(),
 		    (float) Math.log10(10 + transfer.getVoltage() / getVoltage()), ExplosionInteraction.BLOCK);
 	} else if (this instanceof ComponentElectrodynamic electro) {
 	    BlockEntity tile = electro.getHolder();
-	    if (tile != null) {
-		Level world = tile.getLevel();
-		BlockPos pos = tile.getBlockPos();
-		world.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
-		world.explode(null, pos.getX(), pos.getY(), pos.getZ(),
-			(float) Math.log10(10 + transfer.getVoltage() / getVoltage()), ExplosionInteraction.BLOCK);
-	    }
+	    Level level = tile.getLevel();
+	    if (level == null)
+		return;
+
+	    BlockPos pos = tile.getBlockPos();
+	    level.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
+	    level.explode(null, pos.getX(), pos.getY(), pos.getZ(),
+		    (float) Math.log10(10 + transfer.getVoltage() / getVoltage()), ExplosionInteraction.BLOCK);
 	}
     }
 

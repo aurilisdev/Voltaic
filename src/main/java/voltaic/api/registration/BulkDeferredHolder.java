@@ -23,7 +23,6 @@ public class BulkDeferredHolder<T, A extends T, SUBTYPE> {
 
     private final HashMap<SUBTYPE, DeferredHolder<T, A>> subtypeMap = new HashMap<>();
     private final List<A> extractedValues = new ArrayList<>();
-    private A[] extractedValuesArray;
 
     public BulkDeferredHolder(SUBTYPE[] values, Function<SUBTYPE, DeferredHolder<T, A>> factory) {
 	subtypeMap.clear();
@@ -49,10 +48,7 @@ public class BulkDeferredHolder<T, A extends T, SUBTYPE> {
     }
 
     public A[] getAllValuesArray(A[] newArray) {
-	if (extractedValuesArray == null) {
-	    extractedValuesArray = getAllValues().toArray(newArray);
-	}
-	return extractedValuesArray;
+	return getAllValues().toArray(newArray);
     }
 
     public A[] getSpecificValuesArray(A[] newArray, SUBTYPE... subtypes) {

@@ -2,6 +2,8 @@ package voltaic.prefab.utilities.math;
 
 import java.util.Arrays;
 
+import javax.annotation.Nullable;
+
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
@@ -38,15 +40,15 @@ public class MathUtils {
 	}
     };
 
-    public static Location getRaytracedBlock(Entity entity) {
+    public static @Nullable Location getRaytracedBlock(Entity entity) {
 	return getRaytracedBlock(entity, 100);
     }
 
-    public static Location getRaytracedBlock(Entity entity, double rayLength) {
+    public static @Nullable Location getRaytracedBlock(Entity entity, double rayLength) {
 	return getRaytracedBlock(entity.level(), entity.getLookAngle(), entity.getEyePosition(0), rayLength);
     }
 
-    public static Location getRaytracedBlock(Level world, Vec3 direction, Vec3 from, double rayLength) {
+    public static @Nullable Location getRaytracedBlock(Level world, Vec3 direction, Vec3 from, double rayLength) {
 	// Just normalize for safety. Allows the direction
 	// vector to be from some block to another with no
 	// consideration for more math.
@@ -64,9 +66,8 @@ public class MathUtils {
 
     public static int nearestPowerOf10(double value, boolean roundUp) {
 	double power = Math.log10(value);
-	if (roundUp) {
+	if (roundUp)
 	    return (int) Math.ceil(power);
-	}
 	return (int) Math.floor(power);
     }
 

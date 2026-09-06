@@ -52,6 +52,8 @@ public class BiproductPercentWrapperElectroRecipe extends AbstractLabelWrapper {
     }
 
     public static enum BiproductType {
-	ITEM, FLUID, GAS;
+	ITEM,
+	FLUID,
+	GAS;
     }
 }

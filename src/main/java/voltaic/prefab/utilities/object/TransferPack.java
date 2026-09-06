@@ -2,6 +2,8 @@ package voltaic.prefab.utilities.object;
 
 import java.util.function.BiFunction;
 
+import javax.annotation.Nullable;
+
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
@@ -22,8 +24,8 @@ public class TransferPack {
 	    TransferPack::new);
 
     public static final TransferPack EMPTY = new TransferPack(0, 0);
-    private double joules;
-    private double voltage;
+    private final double joules;
+    private final double voltage;
 
     private TransferPack(double joules, double voltage) {
 	this.joules = joules;
@@ -88,10 +90,9 @@ public class TransferPack {
     }
 
     @Override
-    public boolean equals(Object obj) {
-	if (obj instanceof TransferPack other) {
+    public boolean equals(@Nullable Object obj) {
+	if (obj instanceof TransferPack other)
 	    return other.joules == joules && other.voltage == voltage;
-	}
 	return false;
     }
 

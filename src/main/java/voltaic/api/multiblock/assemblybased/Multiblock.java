@@ -39,8 +39,8 @@ public record Multiblock(Map<Direction, List<MultiblockSlaveNode>> nodes) {
 
     ).apply(instance, Multiblock::new));
 
-    public static List<MultiblockSlaveNode> getNodes(Level world, ResourceKey<Multiblock> id, Direction facing) {
-	return world.registryAccess().lookupOrThrow(Multiblock.REGISTRY_KEY).getOrThrow(id).value().nodes().get(facing);
+    public static List<MultiblockSlaveNode> getNodes(Level level, ResourceKey<Multiblock> id, Direction facing) {
+	return level.registryAccess().lookupOrThrow(Multiblock.REGISTRY_KEY).getOrThrow(id).value().nodes().get(facing);
     }
 
     public static ResourceKey makeKey(ResourceLocation id) {

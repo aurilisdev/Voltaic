@@ -10,6 +10,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.FormattedCharSequence;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -45,10 +46,9 @@ public class ScreenComponentFluidGauge extends AbstractScreenComponentGauge {
     protected int getScaledLevel() {
 	IFluidTank tank = fluidInfoHandler.getTank();
 	if (tank != null) {
-	    if (tank.getFluidAmount() > 0 && tank.getCapacity() > 0) {
+	    if (tank.getFluidAmount() > 0 && tank.getCapacity() > 0)
 		return tank.getFluidAmount() * (GaugeTextures.BACKGROUND_DEFAULT.textureHeight() - 2)
 			/ tank.getCapacity();
-	    }
 	}
 
 	return 0;
@@ -121,81 +121,65 @@ public class ScreenComponentFluidGauge extends AbstractScreenComponentGauge {
 
     @Override
     public void onMouseClick(double mouseX, double mouseY) {
-
 	PropertyFluidTank tank = fluidInfoHandler.getTank() instanceof PropertyFluidTank x ? x : null;
-
-	if (tank == null) {
+	if (tank == null)
 	    return;
-	}
 
-	GenericScreen<?> screen = (GenericScreen<?>) gui;
-
-	GenericTile owner = (GenericTile) ((GenericContainerBlockEntity<?>) screen.getMenu()).getSafeHost();
-
-	if (owner == null) {
+	GenericScreen<?> screen = (GenericScreen<?>) requireScreen();
+	GenericContainerBlockEntity<?> menu = (GenericContainerBlockEntity<?>) screen.getMenu();
+	GenericTile owner = (GenericTile) menu.getSafeHost().orElse(null);
+	if (owner == null)
 	    return;
-	}
 
-	ItemStack stack = screen.getMenu().getCarried();
-
-	if (stack.isEmpty() || stack.getOrDefault(VoltaicDataComponentTypes.HASCLICKEDONFLUIDGAUGE, false)) {
+	Minecraft minecraft = Minecraft.getInstance();
+	Player player = minecraft.player;
+	if (player == null)
 	    return;
-	}
+
+	ItemStack stack = menu.getCarried();
+	if (stack.isEmpty() || stack.getOrDefault(VoltaicDataComponentTypes.HASCLICKEDONFLUIDGAUGE, false))
+	    return;
 
 	IFluidHandlerItem handler = stack.getCapability(Capabilities.FluidHandler.ITEM);
-
-	if (handler == null) {
+	if (handler == null)
 	    return;
-	}
 
 	FluidStack drainedSourceFluid = tank.getFluid().copy();
-
 	int taken = handler.fill(drainedSourceFluid, IFluidHandler.FluidAction.EXECUTE);
 
-	// drain this fluid gauge if the amount taken was greater than zero
 	if (taken > 0) {
-
 	    tank.drain(taken, IFluidHandler.FluidAction.EXECUTE);
-
-	    Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.BUCKET_FILL, 1.0F));
+	    minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.BUCKET_FILL, 1.0F));
 
 	    stack = handler.getContainer();
+	    menu.setCarried(stack);
 
-	    screen.getMenu().setCarried(stack);
-
-	    PacketDistributor.sendToServer(new PacketUpdateCarriedItemServer(stack.copy(),
-		    ((GenericContainerBlockEntity<?>) screen.getMenu()).getSafeHost().getBlockPos(),
-		    Minecraft.getInstance().player.getUUID()));
+	    PacketDistributor.sendToServer(
+		    new PacketUpdateCarriedItemServer(stack.copy(), owner.getBlockPos(), player.getUUID()));
 
 	    stack.set(VoltaicDataComponentTypes.HASCLICKEDONFLUIDGAUGE, true);
-
 	    return;
-
 	}
-	// we didn't drain the gauge, now we try to fill it
 
 	for (int i = 0; i < handler.getTanks(); i++) {
 	    drainedSourceFluid = handler.getFluidInTank(i);
 	    taken = tank.fill(drainedSourceFluid, IFluidHandler.FluidAction.EXECUTE);
+
 	    if (taken <= 0) {
 		continue;
 	    }
-	    handler.drain(taken, IFluidHandler.FluidAction.EXECUTE);
 
-	    Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.BUCKET_EMPTY, 1.0F));
+	    handler.drain(taken, IFluidHandler.FluidAction.EXECUTE);
+	    minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.BUCKET_EMPTY, 1.0F));
 
 	    stack = handler.getContainer();
+	    menu.setCarried(stack);
 
-	    screen.getMenu().setCarried(stack);
-
-	    PacketDistributor.sendToServer(new PacketUpdateCarriedItemServer(stack.copy(),
-		    ((GenericContainerBlockEntity<?>) screen.getMenu()).getSafeHost().getBlockPos(),
-		    Minecraft.getInstance().player.getUUID()));
+	    PacketDistributor.sendToServer(
+		    new PacketUpdateCarriedItemServer(stack.copy(), owner.getBlockPos(), player.getUUID()));
 
 	    stack.set(VoltaicDataComponentTypes.HASCLICKEDONFLUIDGAUGE, true);
-
 	    return;
 	}
-
     }
 }

@@ -18,16 +18,16 @@ public class ParticleLavaWithPhysics extends TextureSheetParticle {
 	    double zSpeed, ParticleOptionLavaWithPhysics options, SpriteSet sprites) {
 	super(level, x, y, z, xSpeed, ySpeed, zSpeed);
 	this.sprites = sprites;
-	this.gravity = 0.75F;
-	this.friction = 0.999F;
-	this.hasPhysics = true;
-	this.bounceFactor = options.bounceFactor;
-	this.xd = xSpeed;
-	this.yd = ySpeed;
-	this.zd = zSpeed;
-	this.quadSize = options.scale;
-	this.lifetime = options.lifetime;
-	this.setSpriteFromAge(this.sprites);
+	gravity = 0.75F;
+	friction = 0.999F;
+	hasPhysics = true;
+	bounceFactor = options.bounceFactor;
+	xd = xSpeed;
+	yd = ySpeed;
+	zd = zSpeed;
+	quadSize = options.scale;
+	lifetime = options.lifetime;
+	setSpriteFromAge(this.sprites);
     }
 
     @Override
@@ -44,25 +44,25 @@ public class ParticleLavaWithPhysics extends TextureSheetParticle {
 
     @Override
     public float getQuadSize(float scaleFactor) {
-	float f = (this.age + scaleFactor) / this.lifetime;
-	return this.quadSize * (1.0F - f * f);
+	float f = (age + scaleFactor) / lifetime;
+	return quadSize * (1.0F - f * f);
     }
 
     @Override
     public void tick() {
 	super.tick();
-	this.setSpriteFromAge(sprites);
-	if (!this.removed) {
+	setSpriteFromAge(sprites);
+	if (!removed) {
 	    if (stoppedByCollision) {
-		this.xd = -xd * bounceFactor;
-		this.yd = -yd * bounceFactor;
-		this.zd = -zd * bounceFactor;
+		xd = -xd * bounceFactor;
+		yd = -yd * bounceFactor;
+		zd = -zd * bounceFactor;
 		stoppedByCollision = false;
 	    }
 
-	    float f = (float) this.age / (float) this.lifetime;
-	    if (this.random.nextFloat() > f) {
-		this.level.addParticle(ParticleTypes.SMOKE, this.x, this.y, this.z, this.xd, this.yd, this.zd);
+	    float f = (float) age / (float) lifetime;
+	    if (random.nextFloat() > f) {
+		level.addParticle(ParticleTypes.SMOKE, x, y, z, xd, yd, zd);
 	    }
 	}
     }

@@ -22,14 +22,13 @@ public abstract class AbstractRefreshingConnectBlock<CONDUCTOR extends GenericCo
     @Override
     public void onPlace(BlockState state, Level worldIn, BlockPos pos, BlockState oldState, boolean isMoving) {
 	super.onPlace(state, worldIn, pos, oldState, isMoving);
-	if (worldIn.isClientSide()) {
+	if (worldIn.isClientSide())
 	    return;
-	}
+
 	BlockEntity tile = worldIn.getBlockEntity(pos);
 	CONDUCTOR conductor = getCableIfValid(tile);
-	if (conductor == null || conductor.isRemoved()) {
+	if (conductor == null || conductor.isRemoved())
 	    return;
-	}
 
 	BlockPos relPos;
 
@@ -47,37 +46,35 @@ public abstract class AbstractRefreshingConnectBlock<CONDUCTOR extends GenericCo
 
     @Override
     public void onNeighborChange(BlockState state, LevelReader world, BlockPos pos, BlockPos neighbor) {
-
 	super.onNeighborChange(state, world, pos, neighbor);
 
-	if (world.isClientSide()) {
+	if (world.isClientSide())
 	    return;
-	}
+
 	BlockEntity tile = world.getBlockEntity(pos);
 	CONDUCTOR conductor = getCableIfValid(tile);
-	if (conductor == null || conductor.isRemoved()) {
+	if (conductor == null || conductor.isRemoved())
 	    return;
-	}
 
 	Direction facing = WorldUtils.getDirectionFromPosDelta(pos, neighbor);
+	if (facing == null)
+	    return;
 
 	EnumConnectType currConnection = conductor.readConnections()[facing.ordinal()];
 
 	EnumConnectType connection = getConnection(world.getBlockState(neighbor), world.getBlockEntity(neighbor),
 		conductor, facing);
 
-	if(currConnection != connection && !conductor.writeConnection(facing, connection)) {
+	if (currConnection != connection && !conductor.writeConnection(facing, connection))
 	    return;
-	}
 
 	conductor.updateNetwork(facing);
 
     }
 
-    public abstract EnumConnectType getConnection(BlockState otherState, BlockEntity otherTile, CONDUCTOR thisConductor,
-	    Direction dir);
+    public abstract EnumConnectType getConnection(BlockState otherState, @Nullable BlockEntity otherTile,
+	    CONDUCTOR thisConductor, Direction dir);
 
-    @Nullable
-    public abstract CONDUCTOR getCableIfValid(BlockEntity tile);
+    public abstract @Nullable CONDUCTOR getCableIfValid(BlockEntity tile);
 
 }

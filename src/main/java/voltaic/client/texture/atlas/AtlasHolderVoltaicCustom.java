@@ -1,5 +1,7 @@
 package voltaic.client.texture.atlas;
 
+import javax.annotation.Nullable;
+
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.TextureAtlasHolder;
@@ -8,8 +10,20 @@ import voltaic.Voltaic;
 
 public class AtlasHolderVoltaicCustom extends TextureAtlasHolder {
 
-    public static AtlasHolderVoltaicCustom INSTANCE;
+    private static @Nullable AtlasHolderVoltaicCustom instance;
 
+    public static AtlasHolderVoltaicCustom initialize(TextureManager textureManager) {
+	if (instance != null)
+	    throw new IllegalStateException("Atlas holder has already been initialized");
+	return instance = new AtlasHolderVoltaicCustom(textureManager);
+    }
+
+    public static AtlasHolderVoltaicCustom getInstance() {
+	AtlasHolderVoltaicCustom instance = AtlasHolderVoltaicCustom.instance;
+	if (instance == null)
+	    throw new IllegalStateException("Atlas holder has not been initialized");
+	return instance;
+    }
     // Custom Textures
 //	public static final ResourceLocation TEXTURE_QUARRYARM = create("quarryarm");
 //	public static final ResourceLocation TEXTURE_QUARRYARM_DARK = create("quarrydark");
@@ -28,7 +42,7 @@ public class AtlasHolderVoltaicCustom extends TextureAtlasHolder {
     }
 
     public static TextureAtlasSprite get(ResourceLocation loc) {
-	return INSTANCE.getSprite(loc);
+	return getInstance().getSprite(loc);
     }
 
     @SuppressWarnings("unused")

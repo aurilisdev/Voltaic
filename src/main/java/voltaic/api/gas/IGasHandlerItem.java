@@ -1,7 +1,5 @@
 package voltaic.api.gas;
 
-import javax.annotation.Nonnull;
-
 import net.minecraft.world.item.ItemStack;
 
 /**
@@ -19,7 +17,6 @@ public interface IGasHandlerItem extends IGasHandler {
      * have different items for their filled and empty states. May be an empty item
      * if the container was drained and is consumable.
      */
-    @Nonnull
     ItemStack getContainer();
 
 }

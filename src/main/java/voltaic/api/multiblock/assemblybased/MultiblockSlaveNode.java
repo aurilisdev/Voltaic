@@ -1,5 +1,7 @@
 package voltaic.api.multiblock.assemblybased;
 
+import javax.annotation.Nullable;
+
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
@@ -113,7 +115,7 @@ public record MultiblockSlaveNode(BlockState placeState, BlockState replaceState
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
 	return false;
     }
 }

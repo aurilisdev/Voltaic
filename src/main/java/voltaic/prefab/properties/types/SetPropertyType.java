@@ -5,8 +5,6 @@ import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import javax.annotation.Nonnull;
-
 import com.mojang.serialization.Codec;
 
 import io.netty.buffer.ByteBuf;
@@ -22,16 +20,15 @@ public class SetPropertyType<TYPE, BUFFERTYPE extends ByteBuf> implements IPrope
     private final Consumer<TagWriter<HashSet<TYPE>>> writeToNbt;
     private final Function<TagReader<HashSet<TYPE>>, HashSet<TYPE>> readFromNbt;
 
-    public SetPropertyType(@Nonnull BiPredicate<TYPE, TYPE> singleComparison,
-	    StreamCodec<BUFFERTYPE, TYPE> singlePacketCodec, Codec<TYPE> singleNbtCodec) {
+    public SetPropertyType(BiPredicate<TYPE, TYPE> singleComparison, StreamCodec<BUFFERTYPE, TYPE> singlePacketCodec,
+	    Codec<TYPE> singleNbtCodec) {
 
 	this.singleComparison = singleComparison;
 
-	this.comparison = (set1, set2) -> {
+	comparison = (set1, set2) -> {
 
-	    if (set1 == null || set2 == null || (set1.size() != set2.size())) {
+	    if (set1 == null || set2 == null || set1.size() != set2.size())
 		return false;
-	    }
 
 	    return set1.equals(set2);
 
@@ -101,17 +98,15 @@ public class SetPropertyType<TYPE, BUFFERTYPE extends ByteBuf> implements IPrope
 
 	    CompoundTag data = reader.tag().getCompound(reader.prop().getName());
 
-	    if (!data.contains("size")) {
+	    if (!data.contains("size"))
 		return reader.prop().getValue();
-	    }
 
 	    int size = data.getInt("size");
 
 	    HashSet<TYPE> set = new HashSet<>();
 
-	    if (size <= 0) {
+	    if (size <= 0)
 		return set;
-	    }
 
 	    for (int i = 0; i < size; i++) {
 

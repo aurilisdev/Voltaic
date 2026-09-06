@@ -1,5 +1,7 @@
 package voltaic.prefab.utilities.math;
 
+import javax.annotation.Nullable;
+
 import org.joml.Vector3f;
 
 /**
@@ -46,8 +48,8 @@ public class Color {
 	color = (this.a << 24) + (this.r << 16) + (this.g << 8) + this.b;
 
 	colorArr = new int[] { this.r, this.g, this.b, this.a };
-	colorFloatArr = new float[] { this.rFloat, this.gFloat, this.bFloat, this.aFloat };
-	floatVector = new Vector3f(this.rFloat, this.gFloat, this.bFloat);
+	colorFloatArr = new float[] { rFloat, gFloat, bFloat, aFloat };
+	floatVector = new Vector3f(rFloat, gFloat, bFloat);
 
     }
 
@@ -116,8 +118,7 @@ public class Color {
     }
 
     public Color multiply(Color other) {
-	return new Color(this.r * other.r / 255, this.g * other.g / 255, this.b * other.b / 255,
-		this.a * other.a / 255);
+	return new Color(r * other.r / 255, g * other.g / 255, b * other.b / 255, a * other.a / 255);
     }
 
     public Color blend(Color other, double amtOther) {
@@ -127,13 +128,11 @@ public class Color {
     }
 
     @Override
-    public boolean equals(Object obj) {
-	if (obj == null) {
+    public boolean equals(@Nullable Object obj) {
+	if (obj == null)
 	    return false;
-	}
-	if (obj instanceof Color other) {
-	    return this.r == other.r && this.g == other.g && this.b == other.b && this.a == other.a;
-	}
+	if (obj instanceof Color other)
+	    return r == other.r && g == other.g && b == other.b && a == other.a;
 	return false;
     }
 

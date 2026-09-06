@@ -1,7 +1,6 @@
 package voltaic.api.network.cable.type;
 
 import javax.annotation.Nonnegative;
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.minecraft.tags.TagKey;
@@ -90,10 +89,9 @@ public interface IWire {
 
     public static interface IWireColor {
 
-	@Nonnull
 	Color getColor();
 
-	@Nonnull
+	@Nullable
 	TagKey<Item> getDyeTag();
 
     }

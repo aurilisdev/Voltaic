@@ -35,7 +35,8 @@ public class SimpleWaterBasedFluidType extends FluidType {
     }
 
     @Override
-    public @Nullable PathType getBlockPathType(FluidState state, BlockGetter level, BlockPos pos, @Nullable Mob mob,
+    @Nullable
+    public PathType getBlockPathType(FluidState state, BlockGetter level, BlockPos pos, @Nullable Mob mob,
 	    boolean canFluidLog) {
 	return canFluidLog ? super.getBlockPathType(state, level, pos, mob, true) : null;
     }

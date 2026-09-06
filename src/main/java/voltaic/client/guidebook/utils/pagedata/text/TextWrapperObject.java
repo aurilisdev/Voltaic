@@ -36,7 +36,7 @@ public class TextWrapperObject extends AbstractWrapperObject<TextWrapperObject> 
     }
 
     public TextWrapperObject setIndentions(int numOfIndentions) {
-	this.numberOfIndentions = numOfIndentions;
+	numberOfIndentions = numOfIndentions;
 	return this;
     }
 

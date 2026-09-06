@@ -1,14 +1,15 @@
 package voltaic.prefab.tile;
 
+import java.util.Optional;
 import java.util.UUID;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nullable;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
@@ -24,6 +25,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -48,6 +50,7 @@ import voltaic.prefab.properties.variant.AbstractProperty;
 import voltaic.prefab.tile.components.CapabilityInputType;
 import voltaic.prefab.tile.components.IComponent;
 import voltaic.prefab.tile.components.IComponentType;
+import voltaic.prefab.tile.components.type.ComponentContainerProvider;
 import voltaic.prefab.tile.components.type.ComponentElectrodynamic;
 import voltaic.prefab.tile.components.type.ComponentForgeEnergy;
 import voltaic.prefab.tile.components.type.ComponentInventory;
@@ -73,9 +76,8 @@ public abstract class GenericTile extends BlockEntity implements Nameable, IProp
 
     public <T extends AbstractProperty> T property(T prop) {
 	for (AbstractProperty existing : propertyManager.getProperties()) {
-	    if (existing.getName().equals(prop.getName())) {
+	    if (existing.getName().equals(prop.getName()))
 		throw new RuntimeException(prop.getName() + " is already being used by another property!");
-	    }
 	}
 
 	return propertyManager.addProperty(prop);
@@ -90,23 +92,34 @@ public abstract class GenericTile extends BlockEntity implements Nameable, IProp
 	return components[type.ordinal()] != null;
     }
 
-    public <T extends IComponent> T getComponent(IComponentType type) {
-	return !hasComponent(type) ? null : (T) components[type.ordinal()];
+    public <T extends IComponent> Optional<T> getComponent(IComponentType type) {
+	return Optional.ofNullable((T) components[type.ordinal()]);
+    }
+
+    /**
+     * Returns the requested component or throws if it is unavailable. Only use this
+     * when you are completely certain that the tile has the component, or when the
+     * component is required for a feature to function.
+     *
+     * @deprecated Prefer {@link #getComponent(IComponentType)} unless the component
+     *             is guaranteed to exist.
+     */
+    @Deprecated(since = "1.1.0", forRemoval = false)
+    public <C extends IComponent> C requireComponent(IComponentType type) {
+	return this.<C>getComponent(type).orElseThrow(
+		() -> new IllegalStateException("Tile " + this + " is missing required component " + type));
     }
 
     public GenericTile addComponent(IComponent component) {
-	component.holder(this);
-	if (hasComponent(component.getType())) {
+	if (hasComponent(component.getType()))
 	    throw new ExceptionInInitializerError(
 		    "Component of type: " + component.getType().name() + " already registered!");
-	}
 	components[component.getType().ordinal()] = component;
 	return this;
     }
 
     @Deprecated(since = "Try not using this method.")
     public GenericTile forceComponent(IComponent component) {
-	component.holder(this);
 	components[component.getType().ordinal()] = component;
 	return this;
     }
@@ -115,14 +128,13 @@ public abstract class GenericTile extends BlockEntity implements Nameable, IProp
     @Override
     protected void loadAdditional(CompoundTag compound, HolderLookup.Provider registries) {
 	super.loadAdditional(compound, registries);
-	if (propertyManager != null && compound.contains(PropertyManager.NBT_KEY)) {
+	if (compound.contains(PropertyManager.NBT_KEY)) {
 	    CompoundTag propertyData = compound.getCompound(PropertyManager.NBT_KEY);
 	    propertyManager.loadFromTag(propertyData, registries);
 	    compound.remove(PropertyManager.NBT_KEY);
 	}
 	for (IComponent component : components) {
 	    if (component != null) {
-		component.holder(this);
 		component.loadFromNBT(compound);
 	    }
 	}
@@ -130,14 +142,11 @@ public abstract class GenericTile extends BlockEntity implements Nameable, IProp
 
     @Override
     protected void saveAdditional(CompoundTag compound, HolderLookup.Provider registries) {
-	if (propertyManager != null) {
-	    CompoundTag propertyData = new CompoundTag();
-	    propertyManager.saveToTag(propertyData, registries);
-	    compound.put(PropertyManager.NBT_KEY, propertyData);
-	}
+	CompoundTag propertyData = new CompoundTag();
+	propertyManager.saveToTag(propertyData, registries);
+	compound.put(PropertyManager.NBT_KEY, propertyData);
 	for (IComponent component : components) {
 	    if (component != null) {
-		component.holder(this);
 		component.saveToNBT(compound);
 	    }
 	}
@@ -148,12 +157,10 @@ public abstract class GenericTile extends BlockEntity implements Nameable, IProp
     @Override
     public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
 	CompoundTag tag = super.getUpdateTag(registries);
-	if (propertyManager != null) {
-	    CompoundTag propertyData = new CompoundTag();
-	    propertyManager.saveAllPropsForClientSync(propertyData, registries);
-	    tag.put(PropertyManager.NBT_KEY, propertyData);
-	    propertyManager.clean();
-	}
+	CompoundTag propertyData = new CompoundTag();
+	propertyManager.saveAllPropsForClientSync(propertyData, registries);
+	tag.put(PropertyManager.NBT_KEY, propertyData);
+	propertyManager.clean();
 
 	return tag;
     }
@@ -176,57 +183,57 @@ public abstract class GenericTile extends BlockEntity implements Nameable, IProp
     public void onLoad() {
 	super.onLoad();
 
+	Level level = this.level;
+	if (level == null)
+	    throw new IllegalStateException("Block entity " + getType() + " has no level after onLoad at "
+		    + worldPosition + ". This should not happen in vanilla Minecraft code.");
+
 	for (IComponent component : components) {
 	    if (component != null) {
-		component.holder(this);
-		component.onLoad();
+		component.onLoad(level);
 	    }
 	}
 
-	if (propertyManager != null) {
-	    propertyManager.onTileLoaded();
-	}
+	propertyManager.onTileLoaded();
     }
 
     @Override
-    public net.minecraft.network.chat.@NotNull Component getName() {
-	return hasComponent(IComponentType.Name) ? this.<ComponentName>getComponent(IComponentType.Name).getName()
-		: net.minecraft.network.chat.Component.literal(Voltaic.ID + ".default.tile.name");
+    public Component getName() {
+	return this.<ComponentName>getComponent(IComponentType.Name).map(ComponentName::getName)
+		.orElse(Component.literal(Voltaic.ID + ".default.tile.name"));
     }
 
     /*
      * Since you have to register it anyway, might as well make it somewhat faster
      */
-
     @Nullable
     public ICapabilityElectrodynamic getElectrodynamicCapability(@Nullable Direction side) {
-	ComponentElectrodynamic electro = getComponent(IComponentType.Electrodynamic);
-	return electro == null ? null : electro.getCapability(side, CapabilityInputType.NONE);
-
+	return this.<ComponentElectrodynamic>getComponent(IComponentType.Electrodynamic)
+		.map(electro -> electro.getCapability(side, CapabilityInputType.NONE)).orElse(null);
     }
 
     @Nullable
     public IFluidHandler getFluidHandlerCapability(@Nullable Direction side) {
-	IComponentFluidHandler fluid = getComponent(IComponentType.FluidHandler);
-	return fluid == null ? null : fluid.getCapability(side, CapabilityInputType.NONE);
+	return this.<IComponentFluidHandler>getComponent(IComponentType.FluidHandler)
+		.map(fluid -> fluid.getCapability(side, CapabilityInputType.NONE)).orElse(null);
     }
 
     @Nullable
     public IGasHandler getGasHandlerCapability(@Nullable Direction side) {
-	IComponentGasHandler gas = getComponent(IComponentType.GasHandler);
-	return gas == null ? null : gas.getCapability(side, CapabilityInputType.NONE);
+	return this.<IComponentGasHandler>getComponent(IComponentType.GasHandler)
+		.map(gas -> gas.getCapability(side, CapabilityInputType.NONE)).orElse(null);
     }
 
     @Nullable
     public IItemHandler getItemHandlerCapability(@Nullable Direction side) {
-	ComponentInventory inv = getComponent(IComponentType.Inventory);
-	return inv == null ? null : inv.getCapability(side, CapabilityInputType.NONE);
+	return this.<ComponentInventory>getComponent(IComponentType.Inventory)
+		.map(inv -> inv.getCapability(side, CapabilityInputType.NONE)).orElse(null);
     }
 
     @Nullable
     public IEnergyStorage getForgeEnergyCapability(@Nullable Direction side) {
-	ComponentForgeEnergy energy = getComponent(IComponentType.ForgeEnergy);
-	return energy == null ? null : energy.getCap(side, CapabilityInputType.NONE);
+	return this.<ComponentForgeEnergy>getComponent(IComponentType.ForgeEnergy)
+		.map(energy -> energy.getCap(side, CapabilityInputType.NONE)).orElse(null);
     }
 
     @Override
@@ -234,7 +241,6 @@ public abstract class GenericTile extends BlockEntity implements Nameable, IProp
 	super.setRemoved();
 	for (IComponent component : components) {
 	    if (component != null) {
-		component.holder(this);
 		component.remove();
 	    }
 	}
@@ -249,13 +255,17 @@ public abstract class GenericTile extends BlockEntity implements Nameable, IProp
     }
 
     public boolean isPoweredByRedstone() {
+	Level level = this.level;
+	if (level == null)
+	    return false;
+
 	return level.getDirectSignalTo(worldPosition) > 0;
     }
 
     /**
      * NORTH is defined as the default direction
      *
-     * @return
+     * @return the facing direction.
      */
     public Direction getFacing() {
 	return getBlockState().hasProperty(VoltaicBlockStates.FACING)
@@ -264,46 +274,34 @@ public abstract class GenericTile extends BlockEntity implements Nameable, IProp
     }
 
     public void onEnergyChange(ComponentElectrodynamic cap) {
-	// hook method for now
     }
 
-    // no more polling for upgrade effects :D
     public void onInventoryChange(ComponentInventory inv, int slot) {
-	// this can be moved to a seperate tile class in the future
-	if (hasComponent(IComponentType.Processor)) {
-	    this.<ComponentProcessor>getComponent(IComponentType.Processor).onInventoryChange(inv, slot);
-	}
+	this.<ComponentProcessor>getComponent(IComponentType.Processor)
+		.ifPresent(processor -> processor.onInventoryChange(inv, slot));
     }
 
     public void onFluidTankChange(FluidTank tank) {
-	// hook method for now
     }
 
     public void onGasTankChange(GasTank tank) {
-
     }
 
-    public InteractionResult useWithoutItem(Player player, BlockHitResult hit) {
+    public InteractionResult useWithoutItem(Level level, Player player, BlockHitResult hit) {
 	if (hasComponent(IComponentType.ContainerProvider)) {
-
 	    if (!level.isClientSide) {
-
-		player.openMenu(getComponent(IComponentType.ContainerProvider));
-
+		player.openMenu(this.<ComponentContainerProvider>getComponent(IComponentType.ContainerProvider).get());
 		player.awardStat(Stats.INTERACT_WITH_FURNACE);
-
 	    }
-
 	    return InteractionResult.CONSUME;
-
 	}
 	return InteractionResult.PASS;
     }
 
-    public ItemInteractionResult useWithItem(ItemStack used, Player player, InteractionHand hand, BlockHitResult hit) {
+    public ItemInteractionResult useWithItem(Level level, ItemStack used, Player player, InteractionHand hand,
+	    BlockHitResult hit) {
 	if (used.getItem() instanceof ItemUpgrade upgrade && hasComponent(IComponentType.Inventory)) {
-
-	    ComponentInventory inv = getComponent(IComponentType.Inventory);
+	    ComponentInventory inv = this.<ComponentInventory>getComponent(IComponentType.Inventory).get();
 	    // null check for safety
 	    if (inv != null && inv.upgrades() > 0) {
 		int upgradeIndex = inv.getUpgradeSlotStartIndex();
@@ -333,31 +331,20 @@ public abstract class GenericTile extends BlockEntity implements Nameable, IProp
 	    }
 
 	} else if (!(used.getItem() instanceof IWrenchItem)) {
-
 	}
 	return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
     }
 
-    public void onBlockDestroyed() {
-
+    public void onBlockDestroyed(Level level) {
     }
 
-    public void onNeightborChanged(BlockPos neighbor, boolean blockStateTrigger) {
-
+    public void onNeighbourChanged(LevelReader reader, BlockPos neighbor, boolean blockStateTrigger) {
     }
 
-    public void onPlace(BlockState oldState, boolean isMoving) {
-
-	for (IComponent component : components) {
-	    if (component != null) {
-		component.holder(this);
-		component.onLoad();
-	    }
-	}
-
+    public void onPlace(Level level, BlockState oldState, boolean isMoving) {
     }
 
-    public int getComparatorSignal() {
+    public int getComparatorSignal(Level level) {
 	return 0;
     }
 
@@ -370,15 +357,22 @@ public abstract class GenericTile extends BlockEntity implements Nameable, IProp
     }
 
     public void onEntityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
-
     }
 
     public void updateCarriedItemInContainer(ItemStack stack, UUID playerId) {
-	ServerPlayer player = (ServerPlayer) getLevel().getPlayerByUUID(playerId);
-	if (player.hasContainerOpen()) {
+	Level level = this.level;
+	if (level == null)
+	    return;
+
+	ServerPlayer serverPlayer = (ServerPlayer) level.getPlayerByUUID(playerId);
+	if (serverPlayer == null)
+	    return;
+
+	if (serverPlayer.hasContainerOpen()) {
 	    stack.set(VoltaicDataComponentTypes.HASCLICKEDONFLUIDGAUGE, false);
-	    player.containerMenu.setCarried(stack);
-	    PacketDistributor.sendToPlayer(player, new PacketUpdateCariedItemClient(stack, worldPosition, playerId));
+	    serverPlayer.containerMenu.setCarried(stack);
+	    PacketDistributor.sendToPlayer(serverPlayer,
+		    new PacketUpdateCariedItemClient(stack, worldPosition, playerId));
 	}
     }
 
@@ -407,20 +401,20 @@ public abstract class GenericTile extends BlockEntity implements Nameable, IProp
     /**
      * This method will never have air as the newState unless something has gone
      * horribly horribly wrong!
+     * 
+     * @param level
      *
      * @param oldState
      * @param newState
      */
-    public void onBlockStateUpdate(BlockState oldState, BlockState newState) {
+    public void onBlockStateUpdate(Level level, BlockState oldState, BlockState newState) {
 	for (IComponent component : components) {
 	    if (component != null) {
-		component.refreshIfUpdate(oldState, newState);
+		component.refreshIfUpdate(level, oldState, newState);
 	    }
 	}
     }
 
     public void setPlacedBy(LivingEntity player, ItemStack stack) {
-
     }
-
 }

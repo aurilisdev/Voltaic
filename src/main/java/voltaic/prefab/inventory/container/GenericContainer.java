@@ -36,10 +36,10 @@ public abstract class GenericContainer<CONTAINERTYPE> extends AbstractContainerM
 	validateContainer(inventory);
 	this.inventory = inventory;
 	this.playerinv = playerinv;
-	this.player = playerinv.player;
-	this.world = playerinv.player.level();
+	player = playerinv.player;
+	world = playerinv.player.level();
 	addInventorySlots(inventory, playerinv);
-	this.slotCount = slots.size();
+	slotCount = slots.size();
 	addPlayerInventory(playerinv);
     }
 

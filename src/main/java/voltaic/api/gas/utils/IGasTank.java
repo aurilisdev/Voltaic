@@ -1,7 +1,5 @@
 package voltaic.api.gas.utils;
 
-import javax.annotation.Nonnull;
-
 import voltaic.api.gas.GasAction;
 import voltaic.api.gas.GasStack;
 
@@ -14,7 +12,6 @@ import voltaic.api.gas.GasStack;
  */
 public interface IGasTank {
 
-    @Nonnull
     GasStack getGas();
 
     /**

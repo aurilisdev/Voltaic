@@ -19,14 +19,13 @@ import net.neoforged.neoforge.common.crafting.ICustomIngredient;
 
 public class ShapelessCraftingRecipeBuilder implements RecipeBuilder {
 
-    private ResourceLocation id;
-
-    private Item item;
-    private int count;
-    private NonNullList<Ingredient> ingredients = NonNullList.create();
-    @Nullable
-    private ICondition[] recipeConditions;
+    private final Item item;
+    private final int count;
+    private final NonNullList<Ingredient> ingredients = NonNullList.create();
+    private ICondition[] recipeConditions = {};
     private String group = "";
+
+    private @Nullable ResourceLocation id;
 
     private ShapelessCraftingRecipeBuilder(Item item, int count) {
 	this.item = item;
@@ -87,8 +86,8 @@ public class ShapelessCraftingRecipeBuilder implements RecipeBuilder {
     }
 
     @Override
-    public ShapelessCraftingRecipeBuilder group(String group) {
-	this.group = group;
+    public ShapelessCraftingRecipeBuilder group(@Nullable String group) {
+	this.group = group == null ? "" : group;
 	return this;
     }
 
@@ -98,26 +97,27 @@ public class ShapelessCraftingRecipeBuilder implements RecipeBuilder {
     }
 
     @Override
-    public void save(RecipeOutput output, ResourceLocation altName) {
-	if (recipeConditions != null) {
-	    output.withConditions(recipeConditions).accept(id,
-		    new ShapelessRecipe(group, CraftingBookCategory.MISC, new ItemStack(item, count), ingredients),
-		    null);
-	} else {
-	    output.accept(id,
-		    new ShapelessRecipe(group, CraftingBookCategory.MISC, new ItemStack(item, count), ingredients),
-		    null);
-	}
+    public void save(RecipeOutput output, ResourceLocation id) {
+	if (recipeConditions.length > 0)
+	    output = output.withConditions(recipeConditions);
+
+	output.accept(id,
+		new ShapelessRecipe(group, CraftingBookCategory.MISC, new ItemStack(item, count), ingredients), null);
+
     }
 
     @Override
     public void save(RecipeOutput output) {
-	this.save(output, id);
+	ResourceLocation recipeId = id;
+	if (recipeId == null)
+	    throw new IllegalStateException("Recipe ID has not been set");
+
+	save(output, recipeId);
     }
 
     @Override
     public void save(RecipeOutput output, String name) {
-	this.save(output, id);
+	save(output);
     }
 
 }

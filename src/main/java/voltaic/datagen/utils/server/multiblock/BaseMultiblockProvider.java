@@ -46,9 +46,8 @@ public abstract class BaseMultiblockProvider extends JsonCodecProvider<Multibloc
 	nodeMap.put(Direction.EAST, getRotatedNodes(nodeMap.get(Direction.SOUTH),
 		Direction.EAST.get2DDataValue() - Direction.SOUTH.get2DDataValue()));
 
-	if (conditions.containsKey(id)) {
+	if (conditions.containsKey(id))
 	    throw new UnsupportedOperationException("Multiblock with id " + id.toString() + " already provided!");
-	}
 
 	conditions.put(id, new WithConditions<>(List.of(), new Multiblock(nodeMap)));
     }

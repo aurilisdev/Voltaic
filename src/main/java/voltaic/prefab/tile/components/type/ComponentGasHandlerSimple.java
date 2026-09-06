@@ -9,6 +9,7 @@ import javax.annotation.Nullable;
 
 import net.minecraft.core.Direction;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import voltaic.api.gas.Gas;
 import voltaic.api.gas.GasAction;
@@ -35,19 +36,14 @@ import voltaic.registers.VoltaicGases;
  */
 public class ComponentGasHandlerSimple extends PropertyGasTank implements IComponentGasHandler {
 
-    @Nullable
-    public Direction[] inputDirections;
-    @Nullable
-    public Direction[] outputDirections;
+    private Gas[] validGases = {};
+    public Direction[] inputDirections = {};
+    public Direction[] outputDirections = {};
+    private TagKey<Gas>[] validGasTags = (TagKey<Gas>[]) new TagKey<?>[0];
 
     private boolean isSided = false;
 
-    @Nullable
-    private TagKey<Gas>[] validGasTags;
-    @Nullable
-    private Gas[] validGases;
-
-    private HashSet<Gas> validatorGases = new HashSet<>();
+    private final HashSet<Gas> validatorGases = new HashSet<>();
 
     private IGasHandler[] sidedOptionals = new IGasHandler[6]; // Down Up North South West East
 
@@ -128,89 +124,60 @@ public class ComponentGasHandlerSimple extends PropertyGasTank implements ICompo
     }
 
     @Override
-    public void holder(GenericTile holder) {
-	this.holder = holder;
-    }
-
-    @Override
     public GenericTile getHolder() {
 	return holder;
     }
 
     @Override
-    public void refreshIfUpdate(BlockState oldState, BlockState newState) {
+    public void refreshIfUpdate(Level level, BlockState oldState, BlockState newState) {
 	if (isSided && oldState.hasProperty(VoltaicBlockStates.FACING)
 		&& newState.hasProperty(VoltaicBlockStates.FACING)
 		&& oldState.getValue(VoltaicBlockStates.FACING) != newState.getValue(VoltaicBlockStates.FACING)) {
-	    defineOptionals(newState.getValue(VoltaicBlockStates.FACING));
+	    defineOptionals(level, newState.getValue(VoltaicBlockStates.FACING));
 	}
     }
 
     @Override
-    public @org.jetbrains.annotations.Nullable IGasHandler getCapability(
-	    @org.jetbrains.annotations.Nullable Direction direction, CapabilityInputType mode) {
-	if (!isSided) {
+    public @Nullable IGasHandler getCapability(@Nullable Direction direction, CapabilityInputType mode) {
+	if (!isSided)
 	    return this;
-	}
-	if (direction == null) {
+
+	if (direction == null)
 	    return null;
-	}
+
 	return sidedOptionals[direction.ordinal()];
     }
 
     @Override
-    public void refresh() {
-
-	defineOptionals(holder.getFacing());
-
+    public void refresh(Level level) {
+	defineOptionals(level, holder.getFacing());
     }
 
-    private void defineOptionals(Direction facing) {
-
-	holder.getLevel().invalidateCapabilities(holder.getBlockPos());
+    private void defineOptionals(Level level, Direction facing) {
+	level.invalidateCapabilities(holder.getBlockPos());
 
 	sidedOptionals = new IGasHandler[6];
-
 	inputOptional = null;
-
 	outputOptional = null;
 
-	if (isSided) {
-
-	    // Input
-
-	    if (inputDirections != null) {
-		inputOptional = new InputTank(this);
-
-		for (Direction dir : inputDirections) {
-		    sidedOptionals[BlockEntityUtils.getRelativeSide(facing, dir).ordinal()] = inputOptional;
-		}
-	    }
-
-	    if (outputDirections != null) {
-		outputOptional = new OutputTank(this);
-
-		for (Direction dir : outputDirections) {
-		    sidedOptionals[BlockEntityUtils.getRelativeSide(facing, dir).ordinal()] = outputOptional;
-		}
-	    }
-
+	inputOptional = new InputTank(this);
+	for (Direction dir : inputDirections) {
+	    sidedOptionals[BlockEntityUtils.getRelativeSide(facing, dir).ordinal()] = inputOptional;
 	}
 
+	outputOptional = new OutputTank(this);
+	for (Direction dir : outputDirections) {
+	    sidedOptionals[BlockEntityUtils.getRelativeSide(facing, dir).ordinal()] = outputOptional;
+	}
     }
 
     @Override
-    public void onLoad() {
-	IComponentGasHandler.super.onLoad();
-	if (validGases != null) {
-	    Collections.addAll(validatorGases, validGases);
-	}
-	if (validGasTags != null) {
-	    for (TagKey<Gas> tag : validGasTags) {
-		VoltaicGases.GAS_REGISTRY.getTag(tag).get().stream().forEach(holder -> {
-		    validatorGases.add(holder.value());
-		});
-	    }
+    public void onLoad(Level level) {
+	IComponentGasHandler.super.onLoad(level);
+	Collections.addAll(validatorGases, validGases);
+	for (TagKey<Gas> tag : validGasTags) {
+	    VoltaicGases.GAS_REGISTRY.getTag(tag).get().stream()
+		    .forEach(holder -> { validatorGases.add(holder.value()); });
 	}
 	if (!validatorGases.isEmpty()) {
 	    isGasValid = gasStack -> validatorGases.contains(gasStack.getGas());

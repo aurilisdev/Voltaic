@@ -20,8 +20,8 @@ public class Fluid2GasBuilder<T extends Fluid2GasRecipe> extends BaseRecipeBuild
 
     private final GasStack output;
 
-    private List<FluidStack> fluidIngredients = new ArrayList<>();
-    private List<Pair<TagKey<Fluid>, Integer>> tagFluidIngredients = new ArrayList<>();
+    private final List<FluidStack> fluidIngredients = new ArrayList<>();
+    private final List<Pair<TagKey<Fluid>, Integer>> tagFluidIngredients = new ArrayList<>();
 
     public Fluid2GasBuilder(Fluid2GasRecipe.Factory<T> factory, GasStack output, RecipeCategory category, String parent,
 	    String name, String group, double experience, int processTime, double usagePerTick) {

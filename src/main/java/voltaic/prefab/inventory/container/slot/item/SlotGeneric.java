@@ -35,13 +35,13 @@ public class SlotGeneric extends Slot implements SlotTextureProvider {
     }
 
     public SlotGeneric setIOColor(Color color) {
-	this.ioColor = color;
+	ioColor = color;
 	return this;
     }
 
     @Override
     public boolean mayPlace(ItemStack stack) {
-	return stack != null && container.canPlaceItem(getSlotIndex(), stack);
+	return container.canPlaceItem(getSlotIndex(), stack);
     }
 
     @Override

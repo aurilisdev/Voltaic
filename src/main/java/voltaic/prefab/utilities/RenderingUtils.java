@@ -3,8 +3,6 @@ package voltaic.prefab.utilities;
 import java.util.Random;
 import java.util.function.Supplier;
 
-import javax.annotation.Nonnull;
-
 import org.joml.Matrix4f;
 
 import com.mojang.blaze3d.platform.Lighting;
@@ -111,8 +109,8 @@ public class RenderingUtils {
 	stack.popPose();
     }
 
-    public static void renderModel(BakedModel model, BlockEntity tile, RenderType type, PoseStack stack,
-	    MultiBufferSource buffer, int combinedLightIn, int combinedOverlayIn) {
+    public static void renderModel(BakedModel model, RenderType type, PoseStack stack, MultiBufferSource buffer,
+	    int combinedLightIn, int combinedOverlayIn) {
 	Minecraft.getInstance().getItemRenderer().render(
 		new ItemStack(type == RenderType.translucent() ? Items.BLACK_STAINED_GLASS : Blocks.STONE),
 		ItemDisplayContext.NONE, false, stack, buffer, combinedLightIn, combinedOverlayIn, model);
@@ -137,7 +135,7 @@ public class RenderingUtils {
     }
 
     public static void renderSolidColorBox(PoseStack stack, Minecraft minecraft, VertexConsumer builder, AABB box,
-	    float r, float g, float b, float a, int light, int overlay, @Nonnull boolean[] renderedFaces) {
+	    float r, float g, float b, float a, int light, int overlay, boolean[] renderedFaces) {
 	TextureAtlasSprite sp = minecraft.getTextureAtlas(InventoryMenu.BLOCK_ATLAS)
 		.apply(Voltaic.vanillarl("block/white_wool"));
 	renderFilledBox(stack, builder, box, r, g, b, a, sp.getU0(), sp.getV0(), sp.getU1(), sp.getV1(), light, overlay,
@@ -145,7 +143,7 @@ public class RenderingUtils {
     }
 
     public static void renderFluidBox(PoseStack stack, Minecraft minecraft, VertexConsumer builder, AABB box,
-	    FluidStack fluidStack, int light, int overlay, @Nonnull boolean[] renderedFaces) {
+	    FluidStack fluidStack, int light, int overlay, boolean[] renderedFaces) {
 	IClientFluidTypeExtensions attributes = IClientFluidTypeExtensions.of(fluidStack.getFluid());
 
 	TextureAtlasSprite sp = minecraft.getTextureAtlas(InventoryMenu.BLOCK_ATLAS)
@@ -156,8 +154,7 @@ public class RenderingUtils {
     }
 
     public static void renderFilledBox(PoseStack stack, VertexConsumer builder, AABB box, float r, float g, float b,
-	    float a, float uMin, float vMin, float uMax, float vMax, int light, int overlay,
-	    @Nonnull boolean[] renderedFaces) {
+	    float a, float uMin, float vMin, float uMax, float vMax, int light, int overlay, boolean[] renderedFaces) {
 	Matrix4f matrix4f = stack.last().pose();
 	PoseStack.Pose pose = stack.last();
 
@@ -243,8 +240,7 @@ public class RenderingUtils {
     }
 
     public static void renderFilledBoxNoOverlay(PoseStack stack, VertexConsumer builder, AABB box, float r, float g,
-	    float b, float a, float uMin, float vMin, float uMax, float vMax, int light,
-	    @Nonnull boolean[] renderedFaces) {
+	    float b, float a, float uMin, float vMin, float uMax, float vMax, int light, boolean[] renderedFaces) {
 	Matrix4f matrix4f = stack.last().pose();
 	PoseStack.Pose pose = stack.last();
 

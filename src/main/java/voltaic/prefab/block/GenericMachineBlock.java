@@ -38,7 +38,7 @@ public class GenericMachineBlock extends GenericEntityBlockWaterloggable {
 		.requiresCorrectToolForDrops());
 	registerDefaultState(stateDefinition.any().setValue(VoltaicBlockStates.FACING, Direction.NORTH));
 	this.blockEntitySupplier = blockEntitySupplier;
-	this.shapeProvider = provider;
+	shapeProvider = provider;
     }
 
     public GenericMachineBlock(BlockEntitySupplier<BlockEntity> blockEntitySupplier, boolean temp) {
@@ -76,9 +76,13 @@ public class GenericMachineBlock extends GenericEntityBlockWaterloggable {
     }
 
     @Override
+    @Nullable
     public BlockState getStateForPlacement(BlockPlaceContext context) {
-	return super.getStateForPlacement(context).setValue(VoltaicBlockStates.FACING,
-		context.getHorizontalDirection().getOpposite());
+	BlockState superState = super.getStateForPlacement(context);
+	if (superState == null)
+	    return null;
+
+	return superState.setValue(VoltaicBlockStates.FACING, context.getHorizontalDirection().getOpposite());
     }
 
     @Override

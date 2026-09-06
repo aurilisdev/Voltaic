@@ -33,97 +33,93 @@ public abstract class BaseBlockstateProvider extends BlockStateProvider {
 	this.modID = modID;
     }
 
-    public ItemModelBuilder simpleBlock(DeferredHolder<Block, ? extends Block> block, ModelFile file,
+    public @Nullable ItemModelBuilder simpleBlock(DeferredHolder<Block, ? extends Block> block, ModelFile file,
 	    boolean registerItem) {
 	return simpleBlock(block.get(), file, registerItem);
     }
 
-    public ItemModelBuilder simpleBlock(Block block, ModelFile file, boolean registerItem) {
+    public @Nullable ItemModelBuilder simpleBlock(Block block, ModelFile file, boolean registerItem) {
 	simpleBlock(block, file);
-	if (registerItem) {
+	if (registerItem)
 	    return blockItem(block, file);
-	}
 	return null;
     }
 
-    public ItemModelBuilder simpleBlock(DeferredHolder<Block, ? extends Block> block, ResourceLocation texture,
-	    boolean registerItem) {
+    public @Nullable ItemModelBuilder simpleBlock(DeferredHolder<Block, ? extends Block> block,
+	    ResourceLocation texture, boolean registerItem) {
 	return simpleBlock(block.get(), texture, registerItem);
     }
 
-    public ItemModelBuilder simpleBlock(Block block, ResourceLocation texture, boolean registerItem) {
+    public @Nullable ItemModelBuilder simpleBlock(Block block, ResourceLocation texture, boolean registerItem) {
 	return simpleBlock(block, models().cubeAll(name(block), texture), registerItem);
     }
 
-    public ItemModelBuilder glassBlock(DeferredHolder<Block, ? extends Block> block, ResourceLocation texture,
+    public @Nullable ItemModelBuilder glassBlock(DeferredHolder<Block, ? extends Block> block, ResourceLocation texture,
 	    boolean registerItem) {
 	return glassBlock(block.get(), texture, registerItem);
     }
 
-    public ItemModelBuilder glassBlock(Block block, ResourceLocation texture, boolean registerItem) {
+    public @Nullable ItemModelBuilder glassBlock(Block block, ResourceLocation texture, boolean registerItem) {
 	return simpleBlockCustomRenderType(block, texture, Voltaic.vanillarl("cutout"), registerItem);
     }
 
-    public ItemModelBuilder simpleBlockCustomRenderType(Block block, ResourceLocation texture,
+    public @Nullable ItemModelBuilder simpleBlockCustomRenderType(Block block, ResourceLocation texture,
 	    ResourceLocation renderType, boolean registerItem) {
 	BlockModelBuilder builder = models().cubeAll(name(block), texture).renderType(renderType);
 	getVariantBuilder(block).partialState().setModels(new ConfiguredModel(builder));
-	if (registerItem) {
+	if (registerItem)
 	    return blockItem(block, builder);
-	}
 	return null;
     }
 
-    public ItemModelBuilder simpleBlockCustomRenderType(DeferredHolder<Block, ? extends Block> block,
+    public @Nullable ItemModelBuilder simpleBlockCustomRenderType(DeferredHolder<Block, ? extends Block> block,
 	    ResourceLocation texture, ResourceLocation renderType, boolean registerItem) {
 	return simpleBlockCustomRenderType(block.get(), texture, renderType, registerItem);
     }
 
-    public ItemModelBuilder airBlock(DeferredHolder<Block, ? extends Block> block, String particleTexture,
+    public @Nullable ItemModelBuilder airBlock(DeferredHolder<Block, ? extends Block> block, String particleTexture,
 	    boolean registerItem) {
 	return airBlock(block.get(), particleTexture, registerItem);
     }
 
-    public ItemModelBuilder airBlock(Block block, String particleTexture, boolean registerItem) {
+    public @Nullable ItemModelBuilder airBlock(Block block, String particleTexture, boolean registerItem) {
 	BlockModelBuilder builder = models().getBuilder(name(block)).texture("particle", modLoc(particleTexture))
 		.renderType("cutout");
 	getVariantBuilder(block).partialState().setModels(new ConfiguredModel(builder));
-	if (registerItem) {
+	if (registerItem)
 	    return blockItem(block, builder);
-	}
 	return null;
     }
 
-    public ItemModelBuilder bottomSlabBlock(DeferredHolder<Block, ? extends Block> block, ResourceLocation side,
-	    ResourceLocation bottom, ResourceLocation top, boolean registerItem) {
+    public @Nullable ItemModelBuilder bottomSlabBlock(DeferredHolder<Block, ? extends Block> block,
+	    ResourceLocation side, ResourceLocation bottom, ResourceLocation top, boolean registerItem) {
 	return bottomSlabBlock(block.get(), side, bottom, top, registerItem);
     }
 
-    public ItemModelBuilder bottomSlabBlock(Block block, ResourceLocation side, ResourceLocation bottom,
+    public @Nullable ItemModelBuilder bottomSlabBlock(Block block, ResourceLocation side, ResourceLocation bottom,
 	    ResourceLocation top, boolean registerItem) {
 	BlockModelBuilder builder = models().slab(name(block), side, bottom, top);
 	getVariantBuilder(block).partialState().setModels(new ConfiguredModel(builder));
-	if (registerItem) {
+	if (registerItem)
 	    return blockItem(block, builder);
-	}
 	return null;
     }
 
-    public ItemModelBuilder horrRotatedBlock(DeferredHolder<Block, ? extends Block> block, ModelFile modelFile,
-	    boolean registerItem) {
+    public @Nullable ItemModelBuilder horrRotatedBlock(DeferredHolder<Block, ? extends Block> block,
+	    ModelFile modelFile, boolean registerItem) {
 	return horrRotatedBlock(block, modelFile, 0, 0, registerItem);
     }
 
-    public ItemModelBuilder horrRotatedBlock(DeferredHolder<Block, ? extends Block> block, ModelFile modelFile,
-	    int yRotationOffset, int xRotation, boolean registerItem) {
+    public @Nullable ItemModelBuilder horrRotatedBlock(DeferredHolder<Block, ? extends Block> block,
+	    ModelFile modelFile, int yRotationOffset, int xRotation, boolean registerItem) {
 	return horrRotatedBlock(block.get(), modelFile, yRotationOffset, xRotation, registerItem);
     }
 
-    public ItemModelBuilder horrRotatedBlock(Block block, ModelFile file, boolean registerItem) {
+    public @Nullable ItemModelBuilder horrRotatedBlock(Block block, ModelFile file, boolean registerItem) {
 	return horrRotatedBlock(block, file, 0, 0, registerItem);
     }
 
-    public ItemModelBuilder horrRotatedBlock(Block block, ModelFile file, int yRotationOffset, int xRotation,
+    public @Nullable ItemModelBuilder horrRotatedBlock(Block block, ModelFile file, int yRotationOffset, int xRotation,
 	    boolean registerItem) {
 	getVariantBuilder(block)//
 		.partialState().with(VoltaicBlockStates.FACING, Direction.NORTH).modelForState().modelFile(file)
@@ -134,27 +130,27 @@ public abstract class BaseBlockstateProvider extends BlockStateProvider {
 		.rotationY((90 + yRotationOffset) % 360).rotationX(xRotation).addModel()//
 		.partialState().with(VoltaicBlockStates.FACING, Direction.WEST).modelForState().modelFile(file)
 		.rotationY((180 + yRotationOffset) % 360).rotationX(xRotation).addModel();
-	if (registerItem) {
+	if (registerItem)
 	    return blockItem(block, file);
-	}
 	return null;
     }
 
-    public ItemModelBuilder horrRotatedLitBlock(DeferredHolder<Block, ? extends Block> block, ModelFile off,
+    public @Nullable ItemModelBuilder horrRotatedLitBlock(DeferredHolder<Block, ? extends Block> block, ModelFile off,
 	    ModelFile on, boolean registerItem) {
 	return horrRotatedLitBlock(block, off, on, 0, 0, registerItem);
     }
 
-    public ItemModelBuilder horrRotatedLitBlock(DeferredHolder<Block, ? extends Block> block, ModelFile off,
+    public @Nullable ItemModelBuilder horrRotatedLitBlock(DeferredHolder<Block, ? extends Block> block, ModelFile off,
 	    ModelFile on, int yRotationOffset, int xRotation, boolean registerItem) {
 	return horrRotatedLitBlock(block.get(), off, on, yRotationOffset, xRotation, registerItem);
     }
 
-    public ItemModelBuilder horrRotatedLitBlock(Block block, ModelFile off, ModelFile on, boolean registerItem) {
+    public @Nullable ItemModelBuilder horrRotatedLitBlock(Block block, ModelFile off, ModelFile on,
+	    boolean registerItem) {
 	return horrRotatedLitBlock(block, off, on, 0, 0, registerItem);
     }
 
-    public ItemModelBuilder horrRotatedLitBlock(Block block, ModelFile off, ModelFile on, int yRotationOffset,
+    public @Nullable ItemModelBuilder horrRotatedLitBlock(Block block, ModelFile off, ModelFile on, int yRotationOffset,
 	    int xRotation, boolean registerItem) {
 	getVariantBuilder(block)//
 		.partialState().with(VoltaicBlockStates.FACING, Direction.NORTH).with(VoltaicBlockStates.LIT, false)
@@ -173,24 +169,23 @@ public abstract class BaseBlockstateProvider extends BlockStateProvider {
 		.modelForState().modelFile(on).rotationY((90 + yRotationOffset) % 360).rotationX(xRotation).addModel()//
 		.partialState().with(VoltaicBlockStates.FACING, Direction.WEST).with(VoltaicBlockStates.LIT, true)
 		.modelForState().modelFile(on).rotationY((180 + yRotationOffset) % 360).rotationX(xRotation).addModel();
-	if (registerItem) {
+	if (registerItem)
 	    return blockItem(block, off);
-	}
 	return null;
 
     }
 
-    public ItemModelBuilder redstoneToggleBlock(DeferredHolder<Block, ? extends Block> block, ModelFile off,
+    public @Nullable ItemModelBuilder redstoneToggleBlock(DeferredHolder<Block, ? extends Block> block, ModelFile off,
 	    ModelFile on, boolean registerItem) {
 	return redstoneToggleBlock(block.get(), off, on, registerItem);
     }
 
-    public ItemModelBuilder redstoneToggleBlock(Block block, ModelFile off, ModelFile on, boolean registerItem) {
+    public @Nullable ItemModelBuilder redstoneToggleBlock(Block block, ModelFile off, ModelFile on,
+	    boolean registerItem) {
 	getVariantBuilder(block).partialState().with(VoltaicBlockStates.LIT, false).modelForState().modelFile(off)
 		.addModel().partialState().with(VoltaicBlockStates.LIT, true).modelForState().modelFile(on).addModel();
-	if (registerItem) {
+	if (registerItem)
 	    return blockItem(block, off);
-	}
 	return null;
 
     }
@@ -265,19 +260,19 @@ public abstract class BaseBlockstateProvider extends BlockStateProvider {
 	getVariantBuilder(block).partialState().setModels(new ConfiguredModel(builder));
     }
 
-    public ItemModelBuilder snowyBlock(Block block, ModelFile noSnow, ModelFile withSnow, boolean registerItem) {
+    public @Nullable ItemModelBuilder snowyBlock(Block block, ModelFile noSnow, ModelFile withSnow,
+	    boolean registerItem) {
 	getVariantBuilder(block).partialState().with(SnowyDirtBlock.SNOWY, false).modelForState().modelFile(noSnow)
 		.addModel().partialState().with(SnowyDirtBlock.SNOWY, true).modelForState().modelFile(withSnow)
 		.rotationY(0).addModel();
 
-	if (registerItem) {
+	if (registerItem)
 	    return blockItem(block, noSnow);
-	}
 	return null;
     }
 
     // gotta love dealing with mojank
-    public ItemModelBuilder pressurePlateBlock(PressurePlateBlock block, ResourceLocation texture,
+    public @Nullable ItemModelBuilder pressurePlateBlock(PressurePlateBlock block, ResourceLocation texture,
 	    @Nullable ResourceLocation renderType, boolean registerItem) {
 	ModelFile pressurePlate = models().pressurePlate(name(block), texture);
 	ModelFile pressurePlateDown = models().pressurePlateDown(name(block) + "_down", texture);
@@ -288,34 +283,32 @@ public abstract class BaseBlockstateProvider extends BlockStateProvider {
 	return pressurePlateBlock(block, pressurePlate, pressurePlateDown, renderType, registerItem);
     }
 
-    public ItemModelBuilder pressurePlateBlock(PressurePlateBlock block, ModelFile pressurePlate,
+    public @Nullable ItemModelBuilder pressurePlateBlock(PressurePlateBlock block, ModelFile pressurePlate,
 	    ModelFile pressurePlateDown, @Nullable ResourceLocation renderType, boolean registerItem) {
 	getVariantBuilder(block).partialState().with(PressurePlateBlock.POWERED, true)
 		.addModels(new ConfiguredModel(pressurePlateDown)).partialState()
 		.with(PressurePlateBlock.POWERED, false).addModels(new ConfiguredModel(pressurePlate));
-	if (registerItem) {
+	if (registerItem)
 	    return blockItem(block, pressurePlate);
-	}
 	return null;
     }
 
-    public ItemModelBuilder simpleColumnBlock(Block block, ResourceLocation side, ResourceLocation top,
+    public @Nullable ItemModelBuilder simpleColumnBlock(Block block, ResourceLocation side, ResourceLocation top,
 	    boolean registerItem) {
 	BlockModelBuilder builder = models().cubeColumn(name(block), side, top);
 	getVariantBuilder(block).partialState().setModels(new ConfiguredModel(builder));
-	if (registerItem) {
+	if (registerItem)
 	    return blockItem(block, builder);
-	}
 	return null;
     }
 
-    public ItemModelBuilder crossBlock(DeferredHolder<Block, ? extends Block> block, ResourceLocation texture,
+    public @Nullable ItemModelBuilder crossBlock(DeferredHolder<Block, ? extends Block> block, ResourceLocation texture,
 	    @Nullable ResourceLocation renderType, boolean registerItem) {
 	return crossBlock(block.get(), texture, renderType, registerItem);
     }
 
-    public ItemModelBuilder crossBlock(Block block, ResourceLocation texture, @Nullable ResourceLocation renderType,
-	    boolean registerItem) {
+    public @Nullable ItemModelBuilder crossBlock(Block block, ResourceLocation texture,
+	    @Nullable ResourceLocation renderType, boolean registerItem) {
 	ModelFile cross;
 	if (renderType == null) {
 	    cross = models().cross(name(block), texture);
@@ -323,9 +316,8 @@ public abstract class BaseBlockstateProvider extends BlockStateProvider {
 	    cross = models().cross(name(block), texture).renderType(renderType);
 	}
 	getVariantBuilder(block).partialState().setModels(new ConfiguredModel(cross));
-	if (registerItem) {
+	if (registerItem)
 	    return blockItem(block, cross);
-	}
 	return null;
     }
 

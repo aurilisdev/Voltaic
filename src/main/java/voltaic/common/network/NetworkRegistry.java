@@ -24,9 +24,8 @@ public class NetworkRegistry {
     public static void deregister(ITickableNetwork network) {
 	UUID id = network.getId();
 
-	if (PENDING_ADDITIONS.remove(id) != null) {
+	if (PENDING_ADDITIONS.remove(id) != null)
 	    return;
-	}
 
 	if (NETWORKS.containsKey(id)) {
 	    PENDING_REMOVALS.add(id);

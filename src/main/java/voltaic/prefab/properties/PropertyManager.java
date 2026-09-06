@@ -5,28 +5,21 @@ import java.util.HashSet;
 
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
 import voltaic.Voltaic;
 import voltaic.prefab.properties.types.IPropertyType;
 import voltaic.prefab.properties.variant.AbstractProperty;
 import voltaic.prefab.tile.GenericTile;
 
-/**
- * A wrapper class designed to manage data properties on a tile
- * 
- * @author AurilisDev
- * @author skip999
- *
- */
 public class PropertyManager {
 
     public static final String NBT_KEY = "propertydata";
 
     private final GenericTile owner;
 
-    private ArrayList<AbstractProperty> properties = new ArrayList<>();
+    private final ArrayList<AbstractProperty> properties = new ArrayList<>();
 
-    // private HashSet<PropertyWrapper> dirtyProperties = new HashSet<>();
-    private HashSet<AbstractProperty> dirtyPropertiesDirect = new HashSet<>();
+    private final HashSet<AbstractProperty> dirtyPropertiesDirect = new HashSet<>();
 
     private boolean isDirty = false;
 
@@ -62,13 +55,10 @@ public class PropertyManager {
 
     public void clean() {
 	isDirty = false;
-	/*
-	 * dirtyProperties.forEach(wrapper -> { wrapper.property.clean(); });
-	 */
+
 	for (AbstractProperty property : dirtyPropertiesDirect) {
 	    property.clean();
 	}
-	// dirtyProperties.clear();
 	dirtyPropertiesDirect.clear();
     }
 
@@ -114,24 +104,28 @@ public class PropertyManager {
 	}
     }
 
-    public void loadDataFromClient(int index, CompoundTag data) {
-	if (index >= properties.size()) {
+    public void loadDataFromClient(ServerLevel serverLevel, int index, CompoundTag data) {
+	if (index < 0 || index >= properties.size()) {
 	    Voltaic.LOGGER.error("The tile at " + owner.getBlockPos()
 		    + " has a differently sized property list than what was declared by the packet");
 	    return;
 	}
+
 	AbstractProperty prop = properties.get(index);
-	if (owner == null) {
-	    Voltaic.LOGGER.info("The property " + prop.getName() + " is sending data to a null tile");
+	if (!prop.shouldUpdateServer()) {
+	    Voltaic.LOGGER.info("The property " + prop.getName() + " does not accept updates from the client");
 	    return;
 	}
+
 	if (owner.getLevel() == null) {
 	    Voltaic.LOGGER.info("The property " + prop.getName() + " that sent data to the tile at "
 		    + owner.getBlockPos() + " encountered a null level. The data was not loaded");
 	    return;
 	}
-	prop.setValue(
-		prop.getType().readFromTag(new IPropertyType.TagReader(prop, data, owner.getLevel().registryAccess())));
+
+	Object value = prop.getType()
+		.readFromTag(new IPropertyType.TagReader(prop, data, serverLevel.registryAccess()));
+	prop.setValue(value);
     }
 
     public void onTileLoaded() {
@@ -139,12 +133,4 @@ public class PropertyManager {
 	    property.onTileLoaded();
 	}
     }
-
-    /*
-     * public static record PropertyWrapper(int index, IPropertyType type, Object
-     * value, @Nullable Property<?> property) {
-     * 
-     * }
-     * 
-     */
 }

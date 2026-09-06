@@ -1,5 +1,7 @@
 package voltaic.prefab.utilities.object;
 
+import javax.annotation.Nullable;
+
 import org.joml.Vector3f;
 
 import com.mojang.serialization.Codec;
@@ -189,7 +191,7 @@ public final class Location {
 	return getBlockState(reader).getBlock();
     }
 
-    public BlockEntity getTile(BlockGetter reader) {
+    public @Nullable BlockEntity getTile(BlockGetter reader) {
 	return reader.getBlockEntity(toBlockPos());
     }
 
@@ -224,13 +226,11 @@ public final class Location {
     }
 
     @Override
-    public boolean equals(Object obj) {
-	if (this == obj) {
+    public boolean equals(@Nullable Object obj) {
+	if (this == obj)
 	    return true;
-	}
-	if (obj == null || getClass() != obj.getClass()) {
+	if (obj == null || getClass() != obj.getClass())
 	    return false;
-	}
 	Location other = (Location) obj;
 	return Double.doubleToLongBits(x) == Double.doubleToLongBits(other.x)
 		&& Double.doubleToLongBits(y) == Double.doubleToLongBits(other.y)

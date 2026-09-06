@@ -9,7 +9,7 @@ import voltaic.prefab.screen.component.ScreenComponentGeneric;
 public class ScreenComponentGuidebookArrow extends ScreenComponentGeneric {
 
     private boolean shouldRender = false;
-    private int page;
+    private final int page;
 
     public ScreenComponentGuidebookArrow(ITexture texture, int x, int y, int page) {
 	super(texture, x, y);
@@ -28,7 +28,8 @@ public class ScreenComponentGuidebookArrow extends ScreenComponentGeneric {
     }
 
     public enum ArrowTextures implements ITexture {
-	ARROW_DOWN(11, 7, 0, 0, 11, 7, "arrowdown"), ARROW_UP(11, 7, 0, 0, 11, 7, "arrowup");
+	ARROW_DOWN(11, 7, 0, 0, 11, 7, "arrowdown"),
+	ARROW_UP(11, 7, 0, 0, 11, 7, "arrowup");
 
 	private final int textureWidth;
 	private final int textureHeight;

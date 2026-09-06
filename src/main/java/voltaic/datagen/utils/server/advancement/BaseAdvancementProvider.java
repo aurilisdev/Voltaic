@@ -27,14 +27,14 @@ public abstract class BaseAdvancementProvider implements DataProvider {
 
     public BaseAdvancementProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registries,
 	    String modID) {
-	this.pathProvider = output.createPathProvider(PackOutput.Target.DATA_PACK, "advancement");
+	pathProvider = output.createPathProvider(PackOutput.Target.DATA_PACK, "advancement");
 	this.registries = registries;
 	this.modID = modID;
     }
 
     @Override
     public CompletableFuture<?> run(CachedOutput output) {
-	return this.registries.thenCompose(provider -> {
+	return registries.thenCompose(provider -> {
 	    generate(provider);
 	    //
 
@@ -46,11 +46,10 @@ public abstract class BaseAdvancementProvider implements DataProvider {
 
 		AdvancementHolder holder = builder.build();
 
-		if (!advancementIds.add(holder.id())) {
+		if (!advancementIds.add(holder.id()))
 		    throw new IllegalStateException("Duplicate advancement " + holder.id());
-		}
 
-		Path path = this.pathProvider.json(holder.id());
+		Path path = pathProvider.json(holder.id());
 
 		list.add(DataProvider.saveStable(output, builder.serializeToJson(provider), path));
 

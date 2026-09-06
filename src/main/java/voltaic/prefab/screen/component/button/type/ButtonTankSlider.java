@@ -45,7 +45,9 @@ public class ButtonTankSlider extends ScreenComponentButton<ButtonTankSlider> {
     }
 
     public static enum TankSliderTextures implements ITexture {
-	LEFT_DEFAULT(6, 9, 0, 0, 12, 18), LEFT_HOVERED(6, 9, 0, 9, 12, 18), RIGHT_DEFAULT(6, 9, 6, 0, 12, 18),
+	LEFT_DEFAULT(6, 9, 0, 0, 12, 18),
+	LEFT_HOVERED(6, 9, 0, 9, 12, 18),
+	RIGHT_DEFAULT(6, 9, 6, 0, 12, 18),
 	RIGHT_HOVERED(6, 9, 6, 9, 12, 18);
 
 	private final int textureWidth;

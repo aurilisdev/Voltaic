@@ -35,49 +35,46 @@ public class ClientBarrierMethods {
     public static void handlerSetGuidebookInitFlag() {
 	Minecraft minecraft = Minecraft.getInstance();
 	ClientLevel world = minecraft.level;
-	if (world == null || minecraft.player == null) {
+	if (world == null || minecraft.player == null)
 	    return;
-	}
 	ScreenGuidebook.setInitNotHappened();
     }
 
     public static void handlerSpawnSmokeParicle(BlockPos pos) {
 	ClientLevel world = Minecraft.getInstance().level;
-	if (world == null) {
+	if (world == null)
 	    return;
-	}
 	world.addParticle(ParticleTypes.CAMPFIRE_COSY_SMOKE, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 0, 0,
 		0);
     }
 
     public static void handleSetClientRadioactiveItems(HashMap<Item, RadioactiveObject> items) {
-	RadioactiveItemRegister.INSTANCE.setClientValues(items);
+	RadioactiveItemRegister.getInstance().setClientValues(items);
     }
 
     public static void handleSetClientRadioactiveFluids(HashMap<Fluid, RadioactiveObject> fluids) {
-	RadioactiveFluidRegister.INSTANCE.setClientValues(fluids);
+	RadioactiveFluidRegister.getInstance().setClientValues(fluids);
     }
 
     public static void handleSetClientRadioactiveGases(HashMap<Gas, RadioactiveObject> gases) {
-	RadioactiveGasRegister.INSTANCE.setClientValues(gases);
+	RadioactiveGasRegister.getInstance().setClientValues(gases);
     }
 
     public static void handleSetClientRadiationShielding(HashMap<Block, RadiationShielding> shielding) {
-	RadiationShieldingRegister.INSTANCE.setClientValues(shielding);
+	RadiationShieldingRegister.getInstance().setClientValues(shielding);
     }
 
     public static void handleUpdateCarriedItemClient(ItemStack carriedItem, BlockPos tilePos, UUID playerId) {
 	Player player = Minecraft.getInstance().player;
 
-	if (player == null || !player.getUUID().equals(playerId)) {
+	if (player == null || !player.getUUID().equals(playerId))
 	    return;
-	}
 
 	player.containerMenu.setCarried(carriedItem);
 
     }
 
     public static void handleSetClientRadioactiveBlocks(HashMap<Block, RadioactiveObject> blocks) {
-	RadioactiveBlockRegister.INSTANCE.setClientValues(blocks);
+	RadioactiveBlockRegister.getInstance().setClientValues(blocks);
     }
 }

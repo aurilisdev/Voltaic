@@ -20,8 +20,8 @@ public class Item2FluidBuilder<T extends Item2FluidRecipe> extends BaseRecipeBui
 
     private final FluidStack output;
 
-    private List<ItemStack> itemIngredients = new ArrayList<>();
-    private List<Pair<TagKey<Item>, Integer>> tagItemIngredients = new ArrayList<>();
+    private final List<ItemStack> itemIngredients = new ArrayList<>();
+    private final List<Pair<TagKey<Item>, Integer>> tagItemIngredients = new ArrayList<>();
 
     public Item2FluidBuilder(Item2FluidRecipe.Factory<T> factory, FluidStack output, RecipeCategory category,
 	    String parent, String name, String group, double experience, int processTime, double usagePerTick) {

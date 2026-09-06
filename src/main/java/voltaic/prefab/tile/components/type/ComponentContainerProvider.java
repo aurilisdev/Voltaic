@@ -1,6 +1,9 @@
 package voltaic.prefab.tile.components.type;
 
+import java.util.Optional;
 import java.util.function.BiFunction;
+
+import javax.annotation.Nullable;
 
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
@@ -12,17 +15,14 @@ import voltaic.prefab.tile.components.IComponentType;
 
 public class ComponentContainerProvider implements IComponent, MenuProvider {
 
-    protected GenericTile holder = null;
-    protected BiFunction<Integer, Inventory, AbstractContainerMenu> createMenuFunction;
     protected String name = "";
+    protected GenericTile holder;
+
+    @Nullable
+    protected BiFunction<Integer, Inventory, AbstractContainerMenu> createMenuFunction;
 
     public ComponentContainerProvider(String name, GenericTile holder) {
 	this.name = "container." + name;
-	this.holder = holder;
-    }
-
-    @Override
-    public void holder(GenericTile holder) {
 	this.holder = holder;
     }
 
@@ -38,16 +38,22 @@ public class ComponentContainerProvider implements IComponent, MenuProvider {
     }
 
     @Override
+    @Nullable
     public AbstractContainerMenu createMenu(int id, Inventory inv, Player pl) {
-	if (createMenuFunction != null) {
+	BiFunction<Integer, Inventory, AbstractContainerMenu> pCreateMenuFunction = createMenuFunction;
+	if (pCreateMenuFunction != null) {
 	    if (holder.hasComponent(IComponentType.Inventory)) {
-		ComponentInventory componentinv = holder.getComponent(IComponentType.Inventory);
-		if (!componentinv.stillValid(pl)) {
+		Optional<ComponentInventory> oCompInv = holder.getComponent(IComponentType.Inventory);
+		if (oCompInv.isEmpty())
 		    return null;
-		}
-		componentinv.startOpen(pl);
+
+		ComponentInventory compInv = oCompInv.get();
+		if (!compInv.stillValid(pl))
+		    return null;
+
+		compInv.startOpen(pl);
 	    }
-	    return createMenuFunction.apply(id, inv);
+	    return pCreateMenuFunction.apply(id, inv);
 	}
 	return null;
     }

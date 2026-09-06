@@ -3,6 +3,8 @@ package voltaic.prefab.screen;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -30,14 +32,15 @@ import voltaic.prefab.utilities.math.Color;
 public class GenericScreen<T extends GenericContainer> extends AbstractContainerScreen<T> implements IScreenWrapper {
 
     protected ResourceLocation defaultResource = Voltaic.rl("textures/screen/component/base.png");
-    private List<AbstractScreenComponent> components = new ArrayList<>();
+    private final List<AbstractScreenComponent> components = new ArrayList<>();
     public List<ScreenComponentSlot> slots = new ArrayList<>();
-    private List<ScreenComponentEditBox> editBoxes = new ArrayList<>();
+    private final List<ScreenComponentEditBox> editBoxes = new ArrayList<>();
     protected int playerInvOffset = 0;
 
     // Ability to manipulate labels
-    public ScreenComponentSimpleLabel guiTitle;
-    public ScreenComponentSimpleLabel playerInvLabel;
+
+    public @Nullable ScreenComponentSimpleLabel guiTitle;
+    public @Nullable ScreenComponentSimpleLabel playerInvLabel;
 
     public GenericScreen(T container, Inventory inv, Component title) {
 	super(container, inv, title);
@@ -50,10 +53,9 @@ public class GenericScreen<T extends GenericContainer> extends AbstractContainer
 	    addComponent(component);
 	    slots.add(component);
 	}
-	addComponent(guiTitle = new ScreenComponentSimpleLabel(this.titleLabelX, this.titleLabelY, 10, Color.TEXT_GRAY,
-		this.title));
-	addComponent(playerInvLabel = new ScreenComponentSimpleLabel(this.inventoryLabelX, this.inventoryLabelY, 10,
-		Color.TEXT_GRAY, this.playerInventoryTitle));
+	addComponent(guiTitle = new ScreenComponentSimpleLabel(titleLabelX, titleLabelY, 10, Color.TEXT_GRAY, title));
+	addComponent(playerInvLabel = new ScreenComponentSimpleLabel(inventoryLabelX, inventoryLabelY, 10,
+		Color.TEXT_GRAY, playerInventoryTitle));
     }
 
     protected ScreenComponentSlot createScreenSlot(Slot slot) {
@@ -77,10 +79,16 @@ public class GenericScreen<T extends GenericContainer> extends AbstractContainer
     @Override
     protected void init() {
 	super.init();
-	guiTitle.xLocation = titleLabelX;
-	guiTitle.yLocation = titleLabelY;
-	playerInvLabel.xLocation = inventoryLabelX;
-	playerInvLabel.yLocation = inventoryLabelY;
+	ScreenComponentSimpleLabel pGuiTitle = guiTitle;
+	if (pGuiTitle != null) {
+	    pGuiTitle.xLocation = titleLabelX;
+	    pGuiTitle.yLocation = titleLabelY;
+	}
+	ScreenComponentSimpleLabel pPlayerInvLabel = playerInvLabel;
+	if (pPlayerInvLabel != null) {
+	    pPlayerInvLabel.xLocation = inventoryLabelX;
+	    pPlayerInvLabel.yLocation = inventoryLabelY;
+	}
 	for (AbstractScreenComponent component : components) {
 	    addRenderableWidget(component);
 	}
@@ -88,7 +96,7 @@ public class GenericScreen<T extends GenericContainer> extends AbstractContainer
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-	this.renderBackground(graphics, mouseX, mouseY, partialTicks);
+	renderBackground(graphics, mouseX, mouseY, partialTicks);
 	super.render(graphics, mouseX, mouseY, partialTicks);
 	renderTooltip(graphics, mouseX, mouseY);
     }

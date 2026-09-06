@@ -4,6 +4,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
@@ -58,7 +59,12 @@ public abstract class BaseLangKeyProvider extends LanguageProvider {
     }
 
     public void addGas(Gas gas, String translation) {
-	add("gas." + modID + "." + VoltaicGases.GAS_REGISTRY.getKey(gas).getPath(), translation);
+	ResourceLocation key = VoltaicGases.GAS_REGISTRY.getKey(gas);
+
+	if (key == null)
+	    throw new IllegalArgumentException("Gas is not registered: " + gas);
+
+	add("gas." + modID + "." + key.getPath(), translation);
     }
 
     public void addContainer(String key, String translation) {

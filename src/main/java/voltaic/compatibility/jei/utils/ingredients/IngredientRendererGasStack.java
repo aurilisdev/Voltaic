@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 
+import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
@@ -30,12 +31,17 @@ public class IngredientRendererGasStack implements IIngredientRenderer<GasStack>
 	}
 
 	@Override
+	@Deprecated
 	public List<Component> getTooltip(GasStack ingredient, TooltipFlag tooltipFlag) {
 	    return List.of(ingredient.getGas().getDescription());
 	}
 
-    };
+	@Override
+	public void getTooltip(ITooltipBuilder tooltip, GasStack ingredient, TooltipFlag tooltipFlag) {
+	    tooltip.add(ingredient.getGas().getDescription());
+	}
 
+    };
     private final int tankAmount;
     private final int mercuryOffset;
     private final int tooltipHeight;
@@ -50,9 +56,8 @@ public class IngredientRendererGasStack implements IIngredientRenderer<GasStack>
 
     @Override
     public void render(GuiGraphics graphics, GasStack ingredient) {
-	if (ingredient.isEmpty()) {
+	if (ingredient.isEmpty())
 	    return;
-	}
 	PoseStack stack = graphics.pose();
 
 	stack.pushPose();
@@ -83,17 +88,26 @@ public class IngredientRendererGasStack implements IIngredientRenderer<GasStack>
     }
 
     @Override
+    @Deprecated
     public List<Component> getTooltip(GasStack ingredient, TooltipFlag tooltipFlag) {
+	return createTooltip(ingredient);
+    }
+
+    @Override
+    public void getTooltip(ITooltipBuilder tooltip, GasStack ingredient, TooltipFlag tooltipFlag) {
+	tooltip.addAll(createTooltip(ingredient));
+    }
+
+    private static List<Component> createTooltip(GasStack ingredient) {
 	List<Component> tooltips = new ArrayList<>();
 	tooltips.add(ingredient.getGas().getDescription());
-	if (!ingredient.isEmpty()) {
-	    tooltips.add(ChatFormatter.formatFluidMilibuckets(ingredient.getAmount()).withStyle(ChatFormatting.GRAY));
-	    tooltips.add(ChatFormatter.getChatDisplayShort(ingredient.getTemperature(), DisplayUnits.TEMPERATURE_KELVIN)
-		    .withStyle(ChatFormatting.GRAY));
-	    tooltips.add(ChatFormatter.getChatDisplayShort(ingredient.getPressure(), DisplayUnits.PRESSURE_ATM)
-		    .withStyle(ChatFormatting.GRAY));
-	}
-
+	if (ingredient.isEmpty())
+	    return tooltips;
+	tooltips.add(ChatFormatter.formatFluidMilibuckets(ingredient.getAmount()).withStyle(ChatFormatting.GRAY));
+	tooltips.add(ChatFormatter.getChatDisplayShort(ingredient.getTemperature(), DisplayUnits.TEMPERATURE_KELVIN)
+		.withStyle(ChatFormatting.GRAY));
+	tooltips.add(ChatFormatter.getChatDisplayShort(ingredient.getPressure(), DisplayUnits.PRESSURE_ATM)
+		.withStyle(ChatFormatting.GRAY));
 	return tooltips;
     }
 

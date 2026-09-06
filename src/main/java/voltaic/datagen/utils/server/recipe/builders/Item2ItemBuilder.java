@@ -18,8 +18,8 @@ public class Item2ItemBuilder<T extends Item2ItemRecipe> extends BaseRecipeBuild
 
     private final ItemStack output;
 
-    private List<ItemStack> itemIngredients = new ArrayList<>();
-    private List<Pair<TagKey<Item>, Integer>> tagItemIngredients = new ArrayList<>();
+    private final List<ItemStack> itemIngredients = new ArrayList<>();
+    private final List<Pair<TagKey<Item>, Integer>> tagItemIngredients = new ArrayList<>();
 
     public Item2ItemBuilder(Item2ItemRecipe.Factory<T> factory, ItemStack output, RecipeCategory category,
 	    String parent, String name, String group, double experience, int processTime, double usagePerTick) {

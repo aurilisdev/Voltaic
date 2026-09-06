@@ -20,9 +20,8 @@ public class TargetValue {
     }
 
     public TargetValue flush(double target, double acceleration) {
-	if (acceleration < 0) {
+	if (acceleration < 0)
 	    throw new InvalidValueException("Negative acceleration is not supported");
-	}
 	this.target = target;
 	this.acceleration = getValue() < target && acceleration > 1 ? acceleration : 1 / acceleration;
 	boolean aimsUp = this.acceleration > 1;

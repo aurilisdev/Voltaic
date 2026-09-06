@@ -30,9 +30,8 @@ public class ScreenComponentGasTemperature extends ScreenComponentGuiTab {
 
     @Override
     protected List<? extends FormattedCharSequence> getInfo(List<? extends FormattedCharSequence> list) {
-	if (infoHandler == EMPTY) {
+	if (infoHandler == EMPTY)
 	    return getMaxPressureInfo();
-	}
 	return super.getInfo(list);
     }
 
@@ -40,14 +39,15 @@ public class ScreenComponentGasTemperature extends ScreenComponentGuiTab {
 
 	List<FormattedCharSequence> tooltips = new ArrayList<>();
 
-	GenericTile generic = (GenericTile) ((GenericContainerBlockEntity<?>) ((GenericScreen<?>) gui).getMenu())
-		.getSafeHost();
-
-	if (generic == null) {
+	GenericTile generic = (GenericTile) ((GenericContainerBlockEntity<?>) ((GenericScreen<?>) requireScreen())
+		.getMenu()).getSafeHost().orElse(null);
+	if (generic == null)
 	    return tooltips;
-	}
 
-	IComponentGasHandler handler = generic.getComponent(IComponentType.GasHandler);
+	IComponentGasHandler handler = generic.<IComponentGasHandler>getComponent(IComponentType.GasHandler)
+		.orElse(null);
+	if (handler == null)
+	    return tooltips;
 
 	int index = 1;
 

@@ -4,9 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.function.Function;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
 import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
@@ -116,8 +113,7 @@ public class SlaveNodeModelLoader implements IGeometryLoader<SlaveNodeModelLoade
 	}
 
 	@Override
-	public ChunkRenderTypeSet getRenderTypes(@NotNull BlockState state, @NotNull RandomSource rand,
-		@NotNull ModelData data) {
+	public ChunkRenderTypeSet getRenderTypes(BlockState state, RandomSource rand, ModelData data) {
 	    if (data.has(ModelPropertySlaveNode.INSTANCE)) {
 		BakedModel model = modelMap.get(data.get(ModelPropertySlaveNode.INSTANCE).id());
 		return model == null ? ChunkRenderTypeSet.none() : model.getRenderTypes(state, rand, data);
@@ -126,23 +122,21 @@ public class SlaveNodeModelLoader implements IGeometryLoader<SlaveNodeModelLoade
 	}
 
 	@Override
-	public @NotNull List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side,
-		@NotNull RandomSource rand, @NotNull ModelData extraData, @Nullable RenderType renderType) {
+	public List<BakedQuad> getQuads(@org.jetbrains.annotations.Nullable BlockState state,
+		@org.jetbrains.annotations.Nullable Direction side, RandomSource rand, ModelData extraData,
+		@org.jetbrains.annotations.Nullable RenderType renderType) {
 	    ModelPropertySlaveNode.SlaveNodeWrapper data = extraData.get(ModelPropertySlaveNode.INSTANCE);
-	    if (data == null || !MultiblockSlaveNode.hasModel(data.id())) {
+	    if (data == null || !MultiblockSlaveNode.hasModel(data.id()))
 		return NO_QUADS;
-	    }
 	    BakedModel model = modelMap.get(data.id());
-	    if (model instanceof MultiblockModelLoader.MultiblockModel slave) {
+	    if (model instanceof MultiblockModelLoader.MultiblockModel slave)
 		return slave.getQuads(state, side, rand, extraData, renderType);
-	    }
 
 	    return NO_QUADS;
 	}
 
 	@Override
-	public @NotNull ModelData getModelData(@NotNull BlockAndTintGetter level, @NotNull BlockPos pos,
-		@NotNull BlockState state, @NotNull ModelData modelData) {
+	public ModelData getModelData(BlockAndTintGetter level, BlockPos pos, BlockState state, ModelData modelData) {
 	    if (level.getBlockEntity(pos) instanceof TileMultiblockSlave slave
 		    && MultiblockSlaveNode.hasModel(slave.renderModel.getValue())) {
 		if (modelMap.get(slave.renderModel.getValue()) == null) {

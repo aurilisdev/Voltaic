@@ -4,10 +4,14 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
+
+import javax.annotation.Nullable;
 
 import com.mojang.blaze3d.platform.InputConstants;
 
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
@@ -106,19 +110,19 @@ public class ScreenGuidebook extends GenericScreen<ContainerGuidebook> {
     private static final ResourceLocation PAGE_TEXTURE_RIGHT = Voltaic
 	    .rl("textures/screen/guidebook/resources/guidebookpageright.png");
 
-    private static ButtonGuidebook forward;
-    private static ButtonGuidebook back;
+    private static @Nullable ButtonGuidebook forward;
+    private static @Nullable ButtonGuidebook back;
 
-    private static ButtonGuidebook home;
-    private static ButtonGuidebook chapters;
-    private static ButtonGuidebook search;
+    private static @Nullable ButtonGuidebook home;
+    private static @Nullable ButtonGuidebook chapters;
+    private static @Nullable ButtonGuidebook search;
 
-    private static EditBoxSpecificPage searchBox;
+    private static @Nullable EditBoxSpecificPage searchBox;
 
-    private static ScreenComponentGuidebookArrow down;
-    private static ScreenComponentGuidebookArrow up;
+    private static @Nullable ScreenComponentGuidebookArrow down;
+    private static @Nullable ScreenComponentGuidebookArrow up;
 
-    private static ButtonModuleSelector caseSensitive;
+    private static @Nullable ButtonModuleSelector caseSensitive;
 
     private static final List<ButtonModuleSelector> MODULE_PARAMETERS = new ArrayList<>();
 
@@ -138,11 +142,11 @@ public class ScreenGuidebook extends GenericScreen<ContainerGuidebook> {
     private Color color = Color.BLACK;
     private boolean centered = false;
     private MutableComponent mergedText = Component.empty();
-
+    @Nullable
     private OnTooltip textOnTooltip = null;
-
+    @Nullable
     private OnClick textOnClick = null;
-
+    @Nullable
     private OnKeyPress textOnKeyPress = null;
 
     private boolean previousWasText = false;
@@ -191,13 +195,16 @@ public class ScreenGuidebook extends GenericScreen<ContainerGuidebook> {
     }
 
     private void addButtons() {
-
-	addComponent(forward);
-	addComponent(back);
-
-	addComponent(home);
-	addComponent(chapters);
-	addComponent(search);
+	if (forward != null)
+	    addComponent(forward);
+	if (back != null)
+	    addComponent(back);
+	if (home != null)
+	    addComponent(home);
+	if (chapters != null)
+	    addComponent(chapters);
+	if (search != null)
+	    addComponent(search);
 
 	for (ScreenComponentButton<?> button : BUTTONS) {
 	    addComponent(button);
@@ -209,18 +216,20 @@ public class ScreenGuidebook extends GenericScreen<ContainerGuidebook> {
 	    addComponent(button);
 	}
 
-	addComponent(caseSensitive);
+	if (caseSensitive != null)
+	    addComponent(caseSensitive);
+	if (searchBox != null)
+	    addEditBox(searchBox);
 
-	addEditBox(searchBox);
-
-	addComponent(up);
-	addComponent(down);
+	if (up != null)
+	    addComponent(up);
+	if (down != null)
+	    addComponent(down);
     }
 
     private static void sortModules() {
-	if (GUIDEBOOK_MODULES.isEmpty()) {
+	if (GUIDEBOOK_MODULES.isEmpty())
 	    return;
-	}
 	List<Module> temp = new ArrayList<>(GUIDEBOOK_MODULES);
 	GUIDEBOOK_MODULES.clear();
 	GUIDEBOOK_MODULES.add(temp.get(0));
@@ -261,7 +270,7 @@ public class ScreenGuidebook extends GenericScreen<ContainerGuidebook> {
 	int numPages = (int) Math.ceil((double) GUIDEBOOK_MODULES.size() / (double) MODULES_PER_PAGE);
 	int index = 0;
 	for (int i = 0; i < numPages; i++) {
-	    final ModulePage page = new ModulePage(nextPageNumber);
+	    final ModulePage page = new ModulePage(null, nextPageNumber);
 
 	    for (int j = 0; j < MODULES_PER_PAGE; j++) {
 
@@ -295,7 +304,6 @@ public class ScreenGuidebook extends GenericScreen<ContainerGuidebook> {
     }
 
     private void genPages() {
-
 	for (Module module : GUIDEBOOK_MODULES) {
 
 	    module.setStartPage(nextPageNumber);
@@ -304,7 +312,7 @@ public class ScreenGuidebook extends GenericScreen<ContainerGuidebook> {
 	    int index = 0;
 
 	    for (int i = 0; i < numPages; i++) {
-		final ChapterPage chapterPage = new ChapterPage(nextPageNumber, module);
+		final ChapterPage chapterPage = new ChapterPage(null, nextPageNumber, module);
 		for (int j = 0; j < CHAPTERS_PER_PAGE; j++) {
 		    if (index >= module.chapters.size()) {
 			break;
@@ -347,8 +355,7 @@ public class ScreenGuidebook extends GenericScreen<ContainerGuidebook> {
 
 		chapter.setStartPage(nextPageNumber);
 
-		Page currentPage = new Page(nextPageNumber);
-		currentPage.associatedChapter = chapter;
+		Page currentPage = new Page(chapter, nextPageNumber);
 		nextPageNumber++;
 
 		int counter = 0;
@@ -419,10 +426,9 @@ public class ScreenGuidebook extends GenericScreen<ContainerGuidebook> {
 			int trueHeight = graphicWrapper.trueHeight - graphicWrapper.descriptorTopOffset
 				+ graphicWrapper.descriptorBottomOffset;
 
-			if (trueHeight > Y_PIXELS_PER_PAGE) {
+			if (trueHeight > Y_PIXELS_PER_PAGE)
 			    throw new UnsupportedOperationException(
 				    "The image cannot be more than " + Y_PIXELS_PER_PAGE + " pixels tall!");
-			}
 
 			if (graphicWrapper.allowNextToOthers && graphicWrapper.width <= graphicPixelWidthLeft) {
 			    graphicPixelWidthLeft -= graphicWrapper.width;
@@ -508,7 +514,7 @@ public class ScreenGuidebook extends GenericScreen<ContainerGuidebook> {
 	}
 
 	if (PAGES.size() % 2 == 1) {
-	    PAGES.add(new CoverPage(nextPageNumber));
+	    PAGES.add(new CoverPage(null, nextPageNumber));
 	    nextPageNumber++;
 	}
 
@@ -516,9 +522,8 @@ public class ScreenGuidebook extends GenericScreen<ContainerGuidebook> {
 
     private Page writeCurrentTextToPage(Page currentPage, Chapter chapter) {
 
-	if (mergedText.equals(Component.empty())) {
+	if (mergedText.equals(Component.empty()))
 	    return currentPage;
-	}
 
 	int remainder = lineY % LINE_HEIGHT;
 	if (remainder > 0) {
@@ -565,8 +570,7 @@ public class ScreenGuidebook extends GenericScreen<ContainerGuidebook> {
 
     private Page resetToNewPage(Page page, Chapter chapter) {
 	PAGES.add(page);
-	page = new Page(nextPageNumber);
-	page.associatedChapter = chapter;
+	page = new Page(chapter, nextPageNumber);
 	nextPageNumber++;
 
 	graphicPixelHeightLeft = Y_PIXELS_PER_PAGE;
@@ -684,7 +688,7 @@ public class ScreenGuidebook extends GenericScreen<ContainerGuidebook> {
 
 	    if (isPointInRegionText(refX + xShift + xPageShift + text.x(), refY + text.y(), xAxis, yAxis, textWidth,
 		    LINE_HEIGHT)) {
-		text.onTooltip().onTooltip(graphics, xAxis, yAxis, this);
+		Objects.requireNonNull(text.onTooltip()).onTooltip(graphics, xAxis, yAxis, this);
 	    }
 
 	}
@@ -698,7 +702,7 @@ public class ScreenGuidebook extends GenericScreen<ContainerGuidebook> {
 	    if (isPointInRegionGraphic(mouseX, mouseY, guiWidth + wrapper.x() + graphic.lookupXOffset + xPageShift,
 		    guiHeight + wrapper.y() + graphic.lookupYOffset - graphic.descriptorTopOffset, graphic.width,
 		    graphic.height)) {
-		wrapper.onTooltip().onTooltip(graphics, xAxis, yAxis, this);
+		Objects.requireNonNull(wrapper.onTooltip()).onTooltip(graphics, xAxis, yAxis, this);
 	    }
 
 	    for (GraphicTextDescriptor descriptor : graphic.descriptors) {
@@ -707,7 +711,7 @@ public class ScreenGuidebook extends GenericScreen<ContainerGuidebook> {
 			&& isPointInRegionText(refX + wrapper.x() + descriptor.xOffsetFromImage + xPageShift,
 				refY + wrapper.y() + descriptor.yOffsetFromImage, xAxis, yAxis,
 				font.width(descriptor.text), LINE_HEIGHT)) {
-		    descriptor.onTooltip.onTooltip(graphics, xAxis, yAxis, this);
+		    Objects.requireNonNull(descriptor.onTooltip).onTooltip(graphics, xAxis, yAxis, this);
 		}
 
 	    }
@@ -752,7 +756,11 @@ public class ScreenGuidebook extends GenericScreen<ContainerGuidebook> {
 	} else if (page instanceof ChapterPage chapter) {
 	    setPageNumber(chapter.associatedModule.getPage());
 	} else {
-	    setPageNumber(page.associatedChapter.module.getPage());
+	    Chapter associatedChapter = page.associatedChapter;
+	    if (associatedChapter == null)
+		return;
+
+	    setPageNumber(associatedChapter.module.getPage());
 	}
     }
 
@@ -777,11 +785,16 @@ public class ScreenGuidebook extends GenericScreen<ContainerGuidebook> {
     }
 
     private static void updatePageArrowVis() {
-	forward.setVisible(currPageNumber < PAGES.size() - 4);
-	back.setVisible(currPageNumber > GUIDEBOOK_STARTING_PAGE && currPageNumber < PAGES.size() - 2);
-	home.setVisible(currPageNumber != 0);
-	chapters.setVisible(currPageNumber != 0 && currPageNumber < PAGES.size() - 4);
-	search.setVisible(currPageNumber < PAGES.size() - 3);
+	if (forward != null)
+	    forward.setVisible(currPageNumber < PAGES.size() - 4);
+	if (back != null)
+	    back.setVisible(currPageNumber > GUIDEBOOK_STARTING_PAGE && currPageNumber < PAGES.size() - 2);
+	if (home != null)
+	    home.setVisible(currPageNumber != 0);
+	if (chapters != null)
+	    chapters.setVisible(currPageNumber != 0 && currPageNumber < PAGES.size() - 4);
+	if (search != null)
+	    search.setVisible(currPageNumber < PAGES.size() - 3);
     }
 
     public static void addGuidebookModule(Module module) {
@@ -795,7 +808,7 @@ public class ScreenGuidebook extends GenericScreen<ContainerGuidebook> {
 
     private CoverPage getCoverPage() {
 
-	CoverPage page = new CoverPage(nextPageNumber);
+	CoverPage page = new CoverPage(null, nextPageNumber);
 
 	List<FormattedText> split = font.getSplitter().splitLines(
 		VoltaicTextUtils.guidebook("title").withStyle(ChatFormatting.BOLD), TEXT_WIDTH, Style.EMPTY);
@@ -837,7 +850,7 @@ public class ScreenGuidebook extends GenericScreen<ContainerGuidebook> {
     }
 
     private CoverPage getSearchPageLeft() {
-	CoverPage page = new CoverPage(nextPageNumber);
+	CoverPage page = new CoverPage(null, nextPageNumber);
 
 	List<FormattedText> split = font.getSplitter().splitLines(
 		VoltaicTextUtils.guidebook("searchparameters").withStyle(ChatFormatting.BOLD), TEXT_WIDTH, Style.EMPTY);
@@ -889,9 +902,10 @@ public class ScreenGuidebook extends GenericScreen<ContainerGuidebook> {
     }
 
     private CoverPage getSeatchPageRight() {
-	CoverPage page = new CoverPage(nextPageNumber);
+	CoverPage page = new CoverPage(null, nextPageNumber);
 
-	searchBox = new EditBoxSpecificPage(92, 10, TEXT_WIDTH, 12, nextPageNumber, getFontRenderer());
+	EditBoxSpecificPage searchBox = ScreenGuidebook.searchBox = new EditBoxSpecificPage(92, 10, TEXT_WIDTH, 12,
+		nextPageNumber, getFontRenderer());
 	searchBox.setResponder(this::onTextSearched);
 	searchBox.setTextColor(Color.WHITE);
 	searchBox.setMaxLength(100);
@@ -917,71 +931,51 @@ public class ScreenGuidebook extends GenericScreen<ContainerGuidebook> {
     private static final int SEARCH_BUTTON_COUNT = 5;
 
     private void onTextSearched(String text) {
-
 	SEARCHES.clear();
-
-	if (text.isEmpty() || text.isBlank()) {
+	if (text.isBlank()) {
 	    maxScroll = 0;
 	    scrollIndex = 0;
 	    resetSearchButtons();
 	    return;
 	}
-
-	List<SearchHit> found = new ArrayList<>();
-
+	boolean searchCaseSensitive = caseSensitive != null && caseSensitive.isSelected();
+	String searchText = searchCaseSensitive ? text : text.toLowerCase(Locale.ROOT);
 	List<Module> selectedModules = new ArrayList<>();
-
 	for (int i = 0; i < GUIDEBOOK_MODULES.size(); i++) {
 	    if (MODULE_PARAMETERS.get(i).isSelected()) {
 		selectedModules.add(GUIDEBOOK_MODULES.get(i));
 	    }
 	}
-
 	for (Page page : PAGES) {
-
-	    if (!(page instanceof ChapterPage || page instanceof ModulePage || page instanceof CoverPage)) {
-
-		for (Module module : selectedModules) {
-		    if (page.associatedChapter.module.isCat(module.getTitle())) {
-			for (TextWrapper wrapper : page.text) {
-
-			    if ((caseSensitive.isSelected() && wrapper.characters().getString().contains(text))
-				    || (!caseSensitive.isSelected() && wrapper.characters().getString()
-					    .toLowerCase(Locale.ROOT).contains(text.toLowerCase()))) {
-
-				found.add(new SearchHit(wrapper.characters(), page.getPage(), page.associatedChapter));
-
-			    }
-
+	    if (page instanceof ChapterPage || page instanceof ModulePage || page instanceof CoverPage)
+		continue;
+	    for (Module module : selectedModules) {
+		Chapter associatedChapter = page.associatedChapter;
+		if (associatedChapter == null || !associatedChapter.module.isCat(module.getTitle()))
+		    continue;
+		for (TextWrapper wrapper : page.text) {
+		    if (matchesSearch(wrapper.characters().getString(), searchText, searchCaseSensitive)) {
+			SEARCHES.add(new SearchHit(wrapper.characters(), page.getPage(), associatedChapter));
+		    }
+		}
+		for (GraphicWrapper graphic : page.graphics) {
+		    for (GraphicTextDescriptor descriptor : graphic.graphic().descriptors) {
+			if (matchesSearch(descriptor.text.getString(), searchText, searchCaseSensitive)) {
+			    SEARCHES.add(new SearchHit(descriptor.text, page.getPage(), associatedChapter));
 			}
-
-			for (GraphicWrapper graphic : page.graphics) {
-			    for (GraphicTextDescriptor descriptor : graphic.graphic().descriptors) {
-				if ((caseSensitive.isSelected() && descriptor.text.getString().contains(text))
-					|| (!caseSensitive.isSelected() && descriptor.text.getString()
-						.toLowerCase(Locale.ROOT).contains(text.toLowerCase()))) {
-
-				    found.add(new SearchHit(descriptor.text, page.getPage(), page.associatedChapter));
-
-				}
-			    }
-			}
-
 		    }
 		}
 	    }
-
 	}
-	SEARCHES.addAll(found);
-
 	maxScroll = Math.max(0, SEARCHES.size() - SEARCH_BUTTON_COUNT);
-
 	if (scrollIndex > maxScroll) {
 	    scrollIndex = maxScroll;
 	}
-
 	updateSearchButtons();
+    }
 
+    private static boolean matchesSearch(String value, String searchText, boolean caseSensitive) {
+	return caseSensitive ? value.contains(searchText) : value.toLowerCase(Locale.ROOT).contains(searchText);
     }
 
     @Override
@@ -1005,14 +999,15 @@ public class ScreenGuidebook extends GenericScreen<ContainerGuidebook> {
     }
 
     private void updateSearchButtons() {
-	up.setShouldRender(scrollIndex > minScroll);
-	down.setShouldRender(scrollIndex < maxScroll);
+	if (up != null)
+	    up.setShouldRender(scrollIndex > minScroll);
+	if (down != null)
+	    down.setShouldRender(scrollIndex < maxScroll);
 
 	resetSearchButtons();
 
-	if (SEARCHES.size() == 0) {
+	if (SEARCHES.size() == 0)
 	    return;
-	}
 
 	if (scrollIndex > maxScroll) {
 	    scrollIndex = maxScroll;
@@ -1045,7 +1040,9 @@ public class ScreenGuidebook extends GenericScreen<ContainerGuidebook> {
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-
+	Minecraft minecraft = this.minecraft;
+	if (minecraft == null)
+	    return super.keyPressed(keyCode, scanCode, modifiers);
 	double mouseX = minecraft.mouseHandler.xpos() * minecraft.getWindow().getGuiScaledWidth()
 		/ minecraft.getWindow().getScreenWidth();
 	double mouseY = minecraft.mouseHandler.ypos() * minecraft.getWindow().getGuiScaledHeight()
@@ -1066,10 +1063,10 @@ public class ScreenGuidebook extends GenericScreen<ContainerGuidebook> {
 		keyCode, scanCode, modifiers, getNextPage());
 
 	InputConstants.Key mouseKey = InputConstants.getKey(keyCode, scanCode);
-	if (this.minecraft.options.keyInventory.isActiveAndMatches(mouseKey) && searchBox.isVisible()
-		&& searchBox.isFocused()) {
+	EditBoxSpecificPage searchBox = ScreenGuidebook.searchBox;
+	if (minecraft.options.keyInventory.isActiveAndMatches(mouseKey) && searchBox != null && searchBox.isVisible()
+		&& searchBox.isFocused())
 	    return false;
-	}
 	return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
@@ -1095,7 +1092,8 @@ public class ScreenGuidebook extends GenericScreen<ContainerGuidebook> {
 	    y = refY + text.y();
 
 	    if (isPointInRegionText(x, y, xAxis, yAxis, textWidth, LINE_HEIGHT)) {
-		text.onKeyPress().onKeyPress(keyCode, scanCode, modifiers, x, y, xAxis, yAxis, this);
+		Objects.requireNonNull(text.onKeyPress()).onKeyPress(keyCode, scanCode, modifiers, x, y, xAxis, yAxis,
+			this);
 	    }
 
 	}
@@ -1108,7 +1106,8 @@ public class ScreenGuidebook extends GenericScreen<ContainerGuidebook> {
 	    y = guiHeight + wrapper.y() + graphic.lookupYOffset - graphic.descriptorTopOffset;
 
 	    if (isPointInRegionGraphic(mouseX, mouseY, x, y, graphic.width, graphic.height)) {
-		wrapper.onKeyPress().onKeyPress(keyCode, scanCode, modifiers, x, y, xAxis, yAxis, this);
+		Objects.requireNonNull(wrapper.onKeyPress()).onKeyPress(keyCode, scanCode, modifiers, x, y, xAxis,
+			yAxis, this);
 	    }
 
 	    for (GraphicTextDescriptor descriptor : graphic.descriptors) {
@@ -1118,7 +1117,8 @@ public class ScreenGuidebook extends GenericScreen<ContainerGuidebook> {
 
 		if (descriptor.onKeyPress != null
 			&& isPointInRegionText(x, y, xAxis, yAxis, font.width(descriptor.text), LINE_HEIGHT)) {
-		    descriptor.onKeyPress.onKeyPress(keyCode, scanCode, modifiers, x, y, xAxis, yAxis, this);
+		    Objects.requireNonNull(descriptor.onKeyPress).onKeyPress(keyCode, scanCode, modifiers, x, y, xAxis,
+			    yAxis, this);
 		}
 
 	    }
@@ -1167,7 +1167,7 @@ public class ScreenGuidebook extends GenericScreen<ContainerGuidebook> {
 	    y = refY + text.y();
 
 	    if (isPointInRegionText(x, y, xAxis, yAxis, textWidth, LINE_HEIGHT)) {
-		text.onClick().onClick(x, y, xAxis, yAxis, this);
+		Objects.requireNonNull(text.onClick()).onClick(x, y, xAxis, yAxis, this);
 	    }
 
 	}
@@ -1180,7 +1180,7 @@ public class ScreenGuidebook extends GenericScreen<ContainerGuidebook> {
 	    y = guiHeight + wrapper.y() + graphic.lookupYOffset - graphic.descriptorTopOffset;
 
 	    if (isPointInRegionGraphic(mouseX, mouseY, x, y, graphic.width, graphic.height)) {
-		wrapper.onClick().onClick(x, y, xAxis, yAxis, this);
+		Objects.requireNonNull(wrapper.onClick()).onClick(x, y, xAxis, yAxis, this);
 	    }
 
 	    for (GraphicTextDescriptor descriptor : graphic.descriptors) {
@@ -1190,7 +1190,7 @@ public class ScreenGuidebook extends GenericScreen<ContainerGuidebook> {
 
 		if (descriptor.onClick != null
 			&& isPointInRegionText(x, y, xAxis, yAxis, font.width(descriptor.text), LINE_HEIGHT)) {
-		    descriptor.onClick.onClick(x, y, xAxis, yAxis, this);
+		    Objects.requireNonNull(descriptor.onClick).onClick(x, y, xAxis, yAxis, this);
 		}
 
 	    }

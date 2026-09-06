@@ -92,15 +92,13 @@ public class CommandScanMultiblock {
 
 	BlockPos.betweenClosed(startCorner, stopCorner).forEach(pos -> {
 
-	    if (pos.equals(controllerPos)) {
+	    if (pos.equals(controllerPos))
 		return;
-	    }
 
 	    BlockState state = level.getBlockState(pos);
 
-	    if (!includeAir && state.isAir()) {
+	    if (!includeAir && state.isAir())
 		return;
-	    }
 
 	    members.add(new MemberHolder(state, pos.subtract(controllerPos),
 		    state.getVisualShape(level, pos, CollisionContext.empty())));

@@ -15,9 +15,8 @@ public class SlotFluid extends SlotGeneric {
 
     @Override
     public boolean mayPlace(ItemStack stack) {
-	if (super.mayPlace(stack) && stack.getCapability(Capabilities.FluidHandler.ITEM) != null) {
+	if (super.mayPlace(stack) && stack.getCapability(Capabilities.FluidHandler.ITEM) != null)
 	    return true;
-	}
 	return false;
     }
 

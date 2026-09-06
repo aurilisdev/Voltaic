@@ -4,8 +4,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nullable;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -27,7 +26,6 @@ import voltaic.registers.VoltaicGases;
  * @author skip999
  */
 public class GasStack {
-
     private static final Codec<GasStack> INTERNAL_CODEC = RecordCodecBuilder.create(instance ->
     //
     instance.group(
@@ -36,7 +34,6 @@ public class GasStack {
 	    //
 	    Codec.INT.fieldOf("amount").forGetter(instance0 -> instance0.amount),
 	    //
-
 	    Codec.INT.fieldOf("temp").forGetter(instance0 -> instance0.temperature),
 	    //
 	    Codec.INT.fieldOf("pressure").forGetter(instance0 -> instance0.pressure)
@@ -44,24 +41,18 @@ public class GasStack {
     ).apply(instance, GasStack::new)
 //        
     );
-
     public static final Codec<GasStack> CODEC = ExtraCodecs.optionalEmptyMap(INTERNAL_CODEC).xmap(
 	    optional -> optional.orElse(GasStack.EMPTY),
 	    stack -> stack.isEmpty() ? Optional.empty() : Optional.of(stack));
-
     public static final StreamCodec<RegistryFriendlyByteBuf, GasStack> STREAM_CODEC = new StreamCodec<>() {
-
 	private static final StreamCodec<RegistryFriendlyByteBuf, Holder<Gas>> GAS_STREAM_CODEC = ByteBufCodecs
 		.holderRegistry(VoltaicGases.GAS_REGISTRY_KEY);
 
 	@Override
 	public GasStack decode(RegistryFriendlyByteBuf buffer) {
 	    int amt = buffer.readInt();
-
-	    if (amt <= 0) {
+	    if (amt <= 0)
 		return GasStack.EMPTY;
-	    }
-
 	    return new GasStack(GAS_STREAM_CODEC.decode(buffer), amt, buffer.readInt(), buffer.readInt());
 	}
 
@@ -77,29 +68,27 @@ public class GasStack {
 	    }
 	}
     };
-
     public static final GasStack EMPTY = new GasStack(null);
-
     public static final int ABSOLUTE_ZERO = 1; // zero technically, but that makes volumes a pain in the ass
     public static final int VACUUM = 1; // zero technically, but that makes volumes a pain in the ass
-
+    @Nullable
     private final Gas gas;
     private int amount = 0; // mB
     private int temperature = Gas.ROOM_TEMPERATURE;
     private int pressure = Gas.PRESSURE_AT_SEA_LEVEL; // ATM
 
     private GasStack(@Nullable Void unused) {
-	this.gas = null;
+	gas = null;
     }
 
-    public GasStack(@NonNull Gas gas, int amount, int temperature, int pressure) {
+    public GasStack(@Nullable Gas gas, int amount, int temperature, int pressure) {
 	this.gas = gas;
 	this.amount = amount;
 	this.temperature = temperature;
 	this.pressure = pressure;
     }
 
-    public GasStack(@NonNull Holder<Gas> gas, int amount, int temperature, int pressure) {
+    public GasStack(Holder<Gas> gas, int amount, int temperature, int pressure) {
 	this(gas.value(), amount, temperature, pressure);
     }
 
@@ -124,9 +113,8 @@ public class GasStack {
     }
 
     public GasStack copy() {
-	if (isEmpty()) {
+	if (isEmpty())
 	    return EMPTY;
-	}
 	return new GasStack(gas, amount, temperature, pressure);
     }
 
@@ -166,40 +154,33 @@ public class GasStack {
     }
 
     public int getVolumeChangeFromHeating(int deltaTemp) {
-	if (isAbsoluteZero() && deltaTemp < 0 || temperature + deltaTemp < ABSOLUTE_ZERO) {
+	if (isAbsoluteZero() && deltaTemp < 0 || temperature + deltaTemp < ABSOLUTE_ZERO)
 	    throw new UnsupportedOperationException("The temperature cannot drop below absolute zero");
-	}
-
 	double change = (deltaTemp + (double) temperature) / temperature;
-
 	return (int) Math.ceil(amount * change);
-
     }
 
     public int getVolumeChangeFromPressurizing(int atm) {
-	if (isVacuum() || atm < VACUUM) {
+	if (isVacuum() || atm < VACUUM)
 	    throw new UnsupportedOperationException("You cannot have a pressure less than " + VACUUM);
-	}
-
 	double change = (double) atm / (double) pressure;
-
 	return (int) Math.ceil(amount / change);
     }
 
     public boolean isEmpty() {
-	return this == EMPTY || this.gas == VoltaicGases.EMPTY.value() || this.amount <= 0;
+	return this == EMPTY || gas == VoltaicGases.EMPTY.value() || amount <= 0;
     }
 
     public boolean is(TagKey<Gas> tag) {
-	return this.getGas().getBuiltInRegistry().is(tag);
+	return getGas().getBuiltInRegistry().is(tag);
     }
 
     public boolean is(Gas fluid) {
-	return this.getGas() == fluid;
+	return getGas() == fluid;
     }
 
     public boolean is(Predicate<Holder<Gas>> holderPredicate) {
-	return holderPredicate.test(this.getGasHolder());
+	return holderPredicate.test(getGasHolder());
     }
 
     public boolean is(Holder<Gas> holder) {
@@ -207,11 +188,11 @@ public class GasStack {
     }
 
     public boolean is(HolderSet<Gas> holderSet) {
-	return holderSet.contains(this.getGasHolder());
+	return holderSet.contains(getGasHolder());
     }
 
     public boolean isSameGas(GasStack other) {
-	return this.gas.equals(other.gas);
+	return gas != null && gas.equals(other.gas);
     }
 
     public boolean isSameAmount(GasStack other) {
@@ -235,18 +216,16 @@ public class GasStack {
     }
 
     public boolean isCondensed() {
-	return temperature <= gas.getCondensationTemp();
+	return gas != null && gas.getCondensationTemp() > temperature;
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
 	if (obj instanceof GasStack other) {
 	    boolean empty = isEmpty();
 	    boolean otherEmpty = other.isEmpty();
-
-	    if (empty && !otherEmpty || !empty && otherEmpty) {
+	    if (empty && !otherEmpty || !empty && otherEmpty)
 		return false;
-	    }
 	    return empty && otherEmpty || other.getGas().equals(getGas()) && other.amount == amount
 		    && other.temperature == temperature && other.pressure == pressure;
 	}
@@ -260,34 +239,34 @@ public class GasStack {
 
     @Override
     public String toString() {
-	return gas.toString() + ", amount: " + amount + " mB, temp: " + temperature + " K, pressure: " + pressure
-		+ " ATM";
+	return gas + ", amount: " + amount + " mB, temp: " + temperature + " K, pressure: " + pressure + " ATM";
     }
 
     public CompoundTag writeToNbt() {
 	CompoundTag tag = new CompoundTag();
-
-	if (isEmpty()) {
-	    tag.putInt("amount", 0);
-	} else {
-	    tag.putString("name", VoltaicGases.GAS_REGISTRY.getKey(getGas()).toString());
-	    tag.putInt("amount", amount);
-	    tag.putInt("temperature", temperature);
-	    tag.putInt("pressure", pressure);
-	}
+	tag.putInt("amount", amount);
+	if (isEmpty())
+	    return tag;
+	ResourceLocation name = VoltaicGases.GAS_REGISTRY.getKey(getGas());
+	if (name == null)
+	    return tag;
+	tag.putString("name", name.toString());
+	tag.putInt("temperature", temperature);
+	tag.putInt("pressure", pressure);
 	return tag;
     }
 
     public static GasStack readFromNbt(CompoundTag tag) {
 	int amount = tag.getInt("amount");
-
-	if (amount <= 0) {
+	if (amount <= 0)
 	    return GasStack.EMPTY;
-	}
-	Gas gas = VoltaicGases.GAS_REGISTRY.get(ResourceLocation.parse(tag.getString("name")));
+	ResourceLocation name = ResourceLocation.tryParse(tag.getString("name"));
+	if (name == null)
+	    return GasStack.EMPTY;
 	int temperature = tag.getInt("temperature");
 	int pressure = tag.getInt("pressure");
-	return new GasStack(gas, amount, temperature, pressure);
+	return VoltaicGases.GAS_REGISTRY.getOptional(name).filter(gas -> gas != VoltaicGases.EMPTY.get())
+		.map(gas -> new GasStack(gas, amount, temperature, pressure)).orElse(GasStack.EMPTY);
     }
 
     /**
@@ -304,23 +283,16 @@ public class GasStack {
      *         stacks with the corresponding volume
      */
     public static GasStack equalizePresrsureAndTemperature(GasStack stack1, GasStack stack2) {
-
 	int newPressure = stack1.getAmount() > stack2.getAmount() ? stack1.getPressure() : stack2.getPressure();
-
 	int medianTemperature = (int) ((stack1.temperature + stack2.temperature) / 2.0);
-
 	int deltaT1 = medianTemperature - stack1.temperature;
 	int deltaT2 = medianTemperature - stack2.temperature;
-
 	stack1.bringPressureTo(newPressure);
 	stack2.bringPressureTo(newPressure);
-
 	stack1.heat(deltaT1);
 	stack2.heat(deltaT2);
-
 	return new GasStack(stack1.getGas(), stack1.getAmount() + stack2.getAmount(), medianTemperature,
 		stack1.getPressure());
-
     }
 
     /**
@@ -338,35 +310,21 @@ public class GasStack {
      *         pressures equalize
      */
     public static int getMaximumAcceptance(GasStack stack1, GasStack stack2, int maximumAccept) {
-
 	int rulingPressure = stack1.getAmount() > stack2.getAmount() ? stack1.getPressure() : stack2.getPressure();
 	double medianTemperature = (stack1.temperature + stack2.temperature) / 2.0;
-
 	double deltaT1 = medianTemperature - stack1.temperature;
 	double deltaT2 = medianTemperature - stack2.temperature;
-
 	double deltaP1Factor = (double) rulingPressure / (double) stack1.getPressure();
 	double deltaT1Factor = (deltaT1 + stack1.getTemperature()) / stack1.getTemperature();
-
 	double newStack1Volume = stack1.getAmount() * deltaT1Factor / deltaP1Factor;
-
 	double remaining = maximumAccept - newStack1Volume;
-
-	if (remaining <= 0) {
+	if (remaining <= 0)
 	    return 0;
-	}
-
 	double deltaP2Factor = (double) rulingPressure / (double) stack2.getPressure();
 	double deltaT2Factor = (deltaT2 + stack2.getTemperature()) / stack2.getTemperature();
-
 	double newStack2Volume = stack2.getAmount() * deltaT2Factor / deltaP2Factor;
-
-	if (newStack2Volume <= remaining) {
+	if (newStack2Volume <= remaining)
 	    return stack2.getAmount();
-	}
-
 	return (int) Math.ceil(remaining / deltaT2Factor * deltaP2Factor);
-
     }
-
 }

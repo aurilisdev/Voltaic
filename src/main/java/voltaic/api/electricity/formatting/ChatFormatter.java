@@ -10,14 +10,12 @@ import voltaic.prefab.utilities.VoltaicTextUtils;
 public class ChatFormatter {
 
     public static MutableComponent getChatDisplay(double value, IDisplayUnit unit, int decimalPlaces, boolean isShort) {
-	if (value < Long.MIN_VALUE + 10000) {
+	if (value < Long.MIN_VALUE + 10000)
 	    return Component.literal("-").append(VoltaicTextUtils.gui("displayunit.infinity.name")).append(" ")
 		    .append(isShort ? unit.getSymbol() : unit.getNamePlural());
-	}
-	if (value > Long.MAX_VALUE - 10000) {
+	if (value > Long.MAX_VALUE - 10000)
 	    return VoltaicTextUtils.gui("displayunit.infinity.name").append(" ")
 		    .append(isShort ? unit.getSymbol() : unit.getNamePlural());
-	}
 	Component unitName;
 	if (isShort) {
 	    unitName = unit.getSymbol();
@@ -27,9 +25,8 @@ public class ChatFormatter {
 	    unitName = unit.getName();
 	}
 
-	if (value == 0.0D) {
+	if (value == 0.0D)
 	    return Component.literal(value + "").append(unit.getDistanceFromValue()).append(unitName);
-	}
 
 	for (int i = 0; i < MeasurementUnits.values().length; i++) {
 
@@ -37,10 +34,9 @@ public class ChatFormatter {
 
 	    if (value < measurement.getValue()) {
 
-		if (i == 0) {
+		if (i == 0)
 		    return formatDecimals(measurement.process(value), decimalPlaces).append(unit.getDistanceFromValue())
 			    .append(measurement.getName(isShort)).append(unitName);
-		}
 		measurement = MeasurementUnits.values()[i - 1];
 		return formatDecimals(measurement.process(value), decimalPlaces).append(unit.getDistanceFromValue())
 			.append(measurement.getName(isShort)).append(unitName);
@@ -67,18 +63,16 @@ public class ChatFormatter {
     public static MutableComponent getChatDisplaySimple(double value, IDisplayUnit unit, int decimalPlaces) {
 	if (value > 1.0D) {
 
-	    if (decimalPlaces < 1) {
+	    if (decimalPlaces < 1)
 		return Component.literal((int) value + "").append(unit.getDistanceFromValue())
 			.append(unit.getNamePlural());
-	    }
 
 	    return formatDecimals(value, decimalPlaces).append(unit.getDistanceFromValue())
 		    .append(unit.getNamePlural());
 	}
 
-	if (decimalPlaces < 1) {
+	if (decimalPlaces < 1)
 	    return Component.literal((int) value + "").append(unit.getDistanceFromValue()).append(unit.getName());
-	}
 
 	return formatDecimals(value, decimalPlaces).append(unit.getDistanceFromValue()).append(unit.getName());
     }
@@ -101,9 +95,8 @@ public class ChatFormatter {
     }
 
     private static String getDecimals(int num) {
-	if (num <= 0) {
+	if (num <= 0)
 	    return ".";
-	}
 	num--;
 	String key = ".0";
 	for (int i = 0; i < num; i++) {

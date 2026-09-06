@@ -1,6 +1,6 @@
 package voltaic.prefab.tile.components.utils;
 
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nullable;
 
 import net.minecraft.core.Direction;
 import voltaic.api.gas.IGasHandler;

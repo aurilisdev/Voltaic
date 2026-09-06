@@ -27,9 +27,8 @@ public class ItemWrench extends ItemVoltaic implements IWrenchItem {
 
 	Player player = context.getPlayer();
 
-	if (player == null) {
+	if (player == null)
 	    return InteractionResult.FAIL;
-	}
 
 	BlockPos pos = context.getClickedPos();
 	BlockState state = context.getLevel().getBlockState(pos);

@@ -18,7 +18,7 @@ import voltaic.prefab.utilities.math.Color;
 public class WrapperCyclableGasGauge {
 
     private int gauge = 0;
-    private List<AbstractScreenComponent> components = new ArrayList<>();
+    private final List<AbstractScreenComponent> components = new ArrayList<>();
 
     public WrapperCyclableGasGauge(int x, int y, GenericContainerBlockEntity<? extends GenericTile> container,
 	    GenericScreen<?> screen, boolean inputTanks) {
@@ -31,14 +31,15 @@ public class WrapperCyclableGasGauge {
 	yOffset += 8;
 
 	components.add(screen.addComponent(new ScreenComponentGasGauge(() -> {
-	    GenericTile tile = container.getSafeHost();
-	    if (tile == null) {
+	    GenericTile tile = container.getSafeHost().orElse(null);
+	    if (tile == null)
 		return null;
-	    }
-	    IComponentGasHandler handler = tile.getComponent(IComponentType.GasHandler);
-	    if (handler == null) {
+
+	    IComponentGasHandler handler = tile.<IComponentGasHandler>getComponent(IComponentType.GasHandler)
+		    .orElse(null);
+	    if (handler == null)
 		return null;
-	    }
+
 	    return inputTanks ? handler.getInputTanks()[gauge] : handler.getOutputTanks()[gauge];
 	}, x, y + yOffset)));
 
@@ -46,14 +47,15 @@ public class WrapperCyclableGasGauge {
 
 	components.add(screen.addComponent(
 		new ButtonTankSlider(ButtonTankSlider.TankSliderPair.LEFT, x, y + yOffset).setOnPress(button -> {
-		    GenericTile tile = container.getSafeHost();
-		    if (tile == null) {
+		    GenericTile tile = container.getSafeHost().orElse(null);
+		    if (tile == null)
 			return;
-		    }
-		    IComponentGasHandler handler = tile.getComponent(IComponentType.GasHandler);
-		    if (handler == null) {
+
+		    IComponentGasHandler handler = tile.<IComponentGasHandler>getComponent(IComponentType.GasHandler)
+			    .orElse(null);
+		    if (handler == null)
 			return;
-		    }
+
 		    int size = inputTanks ? handler.getInputTanks().length : handler.getOutputTanks().length;
 
 		    gauge--;
@@ -65,14 +67,15 @@ public class WrapperCyclableGasGauge {
 
 	components.add(screen.addComponent(
 		new ButtonTankSlider(ButtonTankSlider.TankSliderPair.RIGHT, x + 8, y + yOffset).setOnPress(button -> {
-		    GenericTile tile = container.getSafeHost();
-		    if (tile == null) {
+		    GenericTile tile = container.getSafeHost().orElse(null);
+		    if (tile == null)
 			return;
-		    }
-		    IComponentGasHandler handler = tile.getComponent(IComponentType.GasHandler);
-		    if (handler == null) {
+
+		    IComponentGasHandler handler = tile.<IComponentGasHandler>getComponent(IComponentType.GasHandler)
+			    .orElse(null);
+		    if (handler == null)
 			return;
-		    }
+
 		    int size = inputTanks ? handler.getInputTanks().length : handler.getOutputTanks().length;
 
 		    gauge++;

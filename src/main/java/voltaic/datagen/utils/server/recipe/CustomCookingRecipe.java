@@ -27,15 +27,20 @@ public abstract class CustomCookingRecipe<T extends CustomCookingRecipe<T, A>, A
     private final float experience;
     private final int cookingTime;
 
-    private Ingredient ingredient;
+    private @Nullable Ingredient ingredient;
+    private ICondition[] conditions = {};
 
-    @Nullable
-    private ICondition[] conditions;
+    protected final Ingredient getIngredient() {
+	Ingredient ingredient = this.ingredient;
+	if (ingredient == null)
+	    throw new IllegalStateException("No ingredient defined for recipe " + id);
+	return ingredient;
+    }
 
     private CustomCookingRecipe(ResourceLocation id, String group, Item result, float experience, int cookingTime) {
 	this.id = id;
 	this.group = group;
-	this.category = CookingBookCategory.MISC;
+	category = CookingBookCategory.MISC;
 	this.result = result;
 	this.experience = experience;
 	this.cookingTime = cookingTime;
@@ -47,7 +52,7 @@ public abstract class CustomCookingRecipe<T extends CustomCookingRecipe<T, A>, A
     }
 
     @Override
-    public RecipeBuilder group(String pGroupName) {
+    public RecipeBuilder group(@Nullable String pGroupName) {
 	return this;
     }
 
@@ -58,11 +63,9 @@ public abstract class CustomCookingRecipe<T extends CustomCookingRecipe<T, A>, A
 
     @Override
     public void save(RecipeOutput output, ResourceLocation altName) {
-	if (conditions != null) {
+	if (conditions.length > 0)
 	    output.withConditions(conditions).accept(id, makeRecipe(), null);
-	} else {
-	    output.accept(id, makeRecipe(), null);
-	}
+	output.accept(id, makeRecipe(), null);
     }
 
     @Override
@@ -122,7 +125,7 @@ public abstract class CustomCookingRecipe<T extends CustomCookingRecipe<T, A>, A
 
 	@Override
 	public SmeltingRecipe makeRecipe() {
-	    return new SmeltingRecipe(super.group, super.category, super.ingredient, new ItemStack(super.result),
+	    return new SmeltingRecipe(super.group, super.category, getIngredient(), new ItemStack(super.result),
 		    super.experience, super.cookingTime);
 	}
 
@@ -136,7 +139,7 @@ public abstract class CustomCookingRecipe<T extends CustomCookingRecipe<T, A>, A
 
 	@Override
 	public SmokingRecipe makeRecipe() {
-	    return new SmokingRecipe(super.group, super.category, super.ingredient, new ItemStack(super.result),
+	    return new SmokingRecipe(super.group, super.category, getIngredient(), new ItemStack(super.result),
 		    super.experience, super.cookingTime);
 	}
 
@@ -150,7 +153,7 @@ public abstract class CustomCookingRecipe<T extends CustomCookingRecipe<T, A>, A
 
 	@Override
 	public BlastingRecipe makeRecipe() {
-	    return new BlastingRecipe(super.group, super.category, super.ingredient, new ItemStack(super.result),
+	    return new BlastingRecipe(super.group, super.category, getIngredient(), new ItemStack(super.result),
 		    super.experience, super.cookingTime);
 	}
 

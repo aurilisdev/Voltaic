@@ -24,9 +24,8 @@ public class SlotQuarryTrashcan extends SlotGeneric {
 	for (int i = 0; i < container.getContainerSize(); i++) {
 	    ItemStack item = container.getItem(i);
 	    if (!item.isEmpty() && item.getItem() instanceof ItemUpgrade upgrade
-		    && upgrade.subtype == SubtypeItemUpgrade.itemvoid) {
+		    && upgrade.subtype == SubtypeItemUpgrade.itemvoid)
 		return true;
-	    }
 	}
 	return false;
     }

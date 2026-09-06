@@ -71,9 +71,8 @@ public class GasHandlerItemStack implements IGasHandlerItem {
 
     @Override
     public int fill(GasStack resource, GasAction action) {
-	if (resource.isEmpty() || !isGasValid(0, resource)) {
+	if (resource.isEmpty() || !isGasValid(0, resource))
 	    return 0;
-	}
 
 	if (isEmpty()) {
 
@@ -102,15 +101,13 @@ public class GasHandlerItemStack implements IGasHandlerItem {
 	}
 	GasStack gas = getGasInTank(0);
 
-	if (!gas.isSameGas(resource)) {
+	if (!gas.isSameGas(resource))
 	    return 0;
-	}
 
 	int canTake = GasStack.getMaximumAcceptance(gas, resource, capacity);
 
-	if (canTake == 0) {
+	if (canTake == 0)
 	    return 0;
-	}
 
 	if (action == GasAction.EXECUTE) {
 
@@ -145,9 +142,8 @@ public class GasHandlerItemStack implements IGasHandlerItem {
 	GasStack gas = getGasInTank(0);
 
 	if (resource.isEmpty() || !gas.isSameGas(resource) || !gas.isSamePressure(resource)
-		|| !gas.isSameTemperature(resource)) {
+		|| !gas.isSameTemperature(resource))
 	    return GasStack.EMPTY;
-	}
 
 	return drain(resource.getAmount(), action);
 
@@ -156,9 +152,8 @@ public class GasHandlerItemStack implements IGasHandlerItem {
     @Override
     public GasStack drain(int amount, GasAction action) {
 
-	if (isEmpty() || amount == 0) {
+	if (isEmpty() || amount == 0)
 	    return GasStack.EMPTY;
-	}
 
 	GasStack gas = getGasInTank(0);
 
@@ -189,17 +184,15 @@ public class GasHandlerItemStack implements IGasHandlerItem {
 
 	GasStack gas = getGasInTank(0);
 
-	if (gas.isAbsoluteZero() && deltaTemperature < 0) {
+	if (gas.isAbsoluteZero() && deltaTemperature < 0)
 	    return -1;
-	}
 
 	GasStack updated = gas.copy();
 
 	updated.heat(deltaTemperature);
 
-	if (updated.getAmount() > capacity) {
+	if (updated.getAmount() > capacity)
 	    return -1;
-	}
 
 	if (action == GasAction.EXECUTE) {
 
@@ -221,19 +214,15 @@ public class GasHandlerItemStack implements IGasHandlerItem {
 
 	GasStack gas = getGasInTank(0);
 
-	if (gas.isVacuum() && atm < GasStack.VACUUM) {
+	if (gas.isVacuum() && atm < GasStack.VACUUM)
 	    return -1;
-	}
 
 	GasStack updated = gas.copy();
 
 	updated.bringPressureTo(atm);
 
-	if (updated.getAmount() > capacity) {
-
+	if (updated.getAmount() > capacity)
 	    return -1;
-
-	}
 
 	if (action == GasAction.EXECUTE) {
 

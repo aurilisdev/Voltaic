@@ -15,9 +15,8 @@ public class SlotCharging extends SlotGeneric {
 
     @Override
     public boolean mayPlace(ItemStack stack) {
-	if (super.mayPlace(stack) && stack.getItem() instanceof IItemElectric) {
+	if (super.mayPlace(stack) && stack.getItem() instanceof IItemElectric)
 	    return true;
-	}
 	return false;
     }
 

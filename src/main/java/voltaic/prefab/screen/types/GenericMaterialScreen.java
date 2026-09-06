@@ -24,8 +24,8 @@ import voltaic.prefab.screen.component.utils.AbstractScreenComponent;
  */
 public class GenericMaterialScreen<T extends GenericContainer> extends GenericScreen<T> {
 
-    private Set<ScreenComponentFluidGauge> fluidGauges = new HashSet<>();
-    private Set<ScreenComponentGasGauge> gasGauges = new HashSet<>();
+    private final Set<ScreenComponentFluidGauge> fluidGauges = new HashSet<>();
+    private final Set<ScreenComponentGasGauge> gasGauges = new HashSet<>();
 
     public GenericMaterialScreen(T container, Inventory inv, Component titleIn) {
 	super(container, inv, titleIn);

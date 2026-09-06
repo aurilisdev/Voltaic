@@ -24,14 +24,15 @@ public class ScreenComponentSimpleLabel extends AbstractScreenComponent {
 
     @Override
     public boolean isMouseOver(double mouseX, double mouseY) {
-	return isPointInRegion(xLocation, yLocation, mouseX - gui.getGuiWidth(), mouseY - gui.getGuiHeight(),
-		gui.getFontRenderer().width(text.get()), height);
+	return isPointInRegion(xLocation, yLocation, mouseX - requireScreen().getGuiWidth(),
+		mouseY - requireScreen().getGuiHeight(), requireScreen().getFontRenderer().width(text.get()), height);
     }
 
     @Override
     public void renderForeground(GuiGraphics graphics, int xAxis, int yAxis, int guiWidth, int guiHeight) {
 	if (isVisible()) {
-	    graphics.drawString(gui.getFontRenderer(), text.get(), xLocation, yLocation, color.color(), false);
+	    graphics.drawString(requireScreen().getFontRenderer(), text.get(), xLocation, yLocation, color.color(),
+		    false);
 	}
     }
 

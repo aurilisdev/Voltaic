@@ -22,6 +22,7 @@ import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.PacketDistributor;
 import voltaic.Voltaic;
@@ -53,7 +54,7 @@ public class ScreenComponentGasGauge extends ScreenComponentGeneric {
 
     public ScreenComponentGasGauge(Supplier<IGasTank> gasStack, int x, int y) {
 	super(GasGaugeTextures.BACKGROUND_DEFAULT, x, y);
-	this.gasTank = gasStack;
+	gasTank = gasStack;
     }
 
     @Override
@@ -86,9 +87,8 @@ public class ScreenComponentGasGauge extends ScreenComponentGeneric {
 
 	    List<FormattedCharSequence> tooltips = new ArrayList<>();
 
-	    if (tank == null) {
+	    if (tank == null)
 		return;
-	    }
 
 	    GasStack gas = tank.getGas();
 
@@ -112,7 +112,7 @@ public class ScreenComponentGasGauge extends ScreenComponentGeneric {
 
 	    }
 
-	    graphics.renderTooltip(gui.getFontRenderer(), tooltips, xAxis, yAxis);
+	    graphics.renderTooltip(requireScreen().getFontRenderer(), tooltips, xAxis, yAxis);
 
 	}
     }
@@ -174,86 +174,74 @@ public class ScreenComponentGasGauge extends ScreenComponentGeneric {
 
     @Override
     public void onMouseClick(double mouseX, double mouseY) {
-
 	PropertyGasTank tank = (PropertyGasTank) gasTank.get();
-
-	if (tank == null) {
+	if (tank == null)
 	    return;
-	}
 
-	GenericScreen<?> screen = (GenericScreen<?>) gui;
-
-	GenericTile owner = (GenericTile) ((GenericContainerBlockEntity<?>) screen.getMenu()).getSafeHost();
-
-	if (owner == null) {
+	GenericScreen<?> screen = (GenericScreen<?>) requireScreen();
+	GenericContainerBlockEntity<?> menu = (GenericContainerBlockEntity<?>) screen.getMenu();
+	GenericTile owner = (GenericTile) menu.getSafeHost().orElse(null);
+	if (owner == null)
 	    return;
-	}
 
-	ItemStack stack = screen.getMenu().getCarried();
-
-	if (stack.isEmpty() || stack.getOrDefault(VoltaicDataComponentTypes.HASCLICKEDONFLUIDGAUGE, false)) {
+	ItemStack stack = menu.getCarried();
+	if (stack.isEmpty() || stack.getOrDefault(VoltaicDataComponentTypes.HASCLICKEDONFLUIDGAUGE, false))
 	    return;
-	}
-
-	GasStack drainedGasSource = tank.getGas().copy();
 
 	IGasHandlerItem handler = stack.getCapability(VoltaicCapabilities.CAPABILITY_GASHANDLER_ITEM);
-
-	if (handler == null) {
+	if (handler == null)
 	    return;
-	}
 
-	int taken = handler.fill(drainedGasSource, GasAction.EXECUTE);
+	GasStack gas = tank.getGas().copy();
+	int taken = handler.fill(gas, GasAction.EXECUTE);
 
-	// drain this gas gauge if the amount taken was greater than zero
 	if (taken > 0) {
-
 	    tank.drain(taken, GasAction.EXECUTE);
-
-	    Minecraft.getInstance().getSoundManager()
-		    .play(SimpleSoundInstance.forUI(VoltaicSounds.SOUND_PRESSURERELEASE.get(), 1.0F));
+	    playSound();
 
 	    stack = handler.getContainer();
-
-	    screen.getMenu().setCarried(stack);
-
-	    PacketDistributor.sendToServer(new PacketUpdateCarriedItemServer(stack.copy(),
-		    ((GenericContainerBlockEntity<?>) screen.getMenu()).getSafeHost().getBlockPos(),
-		    Minecraft.getInstance().player.getUUID()));
-
+	    menu.setCarried(stack);
+	    sendCarriedItemUpdate(stack, owner);
 	    stack.set(VoltaicDataComponentTypes.HASCLICKEDONFLUIDGAUGE, true);
-
 	    return;
 	}
-	// we didn't drain the gauge, now we try to fill it
+
 	for (int i = 0; i < handler.getTanks(); i++) {
-	    drainedGasSource = handler.getGasInTank(i);
-	    taken = tank.fill(drainedGasSource, GasAction.EXECUTE);
+	    gas = handler.getGasInTank(i);
+	    taken = tank.fill(gas, GasAction.EXECUTE);
+
 	    if (taken <= 0) {
 		continue;
 	    }
-	    handler.drain(taken, GasAction.EXECUTE);
 
-	    Minecraft.getInstance().getSoundManager()
-		    .play(SimpleSoundInstance.forUI(VoltaicSounds.SOUND_PRESSURERELEASE.get(), 1.0F));
+	    handler.drain(taken, GasAction.EXECUTE);
+	    playSound();
 
 	    stack = handler.getContainer();
-
-	    screen.getMenu().setCarried(stack);
-
-	    PacketDistributor.sendToServer(new PacketUpdateCarriedItemServer(stack.copy(),
-		    ((GenericContainerBlockEntity<?>) screen.getMenu()).getSafeHost().getBlockPos(),
-		    Minecraft.getInstance().player.getUUID()));
-
+	    menu.setCarried(stack);
+	    sendCarriedItemUpdate(stack, owner);
 	    stack.set(VoltaicDataComponentTypes.HASCLICKEDONFLUIDGAUGE, true);
-
 	    return;
 	}
+    }
 
+    private static void playSound() {
+	Minecraft.getInstance().getSoundManager()
+		.play(SimpleSoundInstance.forUI(VoltaicSounds.SOUND_PRESSURERELEASE.get(), 1.0F));
+    }
+
+    private static void sendCarriedItemUpdate(ItemStack stack, GenericTile owner) {
+	Player player = Minecraft.getInstance().player;
+	if (player == null)
+	    return;
+
+	PacketDistributor
+		.sendToServer(new PacketUpdateCarriedItemServer(stack.copy(), owner.getBlockPos(), player.getUUID()));
     }
 
     public enum GasGaugeTextures implements ITexture {
-	BACKGROUND_DEFAULT(14, 49, 0, 0, 256, 256, TEXTURE), LEVEL_DEFAULT(14, 49, 14, 0, 256, 256, TEXTURE);
+	BACKGROUND_DEFAULT(14, 49, 0, 0, 256, 256, TEXTURE),
+	LEVEL_DEFAULT(14, 49, 14, 0, 256, 256, TEXTURE);
 
 	private final int textureWidth;
 	private final int textureHeight;

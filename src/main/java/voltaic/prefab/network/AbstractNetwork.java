@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -50,9 +50,6 @@ public abstract class AbstractNetwork<C extends GenericRefreshingConnectTile<T, 
     public void updateRecievers(List<GenericRefreshingConnectTile.UpdatedReceiver> receivers) {
 	boolean updateRecieverStatistics = false;
 	for (GenericRefreshingConnectTile.UpdatedReceiver receiver : receivers) {
-	    if (receiver.reciever() == null) {
-		continue;
-	    }
 	    updateRecieverStatistics |= updateReceiver(receiver.reciever(), receiver.removed(), receiver.dir());
 	}
 	// check if we need to recheck the overall statistics
@@ -86,9 +83,8 @@ public abstract class AbstractNetwork<C extends GenericRefreshingConnectTile<T, 
 	    }
 
 	    HashSet<Direction> dirs = acceptorInputMap.get(entity);
-	    if (dirs == null || !dirs.remove(receiverSide)) {
+	    if (dirs == null || !dirs.remove(receiverSide))
 		return false;
-	    }
 
 	    if (dirs.isEmpty()) {
 		acceptorInputMap.remove(entity);
@@ -97,9 +93,8 @@ public abstract class AbstractNetwork<C extends GenericRefreshingConnectTile<T, 
 	    return true;
 	}
 	HashSet<Direction> dirs = acceptorInputMap.computeIfAbsent(entity, key -> new HashSet<>());
-	if (!dirs.add(receiverSide)) {
+	if (!dirs.add(receiverSide))
 	    return false;
-	}
 	acceptorSet.add(entity);
 	updateRecieverStatistics(entity, receiverSide);
 	return false;
@@ -114,9 +109,6 @@ public abstract class AbstractNetwork<C extends GenericRefreshingConnectTile<T, 
 	boolean updateConductorStatistics = false;
 
 	for (GenericRefreshingConnectTile.UpdatedConductor<C> conductor : conductors) {
-	    if (conductor.conductor() == null) {
-		continue;
-	    }
 
 	    updateConductorStatistics |= updateConductor(conductor.conductor(), conductor.removed());
 	}
@@ -246,57 +238,54 @@ public abstract class AbstractNetwork<C extends GenericRefreshingConnectTile<T, 
     }
 
     /**
-     * Splits this network at the specified cable
+     * Splits this network at the specified cable.
      *
-     * @param splitPoint the cable this network is being split at
+     * @param splitPoint the cable at which this network is split
      */
-    /**
-     * Splits this network at the specified cable
-     *
-     * @param splitPoint the cable this network is being split at
-     */
-    public void split(@Nonnull C splitPoint) {
+    public void split(Level level, C splitPoint) {
+	BlockPos splitPosition = splitPoint.getBlockPos();
+
 	removeFromNetwork(splitPoint);
 
-	BlockEntity[] connectedTiles = new BlockEntity[6];
-	boolean[] dealtWith = { false, false, false, false, false, false };
-	BlockPos relative;
-	BlockEntity sideTile;
-	Level world = splitPoint.getLevel();
-	int ordinal;
+	BlockEntity[] connectedTiles = new BlockEntity[Direction.values().length];
+	boolean[] dealtWith = new boolean[connectedTiles.length];
 
 	for (Direction direction : Direction.values()) {
-	    ordinal = direction.ordinal();
-	    relative = splitPoint.getBlockPos().relative(direction);
-	    if (!world.hasChunkAt(relative)) {
+	    BlockPos relative = splitPosition.relative(direction);
+	    if (!level.hasChunkAt(relative)) {
 		continue;
 	    }
 
-	    sideTile = world.getBlockEntity(relative);
+	    BlockEntity sideTile = level.getBlockEntity(relative);
 	    if (sideTile == null) {
 		continue;
 	    }
 
-	    connectedTiles[ordinal] = sideTile;
+	    connectedTiles[direction.ordinal()] = sideTile;
 	}
 
-	for (int index = 0; index < 6; index++) {
+	for (int index = 0; index < connectedTiles.length; index++) {
 	    BlockEntity tile = connectedTiles[index];
-	    if (tile == null || !isConductor(tile, splitPoint) || dealtWith[index]) {
+	    if (tile == null || dealtWith[index] || !isConductor(tile, splitPoint)) {
 		continue;
 	    }
 
-	    Set<C> explored = new AbstractNetworkFinder<>(world, tile.getBlockPos(), this, splitPoint.getBlockPos())
+	    Set<C> explored = new AbstractNetworkFinder<>(level, tile.getBlockPos(), this, splitPosition)
 		    .exploreNetwork();
 
-	    for (int i = index + 1; i < 6; i++) {
+	    explored.remove(splitPoint);
+
+	    for (int i = index + 1; i < connectedTiles.length; i++) {
 		BlockEntity connection = connectedTiles[i];
-		if (isConductor(connection, (C) tile) && !dealtWith[i] && explored.contains(connection)) {
+		if (connection == null || dealtWith[i]) {
+		    continue;
+		}
+
+		if (isConductor(connection, (C) tile) && explored.contains(connection)) {
 		    dealtWith[i] = true;
 		}
 	    }
 
-	    explored.remove(splitPoint);
 	    TYPE newNetwork = createInstanceConductor(explored);
 	    newNetwork.refreshNewNetwork();
 	}
@@ -396,10 +385,9 @@ public abstract class AbstractNetwork<C extends GenericRefreshingConnectTile<T, 
     public abstract TYPE createInstanceConductor(Set<C> conductors);
 
     @Override
-    public boolean equals(Object obj) {
-	if (obj instanceof AbstractNetwork<?, ?, ?, ?> network) {
+    public boolean equals(@Nullable Object obj) {
+	if (obj instanceof AbstractNetwork<?, ?, ?, ?> network)
 	    return network.id.equals(id);
-	}
 	return false;
     }
 

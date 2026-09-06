@@ -35,9 +35,8 @@ public abstract class GenericContainerItem extends GenericContainerSlotData<Capa
 	Inventory playerinv = pl.getInventory();
 	ItemStack owner = getOwnerItem();
 	if (owner.isEmpty() || slot >= 0 && slot <= playerinv.getContainerSize() - 1
-		&& ItemStack.isSameItem(getSlot(slot).getItem(), owner)) {
+		&& ItemStack.isSameItem(getSlot(slot).getItem(), owner))
 	    return;
-	}
 
 	super.clicked(slot, button, type, pl);
     }
@@ -55,9 +54,8 @@ public abstract class GenericContainerItem extends GenericContainerSlotData<Capa
      */
     public ItemStack getOwnerItem() {
 
-	if (getData().getCount() == 0 || getData().get(0) == -1) {
+	if (getData().getCount() == 0 || getData().get(0) == -1)
 	    return ItemStack.EMPTY;
-	}
 
 	try {
 	    return getPlayer().getItemInHand(InteractionHand.values()[getData().get(0)]);
@@ -68,9 +66,8 @@ public abstract class GenericContainerItem extends GenericContainerSlotData<Capa
     }
 
     public @Nullable InteractionHand getHand() {
-	if (getData().getCount() == 0 || getData().get(0) == -1) {
+	if (getData().getCount() == 0 || getData().get(0) == -1)
 	    return null;
-	}
 
 	try {
 	    return InteractionHand.values()[getData().get(0)];

@@ -19,79 +19,63 @@ public class CapabilityRadiationRecipient implements IRadiationRecipient {
 
     @Override
     public void recieveRadiation(LivingEntity entity, double rads, double strength) {
-
-	if (rads <= RadiationManager.MIN_APPLIED_RADIATION) {
+	if (rads <= RadiationManager.MIN_APPLIED_RADIATION)
 	    return;
-	}
 
 	if (entity instanceof Player player && (player.isCreative() || player.isSpectator())) {
-	    player.setData(VoltaicAttachmentTypes.RECIEVED_RADIATIONAMOUNT,
-		    player.getData(VoltaicAttachmentTypes.RECIEVED_RADIATIONAMOUNT) + rads);
-	    player.setData(VoltaicAttachmentTypes.RECIEVED_RADIATIONSTRENGTH, strength);
+	    recordRadiation(entity, rads, strength);
 	    return;
 	}
 
-	if (entity.hasEffect(VoltaicEffects.RADIATION_RESISTANCE)) {
+	if (entity.getEffect(VoltaicEffects.RADIATION_RESISTANCE) != null) {
 	    if (rads <= VoltaicConfig.INSTANCE.IODINE_RESISTANCE_THRESHOLD.get()) {
-		entity.setData(VoltaicAttachmentTypes.RECIEVED_RADIATIONAMOUNT,
-			entity.getData(VoltaicAttachmentTypes.RECIEVED_RADIATIONAMOUNT) + rads);
-		entity.setData(VoltaicAttachmentTypes.RECIEVED_RADIATIONSTRENGTH, strength);
+		recordRadiation(entity, rads, strength);
 		return;
 	    }
+
 	    rads *= VoltaicConfig.INSTANCE.IODINE_RAD_REDUCTION.get();
 	}
 
-	int count = 0;
+	int hazmatPieces = 0;
 
 	for (EquipmentSlot slot : ARMOR_SLOTS) {
-
 	    ItemStack stack = entity.getItemBySlot(slot);
 
-	    if (stack.getItem() instanceof IHazmatSuit) {
-
-		// TODO implement damage reduction based on radiation amount and strength
-
-		count++;
-
-		float damage = (float) (rads * 2.15f) / 2169.9975f;
-
-		if (Voltaic.RANDOM.nextFloat() >= damage) {
-		    continue;
-		}
-
-		stack.hurtAndBreak((int) Math.ceil(damage), entity, slot);
-
+	    if (!(stack.getItem() instanceof IHazmatSuit)) {
+		continue;
 	    }
 
+	    hazmatPieces++;
+
+	    float damageChance = (float) (rads * 2.15 / 2169.9975);
+
+	    if (Voltaic.RANDOM.nextFloat() < damageChance) {
+		stack.hurtAndBreak((int) Math.ceil(damageChance), entity, slot);
+	    }
 	}
 
-	// Not Full Set
-	if (count < 4) {
-
+	if (hazmatPieces < 4) {
 	    int amplitude = getAmplitudeFromRadiation(rads, strength);
-	    int time = getDurationFromRadiation(rads);
+	    int duration = getDurationFromRadiation(rads);
 
-	    if (entity.hasEffect(VoltaicEffects.RADIATION)) {
+	    MobEffectInstance currentEffect = entity.getEffect(VoltaicEffects.RADIATION);
 
-		MobEffectInstance instance = entity.getEffect(VoltaicEffects.RADIATION);
-
-		if (instance.getAmplifier() > amplitude) {
-		    entity.addEffect(new MobEffectInstance(VoltaicEffects.RADIATION, time + instance.getDuration(),
-			    instance.getAmplifier(), false, true));
-		} else {
-		    entity.addEffect(new MobEffectInstance(VoltaicEffects.RADIATION, time + instance.getDuration(),
-			    amplitude, false, true));
-		}
-
-	    } else {
-		entity.addEffect(new MobEffectInstance(VoltaicEffects.RADIATION, time, amplitude, false, true));
+	    if (currentEffect != null) {
+		duration += currentEffect.getDuration();
+		amplitude = Math.max(amplitude, currentEffect.getAmplifier());
 	    }
+
+	    entity.addEffect(new MobEffectInstance(VoltaicEffects.RADIATION, duration, amplitude, false, true));
 	}
 
+	recordRadiation(entity, rads, strength);
+    }
+
+    private static void recordRadiation(LivingEntity entity, double rads, double strength) {
 	entity.setData(VoltaicAttachmentTypes.RECIEVED_RADIATIONAMOUNT,
 		entity.getData(VoltaicAttachmentTypes.RECIEVED_RADIATIONAMOUNT) + rads);
-	entity.setData(VoltaicAttachmentTypes.RECIEVED_RADIATIONSTRENGTH, strength);
 
+	entity.setData(VoltaicAttachmentTypes.RECIEVED_RADIATIONSTRENGTH, strength);
     }
 
     @Override

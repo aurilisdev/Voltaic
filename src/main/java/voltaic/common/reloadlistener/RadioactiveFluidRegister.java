@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
+import javax.annotation.Nullable;
+
 import org.apache.logging.log4j.Logger;
 
 import com.google.gson.Gson;
@@ -40,7 +42,21 @@ import voltaic.common.packet.types.client.PacketSetClientRadioactiveFluids;
 
 public class RadioactiveFluidRegister extends SimplePreparableReloadListener<JsonObject> {
 
-    public static RadioactiveFluidRegister INSTANCE = null;
+    @Nullable
+    private static RadioactiveFluidRegister instance;
+
+    public static RadioactiveFluidRegister initialize() {
+	if (instance != null)
+	    throw new IllegalStateException("RadioactiveFluidRegister has already been initialized");
+	return instance = new RadioactiveFluidRegister();
+    }
+
+    public static RadioactiveFluidRegister getInstance() {
+	RadioactiveFluidRegister current = instance;
+	if (current == null)
+	    throw new IllegalStateException("RadioactiveFluidRegister has not been initialized");
+	return current;
+    }
 
     public static final String FOLDER = "radiation";
     public static final String FILE_NAME = "radioactive_fluids";
@@ -154,16 +170,16 @@ public class RadioactiveFluidRegister extends SimplePreparableReloadListener<Jso
     }
 
     public void setClientValues(HashMap<Fluid, RadioactiveObject> mappedValues) {
-	this.radioactiveFluidMap.clear();
-	this.radioactiveFluidMap.putAll(mappedValues);
+	radioactiveFluidMap.clear();
+	radioactiveFluidMap.putAll(mappedValues);
     }
 
     public static HashMap<Fluid, RadioactiveObject> getValues() {
-	return INSTANCE.radioactiveFluidMap;
+	return getInstance().radioactiveFluidMap;
     }
 
     public static RadioactiveObject getValue(Fluid fluid) {
-	return INSTANCE.radioactiveFluidMap.getOrDefault(fluid, RadioactiveObject.ZERO);
+	return getInstance().radioactiveFluidMap.getOrDefault(fluid, RadioactiveObject.ZERO);
     }
 
     private static boolean isJson(final ResourceLocation filename) {

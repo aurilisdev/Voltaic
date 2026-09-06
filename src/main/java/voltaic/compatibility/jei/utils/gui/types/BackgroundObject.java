@@ -5,8 +5,8 @@ import voltaic.compatibility.jei.utils.gui.ScreenObject;
 
 public class BackgroundObject extends ScreenObject {
 
-    private int width;
-    private int height;
+    private final int width;
+    private final int height;
 
     public BackgroundObject(int width, int height) {
 	super(JeiTextures.BACKGROUND_DEFAULT, 0, 0);

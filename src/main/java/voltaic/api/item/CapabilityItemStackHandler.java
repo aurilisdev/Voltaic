@@ -19,8 +19,7 @@ public class CapabilityItemStackHandler extends ComponentItemHandler {
 
     private ContainerLevelAccess access = ContainerLevelAccess.NULL;
 
-    private Consumer<OnChangeWrapper> onChange = onChange -> {
-    };
+    private Consumer<OnChangeWrapper> onChange = onChange -> {};
 
     public CapabilityItemStackHandler(int size, ItemStack owner) {
 	super(owner, DataComponents.CONTAINER, size);
@@ -33,7 +32,7 @@ public class CapabilityItemStackHandler extends ComponentItemHandler {
     }
 
     public CapabilityItemStackHandler setValidator(BiPredicate<Integer, ItemStack> predicate) {
-	this.validator = predicate;
+	validator = predicate;
 	return this;
     }
 

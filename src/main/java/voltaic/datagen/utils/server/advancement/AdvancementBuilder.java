@@ -3,6 +3,7 @@ package voltaic.datagen.utils.server.advancement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -32,30 +33,19 @@ import net.neoforged.neoforge.common.extensions.IAdvancementBuilderExtension;
 import voltaic.Voltaic;
 
 public class AdvancementBuilder implements IAdvancementBuilderExtension {
+    private AdvancementRewards rewards = AdvancementRewards.EMPTY;
+    private AdvancementRequirements.Strategy requirementsStrategy = AdvancementRequirements.Strategy.AND;
+    private final Map<String, Criterion<?>> criteria = Maps.newLinkedHashMap();
 
     public final ResourceLocation id;
-
-    @Nullable
-    private ResourceLocation parentId;
-    @Nullable
-    private AdvancementHolder parent;
-    @Nullable
-    private DisplayInfo display;
-    private AdvancementRewards rewards = AdvancementRewards.EMPTY;
-    private Map<String, Criterion<?>> criteria = Maps.newLinkedHashMap();
-    @Nullable
-    private AdvancementRequirements requirements;
-    private AdvancementRequirements.Strategy requirementsStrategy = AdvancementRequirements.Strategy.AND;
-    @Nullable
-    private String comment;
-    @Nullable
-    private String author;
-
-    @Nullable
-    private AdvancementHolder holder;
-
-    @Nullable
-    private List<ICondition> conditions;
+    private @Nullable ResourceLocation parentId;
+    private @Nullable AdvancementHolder parent;
+    private @Nullable DisplayInfo display;
+    private @Nullable AdvancementRequirements requirements;
+    private @Nullable String comment;
+    private @Nullable String author;
+    private @Nullable AdvancementHolder holder;
+    private @Nullable List<ICondition> conditions;
 
     private AdvancementBuilder(ResourceLocation id) {
 	this.id = id;
@@ -118,15 +108,14 @@ public class AdvancementBuilder implements IAdvancementBuilderExtension {
     }
 
     public AdvancementBuilder addCriterion(String key, Criterion<?> criterion) {
-	if (this.criteria.containsKey(key)) {
+	if (criteria.containsKey(key))
 	    throw new IllegalArgumentException("Duplicate criterion " + key);
-	}
-	this.criteria.put(key, criterion);
+	criteria.put(key, criterion);
 	return this;
     }
 
     public AdvancementBuilder requirements(AdvancementRequirements.Strategy strategy) {
-	this.requirementsStrategy = strategy;
+	requirementsStrategy = strategy;
 	return this;
     }
 
@@ -139,7 +128,7 @@ public class AdvancementBuilder implements IAdvancementBuilderExtension {
 	if (conditions == null) {
 	    conditions = new ArrayList<>();
 	}
-	conditions.add(condition);
+	Objects.requireNonNull(conditions).add(condition);
 	return this;
     }
 
@@ -158,41 +147,40 @@ public class AdvancementBuilder implements IAdvancementBuilderExtension {
      * {@code true} on success.
      */
     public boolean canBuild(Function<ResourceLocation, AdvancementHolder> parentLookup) {
-	if (this.parentId == null) {
+	if (parentId == null)
 	    return true;
-	}
-	if (this.parent == null) {
-	    this.parent = parentLookup.apply(this.parentId);
+	if (parent == null) {
+	    parent = parentLookup.apply(parentId);
 	}
 
-	return this.parent != null;
+	return parent != null;
     }
 
     public AdvancementHolder build() {
-	if (!this.canBuild(resourceLocation -> null)) {
+	if (!canBuild(resourceLocation -> null))
 	    throw new IllegalStateException("Tried to build incomplete advancement!");
-	}
-	if (this.requirements == null) {
-	    this.requirements = this.requirementsStrategy.create(this.criteria.keySet());
+	AdvancementRequirements requirements = this.requirements;
+	if (requirements == null) {
+	    requirements = requirementsStrategy.create(criteria.keySet());
+	    this.requirements = requirements;
 	}
 
 	return holder = new AdvancementHolder(id,
-		new Advancement(Optional.ofNullable(parent == null ? parentId : this.parent.id()),
-			Optional.ofNullable(this.display), this.rewards, this.criteria, this.requirements, false));
+		new Advancement(Optional.ofNullable(parent == null ? parentId : parent.id()),
+			Optional.ofNullable(display), rewards, criteria, requirements, false));
     }
 
     public JsonObject serializeToJson(HolderLookup.Provider registries) {
+	AdvancementHolder holder = this.holder;
 	if (holder == null) {
-	    build();
+	    holder = build();
 	}
-
 	RegistryOps<JsonElement> registryops = registries.createSerializationContext(JsonOps.INSTANCE);
 
 	JsonElement jsonElement = Advancement.CODEC.encodeStart(registryops, holder.value()).getOrThrow();
 
-	if (!jsonElement.isJsonObject()) {
+	if (!jsonElement.isJsonObject())
 	    throw new UnsupportedOperationException("Advancement " + holder.id().toString() + " is not a Json Object!");
-	}
 
 	JsonObject jsonObject = jsonElement.getAsJsonObject();
 
@@ -217,9 +205,10 @@ public class AdvancementBuilder implements IAdvancementBuilderExtension {
 	NETHER(Voltaic.vanillarl("textures/gui/advancements/backgrounds/nether.png")), //
 	STONE(Voltaic.vanillarl("textures/gui/advancements/backgrounds/stone.png")); //
 
+	@Nullable
 	public final ResourceLocation loc;
 
-	private AdvancementBackgrounds(ResourceLocation loc) {
+	private AdvancementBackgrounds(@Nullable ResourceLocation loc) {
 	    this.loc = loc;
 	}
 

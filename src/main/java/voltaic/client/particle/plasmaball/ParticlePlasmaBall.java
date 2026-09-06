@@ -15,32 +15,32 @@ public class ParticlePlasmaBall extends TextureSheetParticle {
     public ParticlePlasmaBall(ClientLevel level, double x, double y, double z, double xSpeed, double ySpeed,
 	    double zSpeed, ParticleOptionPlasmaBall options, SpriteSet sprites) {
 	super(level, x, y, z, xSpeed, ySpeed, zSpeed);
-	this.friction = 0.96F;
-	this.speedUpWhenYMotionIsBlocked = true;
+	friction = 0.96F;
+	speedUpWhenYMotionIsBlocked = true;
 	this.sprites = sprites;
-	this.xd *= 0.1F;
-	this.yd *= 0.1F;
-	this.zd *= 0.1F;
-	this.gravity = options.gravity;
-	float f = this.random.nextFloat() * 0.4F + 0.6F;
-	this.rCol = this.randomizeColor(options.r / 255.0F, f);
-	this.gCol = this.randomizeColor(options.g / 255.0F, f);
-	this.bCol = this.randomizeColor(options.b / 255.0F, f);
-	this.alpha = options.a / 255.0F;
-	this.quadSize *= 0.75F * options.scale;
-	this.lifetime = options.maxAge;
-	this.setSpriteFromAge(sprites);
-	this.roll = 0.1F;
+	xd *= 0.1F;
+	yd *= 0.1F;
+	zd *= 0.1F;
+	gravity = options.gravity;
+	float f = random.nextFloat() * 0.4F + 0.6F;
+	rCol = randomizeColor(options.r / 255.0F, f);
+	gCol = randomizeColor(options.g / 255.0F, f);
+	bCol = randomizeColor(options.b / 255.0F, f);
+	alpha = options.a / 255.0F;
+	quadSize *= 0.75F * options.scale;
+	lifetime = options.maxAge;
+	setSpriteFromAge(sprites);
+	roll = 0.1F;
     }
 
     public float randomizeColor(float pCoordMultiplier, float pMultiplier) {
-	return (this.random.nextFloat() * 0.2F + 0.8F) * pCoordMultiplier * pMultiplier;
+	return (random.nextFloat() * 0.2F + 0.8F) * pCoordMultiplier * pMultiplier;
     }
 
     @Override
     public void tick() {
 	super.tick();
-	this.setSpriteFromAge(this.sprites);
+	setSpriteFromAge(sprites);
     }
 
     @Override

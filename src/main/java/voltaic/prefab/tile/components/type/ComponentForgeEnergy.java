@@ -1,6 +1,6 @@
 package voltaic.prefab.tile.components.type;
 
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nullable;
 
 import net.minecraft.core.Direction;
 import net.neoforged.neoforge.energy.IEnergyStorage;
@@ -14,18 +14,17 @@ import voltaic.prefab.utilities.object.TransferPack;
 
 public class ComponentForgeEnergy implements IComponent {
 
-    private GenericTile holder;
+    private final GenericTile holder;
     private final boolean electroLoaded;
 
     private final ComponentElectrodynamic electro;
 
     public ComponentForgeEnergy(GenericTile holder) {
 	this.holder = holder;
-	if (!holder.hasComponent(IComponentType.Electrodynamic)) {
+	if (!holder.hasComponent(IComponentType.Electrodynamic))
 	    throw new RuntimeException(
 		    "You must define a ComponentElectrodynamic before defining a ComponentForgeEnergy!");
-	}
-	electro = holder.getComponent(IComponentType.Electrodynamic);
+	electro = holder.<ComponentElectrodynamic>getComponent(IComponentType.Electrodynamic).get();
 	electroLoaded = Voltaic.isElectroLoaded();
     }
 
@@ -35,24 +34,16 @@ public class ComponentForgeEnergy implements IComponent {
     }
 
     @Override
-    public void holder(GenericTile holder) {
-	this.holder = holder;
-    }
-
-    @Nullable
-    @Override
     public GenericTile getHolder() {
 	return holder;
     }
 
-    public IEnergyStorage getCap(Direction side, CapabilityInputType type) {
-
-	if (electroLoaded || side == null) {
+    @Nullable
+    public IEnergyStorage getCap(@Nullable Direction side, CapabilityInputType type) {
+	if (electroLoaded || side == null)
 	    return null;
-	}
 
 	ICapabilityElectrodynamic electrodynamic = electro.getCapability(side, type);
-
 	return electrodynamic == null ? null : new ElectrodynamicWrapper(electrodynamic);
 
     }

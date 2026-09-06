@@ -2,7 +2,10 @@ package voltaic.compatibility.jei.screenhandlers;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+
+import javax.annotation.Nullable;
 
 import mezz.jei.api.gui.handlers.IGuiContainerHandler;
 import mezz.jei.api.runtime.IClickableIngredient;
@@ -16,9 +19,9 @@ import voltaic.client.guidebook.utils.components.Page.GraphicWrapper;
 import voltaic.client.guidebook.utils.components.Page.TextWrapper;
 import voltaic.client.guidebook.utils.pagedata.graphics.AbstractGraphicWrapper;
 import voltaic.client.guidebook.utils.pagedata.graphics.AbstractGraphicWrapper.GraphicTextDescriptor;
-import voltaic.compatibility.jei.screenhandlers.cliableingredients.ClickableFluidIngredient;
-import voltaic.compatibility.jei.screenhandlers.cliableingredients.ClickableGasIngredient;
-import voltaic.compatibility.jei.screenhandlers.cliableingredients.ClickableItemIngredient;
+import voltaic.compatibility.jei.screenhandlers.clickableingredients.ClickableFluidIngredient;
+import voltaic.compatibility.jei.screenhandlers.clickableingredients.ClickableGasIngredient;
+import voltaic.compatibility.jei.screenhandlers.clickableingredients.ClickableItemIngredient;
 
 public class ScreenHandlerGuidebook implements IGuiContainerHandler<ScreenGuidebook> {
 
@@ -37,9 +40,8 @@ public class ScreenHandlerGuidebook implements IGuiContainerHandler<ScreenGuideb
 
 	Optional<IClickableIngredient<?>> returned = getJeiLookup(ScreenGuidebook.LEFT_X_SHIFT, (int) mouseX,
 		(int) mouseY, refX, refY, xAxis, yAxis, guiWidth, guiHeight, screen.getCurrentPage(), screen);
-	if (returned.isPresent()) {
+	if (returned.isPresent())
 	    return returned;
-	}
 	return getJeiLookup(ScreenGuidebook.RIGHT_X_SHIFT - 8, (int) mouseX, (int) mouseY, refX, refY, xAxis, yAxis,
 		guiWidth, guiHeight, screen.getNextPage(), screen);
     }
@@ -65,10 +67,9 @@ public class ScreenHandlerGuidebook implements IGuiContainerHandler<ScreenGuideb
 	    x = refX + xShift + xPageShift + text.x();
 	    y = refY + text.y();
 
-	    if (screen.isPointInRegionText(x, y, xAxis, yAxis, textWidth, ScreenGuidebook.LINE_HEIGHT)) {
-		return handleLookup(text.onKeyPress().getJeiLookup(),
+	    if (screen.isPointInRegionText(x, y, xAxis, yAxis, textWidth, ScreenGuidebook.LINE_HEIGHT))
+		return handleLookup(Objects.requireNonNull(text.onKeyPress()).getJeiLookup(),
 			new Rect2i(x, y, textWidth, ScreenGuidebook.LINE_HEIGHT));
-	    }
 
 	}
 
@@ -79,9 +80,9 @@ public class ScreenHandlerGuidebook implements IGuiContainerHandler<ScreenGuideb
 	    x = guiWidth + wrapper.x() + image.lookupXOffset + xPageShift;
 	    y = guiHeight + wrapper.y() + image.lookupYOffset - image.descriptorTopOffset;
 
-	    if (screen.isPointInRegionGraphic(mouseX, mouseY, x, y, image.width, image.height)) {
-		return handleLookup(wrapper.onKeyPress().getJeiLookup(), new Rect2i(x, y, image.width, image.height));
-	    }
+	    if (screen.isPointInRegionGraphic(mouseX, mouseY, x, y, image.width, image.height))
+		return handleLookup(Objects.requireNonNull(wrapper.onKeyPress()).getJeiLookup(),
+			new Rect2i(x, y, image.width, image.height));
 
 	    for (GraphicTextDescriptor descriptor : image.descriptors) {
 
@@ -89,10 +90,9 @@ public class ScreenHandlerGuidebook implements IGuiContainerHandler<ScreenGuideb
 		y = refY + wrapper.y() + descriptor.yOffsetFromImage;
 
 		if (descriptor.onKeyPress != null && screen.isPointInRegionText(x, y, xAxis, yAxis,
-			screen.getFontRenderer().width(descriptor.text), ScreenGuidebook.LINE_HEIGHT)) {
-		    return handleLookup(descriptor.onKeyPress.getJeiLookup(), new Rect2i(x, y,
+			screen.getFontRenderer().width(descriptor.text), ScreenGuidebook.LINE_HEIGHT))
+		    return handleLookup(Objects.requireNonNull(descriptor.onKeyPress).getJeiLookup(), new Rect2i(x, y,
 			    screen.getFontRenderer().width(descriptor.text), ScreenGuidebook.LINE_HEIGHT));
-		}
 
 	    }
 
@@ -100,16 +100,13 @@ public class ScreenHandlerGuidebook implements IGuiContainerHandler<ScreenGuideb
 	return Optional.empty();
     }
 
-    private static Optional<IClickableIngredient<?>> handleLookup(Object lookup, Rect2i area) {
-	if (lookup instanceof ItemStack stack) {
+    private static Optional<IClickableIngredient<?>> handleLookup(@Nullable Object lookup, Rect2i area) {
+	if (lookup instanceof ItemStack stack)
 	    return Optional.of(new ClickableItemIngredient(area, stack));
-	}
-	if (lookup instanceof FluidStack stack) {
+	if (lookup instanceof FluidStack stack)
 	    return Optional.of(new ClickableFluidIngredient(area, stack));
-	}
-	if (lookup instanceof GasStack stack) {
+	if (lookup instanceof GasStack stack)
 	    return Optional.of(new ClickableGasIngredient(area, stack));
-	}
 	return Optional.empty();
     }
 

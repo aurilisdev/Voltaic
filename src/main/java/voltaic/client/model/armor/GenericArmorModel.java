@@ -31,13 +31,13 @@ public abstract class GenericArmorModel<T extends LivingEntity> extends Humanoid
 
     public GenericArmorModel(ModelPart root, Function<ResourceLocation, RenderType> function) {
 	super(root, function);
-	this.parentHat = root.getChild(HAT);
-	this.parentHead = root.getChild(HEAD);
-	this.parentChest = root.getChild(CHEST);
-	this.parentRightArm = root.getChild(RIGHT_ARM);
-	this.parentLeftArm = root.getChild(LEFT_ARM);
-	this.parentRightLeg = root.getChild(RIGHT_LEG);
-	this.parentLeftLeg = root.getChild(LEFT_LEG);
+	parentHat = root.getChild(HAT);
+	parentHead = root.getChild(HEAD);
+	parentChest = root.getChild(CHEST);
+	parentRightArm = root.getChild(RIGHT_ARM);
+	parentLeftArm = root.getChild(LEFT_ARM);
+	parentRightLeg = root.getChild(RIGHT_LEG);
+	parentLeftLeg = root.getChild(LEFT_LEG);
     }
 
     public GenericArmorModel(ModelPart root) {

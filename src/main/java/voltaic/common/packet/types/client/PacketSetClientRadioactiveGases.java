@@ -46,7 +46,7 @@ public class PacketSetClientRadioactiveGases implements CustomPacketPayload {
     private final HashMap<Gas, RadioactiveObject> gases;
 
     public PacketSetClientRadioactiveGases(HashMap<Gas, RadioactiveObject> items) {
-	this.gases = items;
+	gases = items;
     }
 
     public static void handle(PacketSetClientRadioactiveGases message, IPayloadContext context) {

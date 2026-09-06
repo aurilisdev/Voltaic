@@ -37,10 +37,16 @@ public abstract class AbstractScreenComponent implements GuiEventListener, Rende
     private boolean isHovered = false;
     private boolean isFocused = false;
 
-    public IScreenWrapper gui;
+    public @Nullable IScreenWrapper gui;
+
+    protected IScreenWrapper requireScreen() {
+	IScreenWrapper gui = this.gui;
+	if (gui == null)
+	    throw new IllegalStateException("Screen component has not been attached to a screen");
+	return gui;
+    }
 
     public AbstractScreenComponent(int x, int y, int width, int height) {
-
 	xLocation = x;
 	yLocation = y;
 
@@ -65,8 +71,8 @@ public abstract class AbstractScreenComponent implements GuiEventListener, Rende
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
 	if (isVisible()) {
 	    setHovered(isMouseOver(mouseX, mouseY));
-	    int guiWidth = (int) gui.getGuiWidth();
-	    int guiHeight = (int) gui.getGuiHeight();
+	    int guiWidth = (int) requireScreen().getGuiWidth();
+	    int guiHeight = (int) requireScreen().getGuiHeight();
 	    renderBackground(graphics, mouseX - guiWidth, mouseY - guiHeight, guiWidth, guiHeight);
 	}
 
@@ -81,10 +87,10 @@ public abstract class AbstractScreenComponent implements GuiEventListener, Rende
     }
 
     public void renderBoundedText(GuiGraphics graphics, Component text, int x, int y, int color, int maxLength) {
-	int length = gui.getFontRenderer().width(text);
+	int length = requireScreen().getFontRenderer().width(text);
 
 	if (length <= maxLength) {
-	    graphics.drawString(gui.getFontRenderer(), text, x, y, color);
+	    graphics.drawString(requireScreen().getFontRenderer(), text, x, y, color);
 	} else {
 	    float scale = (float) maxLength / length;
 	    float reverse = 1 / scale;
@@ -94,7 +100,8 @@ public abstract class AbstractScreenComponent implements GuiEventListener, Rende
 
 	    graphics.pose().scale(scale, scale, scale);
 
-	    graphics.drawString(gui.getFontRenderer(), text, (int) (x * reverse), (int) (y * reverse + yAdd), color);
+	    graphics.drawString(requireScreen().getFontRenderer(), text, (int) (x * reverse),
+		    (int) (y * reverse + yAdd), color);
 
 	    graphics.pose().popPose();
 	}
@@ -102,12 +109,13 @@ public abstract class AbstractScreenComponent implements GuiEventListener, Rende
 
     @Override
     public boolean isMouseOver(double mouseX, double mouseY) {
-	return isPointInRegion(xLocation, yLocation, mouseX - gui.getGuiWidth(), mouseY - gui.getGuiHeight(), width,
-		height);
+	return isPointInRegion(xLocation, yLocation, mouseX - requireScreen().getGuiWidth(),
+		mouseY - requireScreen().getGuiHeight(), width, height);
     }
 
     public Rect2i getClickArea() {
-	return new Rect2i(xLocation + (int) gui.getGuiWidth(), yLocation + (int) gui.getGuiHeight(), width, height);
+	return new Rect2i(xLocation + (int) requireScreen().getGuiWidth(),
+		yLocation + (int) requireScreen().getGuiHeight(), width, height);
     }
 
     /*
@@ -227,18 +235,16 @@ public abstract class AbstractScreenComponent implements GuiEventListener, Rende
 
     @Override
     public NarrationPriority narrationPriority() {
-	if (isFocused()) {
+	if (isFocused())
 	    return NarratableEntry.NarrationPriority.FOCUSED;
-	}
 	return isHovered() ? NarratableEntry.NarrationPriority.HOVERED : NarratableEntry.NarrationPriority.NONE;
     }
 
     @Override
     @Nullable
     public ComponentPath nextFocusPath(FocusNavigationEvent pEvent) {
-	if (isActive() && isVisible()) {
-	    return !this.isFocused() ? ComponentPath.leaf(this) : null;
-	}
+	if (isActive() && isVisible())
+	    return !isFocused() ? ComponentPath.leaf(this) : null;
 	return null;
     }
 

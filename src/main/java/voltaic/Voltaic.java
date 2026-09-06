@@ -57,7 +57,6 @@ public final class Voltaic {
 	VoltaicBlockStates.init();
 	UnifiedVoltaicRegister.register(bus);
 
-	VoltaicConfig.INSTANCE = new VoltaicConfig();
 	container.registerConfig(ModConfig.Type.COMMON, VoltaicConfig.INSTANCE.SPEC);
 	if (FMLEnvironment.dist == Dist.CLIENT) {
 	    container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
@@ -68,11 +67,11 @@ public final class Voltaic {
     public static void onCommonSetup(FMLCommonSetupEvent event) {
 	NeoForge.EVENT_BUS.addListener(getGuidebookListener());
 	VoltaicTags.init();
-	RadioactiveItemRegister.INSTANCE = new RadioactiveItemRegister().subscribeAsSyncable();
-	RadioactiveFluidRegister.INSTANCE = new RadioactiveFluidRegister().subscribeAsSyncable();
-	RadioactiveGasRegister.INSTANCE = new RadioactiveGasRegister().subscribeAsSyncable();
-	RadiationShieldingRegister.INSTANCE = new RadiationShieldingRegister().subscribeAsSyncable();
-	RadioactiveBlockRegister.INSTANCE = new RadioactiveBlockRegister().subscribeAsSyncable();
+	RadioactiveItemRegister.initialize().subscribeAsSyncable();
+	RadioactiveFluidRegister.initialize().subscribeAsSyncable();
+	RadioactiveGasRegister.initialize().subscribeAsSyncable();
+	RadiationShieldingRegister.initialize().subscribeAsSyncable();
+	RadioactiveBlockRegister.initialize().subscribeAsSyncable();
 	// CraftingHelper.register(ConfigCondition.Serializer.INSTANCE); // Probably
 	// wrong location after update from 1.18.2 to
 	// 1.19.2

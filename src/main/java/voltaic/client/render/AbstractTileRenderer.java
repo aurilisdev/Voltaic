@@ -4,8 +4,6 @@ import java.util.Random;
 
 import javax.annotation.Nullable;
 
-import org.jetbrains.annotations.NotNull;
-
 import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.client.Minecraft;
@@ -40,14 +38,15 @@ public abstract class AbstractTileRenderer<T extends GenericTile> implements Blo
     }
 
     public long getGameTime() {
-	return minecraft().level.getGameTime();
+	Level level = level();
+	return level != null ? level.getGameTime() : 0;
     }
 
     public Minecraft minecraft() {
 	return Minecraft.getInstance();
     }
 
-    public ClientLevel level() {
+    public @Nullable ClientLevel level() {
 	return minecraft().level;
     }
 
@@ -62,8 +61,8 @@ public abstract class AbstractTileRenderer<T extends GenericTile> implements Blo
     }
 
     @Override
-    public abstract void render(@NotNull T tile, float partialTick, @NotNull PoseStack poseStack,
-	    @NotNull MultiBufferSource bufferSource, int packedLight, int packedOverlay);
+    public abstract void render(T tile, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource,
+	    int packedLight, int packedOverlay);
 
     public AABB aabb(double x0, double y0, double z0, double x1, double y1, double z1) {
 	return new AABB(x0 / 16.0F, y0 / 16.0F, z0 / 16.0F, x1 / 16.0F, y1 / 16.0F, z1 / 16.0F);

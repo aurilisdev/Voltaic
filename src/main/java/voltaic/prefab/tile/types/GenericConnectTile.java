@@ -1,9 +1,10 @@
 package voltaic.prefab.tile.types;
 
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nullable;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -13,7 +14,6 @@ import voltaic.common.block.connect.EnumConnectType;
 import voltaic.prefab.properties.types.PropertyTypes;
 import voltaic.prefab.properties.variant.SingleProperty;
 import voltaic.prefab.tile.GenericTile;
-import voltaic.prefab.tile.components.type.ComponentPacketHandler;
 
 public abstract class GenericConnectTile extends GenericTile implements IConnectTile {
 
@@ -30,47 +30,61 @@ public abstract class GenericConnectTile extends GenericTile implements IConnect
 	    EnumConnectType.NONE, EnumConnectType.NONE, EnumConnectType.NONE };
 
     public final SingleProperty<Integer> connections = property(
-	    new SingleProperty<>(PropertyTypes.INTEGER, "connections", 0).onChange((property, old) -> {
-		requestModelDataUpdate();
-		if (level != null && level.isClientSide()) {
-		    level.sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), 8); //
-		}
-		connectionsArr = readConnectionsInternal(property.getValue());
+	    new SingleProperty<>(getPropertyManager(), PropertyTypes.INTEGER, "connections", 0)
+		    .onChange((property, old) -> {
+			requestModelDataUpdate();
+			Level level = this.level;
+			if (level != null && level.isClientSide()) {
+			    level.sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), 8); //
+			}
+			connectionsArr = readConnectionsInternal(property.getValue());
 
-	    }).onTileLoaded(property -> {
-		requestModelDataUpdate();
-		connectionsArr = readConnectionsInternal(property.getValue());
-	    }).setNoUpdateServer().setShouldUpdateOnChange());
+		    })
+		    .onTileLoaded(property -> {
+			requestModelDataUpdate();
+			connectionsArr = readConnectionsInternal(property.getValue());
+		    }).setShouldUpdateOnChange());
 
-    public final SingleProperty<BlockState> camoflaugedBlock = property(
-	    new SingleProperty<>(PropertyTypes.BLOCK_STATE, "camoflaugedblock", Blocks.AIR.defaultBlockState()))
+    public final SingleProperty<BlockState> camoflaugedBlock = property(new SingleProperty<>(getPropertyManager(),
+	    PropertyTypes.BLOCK_STATE, "camoflaugedblock", Blocks.AIR.defaultBlockState()))
 	    .onChange((property, block) -> {
-		if (level == null) {
+		Level level = this.level;
+		if (level == null)
 		    return;
-		}
+
 		level.getChunkSource().getLightEngine().checkBlock(worldPosition);
 	    }).onTileLoaded(property -> {
+		Level level = this.level;
+		if (level == null)
+		    return;
+
 		level.getChunkSource().getLightEngine().checkBlock(worldPosition);
 	    }).setShouldUpdateOnChange();
 
-    public final SingleProperty<BlockState> scaffoldBlock = property(
-	    new SingleProperty<>(PropertyTypes.BLOCK_STATE, "scaffoldblock", Blocks.AIR.defaultBlockState()))
-	    .onChange((property, block) -> {
-		if (level == null) {
+    public final SingleProperty<BlockState> scaffoldBlock = property(new SingleProperty<>(getPropertyManager(),
+	    PropertyTypes.BLOCK_STATE, "scaffoldblock", Blocks.AIR.defaultBlockState())).onChange((property, block) -> {
+		Level level = this.level;
+		if (level == null)
 		    return;
-		}
+
 		level.getChunkSource().getLightEngine().checkBlock(worldPosition);
 	    }).onTileLoaded(property -> {
+		Level level = this.level;
+		if (level == null)
+		    return;
+
 		level.getChunkSource().getLightEngine().checkBlock(worldPosition);
 	    }).setShouldUpdateOnChange();
 
     public GenericConnectTile(BlockEntityType<?> tile, BlockPos pos, BlockState state) {
 	super(tile, pos, state);
-	addComponent(new ComponentPacketHandler(this));
     }
 
-    public void setCamoBlock(BlockState block) {
-	camoflaugedBlock.setValue(block);
+    public void setCamoBlock(@Nullable BlockState state) {
+	if (state == null)
+	    return;
+
+	camoflaugedBlock.setValue(state);
 	setChanged();
     }
 
@@ -82,8 +96,11 @@ public abstract class GenericConnectTile extends GenericTile implements IConnect
 	return getCamoBlock().isAir();
     }
 
-    public void setScaffoldBlock(BlockState scaffold) {
-	scaffoldBlock.setValue(scaffold);
+    public void setScaffoldBlock(@Nullable BlockState state) {
+	if (state == null)
+	    return;
+
+	scaffoldBlock.setValue(state);
 	setChanged();
     }
 
@@ -96,10 +113,8 @@ public abstract class GenericConnectTile extends GenericTile implements IConnect
     }
 
     public EnumConnectType readConnection(Direction dir, int connections) {
-
-	if (connections == 0) {
+	if (connections == 0)
 	    return EnumConnectType.NONE;
-	}
 
 	int extracted = 0;
 	switch (dir) {
@@ -124,7 +139,6 @@ public abstract class GenericConnectTile extends GenericTile implements IConnect
 	default:
 	    break;
 	}
-	// return EnumConnectType.NONE;
 
 	return EnumConnectType.values()[extracted >> dir.ordinal() * 4];
 
@@ -155,7 +169,7 @@ public abstract class GenericConnectTile extends GenericTile implements IConnect
     }
 
     public boolean writeConnection(Direction dir, EnumConnectType connection) {
-	int connectionData = this.connections.getValue();
+	int connectionData = connections.getValue();
 	int masked = switch (dir) {
 	case DOWN -> connectionData & ~DOWN_MASK;
 	case UP -> connectionData & ~UP_MASK;
@@ -168,9 +182,9 @@ public abstract class GenericConnectTile extends GenericTile implements IConnect
 
 	connectionData = masked | connection.ordinal() << dir.ordinal() * 4;
 
-	this.connections.setValue(connectionData);
+	connections.setValue(connectionData);
 
-	return this.connections.isDirty();
+	return connections.isDirty();
     }
 
     @Override
@@ -187,7 +201,7 @@ public abstract class GenericConnectTile extends GenericTile implements IConnect
     }
 
     @Override
-    public @NotNull ModelData getModelData() {
+    public ModelData getModelData() {
 	return ModelData.builder().with(ModelPropertyConnections.INSTANCE, this::readConnections).build();
     }
 

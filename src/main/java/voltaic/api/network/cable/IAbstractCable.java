@@ -4,15 +4,15 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import voltaic.prefab.network.AbstractNetwork;
 import voltaic.prefab.tile.types.GenericRefreshingConnectTile;
 
-public interface IAbstractCable<CONDUCTORTYPE, T extends AbstractNetwork<? extends GenericRefreshingConnectTile<?, ?, ?>, ?, ?, ?>> {
+public interface IAbstractCable<CONDUCTORTYPE, NETWORK extends AbstractNetwork<? extends GenericRefreshingConnectTile<?, ?, ?>, ?, ?, ?>> {
 
     void removeFromNetwork();
 
-    T getNetwork();
+    NETWORK getNetwork();
 
-    void createNetworkFromThis();
+    NETWORK createNetworkFromThis();
 
-    void setNetwork(T aValueNetwork);
+    void setNetwork(NETWORK aValueNetwork);
 
     BlockEntity[] getConectedRecievers();
 

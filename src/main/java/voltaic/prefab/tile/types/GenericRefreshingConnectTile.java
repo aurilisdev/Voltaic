@@ -5,11 +5,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.annotation.Nullable;
+
 import com.google.common.collect.Sets;
 import com.mojang.datafixers.util.Pair;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -27,6 +30,7 @@ public abstract class GenericRefreshingConnectTile<CABLETYPE, CONDUCTOR extends 
     protected final BlockEntity[] cableConnections = new BlockEntity[6];
     protected final HashSet<CONDUCTOR> connectionSet = new HashSet<>();
 
+    @Nullable
     private NETWORK network;
 
     public boolean isQueued = false;
@@ -35,7 +39,8 @@ public abstract class GenericRefreshingConnectTile<CABLETYPE, CONDUCTOR extends 
 	super(tile, pos, state);
     }
 
-    public Pair<List<UpdatedReceiver>, List<UpdatedConductor<CONDUCTOR>>> updateAdjacent(Direction[] dirs) {
+    public Pair<List<UpdatedReceiver>, List<UpdatedConductor<CONDUCTOR>>> updateAdjacent(Level level,
+	    Direction[] dirs) {
 	boolean flag = false;
 	int ordinal;
 	EnumConnectType prevConnection, connection;
@@ -84,7 +89,6 @@ public abstract class GenericRefreshingConnectTile<CABLETYPE, CONDUCTOR extends 
 	    previousConnections[ordinal] = connection;
 	    flag = true;
 	}
-
 	if (flag) {
 	    connectionSet.clear();
 	    for (BlockEntity entity : cableConnections) {
@@ -99,34 +103,34 @@ public abstract class GenericRefreshingConnectTile<CABLETYPE, CONDUCTOR extends 
 
     @Override
     public NETWORK getNetwork() {
+	NETWORK network = this.network;
 	if (network == null) {
-	    createNetworkFromThis();
+	    network = createNetworkFromThis();
 	}
 	return network;
     }
 
     @Override
-    public void createNetworkFromThis() {
-	network = createInstanceConductor(Sets.newHashSet((CONDUCTOR) this));
-	network.refreshNewNetwork();
+    public NETWORK createNetworkFromThis() {
+	NETWORK pNetwork = network = createNetworkFromConductors(Sets.newHashSet((CONDUCTOR) this));
+	pNetwork.refreshNewNetwork();
+	return pNetwork;
     }
 
     @Override
     public void setNetwork(NETWORK network) {
-	if (this.network == null) {
-	    this.network = network;
-	} else if (!this.network.equals(network)) {
+	NETWORK pNetwork = this.network;
+	if (pNetwork != null && !pNetwork.equals(network)) {
 	    removeFromNetwork();
-	    this.network = network;
 	}
+	this.network = network;
     }
 
     @Override
     public void updateNetwork(Direction... dirs) {
-	if (isRemoved()) {
+	if (isRemoved())
 	    return;
-	}
-
+	Level level = this.level;
 	if (level == null) {
 	    if (!isQueued) {
 		isQueued = true;
@@ -134,66 +138,47 @@ public abstract class GenericRefreshingConnectTile<CABLETYPE, CONDUCTOR extends 
 	    }
 	    return;
 	}
-
 	isQueued = false;
-
-	if (level.isClientSide) {
+	if (level.isClientSide)
 	    return;
-	}
+	Pair<List<UpdatedReceiver>, List<UpdatedConductor<CONDUCTOR>>> changed = updateAdjacent(level, dirs);
+	List<UpdatedConductor<CONDUCTOR>> conductors = changed.getSecond();
 
-	Pair<List<UpdatedReceiver>, List<UpdatedConductor<CONDUCTOR>>> changed = updateAdjacent(dirs);
-
-	if (changed.getSecond().isEmpty()) {
+	if (conductors.isEmpty()) {
 	    if (network == null) {
-		createNetworkFromThis();
+		network = createNetworkFromThis();
 	    }
 	} else {
 	    HashSet<NETWORK> adjacentNetworks = new HashSet<>();
-
-	    for (UpdatedConductor<CONDUCTOR> wire : changed.getSecond()) {
+	    for (UpdatedConductor<CONDUCTOR> wire : conductors) {
 		CONDUCTOR conductor = wire.conductor();
-
-		if (wire.removed() || conductor == null || conductor.isRemoved()) {
+		if (wire.removed() || conductor.isRemoved())
 		    continue;
-		}
-
 		adjacentNetworks.add(conductor.getNetwork());
 	    }
 
-	    if (adjacentNetworks.isEmpty()) {
-		if (network == null) {
-		    createNetworkFromThis();
-		}
-
-		network.updateConductors(changed.getSecond());
-	    } else if (adjacentNetworks.size() > 1) {
-		if (network == null) {
-		    createNetworkFromThis();
-		}
-
-		adjacentNetworks.add(network);
-
-		NETWORK newNetwork = createInstance(adjacentNetworks);
-		network = newNetwork;
-		newNetwork.refreshNewNetwork();
+	    NETWORK currentNetwork = network;
+	    if (currentNetwork == null && adjacentNetworks.size() == 1) {
+		currentNetwork = network = adjacentNetworks.iterator().next();
+		currentNetwork.updateConductor((CONDUCTOR) this, false);
 	    } else {
-		NETWORK adjacentNetwork = adjacentNetworks.iterator().next();
-
-		if (network == null) {
-		    network = adjacentNetwork;
-		    network.updateConductor((CONDUCTOR) this, false);
+		if (currentNetwork == null) {
+		    currentNetwork = network = createNetworkFromThis();
+		}
+		if (adjacentNetworks.isEmpty()) {
+		    currentNetwork.updateConductors(conductors);
 		} else {
-		    adjacentNetworks.add(network);
-
-		    NETWORK newNetwork = createInstance(adjacentNetworks);
-		    network = newNetwork;
+		    adjacentNetworks.add(currentNetwork);
+		    NETWORK newNetwork = network = createNetworkFromNetworks(adjacentNetworks);
 		    newNetwork.refreshNewNetwork();
 		}
 	    }
 	}
 
-	if (!changed.getFirst().isEmpty()) {
-	    network.updateRecievers(changed.getFirst());
+	List<UpdatedReceiver> receivers = changed.getFirst();
+	NETWORK currentNetwork = network;
+	if (!receivers.isEmpty() && currentNetwork != null) {
+	    currentNetwork.updateRecievers(receivers);
 	}
     }
 
@@ -217,23 +202,31 @@ public abstract class GenericRefreshingConnectTile<CABLETYPE, CONDUCTOR extends 
     @Override
     public void setRemoved() {
 	super.setRemoved();
+	Level level = this.level;
+	if (level == null)
+	    return;
+
 	if (!level.isClientSide && network != null) {
-	    getNetwork().split((CONDUCTOR) this);
+	    network.split(level, (CONDUCTOR) this);
 	}
 
     }
 
     @Override
     public void onChunkUnloaded() {
+	Level level = this.level;
+	if (level == null)
+	    return;
+
 	if (!level.isClientSide && network != null) {
-	    getNetwork().split((CONDUCTOR) this);
+	    network.split(level, (CONDUCTOR) this);
 	}
 	super.onChunkUnloaded();
     }
 
-    public abstract NETWORK createInstanceConductor(Set<CONDUCTOR> conductors);
+    public abstract NETWORK createNetworkFromConductors(Set<CONDUCTOR> conductors);
 
-    public abstract NETWORK createInstance(Set<NETWORK> networks);
+    public abstract NETWORK createNetworkFromNetworks(Set<NETWORK> networks);
 
     @Override
     public void onLoad() {
