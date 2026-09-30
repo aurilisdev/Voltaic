@@ -9,23 +9,13 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
-import voltaic.Voltaic;
 
-public class ProbableItem {
+public class ProbableItem extends AbstractProbable<ItemStack> {
 
-    public static final Codec<ProbableItem> CODEC = RecordCodecBuilder.create(instance ->
-    //
-    instance.group(
-	    //
-	    ItemStack.CODEC.fieldOf("item").forGetter(instance0 -> instance0.item),
-	    //
-	    Codec.DOUBLE.fieldOf("chance").forGetter(instance0 -> instance0.chance)
-
-    )
-	    //
-	    .apply(instance, ProbableItem::new)
-
-    );
+    public static final Codec<ProbableItem> CODEC = RecordCodecBuilder.create(instance -> instance
+	    .group(ItemStack.CODEC.fieldOf("item").forGetter(ProbableItem::getFullStack),
+		    Codec.DOUBLE.fieldOf("chance").forGetter(ProbableItem::getChance))
+	    .apply(instance, ProbableItem::new));
 
     public static final Codec<List<ProbableItem>> LIST_CODEC = CODEC.listOf();
 
@@ -37,8 +27,8 @@ public class ProbableItem {
 
 	@Override
 	public void encode(RegistryFriendlyByteBuf buf, ProbableItem item) {
-	    ItemStack.STREAM_CODEC.encode(buf, item.item);
-	    buf.writeDouble(item.chance);
+	    ItemStack.STREAM_CODEC.encode(buf, item.getFullStack());
+	    buf.writeDouble(item.getChance());
 	}
     };
 
@@ -62,36 +52,18 @@ public class ProbableItem {
 	}
     };
 
-    public static final List<ProbableItem> NONE = new ArrayList<>();
-
-    private ItemStack item;
-    // 0: 0% chance
-    // 1: 100% chance
-    private double chance;
+    public static final List<ProbableItem> NONE = List.of();
 
     public ProbableItem(ItemStack stack, double chance) {
-	item = stack;
-	setChance(chance);
-    }
-
-    public ItemStack getFullStack() {
-	return item;
-    }
-
-    private void setChance(double chance) {
-	this.chance = chance > 1 ? 1 : chance < 0 ? 0 : chance;
-    }
-
-    public double getChance() {
-	return chance;
+	super(stack, chance);
     }
 
     public ItemStack roll() {
-	double random = Voltaic.RANDOM.nextDouble();
-	if (random > 1 - chance) {
-	    double amount = chance >= 1 ? item.getCount() : item.getCount() * random;
+	double random = nextRoll();
+	if (passesChance(random)) {
+	    double amount = isGuaranteed() ? stack.getCount() : stack.getCount() * random;
 	    int itemCount = (int) Math.ceil(amount);
-	    return new ItemStack(item.getItem(), itemCount);
+	    return new ItemStack(stack.getItem(), itemCount);
 	}
 	return ItemStack.EMPTY;
     }

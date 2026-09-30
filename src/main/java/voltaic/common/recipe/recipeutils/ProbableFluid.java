@@ -10,24 +10,15 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.neoforged.neoforge.fluids.FluidStack;
-import voltaic.Voltaic;
 
-public class ProbableFluid {
+public class ProbableFluid extends AbstractProbable<FluidStack> {
 
-    public static final Codec<ProbableFluid> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-	    //
-	    BuiltInRegistries.FLUID.byNameCodec().fieldOf("fluid").forGetter(instance0 -> instance0.fluid.getFluid()),
-	    //
-	    Codec.INT.fieldOf("amount").forGetter(instance0 -> instance0.fluid.getAmount()),
-	    //
-	    Codec.DOUBLE.fieldOf("chance").forGetter(instance0 -> instance0.chance)
-
-    )
-	    //
-	    .apply(instance, (fluid, amt, chance) -> new ProbableFluid(new FluidStack(fluid, amt), chance))
-
-    //
-    );
+    public static final Codec<ProbableFluid> CODEC = RecordCodecBuilder.create(instance -> instance
+	    .group(BuiltInRegistries.FLUID.byNameCodec().fieldOf("fluid")
+		    .forGetter(instance0 -> instance0.stack.getFluid()),
+		    Codec.INT.fieldOf("amount").forGetter(instance0 -> instance0.stack.getAmount()),
+		    Codec.DOUBLE.fieldOf("chance").forGetter(ProbableFluid::getChance))
+	    .apply(instance, (fluid, amt, chance) -> new ProbableFluid(new FluidStack(fluid, amt), chance)));
 
     public static final Codec<List<ProbableFluid>> LIST_CODEC = CODEC.listOf();
 
@@ -39,8 +30,8 @@ public class ProbableFluid {
 
 	@Override
 	public void encode(RegistryFriendlyByteBuf buf, ProbableFluid fluid) {
-	    FluidStack.STREAM_CODEC.encode(buf, fluid.fluid);
-	    buf.writeDouble(fluid.chance);
+	    FluidStack.STREAM_CODEC.encode(buf, fluid.getFullStack());
+	    buf.writeDouble(fluid.getChance());
 	}
     };
 
@@ -65,36 +56,18 @@ public class ProbableFluid {
 	}
     };
 
-    public static final List<ProbableFluid> NONE = new ArrayList<>();
-
-    private FluidStack fluid;
-    // 0: 0% chance
-    // 1: 100% chance
-    private double chance;
+    public static final List<ProbableFluid> NONE = List.of();
 
     public ProbableFluid(FluidStack stack, double chance) {
-	fluid = stack;
-	setChance(chance);
-    }
-
-    public FluidStack getFullStack() {
-	return fluid;
-    }
-
-    private void setChance(double chance) {
-	this.chance = chance > 1 ? 1 : chance < 0 ? 0 : chance;
-    }
-
-    public double getChance() {
-	return chance;
+	super(stack, chance);
     }
 
     public FluidStack roll() {
-	double random = Voltaic.RANDOM.nextDouble();
-	if (random > 1 - chance) {
-	    double amount = chance >= 1 ? fluid.getAmount() : fluid.getAmount() * random;
+	double random = nextRoll();
+	if (passesChance(random)) {
+	    double amount = isGuaranteed() ? stack.getAmount() : stack.getAmount() * random;
 	    int fluidAmount = (int) Math.ceil(amount);
-	    return new FluidStack(fluid.getFluidHolder(), fluidAmount);
+	    return new FluidStack(stack.getFluidHolder(), fluidAmount);
 	}
 	return FluidStack.EMPTY;
     }
