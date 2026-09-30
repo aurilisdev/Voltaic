@@ -1,6 +1,5 @@
 package voltaic.prefab.tile.components.type;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
@@ -22,6 +21,8 @@ import voltaic.prefab.tile.GenericTile;
 import voltaic.prefab.tile.components.CapabilityInputType;
 import voltaic.prefab.tile.components.IComponentType;
 import voltaic.prefab.tile.components.utils.IComponentGasHandler;
+import voltaic.prefab.tile.components.utils.RegistryValidatorUtils;
+import voltaic.prefab.tile.components.utils.SidedCapabilityHandler;
 import voltaic.prefab.utilities.BlockEntityUtils;
 import voltaic.registers.VoltaicGases;
 
@@ -41,16 +42,9 @@ public class ComponentGasHandlerSimple extends PropertyGasTank implements ICompo
     public Direction[] outputDirections = {};
     private TagKey<Gas>[] validGasTags = (TagKey<Gas>[]) new TagKey<?>[0];
 
-    private boolean isSided = false;
-
     private final HashSet<Gas> validatorGases = new HashSet<>();
 
-    private IGasHandler[] sidedOptionals = new IGasHandler[6]; // Down Up North South West East
-
-    @Nullable
-    private IGasHandler inputOptional = null;
-    @Nullable
-    private IGasHandler outputOptional = null;
+    private final SidedCapabilityHandler<IGasHandler> sidedHandler = new SidedCapabilityHandler<>(IGasHandler[]::new);
 
     public ComponentGasHandlerSimple(GenericTile holder, String key, int capacity, int maxTemperature,
 	    int maxPressure) {
@@ -67,24 +61,26 @@ public class ComponentGasHandlerSimple extends PropertyGasTank implements ICompo
     }
 
     public ComponentGasHandlerSimple setInputDirections(BlockEntityUtils.MachineDirection... directions) {
-	isSided = true;
+	sidedHandler.enableSidedAccess();
 	inputDirections = BlockEntityUtils.MachineDirection.toDirectionArray(directions);
 	return this;
     }
 
     public ComponentGasHandlerSimple setOutputDirections(BlockEntityUtils.MachineDirection... directions) {
-	isSided = true;
+	sidedHandler.enableSidedAccess();
 	outputDirections = BlockEntityUtils.MachineDirection.toDirectionArray(directions);
 	return this;
     }
 
     public ComponentGasHandlerSimple universalInput() {
 	inputDirections = Direction.values();
+	sidedHandler.enableSidedAccess();
 	return this;
     }
 
     public ComponentGasHandlerSimple universalOutput() {
 	outputDirections = Direction.values();
+	sidedHandler.enableSidedAccess();
 	return this;
     }
 
@@ -98,13 +94,13 @@ public class ComponentGasHandlerSimple extends PropertyGasTank implements ICompo
 	return (ComponentGasHandlerSimple) super.setOnGasCondensed(onGasCondensed);
     }
 
-    public ComponentGasHandlerSimple setValidFluids(Gas... fluids) {
-	validGases = fluids;
+    public ComponentGasHandlerSimple setValidGases(Gas... gases) {
+	validGases = gases;
 	return this;
     }
 
-    public ComponentGasHandlerSimple setValidFluidTags(TagKey<Gas>... fluids) {
-	validGasTags = fluids;
+    public ComponentGasHandlerSimple setValidGasTags(TagKey<Gas>... gasTags) {
+	validGasTags = gasTags;
 	return this;
     }
 
@@ -130,22 +126,14 @@ public class ComponentGasHandlerSimple extends PropertyGasTank implements ICompo
 
     @Override
     public void refreshIfUpdate(Level level, BlockState oldState, BlockState newState) {
-	if (isSided && oldState.hasProperty(VoltaicBlockStates.FACING)
-		&& newState.hasProperty(VoltaicBlockStates.FACING)
-		&& oldState.getValue(VoltaicBlockStates.FACING) != newState.getValue(VoltaicBlockStates.FACING)) {
+	if (sidedHandler.requiresRefresh(oldState, newState)) {
 	    defineOptionals(level, newState.getValue(VoltaicBlockStates.FACING));
 	}
     }
 
     @Override
     public @Nullable IGasHandler getCapability(@Nullable Direction direction, CapabilityInputType mode) {
-	if (!isSided)
-	    return this;
-
-	if (direction == null)
-	    return null;
-
-	return sidedOptionals[direction.ordinal()];
+	return sidedHandler.get(direction, this);
     }
 
     @Override
@@ -155,30 +143,14 @@ public class ComponentGasHandlerSimple extends PropertyGasTank implements ICompo
 
     private void defineOptionals(Level level, Direction facing) {
 	level.invalidateCapabilities(holder.getBlockPos());
-
-	sidedOptionals = new IGasHandler[6];
-	inputOptional = null;
-	outputOptional = null;
-
-	inputOptional = new InputTank(this);
-	for (Direction dir : inputDirections) {
-	    sidedOptionals[BlockEntityUtils.getRelativeSide(facing, dir).ordinal()] = inputOptional;
-	}
-
-	outputOptional = new OutputTank(this);
-	for (Direction dir : outputDirections) {
-	    sidedOptionals[BlockEntityUtils.getRelativeSide(facing, dir).ordinal()] = outputOptional;
-	}
+	sidedHandler.refresh(facing, inputDirections, () -> new InputTank(this), outputDirections,
+		() -> new OutputTank(this));
     }
 
     @Override
     public void onLoad(Level level) {
 	IComponentGasHandler.super.onLoad(level);
-	Collections.addAll(validatorGases, validGases);
-	for (TagKey<Gas> tag : validGasTags) {
-	    VoltaicGases.GAS_REGISTRY.getTag(tag).get().stream()
-		    .forEach(holder -> { validatorGases.add(holder.value()); });
-	}
+	RegistryValidatorUtils.populate(validatorGases, validGases, validGasTags, VoltaicGases.GAS_REGISTRY);
 	if (!validatorGases.isEmpty()) {
 	    isGasValid = gasStack -> validatorGases.contains(gasStack.getGas());
 	}

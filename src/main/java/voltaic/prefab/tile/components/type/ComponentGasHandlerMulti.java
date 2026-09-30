@@ -1,7 +1,6 @@
 package voltaic.prefab.tile.components.type;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -28,6 +27,8 @@ import voltaic.prefab.tile.GenericTile;
 import voltaic.prefab.tile.components.CapabilityInputType;
 import voltaic.prefab.tile.components.IComponentType;
 import voltaic.prefab.tile.components.utils.IComponentGasHandler;
+import voltaic.prefab.tile.components.utils.RegistryValidatorUtils;
+import voltaic.prefab.tile.components.utils.SidedCapabilityHandler;
 import voltaic.prefab.utilities.BlockEntityUtils;
 import voltaic.prefab.utilities.math.MathUtils;
 import voltaic.registers.VoltaicGases;
@@ -35,8 +36,6 @@ import voltaic.registers.VoltaicGases;
 public class ComponentGasHandlerMulti implements IComponentGasHandler {
 
     private final GenericTile holder;
-
-    private boolean isSided = false;
 
     public Direction[] inputDirections = {};
     public Direction[] outputDirections = {};
@@ -49,15 +48,9 @@ public class ComponentGasHandlerMulti implements IComponentGasHandler {
     private final HashSet<Gas> inputValidatorGases = new HashSet<>();
     private final HashSet<Gas> outputValidatorGases = new HashSet<>();
 
-    private IGasHandler[] sidedOptionals = new IGasHandler[6]; // Down Up North South West East
+    private final SidedCapabilityHandler<IGasHandler> sidedHandler = new SidedCapabilityHandler<>(IGasHandler[]::new);
 
-    @Nullable
-    private RecipeType<? extends AbstractMaterialRecipe> recipeType;
-
-    @Nullable
-    private IGasHandler inputOptional = null;
-    @Nullable
-    private IGasHandler outputOptional = null;
+    private @Nullable RecipeType<? extends AbstractMaterialRecipe> recipeType;
 
     public ComponentGasHandlerMulti(GenericTile holder) {
 	this.holder = holder;
@@ -128,13 +121,13 @@ public class ComponentGasHandlerMulti implements IComponentGasHandler {
     }
 
     public ComponentGasHandlerMulti setInputDirections(BlockEntityUtils.MachineDirection... directions) {
-	isSided = true;
+	sidedHandler.enableSidedAccess();
 	inputDirections = BlockEntityUtils.MachineDirection.toDirectionArray(directions);
 	return this;
     }
 
     public ComponentGasHandlerMulti setOutputDirections(BlockEntityUtils.MachineDirection... directions) {
-	isSided = true;
+	sidedHandler.enableSidedAccess();
 	outputDirections = BlockEntityUtils.MachineDirection.toDirectionArray(directions);
 	return this;
     }
@@ -156,11 +149,11 @@ public class ComponentGasHandlerMulti implements IComponentGasHandler {
     }
 
     public int tankCount(boolean input) {
-	return input ? inputTanks.length : outputTanks.length;
+	return tanks(input).length;
     }
 
     public GasStack getGasInTank(int tank, boolean input) {
-	return (input ? inputTanks : outputTanks)[tank].getGas();
+	return tanks(input)[tank].getGas();
     }
 
     @Nullable
@@ -188,48 +181,38 @@ public class ComponentGasHandlerMulti implements IComponentGasHandler {
     }
 
     public int getTankCapacity(int tank, boolean input) {
-	if (input)
-	    return inputTanks[tank].getCapacity();
-	return outputTanks[tank].getCapacity();
+	return tanks(input)[tank].getCapacity();
     }
 
     public boolean isGasValid(int tank, GasStack stack, boolean input) {
-	if (input)
-	    return inputTanks[tank].isGasValid(stack);
-	return outputTanks[tank].isGasValid(stack);
+	return tanks(input)[tank].isGasValid(stack);
     }
 
     public int fill(int tank, GasStack resource, GasAction action, boolean input) {
-	if (input)
-	    return inputTanks[tank].fill(resource, action);
-	return outputTanks[tank].fill(resource, action);
+	return tanks(input)[tank].fill(resource, action);
     }
 
     public GasStack drain(int tank, GasStack resource, GasAction action, boolean input) {
-	if (input)
-	    return inputTanks[tank].drain(resource, action);
-	return outputTanks[tank].drain(resource, action);
+	return tanks(input)[tank].drain(resource, action);
     }
 
     public GasStack drain(int tank, int maxDrain, GasAction action, boolean input) {
-	if (input)
-	    return inputTanks[tank].drain(maxDrain, action);
-	return outputTanks[tank].drain(maxDrain, action);
+	return tanks(input)[tank].drain(maxDrain, action);
+    }
+
+    private PropertyGasTank[] tanks(boolean input) {
+	return input ? inputTanks : outputTanks;
     }
 
     @Override
     @Nullable
     public IGasHandler getCapability(@Nullable Direction direction, CapabilityInputType mode) {
-	if (direction == null || !isSided)
-	    return null;
-	return sidedOptionals[direction.ordinal()];
+	return sidedHandler.getSided(direction);
     }
 
     @Override
     public void refreshIfUpdate(Level level, BlockState oldState, BlockState newState) {
-	if (isSided && oldState.hasProperty(VoltaicBlockStates.FACING)
-		&& newState.hasProperty(VoltaicBlockStates.FACING)
-		&& oldState.getValue(VoltaicBlockStates.FACING) != newState.getValue(VoltaicBlockStates.FACING)) {
+	if (sidedHandler.requiresRefresh(oldState, newState)) {
 	    defineOptionals(level, newState.getValue(VoltaicBlockStates.FACING));
 	}
     }
@@ -241,20 +224,8 @@ public class ComponentGasHandlerMulti implements IComponentGasHandler {
 
     private void defineOptionals(Level level, Direction facing) {
 	level.invalidateCapabilities(holder.getBlockPos());
-
-	sidedOptionals = new IGasHandler[6];
-	inputOptional = null;
-	outputOptional = null;
-
-	inputOptional = new InputTankDispatcher(inputTanks);
-	for (Direction dir : inputDirections) {
-	    sidedOptionals[BlockEntityUtils.getRelativeSide(facing, dir).ordinal()] = inputOptional;
-	}
-
-	outputOptional = new OutputTankDispatcher(outputTanks);
-	for (Direction dir : outputDirections) {
-	    sidedOptionals[BlockEntityUtils.getRelativeSide(facing, dir).ordinal()] = outputOptional;
-	}
+	sidedHandler.refresh(facing, inputDirections, () -> new InputTankDispatcher(inputTanks), outputDirections,
+		() -> new OutputTankDispatcher(outputTanks));
     }
 
     @Override
@@ -268,177 +239,89 @@ public class ComponentGasHandlerMulti implements IComponentGasHandler {
 
 	RecipeType<? extends AbstractMaterialRecipe> recipeType = this.recipeType;
 	if (recipeType != null) {
-	    List<RecipeHolder<VoltaicRecipe>> recipes = VoltaicRecipe.findRecipesbyType(recipeType, holder.getLevel());
-
-	    List<Gas> inputGasHolder = new ArrayList<>();
-	    List<Gas> outputGasHolder = new ArrayList<>();
-
-	    double maxGasInputAmount = 0;
-	    double maxGasInputTemperature = 0;
-	    int maxGasInputPressure = 0;
-
-	    double maxGasOutputAmount = 0;
-	    double maxGasOutputTemperature = 0;
-	    int maxGasOutputPressure = 0;
-
-	    double maxGasBiproductAmount = 0;
-	    double maxGasBiproductTemperature = 0;
-	    int maxGasBiproudctPressure = 0;
-
-	    for (RecipeHolder<VoltaicRecipe> iRecipe : recipes) {
-		AbstractMaterialRecipe recipe = (AbstractMaterialRecipe) iRecipe.value();
-		for (GasIngredient ing : recipe.getGasIngredients()) {
-		    ing.getMatchingGases().forEach(h -> inputGasHolder.add(h.getGas()));
-		    GasStack gas = ing.getGasStack();
-		    if (gas.getAmount() > maxGasInputAmount) {
-			maxGasInputAmount = gas.getAmount();
-		    }
-		    if (gas.getTemperature() > maxGasInputTemperature) {
-			maxGasInputTemperature = gas.getTemperature();
-		    }
-		    if (gas.getPressure() > maxGasInputPressure) {
-			maxGasInputPressure = gas.getPressure();
-		    }
-		}
-
-		GasStack output = recipe.getGasRecipeOutput();
-		outputGasHolder.add(output.getGas());
-		if (output.getAmount() > maxGasOutputAmount) {
-		    maxGasOutputAmount = output.getAmount();
-		}
-		if (output.getTemperature() > maxGasOutputTemperature) {
-		    maxGasOutputTemperature = output.getTemperature();
-		}
-		if (output.getPressure() > maxGasOutputPressure) {
-		    maxGasOutputPressure = output.getPressure();
-		}
-
-		if (recipe.hasGasBiproducts()) {
-
-		    for (GasStack stack : recipe.getFullGasBiStacks()) {
-
-			outputGasHolder.add(stack.getGas());
-
-			if (stack.getAmount() > maxGasBiproductAmount) {
-			    maxGasBiproductAmount = stack.getAmount();
-			}
-			if (stack.getTemperature() > maxGasBiproductTemperature) {
-			    maxGasBiproductTemperature = stack.getTemperature();
-			}
-			if (stack.getPressure() > maxGasBiproudctPressure) {
-			    maxGasBiproudctPressure = stack.getPressure();
-			}
-
-		    }
-
-		}
-
-	    }
-	    inputValidatorGases.addAll(inputGasHolder);
-	    outputValidatorGases.addAll(outputGasHolder);
-
-	    if (maxGasInputAmount > 0) {
-
-		maxGasInputAmount = maxGasInputAmount / TANK_MULTIPLIER * TANK_MULTIPLIER + TANK_MULTIPLIER;
-		// if you are dumb enough to pass in 2^32 for the pressure the crash in on you
-		// pal
-		int logged = MathUtils.logBase2(maxGasInputPressure);
-		logged++;
-		maxGasInputPressure = (int) Math.pow(2, logged);
-
-		for (PropertyGasTank tank : inputTanks) {
-
-		    if (tank.getCapacity() < maxGasInputAmount) {
-			tank.setCapacity((int) maxGasInputAmount);
-		    }
-
-		    if (tank.getMaxTemperature() < maxGasInputTemperature) {
-
-			tank.setMaxTemperature((int) (maxGasInputTemperature + 10.0));
-
-		    }
-
-		    if (tank.getMaxPressure() < maxGasInputPressure) {
-
-			tank.setMaxPressure(maxGasInputPressure);
-
-		    }
-
-		}
-
-	    }
-
-	    int offset = 0;
-
-	    if (maxGasOutputAmount > 0) {
-
-		maxGasOutputAmount = maxGasOutputAmount / TANK_MULTIPLIER * TANK_MULTIPLIER + TANK_MULTIPLIER;
-
-		PropertyGasTank tank = outputTanks[0];
-
-		int logged = MathUtils.logBase2(maxGasOutputPressure);
-		logged++;
-		maxGasOutputPressure = (int) Math.pow(2, logged);
-
-		if (tank.getCapacity() < maxGasOutputAmount) {
-		    tank.setCapacity((int) maxGasOutputAmount);
-		}
-
-		if (tank.getMaxTemperature() < maxGasOutputTemperature) {
-
-		    tank.setMaxTemperature((int) (maxGasOutputTemperature + 10.0));
-
-		}
-
-		if (tank.getMaxPressure() < maxGasOutputPressure) {
-
-		    tank.setMaxPressure(maxGasOutputPressure);
-
-		}
-
-		offset = 1;
-
-	    }
-
-	    if (maxGasBiproductAmount > 0) {
-
-		maxGasBiproductAmount = maxGasBiproductAmount / TANK_MULTIPLIER * TANK_MULTIPLIER + TANK_MULTIPLIER;
-
-		int logged = MathUtils.logBase2(maxGasBiproudctPressure);
-		logged++;
-		maxGasBiproudctPressure = (int) Math.pow(2, logged);
-
-		for (int i = 0; i < outputTanks.length - offset; i++) {
-
-		    PropertyGasTank tank = outputTanks[i + offset];
-
-		    if (tank.getCapacity() < maxGasBiproductAmount) {
-			tank.setCapacity((int) maxGasBiproductAmount);
-		    }
-
-		    if (tank.getMaxTemperature() < maxGasBiproductTemperature) {
-			tank.setMaxTemperature((int) (maxGasBiproductTemperature + 10.0));
-		    }
-
-		    if (tank.getMaxPressure() < maxGasBiproudctPressure) {
-			tank.setMaxPressure(maxGasBiproudctPressure);
-		    }
-		}
-
-	    }
-
+	    configureTanksFromRecipes(recipeType);
 	} else {
-	    Collections.addAll(inputValidatorGases, validInputGases);
-	    for (TagKey<Gas> tag : validInputGasTags) {
-		VoltaicGases.GAS_REGISTRY.getTag(tag).get().stream()
-			.forEach(holder -> { inputValidatorGases.add(holder.value()); });
+	    RegistryValidatorUtils.populate(inputValidatorGases, validInputGases, validInputGasTags,
+		    VoltaicGases.GAS_REGISTRY);
+	    RegistryValidatorUtils.populate(outputValidatorGases, validOutputGases, validOutputGasTags,
+		    VoltaicGases.GAS_REGISTRY);
+	}
+	applyValidators();
+    }
+
+    private void configureTanksFromRecipes(RecipeType<? extends AbstractMaterialRecipe> recipeType) {
+	GasRecipeRequirements requirements = collectRecipeRequirements(recipeType);
+	inputValidatorGases.addAll(requirements.inputGases);
+	outputValidatorGases.addAll(requirements.outputGases);
+
+	configureTanks(inputTanks, 0, requirements.input);
+	int outputOffset = configurePrimaryOutputTank(requirements.output);
+	configureTanks(outputTanks, outputOffset, requirements.biproduct);
+    }
+
+    private GasRecipeRequirements collectRecipeRequirements(RecipeType<? extends AbstractMaterialRecipe> recipeType) {
+	GasRecipeRequirements requirements = new GasRecipeRequirements();
+	for (RecipeHolder<VoltaicRecipe> recipeHolder : VoltaicRecipe.findRecipesbyType(recipeType, holder.getLevel())) {
+	    AbstractMaterialRecipe recipe = (AbstractMaterialRecipe) recipeHolder.value();
+	    for (GasIngredient ingredient : recipe.getGasIngredients()) {
+		ingredient.getMatchingGases().forEach(gas -> requirements.inputGases.add(gas.getGas()));
+		requirements.input.include(ingredient.getGasStack());
 	    }
-	    Collections.addAll(outputValidatorGases, validOutputGases);
-	    for (TagKey<Gas> tag : validOutputGasTags) {
-		VoltaicGases.GAS_REGISTRY.getTag(tag).get().stream()
-			.forEach(holder -> { outputValidatorGases.add(holder.value()); });
+
+	    GasStack output = recipe.getGasRecipeOutput();
+	    requirements.outputGases.add(output.getGas());
+	    requirements.output.include(output);
+
+	    if (recipe.hasGasBiproducts()) {
+		for (GasStack biproduct : recipe.getFullGasBiStacks()) {
+		    requirements.outputGases.add(biproduct.getGas());
+		    requirements.biproduct.include(biproduct);
+		}
 	    }
 	}
+	return requirements;
+    }
+
+    private static void configureTanks(PropertyGasTank[] tanks, int startIndex, GasTankRequirement requirement) {
+	if (requirement.amount <= 0)
+	    return;
+
+	for (int i = startIndex; i < tanks.length; i++) {
+	    configureTank(tanks[i], requirement);
+	}
+    }
+
+    private int configurePrimaryOutputTank(GasTankRequirement requirement) {
+	if (requirement.amount <= 0)
+	    return 0;
+
+	configureTank(outputTanks[0], requirement);
+	return 1;
+    }
+
+    private static void configureTank(PropertyGasTank tank, GasTankRequirement requirement) {
+	double capacity = roundUpTankCapacity(requirement.amount);
+	int pressure = roundUpPressure(requirement.pressure);
+	if (tank.getCapacity() < capacity) {
+	    tank.setCapacity((int) capacity);
+	}
+	if (tank.getMaxTemperature() < requirement.temperature) {
+	    tank.setMaxTemperature((int) (requirement.temperature + 10.0));
+	}
+	if (tank.getMaxPressure() < pressure) {
+	    tank.setMaxPressure(pressure);
+	}
+    }
+
+    private static double roundUpTankCapacity(double amount) {
+	return amount / TANK_MULTIPLIER * TANK_MULTIPLIER + TANK_MULTIPLIER;
+    }
+
+    private static int roundUpPressure(int pressure) {
+	return (int) Math.pow(2, MathUtils.logBase2(pressure) + 1);
+    }
+
+    private void applyValidators() {
 	if (!inputValidatorGases.isEmpty()) {
 	    for (PropertyGasTank tank : inputTanks) {
 		tank.setValidator(gasStack -> inputValidatorGases.contains(gasStack.getGas()));
@@ -448,6 +331,28 @@ public class ComponentGasHandlerMulti implements IComponentGasHandler {
 	    for (PropertyGasTank tank : outputTanks) {
 		tank.setValidator(gasStack -> outputValidatorGases.contains(gasStack.getGas()));
 	    }
+	}
+    }
+
+    private static final class GasRecipeRequirements {
+
+	private final List<Gas> inputGases = new ArrayList<>();
+	private final List<Gas> outputGases = new ArrayList<>();
+	private final GasTankRequirement input = new GasTankRequirement();
+	private final GasTankRequirement output = new GasTankRequirement();
+	private final GasTankRequirement biproduct = new GasTankRequirement();
+    }
+
+    private static final class GasTankRequirement {
+
+	private double amount;
+	private double temperature;
+	private int pressure;
+
+	private void include(GasStack stack) {
+	    amount = Math.max(amount, stack.getAmount());
+	    temperature = Math.max(temperature, stack.getTemperature());
+	    pressure = Math.max(pressure, stack.getPressure());
 	}
     }
 
@@ -466,11 +371,11 @@ public class ComponentGasHandlerMulti implements IComponentGasHandler {
 	return outputTanks;
     }
 
-    private class InputTankDispatcher implements IGasHandler {
+    private abstract static class AbstractGasTankDispatcher implements IGasHandler {
 
-	private final PropertyGasTank[] tanks;
+	protected final PropertyGasTank[] tanks;
 
-	public InputTankDispatcher(PropertyGasTank[] tanks) {
+	protected AbstractGasTankDispatcher(PropertyGasTank[] tanks) {
 	    this.tanks = tanks;
 	}
 
@@ -497,6 +402,24 @@ public class ComponentGasHandlerMulti implements IComponentGasHandler {
 	@Override
 	public int getTankMaxPressure(int tank) {
 	    return tanks[tank].getMaxPressure();
+	}
+
+	@Override
+	public int heat(int tank, int deltaTemperature, GasAction action) {
+	    return tanks[tank].heat(tank, deltaTemperature, action);
+	}
+
+	@Override
+	public int bringPressureTo(int tank, int atm, GasAction action) {
+	    return tanks[tank].bringPressureTo(tank, atm, action);
+	}
+
+    }
+
+    private static final class InputTankDispatcher extends AbstractGasTankDispatcher {
+
+	private InputTankDispatcher(PropertyGasTank[] tanks) {
+	    super(tanks);
 	}
 
 	@Override
@@ -527,49 +450,12 @@ public class ComponentGasHandlerMulti implements IComponentGasHandler {
 	    return GasStack.EMPTY;
 	}
 
-	@Override
-	public int heat(int tank, int deltaTemperature, GasAction action) {
-	    return tanks[tank].heat(tank, deltaTemperature, action);
-	}
-
-	@Override
-	public int bringPressureTo(int tank, int atm, GasAction action) {
-	    return tanks[tank].bringPressureTo(tank, atm, action);
-	}
-
     }
 
-    private class OutputTankDispatcher implements IGasHandler {
+    private static final class OutputTankDispatcher extends AbstractGasTankDispatcher {
 
-	private final PropertyGasTank[] tanks;
-
-	public OutputTankDispatcher(PropertyGasTank[] tanks) {
-	    this.tanks = tanks;
-	}
-
-	@Override
-	public int getTanks() {
-	    return tanks.length;
-	}
-
-	@Override
-	public GasStack getGasInTank(int tank) {
-	    return tanks[tank].getGas();
-	}
-
-	@Override
-	public int getTankCapacity(int tank) {
-	    return tanks[tank].getCapacity();
-	}
-
-	@Override
-	public int getTankMaxTemperature(int tank) {
-	    return tanks[tank].getMaxTemperature();
-	}
-
-	@Override
-	public int getTankMaxPressure(int tank) {
-	    return tanks[tank].getMaxPressure();
+	private OutputTankDispatcher(PropertyGasTank[] tanks) {
+	    super(tanks);
 	}
 
 	@Override
@@ -594,16 +480,6 @@ public class ComponentGasHandlerMulti implements IComponentGasHandler {
 	@Override
 	public GasStack drain(int maxFill, GasAction action) {
 	    return GasStack.EMPTY;
-	}
-
-	@Override
-	public int heat(int tank, int deltaTemperature, GasAction action) {
-	    return tanks[tank].heat(tank, deltaTemperature, action);
-	}
-
-	@Override
-	public int bringPressureTo(int tank, int atm, GasAction action) {
-	    return tanks[tank].bringPressureTo(tank, atm, action);
 	}
 
     }

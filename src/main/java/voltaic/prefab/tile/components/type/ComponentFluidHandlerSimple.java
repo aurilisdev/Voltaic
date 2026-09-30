@@ -1,6 +1,5 @@
 package voltaic.prefab.tile.components.type;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.function.Predicate;
 
@@ -20,6 +19,8 @@ import voltaic.prefab.tile.GenericTile;
 import voltaic.prefab.tile.components.CapabilityInputType;
 import voltaic.prefab.tile.components.IComponentType;
 import voltaic.prefab.tile.components.utils.IComponentFluidHandler;
+import voltaic.prefab.tile.components.utils.RegistryValidatorUtils;
+import voltaic.prefab.tile.components.utils.SidedCapabilityHandler;
 import voltaic.prefab.utilities.BlockEntityUtils;
 
 /**
@@ -45,14 +46,8 @@ public class ComponentFluidHandlerSimple extends PropertyFluidTank implements IC
 
     private final HashSet<Fluid> validatorFluids = new HashSet<>();
 
-    private IFluidHandler[] sidedOptionals = new IFluidHandler[6]; // Down Up North South West East
-
-    @Nullable
-    private IFluidHandler inputOptional = null;
-    @Nullable
-    private IFluidHandler outputOptional = null;
-
-    private boolean isSided = false;
+    private final SidedCapabilityHandler<IFluidHandler> sidedHandler = new SidedCapabilityHandler<>(
+	    IFluidHandler[]::new);
 
     public ComponentFluidHandlerSimple(int capacity, Predicate<FluidStack> validator, GenericTile holder, String key) {
 	super(capacity, validator, holder, key);
@@ -68,13 +63,13 @@ public class ComponentFluidHandlerSimple extends PropertyFluidTank implements IC
 
     public ComponentFluidHandlerSimple setInputDirections(BlockEntityUtils.MachineDirection... directions) {
 	inputDirections = BlockEntityUtils.MachineDirection.toDirectionArray(directions);
-	isSided = true;
+	sidedHandler.enableSidedAccess();
 	return this;
     }
 
     public ComponentFluidHandlerSimple setOutputDirections(BlockEntityUtils.MachineDirection... directions) {
 	outputDirections = BlockEntityUtils.MachineDirection.toDirectionArray(directions);
-	isSided = true;
+	sidedHandler.enableSidedAccess();
 	return this;
     }
 
@@ -110,22 +105,14 @@ public class ComponentFluidHandlerSimple extends PropertyFluidTank implements IC
 
     @Override
     public void refreshIfUpdate(Level level, BlockState oldState, BlockState newState) {
-	if (isSided && oldState.hasProperty(VoltaicBlockStates.FACING)
-		&& newState.hasProperty(VoltaicBlockStates.FACING)
-		&& oldState.getValue(VoltaicBlockStates.FACING) != newState.getValue(VoltaicBlockStates.FACING)) {
+	if (sidedHandler.requiresRefresh(oldState, newState)) {
 	    defineOptionals(level, newState.getValue(VoltaicBlockStates.FACING));
 	}
     }
 
     @Override
     public @Nullable IFluidHandler getCapability(@Nullable Direction side, CapabilityInputType type) {
-	if (!isSided)
-	    return this;
-
-	if (side == null)
-	    return null;
-
-	return sidedOptionals[side.ordinal()];
+	return sidedHandler.get(side, this);
     }
 
     @Override
@@ -135,34 +122,14 @@ public class ComponentFluidHandlerSimple extends PropertyFluidTank implements IC
 
     private void defineOptionals(Level level, Direction facing) {
 	level.invalidateCapabilities(holder.getBlockPos());
-	sidedOptionals = new IFluidHandler[6];
-	inputOptional = null;
-	outputOptional = null;
-
-	if (!isSided)
-	    return;
-
-	inputOptional = new InputTank(this);
-	for (Direction dir : inputDirections) {
-	    int index = BlockEntityUtils.getRelativeSide(facing, dir).ordinal();
-	    sidedOptionals[index] = inputOptional;
-	}
-
-	outputOptional = new OutputTank(this);
-	for (Direction dir : outputDirections) {
-	    int index = BlockEntityUtils.getRelativeSide(facing, dir).ordinal();
-	    sidedOptionals[index] = outputOptional;
-	}
+	sidedHandler.refresh(facing, inputDirections, () -> new InputTank(this), outputDirections,
+		() -> new OutputTank(this));
     }
 
     @Override
     public void onLoad(Level level) {
 	IComponentFluidHandler.super.onLoad(level);
-	Collections.addAll(validatorFluids, validFluids);
-	for (TagKey<Fluid> tag : validFluidTags) {
-	    BuiltInRegistries.FLUID.getTag(tag).get().stream()
-		    .forEach(holder -> { validatorFluids.add(holder.value()); });
-	}
+	RegistryValidatorUtils.populate(validatorFluids, validFluids, validFluidTags, BuiltInRegistries.FLUID);
 	if (!validatorFluids.isEmpty()) {
 	    validator = fluidStack -> validatorFluids.contains(fluidStack.getFluid());
 	}
