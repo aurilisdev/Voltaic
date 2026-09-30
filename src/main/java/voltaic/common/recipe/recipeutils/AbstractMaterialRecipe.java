@@ -50,4 +50,8 @@ public abstract class AbstractMaterialRecipe extends VoltaicRecipe {
 	return ItemStack.EMPTY;
     }
 
+    public boolean shouldConsumeItemIngredient(int ingredientIndex) {
+	return true;
+    }
+
 }

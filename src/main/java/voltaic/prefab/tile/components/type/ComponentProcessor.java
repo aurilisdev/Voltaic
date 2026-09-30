@@ -3,6 +3,7 @@ package voltaic.prefab.tile.components.type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiPredicate;
+import java.util.function.IntPredicate;
 
 import javax.annotation.Nullable;
 
@@ -363,7 +364,6 @@ public class ComponentProcessor implements IComponent {
 	    return false;
 
 	return hasRoomForBiproducts(recipe, procNumber, fluidBiproductOffset, gasBiproductOffset);
-
     }
 
     private <R extends VoltaicRecipe> boolean canProcessRecipe(int procNumber, RecipeType<?> typeIn,
@@ -624,65 +624,51 @@ public class ComponentProcessor implements IComponent {
 
     public <R extends AbstractMaterialRecipe> void processMaterialRecipe(int procNumber, Class<R> recipeClass,
 	    int fluidBiproductOffset, int gasBiproductOffset) {
-
 	R recipe = getActiveRecipe(procNumber, recipeClass);
-
 	if (recipe == null)
 	    return;
 
 	ComponentInventory inv = holder.requireComponent(IComponentType.Inventory);
-
 	outputBiproducts(recipe, procNumber, fluidBiproductOffset, gasBiproductOffset);
-
 	ItemStack itemOutput = recipe.getItemRecipeOutput();
-
 	if (!itemOutput.isEmpty())
 	    outputItem(inv, procNumber, itemOutput);
 
 	FluidStack fluidOutput = recipe.getFluidRecipeOutput();
-
 	if (!fluidOutput.isEmpty()) {
 	    ComponentFluidHandlerMulti handler = holder.requireComponent(IComponentType.FluidHandler);
 	    outputFluid(handler, fluidOutput);
 	}
 
 	GasStack gasOutput = recipe.getGasRecipeOutput();
-
 	if (!gasOutput.isEmpty()) {
 	    ComponentGasHandlerMulti handler = holder.requireComponent(IComponentType.GasHandler);
 	    outputGas(handler, gasOutput);
 	}
 
 	List<CountableIngredient> itemIngredients = recipe.getCountedIngredients();
-
 	if (!itemIngredients.isEmpty()) {
 	    int[] amounts = itemIngredients.stream().mapToInt(CountableIngredient::getStackSize).toArray();
 	    List<Integer> arrangement = requireItemArrangement(recipe, procNumber, amounts.length, inv);
-
-	    consumeItems(inv, procNumber, arrangement, amounts);
+	    consumeItems(inv, procNumber, arrangement, amounts, recipe::shouldConsumeItemIngredient);
 	}
 
 	List<FluidIngredient> fluidIngredients = recipe.getFluidIngredients();
-
 	if (!fluidIngredients.isEmpty()) {
 	    ComponentFluidHandlerMulti handler = holder.requireComponent(IComponentType.FluidHandler);
 	    List<Integer> arrangement = requireFluidArrangement(recipe, procNumber, fluidIngredients.size(), handler);
-
 	    consumeFluids(handler, arrangement, fluidIngredients);
 	}
 
 	List<GasIngredient> gasIngredients = recipe.getGasIngredients();
-
 	if (!gasIngredients.isEmpty()) {
 	    ComponentGasHandlerMulti handler = holder.requireComponent(IComponentType.GasHandler);
 	    List<Integer> arrangement = requireGasArrangement(recipe, procNumber, gasIngredients.size(), handler);
-
 	    consumeGases(handler, arrangement, gasIngredients);
 	}
 
 	dispenseExperience(inv, recipe.getXp());
 	setChanged();
-
     }
 
     private void processRecipe(VoltaicRecipe recipe, int procNumber, MainOutput mainOutput, Runnable output,
@@ -763,8 +749,16 @@ public class ComponentProcessor implements IComponent {
     }
 
     private static void consumeItems(ComponentInventory inv, int procNumber, List<Integer> arrangement, int[] amounts) {
+	consumeItems(inv, procNumber, arrangement, amounts, index -> true);
+    }
+
+    private static void consumeItems(ComponentInventory inv, int procNumber, List<Integer> arrangement, int[] amounts,
+	    IntPredicate shouldConsume) {
 	List<Integer> inputSlots = inv.getInputSlotsForProcessor(procNumber);
 	for (int i = 0; i < amounts.length; i++) {
+	    if (!shouldConsume.test(i))
+		continue;
+
 	    int slot = inputSlots.get(arrangement.get(i));
 	    ItemStack stack = inv.getItem(slot);
 	    stack.shrink(amounts[i]);

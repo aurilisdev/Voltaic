@@ -2,6 +2,8 @@ package voltaic.common.item;
 
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import net.minecraft.core.Holder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -21,9 +23,9 @@ import voltaic.registers.VoltaicCapabilities;
 
 public class ItemVoltaic extends Item implements CreativeTabSupplier {
 
-    private final Holder<CreativeModeTab> creativeTab;
+    private final @Nullable Holder<CreativeModeTab> creativeTab;
 
-    public ItemVoltaic(Properties properties, Holder<CreativeModeTab> creativeTab) {
+    public ItemVoltaic(Properties properties, @Nullable Holder<CreativeModeTab> creativeTab) {
 	super(properties);
 	this.creativeTab = creativeTab;
     }
@@ -35,7 +37,7 @@ public class ItemVoltaic extends Item implements CreativeTabSupplier {
 
     @Override
     public boolean isAllowedInCreativeTab(CreativeModeTab tab) {
-	return creativeTab.value() == tab;
+	return creativeTab != null && creativeTab.value() == tab;
     }
 
     @Override

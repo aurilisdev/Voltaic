@@ -108,7 +108,7 @@ public abstract class TileMultiblockController extends TileReplaceable {
 	isFormed.setValue(formed);
     }
 
-    public void formMultiblock() {
+    public void formMultiblock(Level level) {
 	Level world = getLevel();
 	if (world == null)
 	    return;
