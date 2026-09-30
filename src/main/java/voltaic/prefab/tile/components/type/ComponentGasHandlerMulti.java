@@ -261,7 +261,8 @@ public class ComponentGasHandlerMulti implements IComponentGasHandler {
 
     private GasRecipeRequirements collectRecipeRequirements(RecipeType<? extends AbstractMaterialRecipe> recipeType) {
 	GasRecipeRequirements requirements = new GasRecipeRequirements();
-	for (RecipeHolder<VoltaicRecipe> recipeHolder : VoltaicRecipe.findRecipesbyType(recipeType, holder.getLevel())) {
+	for (RecipeHolder<VoltaicRecipe> recipeHolder : VoltaicRecipe.findRecipesbyType(recipeType,
+		holder.getLevel())) {
 	    AbstractMaterialRecipe recipe = (AbstractMaterialRecipe) recipeHolder.value();
 	    for (GasIngredient ingredient : recipe.getGasIngredients()) {
 		ingredient.getMatchingGases().forEach(gas -> requirements.inputGases.add(gas.getGas()));

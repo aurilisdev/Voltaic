@@ -12,6 +12,7 @@ public class VoltaicConfig {
     public ModConfigSpec.BooleanValue RADIATION_SYSTEM_ENABLED;
     public ModConfigSpec.BooleanValue ORES_EMIT_RADIATION;
     public ModConfigSpec.IntValue ORE_RADIATION_ADMIT_RATE;
+    public ModConfigSpec.BooleanValue ALLOW_EXTERNAL_POWER_SOURCES;
     public ModConfigSpec SPEC;
 
     private VoltaicConfig() {
@@ -33,6 +34,11 @@ public class VoltaicConfig {
 		.comment("How frequently ores random tick radiation. Value of 1 is fastest rate.")
 		.defineInRange("oreRadiationEmitRate", 20, 1, Integer.MAX_VALUE);
 
+	builder.pop();
+	builder.push("compatibility");
+	ALLOW_EXTERNAL_POWER_SOURCES = builder
+		.comment("Expose external power capabilities, such as Forge Energy, alongside Electrodynamics.")
+		.define("allowExternalPowerSources", false);
 	builder.pop();
 	SPEC = builder.build();
     }

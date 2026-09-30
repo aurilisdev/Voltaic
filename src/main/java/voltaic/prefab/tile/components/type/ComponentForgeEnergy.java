@@ -15,7 +15,6 @@ import voltaic.prefab.utilities.object.TransferPack;
 public class ComponentForgeEnergy implements IComponent {
 
     private final GenericTile holder;
-    private final boolean electroLoaded;
 
     private final ComponentElectrodynamic electro;
 
@@ -25,7 +24,6 @@ public class ComponentForgeEnergy implements IComponent {
 	    throw new RuntimeException(
 		    "You must define a ComponentElectrodynamic before defining a ComponentForgeEnergy!");
 	electro = holder.<ComponentElectrodynamic>getComponent(IComponentType.Electrodynamic).get();
-	electroLoaded = Voltaic.isElectroLoaded();
     }
 
     @Override
@@ -40,7 +38,7 @@ public class ComponentForgeEnergy implements IComponent {
 
     @Nullable
     public IEnergyStorage getCap(@Nullable Direction side, CapabilityInputType type) {
-	if (electroLoaded || side == null)
+	if (!Voltaic.isForgeEnergyEnabled() || side == null)
 	    return null;
 
 	ICapabilityElectrodynamic electrodynamic = electro.getCapability(side, type);

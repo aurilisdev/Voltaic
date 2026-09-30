@@ -271,6 +271,7 @@ public abstract class AbstractRecipeCategory<T> implements IRecipeCategory<T> {
 	}
 
     }
+
     public void setItemInputs(List<List<ItemStack>> inputs, IRecipeLayoutBuilder builder) {
 	SlotDataWrapper wrapper;
 	for (int i = 0; i < inputSlotWrappers.length; i++) {

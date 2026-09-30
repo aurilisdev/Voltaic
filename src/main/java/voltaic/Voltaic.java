@@ -109,4 +109,12 @@ public final class Voltaic {
     public static boolean isElectroLoaded() {
 	return ModList.get().isLoaded(ELECTRODYNAMICS_MOD_ID);
     }
+
+    /**
+     * Forge Energy is the fallback when Electrodynamics is absent. When it is
+     * present, external power capabilities require explicit opt-in.
+     */
+    public static boolean isForgeEnergyEnabled() {
+	return !isElectroLoaded() || VoltaicConfig.INSTANCE.ALLOW_EXTERNAL_POWER_SOURCES.get();
+    }
 }
