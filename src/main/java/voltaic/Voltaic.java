@@ -53,8 +53,7 @@ public final class Voltaic {
     private static final String ELECTRODYNAMICS_MOD_ID = "electrodynamics";
 
     public Voltaic(IEventBus bus, ModContainer container) {
-	// MUST GO BEFORE BLOCKS!!!!
-	VoltaicBlockStates.init();
+	VoltaicBlockStates.init(); // MUST GO BEFORE BLOCKS!!!!
 	UnifiedVoltaicRegister.register(bus);
 
 	container.registerConfig(ModConfig.Type.COMMON, VoltaicConfig.INSTANCE.SPEC);
@@ -72,24 +71,14 @@ public final class Voltaic {
 	RadioactiveGasRegister.initialize().subscribeAsSyncable();
 	RadiationShieldingRegister.initialize().subscribeAsSyncable();
 	RadioactiveBlockRegister.initialize().subscribeAsSyncable();
-	// CraftingHelper.register(ConfigCondition.Serializer.INSTANCE); // Probably
-	// wrong location after update from 1.18.2 to
-	// 1.19.2
-
-	// RegisterFluidToGasMapEvent map = new RegisterFluidToGasMapEvent();
-	// MinecraftForge.EVENT_BUS.post(map);
-	// ElectrodynamicsGases.MAPPED_GASSES.putAll(map.fluidToGasMap);
-
     }
 
-    // I wonder how long this bug has been there
     @SubscribeEvent
     @OnlyIn(Dist.CLIENT)
     public static void onClientSetup(FMLClientSetupEvent event) {
 	event.enqueueWork(VoltaicClientRegister::setup);
     }
 
-    // Don't really have a better place to put this for now
     private static Consumer<OnDatapackSyncEvent> getGuidebookListener() {
 	return event -> {
 	    ServerPlayer player = event.getPlayer();
