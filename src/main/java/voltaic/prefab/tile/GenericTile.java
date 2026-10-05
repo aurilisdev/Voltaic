@@ -24,6 +24,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -330,7 +331,11 @@ public abstract class GenericTile extends BlockEntity implements Nameable, IProp
 		}
 	    }
 
-	} else if (!(used.getItem() instanceof IWrenchItem)) {
+	} else if (used.getItem() instanceof IWrenchItem) {
+	    InteractionResult result = used.getItem().useOn(new UseOnContext(level, player, hand, used, hit));
+	    if (result.consumesAction()) {
+		return ItemInteractionResult.CONSUME;
+	    }
 	}
 	return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
     }
