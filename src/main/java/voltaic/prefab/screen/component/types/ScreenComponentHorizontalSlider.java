@@ -74,46 +74,31 @@ public class ScreenComponentHorizontalSlider extends ScreenComponentGeneric {
 
     @Override
     public void renderBackground(GuiGraphics graphics, int xAxis, int yAxis, int guiWidth, int guiHeight) {
-
 	ITexture bg = ScreenComponentHorizontalSlider.HorizontalSliderTextures.SLIDER_BACKGROUND;
-
 	graphics.blit(bg.getLocation(), guiWidth + xLocation - 1, guiHeight + yLocation, 1, height, bg.textureU(),
 		bg.textureV(), 1, bg.textureHeight(), bg.imageWidth(), bg.imageHeight());
 
 	int permutations = (int) ((width - 2) / 28.0D);
-
 	int remainder = width - permutations * 28 - 2;
-
 	for (int i = 0; i < permutations; i++) {
-
 	    graphics.blit(bg.getLocation(), guiWidth + xLocation + i * 28, guiHeight + yLocation, 28, height,
 		    bg.textureU() + 1, bg.textureV(), 28, bg.textureHeight(), bg.imageWidth(), bg.imageHeight());
-
 	}
-
 	graphics.blit(bg.getLocation(), guiWidth + xLocation + 28 * permutations, guiHeight + yLocation, remainder,
 		height, bg.textureU() + 1, bg.textureV(), remainder, bg.textureHeight(), bg.imageWidth(),
 		bg.imageHeight());
-
 	graphics.blit(bg.getLocation(), guiWidth + xLocation + width - 2, guiHeight + yLocation, 1, height,
 		bg.textureU() + 29, bg.textureV(), 1, bg.textureHeight(), bg.imageWidth(), bg.imageHeight());
 
 	ITexture slider;
-
 	if (active) {
-
 	    slider = ScreenComponentHorizontalSlider.HorizontalSliderTextures.SLIDER_ACTIVE;
-
 	} else {
-
 	    slider = ScreenComponentHorizontalSlider.HorizontalSliderTextures.SLIDER_INACTIVE;
-
 	}
-
 	graphics.blit(slider.getLocation(), guiWidth + xLocation + sliderXOffset, guiHeight + yLocation + 1,
 		slider.textureWidth(), slider.textureHeight(), slider.textureU(), slider.textureV(),
 		slider.textureWidth(), slider.textureHeight(), slider.imageWidth(), slider.imageHeight());
-
     }
 
     public void updateActive(boolean active) {

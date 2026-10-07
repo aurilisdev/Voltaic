@@ -22,9 +22,7 @@ public class ScreenComponentGuidebookArrow extends ScreenComponentGeneric {
 
     @Override
     public boolean isVisible() {
-
 	return (ScreenGuidebook.currPageNumber == page || ScreenGuidebook.currPageNumber + 1 == page) && shouldRender;
-
     }
 
     public enum ArrowTextures implements ITexture {
@@ -47,7 +45,7 @@ public class ScreenComponentGuidebookArrow extends ScreenComponentGeneric {
 	    this.textureV = textureV;
 	    this.imageWidth = imageWidth;
 	    this.imageHeight = imageHeight;
-	    loc = Voltaic.rl("textures/screen//guidebook/buttons/" + name + ".png");
+	    loc = Voltaic.rl("textures/screen/guidebook/buttons/" + name + ".png");
 	}
 
 	@Override

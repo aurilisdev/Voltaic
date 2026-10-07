@@ -32,16 +32,13 @@ public class ScreenComponentCondensedFluid extends ScreenComponentGeneric {
 
     @Override
     public void renderBackground(GuiGraphics graphics, int xAxis, int yAxis, int guiWidth, int guiHeight) {
-
 	super.renderBackground(graphics, xAxis, yAxis, guiWidth, guiHeight);
 
 	SingleProperty<FluidStack> fluidProperty = fluidPropertySupplier.get();
-
 	if (fluidProperty == null || fluidProperty.getValue().isEmpty())
 	    return;
 
 	IconType fluidFull = IconType.FLUID_BLUE;
-
 	graphics.blit(fluidFull.getLocation(), guiWidth + xLocation + 1, guiHeight + yLocation + 1,
 		fluidFull.textureU(), fluidFull.textureV(), fluidFull.textureWidth(), fluidFull.textureHeight(),
 		fluidFull.imageWidth(), fluidFull.imageHeight());

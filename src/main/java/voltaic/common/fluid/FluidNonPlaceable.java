@@ -68,12 +68,12 @@ public class FluidNonPlaceable extends Fluid {
 
     @Override
     public boolean isSource(FluidState state) {
-	return false;
+	return true;
     }
 
     @Override
     public int getAmount(FluidState state) {
-	return 0;
+	return 8;
     }
 
     @Override

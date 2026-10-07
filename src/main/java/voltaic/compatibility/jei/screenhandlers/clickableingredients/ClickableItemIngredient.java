@@ -1,6 +1,7 @@
 package voltaic.compatibility.jei.screenhandlers.clickableingredients;
 
 import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import net.minecraft.client.renderer.Rect2i;
@@ -43,6 +44,11 @@ public class ClickableItemIngredient extends AbstractClickableIngredient<ItemSta
 	@Override
 	public ItemStack getIngredient() {
 	    return ingredient;
+	}
+
+	@Override
+	public ITypedIngredient<ItemStack> normalize(IIngredientHelper<ItemStack> helper) {
+	    return new ItemIngredientType(helper.normalizeIngredient(ingredient));
 	}
 
     }

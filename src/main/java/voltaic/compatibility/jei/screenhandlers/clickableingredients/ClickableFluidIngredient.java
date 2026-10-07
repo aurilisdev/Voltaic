@@ -1,5 +1,6 @@
 package voltaic.compatibility.jei.screenhandlers.clickableingredients;
 
+import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.neoforge.NeoForgeTypes;
@@ -43,6 +44,10 @@ public class ClickableFluidIngredient extends AbstractClickableIngredient<FluidS
 	    return fluidStack;
 	}
 
+	@Override
+	public ITypedIngredient<FluidStack> normalize(IIngredientHelper<FluidStack> helper) {
+	    return new FluidTypeIngredient(helper.normalizeIngredient(fluidStack));
+	}
     }
 
 }

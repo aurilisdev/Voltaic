@@ -41,24 +41,18 @@ public class ScreenComponentInventoryIO extends ScreenComponentGeneric {
     @Override
     public void renderBackground(GuiGraphics graphics, int xAxis, int yAxis, int guiWidth, int guiHeight) {
 	super.renderBackground(graphics, xAxis, yAxis, guiWidth, guiHeight);
-
 	GenericScreen<?> screen = (GenericScreen<?>) requireScreen();
-
 	GenericContainerBlockEntity<?> container = (GenericContainerBlockEntity<?>) screen.getMenu();
-
 	GenericTile tile = (GenericTile) container.getSafeHost().orElse(null);
 	if (tile == null || !tile.hasComponent(IComponentType.Inventory))
 	    return;
 
 	ComponentInventory inv = tile.<ComponentInventory>getComponent(IComponentType.Inventory).orElse(null);
-
 	HashSet<Integer> slots = inv.relativeDirectionToSlotsMap[side.ordinal()];
-
 	if (slots == null)
 	    return;
 
 	List<Color> uniqueColors = new ArrayList<>();
-
 	slots.forEach(slot -> {
 	    SlotGeneric generic = (SlotGeneric) container.slots.get(slot);
 	    if (generic.ioColor == null)

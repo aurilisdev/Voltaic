@@ -1,5 +1,6 @@
 package voltaic.compatibility.jei.screenhandlers.clickableingredients;
 
+import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import net.minecraft.client.renderer.Rect2i;
@@ -41,6 +42,11 @@ public class ClickableGasIngredient extends AbstractClickableIngredient<GasStack
 	@Override
 	public GasStack getIngredient() {
 	    return gasStack;
+	}
+
+	@Override
+	public ITypedIngredient<GasStack> normalize(IIngredientHelper<GasStack> helper) {
+	    return new GasIngredientType(helper.normalizeIngredient(gasStack));
 	}
 
     }
