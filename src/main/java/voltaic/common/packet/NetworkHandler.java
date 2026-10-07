@@ -16,9 +16,9 @@ import voltaic.common.packet.types.client.PacketSetClientRadioactiveGases;
 import voltaic.common.packet.types.client.PacketSetClientRadioactiveItems;
 import voltaic.common.packet.types.client.PacketSpawnSmokeParticle;
 import voltaic.common.packet.types.client.PacketUpdateCariedItemClient;
+import voltaic.common.packet.types.server.PacketGaugeClickServer;
 import voltaic.common.packet.types.server.PacketSendUpdatePropertiesServer;
 import voltaic.common.packet.types.server.PacketSwapBattery;
-import voltaic.common.packet.types.server.PacketUpdateCarriedItemServer;
 
 @EventBusSubscriber(modid = Voltaic.ID, bus = EventBusSubscriber.Bus.MOD)
 public class NetworkHandler {
@@ -54,8 +54,8 @@ public class NetworkHandler {
 	registry.playToServer(PacketSendUpdatePropertiesServer.TYPE, PacketSendUpdatePropertiesServer.CODEC,
 		PacketSendUpdatePropertiesServer::handle);
 	registry.playToServer(PacketSwapBattery.TYPE, PacketSwapBattery.CODEC, PacketSwapBattery::handle);
-	registry.playToServer(PacketUpdateCarriedItemServer.TYPE, PacketUpdateCarriedItemServer.CODEC,
-		PacketUpdateCarriedItemServer::handle);
+	registry.playToServer(PacketGaugeClickServer.TYPE, PacketGaugeClickServer.CODEC,
+		PacketGaugeClickServer::handle);
 
     }
 

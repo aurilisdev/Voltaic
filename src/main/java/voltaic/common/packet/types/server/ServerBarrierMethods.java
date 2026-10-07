@@ -9,7 +9,6 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import voltaic.api.item.IItemElectric;
-import voltaic.prefab.tile.GenericTile;
 import voltaic.prefab.tile.IPropertyHolderTile;
 
 public class ServerBarrierMethods {
@@ -28,13 +27,6 @@ public class ServerBarrierMethods {
 	ItemStack handItem = player.getItemInHand(InteractionHand.MAIN_HAND);
 	if (!handItem.isEmpty() && handItem.getItem() instanceof IItemElectric electric) {
 	    electric.swapBatteryPackFirstItem(handItem, player);
-	}
-    }
-
-    public static void handleUpdateCarriedItemServer(ServerLevel serverLevel, ItemStack carriedItem, BlockPos tilePos,
-	    UUID playerId) {
-	if (serverLevel.getBlockEntity(tilePos) instanceof GenericTile genericTile) {
-	    genericTile.updateCarriedItemInContainer(carriedItem, playerId);
 	}
     }
 

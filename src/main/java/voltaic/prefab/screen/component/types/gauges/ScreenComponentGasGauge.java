@@ -22,9 +22,7 @@ import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.network.PacketDistributor;
 import voltaic.Voltaic;
 import voltaic.api.electricity.formatting.ChatFormatter;
 import voltaic.api.electricity.formatting.DisplayUnits;
@@ -35,11 +33,13 @@ import voltaic.api.gas.PropertyGasTank;
 import voltaic.api.gas.utils.IGasTank;
 import voltaic.api.screen.ITexture;
 import voltaic.client.VoltaicClientRegister;
-import voltaic.common.packet.types.server.PacketUpdateCarriedItemServer;
+import voltaic.common.packet.types.server.PacketGaugeClickServer;
 import voltaic.prefab.inventory.container.types.GenericContainerBlockEntity;
 import voltaic.prefab.screen.GenericScreen;
 import voltaic.prefab.screen.component.ScreenComponentGeneric;
 import voltaic.prefab.tile.GenericTile;
+import voltaic.prefab.tile.components.IComponentType;
+import voltaic.prefab.tile.components.utils.IComponentGasHandler;
 import voltaic.prefab.utilities.RenderingUtils;
 import voltaic.prefab.utilities.VoltaicTextUtils;
 import voltaic.registers.VoltaicCapabilities;
@@ -201,7 +201,9 @@ public class ScreenComponentGasGauge extends ScreenComponentGeneric {
 
 	    stack = handler.getContainer();
 	    menu.setCarried(stack);
-	    sendCarriedItemUpdate(stack, owner);
+	    PacketGaugeClickServer.<IComponentGasHandler, PropertyGasTank>sendClickToServer(owner,
+		    IComponentType.GasHandler, true, tank, IComponentGasHandler::getInputTanks,
+		    IComponentGasHandler::getOutputTanks);
 	    stack.set(VoltaicDataComponentTypes.HASCLICKEDONFLUIDGAUGE, true);
 	    return;
 	}
@@ -219,7 +221,9 @@ public class ScreenComponentGasGauge extends ScreenComponentGeneric {
 
 	    stack = handler.getContainer();
 	    menu.setCarried(stack);
-	    sendCarriedItemUpdate(stack, owner);
+	    PacketGaugeClickServer.<IComponentGasHandler, PropertyGasTank>sendClickToServer(owner,
+		    IComponentType.GasHandler, true, tank, IComponentGasHandler::getInputTanks,
+		    IComponentGasHandler::getOutputTanks);
 	    stack.set(VoltaicDataComponentTypes.HASCLICKEDONFLUIDGAUGE, true);
 	    return;
 	}
@@ -228,15 +232,6 @@ public class ScreenComponentGasGauge extends ScreenComponentGeneric {
     private static void playSound() {
 	Minecraft.getInstance().getSoundManager()
 		.play(SimpleSoundInstance.forUI(VoltaicSounds.SOUND_PRESSURERELEASE.get(), 1.0F));
-    }
-
-    private static void sendCarriedItemUpdate(ItemStack stack, GenericTile owner) {
-	Player player = Minecraft.getInstance().player;
-	if (player == null)
-	    return;
-
-	PacketDistributor
-		.sendToServer(new PacketUpdateCarriedItemServer(stack.copy(), owner.getBlockPos(), player.getUUID()));
     }
 
     public enum GasGaugeTextures implements ITexture {

@@ -20,14 +20,15 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.IFluidTank;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
-import net.neoforged.neoforge.network.PacketDistributor;
 import voltaic.api.electricity.formatting.ChatFormatter;
 import voltaic.api.fluid.PropertyFluidTank;
 import voltaic.api.screen.component.FluidTankSupplier;
-import voltaic.common.packet.types.server.PacketUpdateCarriedItemServer;
+import voltaic.common.packet.types.server.PacketGaugeClickServer;
 import voltaic.prefab.inventory.container.types.GenericContainerBlockEntity;
 import voltaic.prefab.screen.GenericScreen;
 import voltaic.prefab.tile.GenericTile;
+import voltaic.prefab.tile.components.IComponentType;
+import voltaic.prefab.tile.components.utils.IComponentFluidHandler;
 import voltaic.prefab.utilities.RenderingUtils;
 import voltaic.prefab.utilities.VoltaicTextUtils;
 import voltaic.prefab.utilities.math.Color;
@@ -154,8 +155,9 @@ public class ScreenComponentFluidGauge extends AbstractScreenComponentGauge {
 	    stack = handler.getContainer();
 	    menu.setCarried(stack);
 
-	    PacketDistributor.sendToServer(
-		    new PacketUpdateCarriedItemServer(stack.copy(), owner.getBlockPos(), player.getUUID()));
+	    PacketGaugeClickServer.<IComponentFluidHandler, PropertyFluidTank>sendClickToServer(owner,
+		    IComponentType.FluidHandler, false, tank, IComponentFluidHandler::getInputTanks,
+		    IComponentFluidHandler::getOutputTanks);
 
 	    stack.set(VoltaicDataComponentTypes.HASCLICKEDONFLUIDGAUGE, true);
 	    return;
@@ -175,8 +177,9 @@ public class ScreenComponentFluidGauge extends AbstractScreenComponentGauge {
 	    stack = handler.getContainer();
 	    menu.setCarried(stack);
 
-	    PacketDistributor.sendToServer(
-		    new PacketUpdateCarriedItemServer(stack.copy(), owner.getBlockPos(), player.getUUID()));
+	    PacketGaugeClickServer.<IComponentFluidHandler, PropertyFluidTank>sendClickToServer(owner,
+		    IComponentType.FluidHandler, false, tank, IComponentFluidHandler::getInputTanks,
+		    IComponentFluidHandler::getOutputTanks);
 
 	    stack.set(VoltaicDataComponentTypes.HASCLICKEDONFLUIDGAUGE, true);
 	    return;

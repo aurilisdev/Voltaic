@@ -13,7 +13,7 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
 import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
 import net.neoforged.neoforge.network.PacketDistributor;
-import voltaic.common.packet.types.server.PacketUpdateCarriedItemServer;
+import voltaic.common.packet.types.server.PacketGaugeClickServer;
 import voltaic.prefab.inventory.container.types.GenericContainerBlockEntity;
 import voltaic.prefab.properties.variant.SingleProperty;
 import voltaic.prefab.screen.GenericScreen;
@@ -98,8 +98,8 @@ public class ScreenComponentCondensedFluid extends ScreenComponentGeneric {
 	stack = handler.getContainer();
 	menu.setCarried(stack);
 
-	PacketDistributor
-		.sendToServer(new PacketUpdateCarriedItemServer(stack.copy(), owner.getBlockPos(), player.getUUID()));
+	PacketDistributor.sendToServer(
+		new PacketGaugeClickServer(owner.getBlockPos(), false, false, PacketGaugeClickServer.CONDENSED_INDEX));
     }
 
 }
