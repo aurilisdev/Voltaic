@@ -47,7 +47,7 @@ public record Multiblock(Map<Direction, List<MultiblockSlaveNode>> nodes) {
 	return ResourceKey.create(REGISTRY_KEY, id);
     }
 
-    @EventBusSubscriber(modid = Voltaic.ID, bus = EventBusSubscriber.Bus.MOD)
+    @EventBusSubscriber(modid = Voltaic.ID)
     private static final class MultiblockRegistry {
 
 	@SubscribeEvent

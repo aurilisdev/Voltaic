@@ -14,7 +14,7 @@ import voltaic.common.reloadlistener.RadioactiveFluidRegister;
 import voltaic.common.reloadlistener.RadioactiveGasRegister;
 import voltaic.common.reloadlistener.RadioactiveItemRegister;
 
-@EventBusSubscriber(modid = Voltaic.ID, bus = EventBusSubscriber.Bus.GAME)
+@EventBusSubscriber(modid = Voltaic.ID)
 public class ServerEventHandler {
 
     @SubscribeEvent

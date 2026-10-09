@@ -21,7 +21,7 @@ import voltaic.common.reloadlistener.RadiationShieldingRegister;
 import voltaic.common.reloadlistener.RadioactiveItemRegister;
 import voltaic.prefab.utilities.VoltaicTextUtils;
 
-@EventBusSubscriber(modid = Voltaic.ID, bus = EventBusSubscriber.Bus.GAME)
+@EventBusSubscriber(modid = Voltaic.ID)
 public class RadiationTooltipHandler {
 
     @SubscribeEvent

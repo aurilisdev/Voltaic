@@ -38,7 +38,7 @@ import voltaic.common.tags.VoltaicTags;
 import voltaic.registers.UnifiedVoltaicRegister;
 
 @Mod(Voltaic.ID)
-@EventBusSubscriber(modid = Voltaic.ID, bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = Voltaic.ID)
 public final class Voltaic {
 
     public static Logger LOGGER = LogManager.getLogger(Voltaic.ID);

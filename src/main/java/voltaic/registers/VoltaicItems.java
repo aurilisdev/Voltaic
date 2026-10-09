@@ -51,7 +51,7 @@ public class VoltaicItems {
 			}
 		    }));
 
-    @EventBusSubscriber(value = Dist.CLIENT, modid = Voltaic.ID, bus = EventBusSubscriber.Bus.MOD)
+    @EventBusSubscriber(value = Dist.CLIENT, modid = Voltaic.ID)
     private static class VoltaicCreativeRegistry {
 
 	@SubscribeEvent

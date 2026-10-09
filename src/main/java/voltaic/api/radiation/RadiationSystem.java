@@ -19,7 +19,7 @@ import voltaic.common.settings.VoltaicConfig;
 import voltaic.registers.VoltaicAttachmentTypes;
 import voltaic.registers.VoltaicCapabilities;
 
-@EventBusSubscriber(modid = Voltaic.ID, bus = EventBusSubscriber.Bus.GAME)
+@EventBusSubscriber(modid = Voltaic.ID)
 public class RadiationSystem {
 
     @SubscribeEvent

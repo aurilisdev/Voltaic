@@ -19,7 +19,7 @@ import voltaic.api.radiation.CapabilityRadiationRecipient;
 import voltaic.api.radiation.util.IRadiationRecipient;
 import voltaic.prefab.tile.GenericTile;
 
-@EventBusSubscriber(modid = Voltaic.ID, bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = Voltaic.ID)
 public class VoltaicCapabilities {
 
     public static final double DEFAULT_VOLTAGE = 120.0;

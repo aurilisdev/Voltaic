@@ -25,7 +25,7 @@ import voltaic.datagen.server.tags.VoltaicTagsProvider;
 import voltaic.datagen.utils.client.BaseLangKeyProvider.Locale;
 import voltaic.registers.VoltaicDamageTypes;
 
-@EventBusSubscriber(modid = Voltaic.ID, bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = Voltaic.ID)
 public class DataGenerators {
 
     @SubscribeEvent

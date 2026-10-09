@@ -20,7 +20,7 @@ import voltaic.common.packet.types.server.PacketGaugeClickServer;
 import voltaic.common.packet.types.server.PacketSendUpdatePropertiesServer;
 import voltaic.common.packet.types.server.PacketSwapBattery;
 
-@EventBusSubscriber(modid = Voltaic.ID, bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = Voltaic.ID)
 public class NetworkHandler {
 
     public static HashMap<String, String> playerInformation = new HashMap<>();

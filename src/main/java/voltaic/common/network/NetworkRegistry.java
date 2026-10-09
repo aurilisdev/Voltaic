@@ -11,7 +11,7 @@ import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import voltaic.Voltaic;
 import voltaic.api.network.ITickableNetwork;
 
-@EventBusSubscriber(modid = Voltaic.ID, bus = EventBusSubscriber.Bus.GAME)
+@EventBusSubscriber(modid = Voltaic.ID)
 public class NetworkRegistry {
     private static final HashMap<UUID, ITickableNetwork> NETWORKS = new HashMap<>();
     private static final HashMap<UUID, ITickableNetwork> PENDING_ADDITIONS = new HashMap<>();

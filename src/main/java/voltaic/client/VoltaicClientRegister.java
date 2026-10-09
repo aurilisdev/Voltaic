@@ -38,7 +38,7 @@ import voltaic.registers.VoltaicMenuTypes;
 import voltaic.registers.VoltaicParticles;
 
 @OnlyIn(Dist.CLIENT)
-@EventBusSubscriber(modid = Voltaic.ID, bus = EventBusSubscriber.Bus.MOD, value = { Dist.CLIENT })
+@EventBusSubscriber(modid = Voltaic.ID, value = { Dist.CLIENT })
 public class VoltaicClientRegister {
 
     public static final ResourceLocation ON = Voltaic.vanillarl("on");
