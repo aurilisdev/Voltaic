@@ -28,6 +28,12 @@ distsDirName = "../output"
 
 repositories {
     mavenLocal()
+    mavenCentral()
+    maven {
+        name = 'Refined Mods'
+        url = 'https://maven.creeperhost.net'
+        content { includeGroup 'com.refinedmods.refinedstorage' }
+    }
 }
 
 base {
@@ -37,6 +43,13 @@ base {
 java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
 minecraft.accessTransformers.file rootProject.file('src/main/resources/META-INF/accesstransformer.cfg')
+
+sourceSets {
+    gameTest {
+        compileClasspath += sourceSets.main.output + sourceSets.main.compileClasspath
+        runtimeClasspath += sourceSets.main.output + sourceSets.main.runtimeClasspath
+    }
+}
 
 runs {
 
@@ -51,20 +64,24 @@ runs {
 
     client {
 
-        systemProperty 'forge.enabledGameTestNamespaces', project.mod_id
+        systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
 
     }
 
     server {
 
-        systemProperty 'forge.enabledGameTestNamespaces', project.mod_id
+        systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
         argument '--nogui'
 
     }
 
     gameTestServer {
+        workingDirectory file("runs/radiation-${providers.gradleProperty('radiationTestMods').getOrElse('none')}")
+        modSources {
+            add('voltaic_radiation_tests', project.sourceSets.gameTest)
+        }
 
-        systemProperty 'forge.enabledGameTestNamespaces', project.mod_id
+        systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
 
     }
 
@@ -85,6 +102,24 @@ dependencies {
     implementation libs.neo.neoforge
     compileOnly libs.bundles.jeiApi
     localRuntime libs.jei
+    compileOnly(libs.ae2) { transitive = false }
+    compileOnly(libs.refinedstorage) { transitive = false }
+    compileOnly 'org.apiguardian:apiguardian-api:1.1.2'
+    testImplementation platform(libs.junitBom)
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    // Optional integration matrix: neither (default), ae2, rs, or both.
+    def storageMods = providers.gradleProperty('radiationTestMods').getOrElse('none')
+    if (storageMods in ['ae2', 'both']) localRuntime libs.ae2
+    if (storageMods in ['rs', 'both']) localRuntime libs.refinedstorage
+}
+
+tasks.withType(Test).configureEach {
+    useJUnitPlatform()
+}
+
+tasks.named('check').configure {
+    dependsOn tasks.named('gameTestClasses')
 }
 
 tasks.register('sourcesJar', Jar).configure {

@@ -12,6 +12,7 @@ import voltaic.api.radiation.util.RadioactiveObject;
 import voltaic.common.settings.VoltaicConfig;
 import voltaic.registers.VoltaicAttachmentTypes;
 import voltaic.registers.VoltaicEffects;
+import voltaic.prefab.utilities.RadiationUtils;
 
 public class CapabilityRadiationRecipient implements IRadiationRecipient {
     private static final EquipmentSlot[] ARMOR_SLOTS = { EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS,
@@ -19,8 +20,11 @@ public class CapabilityRadiationRecipient implements IRadiationRecipient {
 
     @Override
     public void recieveRadiation(LivingEntity entity, double rads, double strength) {
-	if (rads <= RadiationManager.MIN_APPLIED_RADIATION)
+	if (!(rads > RadiationManager.MIN_APPLIED_RADIATION))
 	    return;
+
+        rads = Math.min(Double.MAX_VALUE, rads);
+        strength = Double.isNaN(strength) ? 0 : Math.max(0, Math.min(Double.MAX_VALUE, strength));
 
 	if (entity instanceof Player player && (player.isCreative() || player.isSpectator())) {
 	    recordRadiation(entity, rads, strength);
@@ -50,7 +54,9 @@ public class CapabilityRadiationRecipient implements IRadiationRecipient {
 	    float damageChance = (float) (rads * 2.15 / 2169.9975);
 
 	    if (Voltaic.RANDOM.nextFloat() < damageChance) {
-		stack.hurtAndBreak((int) Math.ceil(damageChance), entity, slot);
+                // Bound durability and enchantment work even for enormous storage doses.
+                int remaining = Math.max(0, stack.getMaxDamage() - stack.getDamageValue());
+		stack.hurtAndBreak((int) Math.min(remaining, Math.ceil(damageChance)), entity, slot);
 	    }
 	}
 
@@ -73,7 +79,7 @@ public class CapabilityRadiationRecipient implements IRadiationRecipient {
 
     private static void recordRadiation(LivingEntity entity, double rads, double strength) {
 	entity.setData(VoltaicAttachmentTypes.RECIEVED_RADIATIONAMOUNT,
-		entity.getData(VoltaicAttachmentTypes.RECIEVED_RADIATIONAMOUNT) + rads);
+		RadiationUtils.saturatedAdd(entity.getData(VoltaicAttachmentTypes.RECIEVED_RADIATIONAMOUNT), rads));
 
 	entity.setData(VoltaicAttachmentTypes.RECIEVED_RADIATIONSTRENGTH, strength);
     }

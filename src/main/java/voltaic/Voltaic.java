@@ -35,6 +35,7 @@ import voltaic.common.reloadlistener.RadioactiveGasRegister;
 import voltaic.common.reloadlistener.RadioactiveItemRegister;
 import voltaic.common.settings.VoltaicConfig;
 import voltaic.common.tags.VoltaicTags;
+import voltaic.compatibility.radiation.RadiationCompatibility;
 import voltaic.registers.UnifiedVoltaicRegister;
 
 @Mod(Voltaic.ID)
@@ -64,6 +65,7 @@ public final class Voltaic {
 
     @SubscribeEvent
     public static void onCommonSetup(FMLCommonSetupEvent event) {
+        event.enqueueWork(RadiationCompatibility::register);
 	NeoForge.EVENT_BUS.addListener(getGuidebookListener());
 	VoltaicTags.init();
 	RadioactiveItemRegister.initialize().subscribeAsSyncable();

@@ -7,8 +7,14 @@ neoforge = "21.1.251"
 neoforgeRange = "[21.0.0-beta,)"
 loaderRange = "[4,)"
 jei = "19.57.0.451"
+ae2 = "19.2.18"
+refinedstorage = "2.0.9"
+junit = "5.11.4"
 
 [libraries]
+ae2 = { module = "org.appliedenergistics:appliedenergistics2", version.ref = "ae2" }
+refinedstorage = { module = "com.refinedmods.refinedstorage:refinedstorage-neoforge", version.ref = "refinedstorage" }
+junitBom = { module = "org.junit:junit-bom", version.ref = "junit" }
 neo-neoforge = { module = "net.neoforged:neoforge", version.ref = "neoforge" }
 jeiApiCommon = { module = "mezz.jei:jei-1.21.1-common-api", version.ref = "jei" }
 jeiApiNeoforge = { module = "mezz.jei:jei-1.21.1-neoforge-api", version.ref = "jei" }

@@ -110,7 +110,7 @@ public class RadiationEmitterHandler {
 	    manager(level).clearEmitter(id, level);
 	    return;
 	}
-	ItemEmission emission = RadiationUtils.calculateItemEmission(List.of(stack));
+	ItemEmission emission = PortableRadiationHandler.contents(frame, List.of(stack));
 	if (!emission.isRadioactive()) {
 	    manager(level).clearEmitter(id, level);
 	    return;
@@ -121,8 +121,8 @@ public class RadiationEmitterHandler {
 
     @SubscribeEvent
     public static void frameLeave(EntityLeaveLevelEvent event) {
-	if (event.getEntity() instanceof ItemFrame frame && !frame.level().isClientSide()) {
-	    manager(frame.level()).clearEmitter(EmitterId.entity(frame.getUUID()), frame.level());
+	if (event.getEntity() instanceof ItemFrame frame && !event.getLevel().isClientSide()) {
+	    manager(event.getLevel()).clearEmitter(EmitterId.entity(frame.getUUID()), event.getLevel());
 	}
     }
 
@@ -169,22 +169,33 @@ public class RadiationEmitterHandler {
 	List<Set<Long>> buckets = TRACKED_CHUNKS.get(level);
 	if (buckets == null)
 	    return;
-	int bucket = (int) Math.floorMod(level.getGameTime(), (long) CONTAINER_CHECK_INTERVAL);
-	for (long key : buckets.get(bucket)) {
-	    LevelChunk chunk = level.getChunkSource().getChunkNow(ChunkPos.getX(key), ChunkPos.getZ(key));
-	    if (chunk == null)
-		continue;
-	    for (BlockEntity be : chunk.getBlockEntities().values()) {
-		checkContainer(level, be);
-	    }
-	}
+        level.getProfiler().push("voltaicRadiationContainers");
+        try {
+            int bucket = (int) Math.floorMod(level.getGameTime(), (long) CONTAINER_CHECK_INTERVAL);
+            for (long key : buckets.get(bucket)) {
+                LevelChunk chunk = level.getChunkSource().getChunkNow(ChunkPos.getX(key), ChunkPos.getZ(key));
+                if (chunk == null) continue;
+                for (BlockEntity be : chunk.getBlockEntities().values()) {
+                    checkContainer(level, be);
+                }
+            }
+        } finally {
+            level.getProfiler().pop();
+        }
     }
 
     private static void checkContainer(ServerLevel level, BlockEntity be) {
 	if (be.isRemoved() || be instanceof GenericTile)
 	    return;
+        BlockPos pos = be.getBlockPos();
+        EmitterId id = EmitterId.container(pos);
+        // Do not invoke any reader before checking for an ungenerated loot table.
+        if (be instanceof RandomizableContainer randomizable && randomizable.getLootTable() != null) {
+            manager(level).clearEmitter(id, level);
+            return;
+        }
 	boolean specialised = false;
-	ItemEmissionAccumulator contents = new ItemEmissionAccumulator();
+	ItemEmissionAccumulator contents = new ItemEmissionAccumulator(level);
 	for (IRadiationContentsReader reader : READERS) {
 	    if (reader.read(be, contents)) {
 		specialised = true;
@@ -192,14 +203,13 @@ public class RadiationEmitterHandler {
 	    }
 	}
 	Container container = be instanceof Container c ? c : null;
-	if (!specialised && container == null)
-	    return;
-	BlockPos pos = be.getBlockPos();
-	EmitterId id = EmitterId.container(pos);
-	if (be instanceof RandomizableContainer randomizable && randomizable.getLootTable() != null) {
-	    manager(level).clearEmitter(id, level);
-	    return;
-	}
+        if (!specialised && container == null) {
+            specialised = LocalInventoryRadiation.read(be, contents);
+            if (!specialised) {
+                manager(level).clearEmitter(id, level);
+                return;
+            }
+        }
 	if (!specialised) {
 	    if (container.isEmpty()) {
 		manager(level).clearEmitter(id, level);
@@ -210,14 +220,12 @@ public class RadiationEmitterHandler {
 	    }
 	}
 	ItemEmission emission = contents.build();
-	if (emission.isRadioactive() && be.getBlockState().getBlock() instanceof IRadiationContainment containment) {
-	    double escaping = containment.getEscapingFraction(be);
-	    escaping = Double.isNaN(escaping) ? 1.0 : Math.min(1.0, Math.max(0.0, escaping));
-	    double amount = emission.amount() * escaping;
-	    emission = amount > 0
-		    ? new ItemEmission(amount, emission.strength(), RadiationUtils.getItemRadiationRange(amount))
-		    : ItemEmission.NONE;
-	}
+        // A block entity policy takes precedence over its block, never both.
+        IRadiationContainment containment = be instanceof IRadiationContainment own ? own
+                : be.getBlockState().getBlock() instanceof IRadiationContainment block ? block : null;
+        if (containment != null) {
+            emission = RadiationUtils.applyContainment(emission, containment.getEscapingFraction(be));
+        }
 	if (!emission.isRadioactive()) {
 	    manager(level).clearEmitter(id, level);
 	    return;

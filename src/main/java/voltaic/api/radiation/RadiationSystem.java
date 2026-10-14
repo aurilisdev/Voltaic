@@ -32,6 +32,7 @@ public class RadiationSystem {
 
 	if (VoltaicConfig.INSTANCE.RADIATION_SYSTEM_ENABLED.isFalse()) {
 	    wipeAllSources(level);
+            PortableRadiationHandler.clearCache();
 	    return;
 	}
 
@@ -50,7 +51,9 @@ public class RadiationSystem {
 		.getCapability(VoltaicCapabilities.CAPABILITY_RADIATIONRECIPIENT);
 	if (capability == null)
 	    return;
-	capability.tick((LivingEntity) event.getEntity());
+        LivingEntity living = (LivingEntity) event.getEntity();
+        PortableRadiationHandler.exposeCarrier(living, capability);
+	capability.tick(living);
 
     }
 

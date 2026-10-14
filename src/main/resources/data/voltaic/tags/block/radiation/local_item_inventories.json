@@ -1,0 +1,105 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "sophisticatedstorage:chest",
+      "required": false
+    },
+    {
+      "id": "sophisticatedstorage:barrel",
+      "required": false
+    },
+    {
+      "id": "sophisticatedstorage:shulker_box",
+      "required": false
+    },
+    {
+      "id": "sophisticatedstorage:copper_chest",
+      "required": false
+    },
+    {
+      "id": "sophisticatedstorage:copper_barrel",
+      "required": false
+    },
+    {
+      "id": "sophisticatedstorage:copper_shulker_box",
+      "required": false
+    },
+    {
+      "id": "sophisticatedstorage:iron_chest",
+      "required": false
+    },
+    {
+      "id": "sophisticatedstorage:iron_barrel",
+      "required": false
+    },
+    {
+      "id": "sophisticatedstorage:iron_shulker_box",
+      "required": false
+    },
+    {
+      "id": "sophisticatedstorage:gold_chest",
+      "required": false
+    },
+    {
+      "id": "sophisticatedstorage:gold_barrel",
+      "required": false
+    },
+    {
+      "id": "sophisticatedstorage:gold_shulker_box",
+      "required": false
+    },
+    {
+      "id": "sophisticatedstorage:diamond_chest",
+      "required": false
+    },
+    {
+      "id": "sophisticatedstorage:diamond_barrel",
+      "required": false
+    },
+    {
+      "id": "sophisticatedstorage:diamond_shulker_box",
+      "required": false
+    },
+    {
+      "id": "sophisticatedstorage:netherite_chest",
+      "required": false
+    },
+    {
+      "id": "sophisticatedstorage:netherite_barrel",
+      "required": false
+    },
+    {
+      "id": "sophisticatedstorage:netherite_shulker_box",
+      "required": false
+    },
+    {
+      "id": "ironchest:copper_chest",
+      "required": false
+    },
+    {
+      "id": "ironchest:iron_chest",
+      "required": false
+    },
+    {
+      "id": "ironchest:gold_chest",
+      "required": false
+    },
+    {
+      "id": "ironchest:diamond_chest",
+      "required": false
+    },
+    {
+      "id": "ironchest:obsidian_chest",
+      "required": false
+    },
+    {
+      "id": "ironchest:crystal_chest",
+      "required": false
+    },
+    {
+      "id": "ironchest:dirt_chest",
+      "required": false
+    }
+  ]
+}

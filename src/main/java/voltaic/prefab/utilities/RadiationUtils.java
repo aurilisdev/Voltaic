@@ -1,11 +1,18 @@
 package voltaic.prefab.utilities;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Consumer;
+
+import javax.annotation.Nullable;
 
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemContainerContents;
+import net.minecraft.world.item.component.BundleContents;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
@@ -14,6 +21,8 @@ import voltaic.api.gas.GasTank;
 import voltaic.api.radiation.RadiationSystem;
 import voltaic.api.radiation.SimpleRadiationSource;
 import voltaic.api.radiation.util.RadioactiveObject;
+import voltaic.api.radiation.util.IRadiationItemContentsReader;
+import voltaic.api.radiation.util.IRadiationItemContainment;
 import voltaic.common.settings.VoltaicConfig;
 import voltaic.common.reloadlistener.RadioactiveFluidRegister;
 import voltaic.common.reloadlistener.RadioactiveGasRegister;
@@ -48,86 +57,148 @@ public class RadiationUtils {
      */
     public static class ItemEmissionAccumulator {
 
-	private static final int MAX_NESTING_DEPTH = 3;
-	private static final int MAX_NESTED_STACKS = 1024;
+        public static final int MAX_NESTING_DEPTH = 3;
+        public static final int MAX_NESTED_STACKS = 1024;
 
-	private double radiation = 0;
-	private double strength = 0;
-	private int work = 0;
+        private static final class ReadState {
+            private int work;
+            private final Set<Object> stores = new HashSet<>();
+        }
 
-	public ItemEmissionAccumulator add(ItemStack stack) {
-	    return add(stack, 0);
-	}
+        @Nullable
+        private final Level level;
+        private final ReadState state;
+        private final int depth;
+        private double radiation;
+        private double strength;
 
-	/**
-	 * Adds a stack and the contents of vanilla contained items (such as shulker
-	 * boxes). Recursion depth and total work are bounded so malformed nesting
-	 * cannot cause unbounded reads.
-	 */
-	private ItemEmissionAccumulator add(ItemStack stack, int depth) {
-	    if (stack.isEmpty()) {
-		return this;
-	    }
-	    add(stack.getItem(), stack.getCount());
-	    if (depth >= MAX_NESTING_DEPTH || work >= MAX_NESTED_STACKS) {
-		return this;
-	    }
-	    ItemContainerContents nested = stack.get(DataComponents.CONTAINER);
-	    if (nested == null) {
-		return this;
-	    }
-	    for (ItemStack inner : nested.nonEmptyItems()) {
-		if (++work > MAX_NESTED_STACKS) {
-		    break;
-		}
-		/* Each outer item holds its own copy of the contents. */
-		ItemEmissionAccumulator sub = new ItemEmissionAccumulator();
-		sub.work = work;
-		sub.add(inner, depth + 1);
-		work = sub.work;
-		radiation = saturatedAdd(radiation, saturatedMultiply(sub.radiation, stack.getCount()));
-		strength = Math.max(strength, sub.strength);
-	    }
-	    return this;
-	}
+        public ItemEmissionAccumulator() {
+            this(null);
+        }
 
-	public ItemEmissionAccumulator add(Item item, long quantity) {
-	    if (quantity <= 0) {
-		return this;
-	    }
-	    RadioactiveObject rads = RadioactiveItemRegister.getValue(item);
-	    double perItem = rads.amount();
-	    if (!(perItem > 0) || Double.isNaN(perItem)) {
-		return this;
-	    }
-	    radiation = saturatedAdd(radiation, perItem * (double) quantity);
-	    double itemStrength = rads.strength();
-	    if (!Double.isNaN(itemStrength)) {
-		strength = Math.max(strength, itemStrength);
-	    }
-	    return this;
-	}
+        public ItemEmissionAccumulator(@Nullable Level level) {
+            this(level, new ReadState(), 0);
+        }
 
-	public ItemEmission build(int maxRange) {
-	    if (!(radiation > 0)) {
-		return ItemEmission.NONE;
-	    }
-	    return new ItemEmission(radiation, strength, getItemRadiationRange(radiation, maxRange));
-	}
+        private ItemEmissionAccumulator(@Nullable Level level, ReadState state, int depth) {
+            this.level = level;
+            this.state = state;
+            this.depth = depth;
+        }
 
-	public ItemEmission build() {
-	    return build(getConfiguredMaxItemRange());
-	}
+        public ItemEmissionAccumulator add(ItemStack stack) {
+            return add(stack, stack.getCount());
+        }
 
-	private static double saturatedMultiply(double a, double b) {
-	    double product = a * b;
-	    return Double.isFinite(product) ? product : Double.MAX_VALUE;
-	}
+        /**
+         * Adds a component-bearing item type with a long quantity. Quantity is
+         * independent of the sample stack's count, so network counts never need
+         * to be squeezed into an ItemStack.
+         */
+        public ItemEmissionAccumulator add(ItemStack stack, long quantity) {
+            if (stack.isEmpty() || quantity <= 0 || (depth > 0 && state.work++ >= MAX_NESTED_STACKS)) {
+                return this;
+            }
+            add(stack.getItem(), quantity);
+            if (depth >= MAX_NESTING_DEPTH || state.work >= MAX_NESTED_STACKS) {
+                return this;
+            }
+            ItemEmissionAccumulator nested = new ItemEmissionAccumulator(level, state, depth + 1);
+            boolean handled = false;
+            for (IRadiationItemContentsReader reader : ITEM_READERS) {
+                if (reader.read(stack, level, nested)) {
+                    handled = true;
+                    break;
+                }
+            }
+            if (!handled) {
+                ItemContainerContents container = stack.get(DataComponents.CONTAINER);
+                if (container != null) {
+                    for (ItemStack inner : container.nonEmptyItems()) {
+                        if (!nested.hasRemainingWork()) break;
+                        nested.add(inner);
+                    }
+                } else {
+                    BundleContents bundle = stack.get(DataComponents.BUNDLE_CONTENTS);
+                    if (bundle != null) {
+                        for (ItemStack inner : bundle.items()) {
+                            if (!nested.hasRemainingWork()) break;
+                            nested.add(inner);
+                        }
+                    }
+                }
+            }
+            double escaping = stack.getItem() instanceof IRadiationItemContainment containment
+                    ? clampEscapingFraction(containment.getEscapingFraction(stack, level)) : 1;
+            double amount = saturatedMultiply(saturatedMultiply(nested.radiation, escaping), quantity);
+            radiation = saturatedAdd(radiation, amount);
+            if (amount > 0) strength = Math.max(strength, nested.strength);
+            return this;
+        }
 
-	private static double saturatedAdd(double a, double b) {
-	    double sum = a + b;
-	    return Double.isFinite(sum) ? sum : Double.MAX_VALUE;
-	}
+        /** Bounded nested traversal; top level stores still visit every item type. */
+        public boolean hasRemainingWork() {
+            return depth == 0 || state.work < MAX_NESTED_STACKS;
+        }
+
+        /**
+         * Reads a backing store at most once in this calculation. Use a stable
+         * reference (for example an RS storage UUID), never a network identity.
+         */
+        public void readStorage(Object identity, Consumer<ItemEmissionAccumulator> read) {
+            if (state.stores.add(identity)) read.accept(this);
+        }
+
+        public ItemEmissionAccumulator add(Item item, long quantity) {
+            if (quantity <= 0) return this;
+            RadioactiveObject rads = RadioactiveItemRegister.getValue(item);
+            if (!(rads.amount() > 0)) return this;
+            radiation = saturatedAdd(radiation, saturatedMultiply(rads.amount(), quantity));
+            if (!Double.isNaN(rads.strength())) {
+                strength = Math.max(strength, Math.min(Double.MAX_VALUE, rads.strength()));
+            }
+            return this;
+        }
+
+        public ItemEmission build(int maxRange) {
+            return radiation > 0 ? new ItemEmission(radiation, strength,
+                    getItemRadiationRange(radiation, maxRange)) : ItemEmission.NONE;
+        }
+
+        public ItemEmission build() {
+            return build(getConfiguredMaxItemRange());
+        }
+    }
+
+    private static final List<IRadiationItemContentsReader> ITEM_READERS = new CopyOnWriteArrayList<>();
+
+    public static void registerItemReader(IRadiationItemContentsReader reader) {
+        ITEM_READERS.add(reader);
+    }
+
+    public static double saturatedMultiply(double a, double b) {
+        if (!(a > 0) || !(b > 0)) return 0;
+        double result = a * b;
+        return Double.isFinite(result) ? result : Double.MAX_VALUE;
+    }
+
+    public static double saturatedAdd(double a, double b) {
+        double result = a + b;
+        return Double.isFinite(result) ? result : Double.MAX_VALUE;
+    }
+
+    public static double clampEscapingFraction(double fraction) {
+        return Double.isNaN(fraction) ? 1 : Math.max(0, Math.min(1, fraction));
+    }
+
+    public static ItemEmission applyContainment(ItemEmission emission, double fraction) {
+        return applyContainment(emission, fraction, getConfiguredMaxItemRange());
+    }
+
+    public static ItemEmission applyContainment(ItemEmission emission, double fraction, int maxRange) {
+        double amount = saturatedMultiply(emission.amount(), clampEscapingFraction(fraction));
+        return amount > 0 ? new ItemEmission(amount, emission.strength(),
+                getItemRadiationRange(amount, maxRange)) : ItemEmission.NONE;
     }
 
     private static int getConfiguredMaxItemRange() {
@@ -156,7 +227,11 @@ public class RadiationUtils {
     }
 
     public static ItemEmission calculateItemEmission(Iterable<ItemStack> items) {
-	ItemEmissionAccumulator accumulator = new ItemEmissionAccumulator();
+        return calculateItemEmission(null, items);
+    }
+
+    public static ItemEmission calculateItemEmission(@Nullable Level level, Iterable<ItemStack> items) {
+	ItemEmissionAccumulator accumulator = new ItemEmissionAccumulator(level);
 	for (ItemStack item : items) {
 	    accumulator.add(item);
 	}
@@ -249,28 +324,11 @@ public class RadiationUtils {
 
     public static void handleRadioactiveItems(Level level, GenericTile tile, List<ItemStack> items, int radius,
 	    boolean isTemp, int ticks, boolean shouldLinger, boolean shouldCombine) {
-	double totRadiation = 0;
-	double totStrength = 0;
-
-	for (ItemStack item : items) {
-	    if (item.isEmpty()) {
-		continue;
-	    }
-
-	    RadioactiveObject rads = RadioactiveItemRegister.getValue(item.getItem());
-	    if (rads.amount() <= 0) {
-		continue;
-	    }
-
-	    totRadiation += rads.amount() * item.getCount();
-	    totStrength = Math.max(totStrength, rads.strength());
-	}
-	if (totRadiation <= 0)
-	    return;
-
-	RadiationSystem.addRadiationSource(level, new SimpleRadiationSource(totRadiation, totStrength, radius, isTemp,
-		ticks, tile.getBlockPos(), shouldLinger, shouldCombine));
-
+        ItemEmission emission = calculateItemEmission(level, items);
+        if (!emission.isRadioactive()) return;
+        // Machine callers retain their explicit range, lifetime and lingering rules.
+        RadiationSystem.addRadiationSource(level, new SimpleRadiationSource(emission.amount(), emission.strength(),
+                radius, isTemp, ticks, tile.getBlockPos(), shouldLinger, shouldCombine));
     }
 
 }
