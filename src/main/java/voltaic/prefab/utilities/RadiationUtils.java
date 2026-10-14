@@ -2,6 +2,7 @@ package voltaic.prefab.utilities;
 
 import java.util.List;
 
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.fluids.FluidStack;
@@ -11,6 +12,7 @@ import voltaic.api.gas.GasTank;
 import voltaic.api.radiation.RadiationSystem;
 import voltaic.api.radiation.SimpleRadiationSource;
 import voltaic.api.radiation.util.RadioactiveObject;
+import voltaic.common.settings.VoltaicConfig;
 import voltaic.common.reloadlistener.RadioactiveFluidRegister;
 import voltaic.common.reloadlistener.RadioactiveGasRegister;
 import voltaic.common.reloadlistener.RadioactiveItemRegister;
@@ -24,8 +26,8 @@ import voltaic.prefab.tile.components.type.ComponentInventory;
 public class RadiationUtils {
 
     /**
-     * Result of {@link #calculateItemEmission}. Radiation is summed by stack
-     * count, strength is the penetration of the strongest material.
+     * Result of an item emission calculation. Radiation is summed by quantity,
+     * strength is the penetration of the strongest material.
      */
     public record ItemEmission(double amount, double strength, int range) {
 
@@ -37,30 +39,85 @@ public class RadiationUtils {
     }
 
     /**
-     * The range of radioactive items; the same formula used for dropped items.
+     * Collects item types with <code>long</code> quantities so that large stores
+     * are processed once per item type rather than once per item. Quantities are
+     * promoted to <code>double</code> before multiplication and never converted to
+     * <code>int</code>.
+     */
+    public static class ItemEmissionAccumulator {
+
+	private double radiation = 0;
+	private double strength = 0;
+
+	public ItemEmissionAccumulator add(ItemStack stack) {
+	    return stack.isEmpty() ? this : add(stack.getItem(), stack.getCount());
+	}
+
+	public ItemEmissionAccumulator add(Item item, long quantity) {
+	    if (quantity <= 0) {
+		return this;
+	    }
+	    RadioactiveObject rads = RadioactiveItemRegister.getValue(item);
+	    double perItem = rads.amount();
+	    if (!(perItem > 0) || Double.isNaN(perItem)) {
+		return this;
+	    }
+	    radiation = saturatedAdd(radiation, perItem * (double) quantity);
+	    double itemStrength = rads.strength();
+	    if (!Double.isNaN(itemStrength)) {
+		strength = Math.max(strength, itemStrength);
+	    }
+	    return this;
+	}
+
+	public ItemEmission build(int maxRange) {
+	    if (!(radiation > 0)) {
+		return ItemEmission.NONE;
+	    }
+	    return new ItemEmission(radiation, strength, getItemRadiationRange(radiation, maxRange));
+	}
+
+	public ItemEmission build() {
+	    return build(getConfiguredMaxItemRange());
+	}
+
+	private static double saturatedAdd(double a, double b) {
+	    double sum = a + b;
+	    return Double.isFinite(sum) ? sum : Double.MAX_VALUE;
+	}
+    }
+
+    private static int getConfiguredMaxItemRange() {
+	return VoltaicConfig.INSTANCE.MAX_ITEM_RADIATION_RANGE.get();
+    }
+
+    /**
+     * The range of radioactive items; the same formula used for dropped items,
+     * bounded by the configured maximum. The cap only limits the searched area;
+     * callers keep the full amount.
      */
     public static int getItemRadiationRange(double amount) {
-	return (int) (Math.sqrt(amount) / (5 * Math.sqrt(2)) * 1.25);
+	return getItemRadiationRange(amount, getConfiguredMaxItemRange());
+    }
+
+    public static int getItemRadiationRange(double amount, int maxRange) {
+	if (!(amount > 0)) {
+	    return 0;
+	}
+	double range = Math.sqrt(amount) / (5 * Math.sqrt(2)) * 1.25;
+	return (int) Math.min(range, Math.max(0, maxRange));
+    }
+
+    public static ItemEmission calculateItemEmission(Item item, long quantity) {
+	return new ItemEmissionAccumulator().add(item, quantity).build();
     }
 
     public static ItemEmission calculateItemEmission(Iterable<ItemStack> items) {
-	double totRadiation = 0;
-	double totStrength = 0;
+	ItemEmissionAccumulator accumulator = new ItemEmissionAccumulator();
 	for (ItemStack item : items) {
-	    if (item.isEmpty()) {
-		continue;
-	    }
-	    RadioactiveObject rads = RadioactiveItemRegister.getValue(item.getItem());
-	    if (rads.amount() <= 0) {
-		continue;
-	    }
-	    totRadiation += rads.amount() * item.getCount();
-	    totStrength = Math.max(totStrength, rads.strength());
+	    accumulator.add(item);
 	}
-	if (totRadiation <= 0) {
-	    return ItemEmission.NONE;
-	}
-	return new ItemEmission(totRadiation, totStrength, getItemRadiationRange(totRadiation));
+	return accumulator.build();
     }
 
     public static void handleRadioactiveGases(Level level, GenericTile tile, ComponentGasHandlerMulti multi, int radius,

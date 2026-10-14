@@ -202,8 +202,6 @@ public class RadiationManager implements IRadiationManager {
 
     @Override
     public void tick(Level world) {
-	BlockPos position;
-
 	HashMap<BlockPos, SimpleRadiationSource> permanentSources = world
 		.getData(VoltaicAttachmentTypes.PERMANENT_RADIATION_SOURCES);
 
@@ -213,7 +211,6 @@ public class RadiationManager implements IRadiationManager {
 
 	HashMap<BlockPos, TemporaryRadiationSource> temporarySources = world
 		.getData(VoltaicAttachmentTypes.TEMPORARY_RADIATION_SOURCES);
-	TemporaryRadiationSource temporarySource;
 	ServerLevel serverLevel = (ServerLevel) world;
 
 	/* Permanent sources */
@@ -223,7 +220,7 @@ public class RadiationManager implements IRadiationManager {
 	    SimpleRadiationSource source = entry.getValue();
 
 	    applySourceToNearbyEntities(serverLevel, entry.getKey(), source.getBoundingBox(),
-		    source.getRadiationAmount(), source.getRadiationStrength());
+		    source.getDistanceSpread(), source.getRadiationAmount(), source.getRadiationStrength());
 	}
 
 	/* Temporary sources */
@@ -232,13 +229,13 @@ public class RadiationManager implements IRadiationManager {
 
 	    TemporaryRadiationSource source = entry.getValue();
 
-	    applySourceToNearbyEntities(serverLevel, entry.getKey(), source.boundingBox, source.radiation,
-		    source.strength);
+	    applySourceToNearbyEntities(serverLevel, entry.getKey(), source.boundingBox, source.distance,
+		    source.radiation, source.strength);
 	}
 
 	for (TemporaryRadiationSource source : emitters.values()) {
-	    applySourceToNearbyEntities(serverLevel, source.position, source.boundingBox, source.radiation,
-		    source.strength);
+	    applySourceToNearbyEntities(serverLevel, source.position, source.boundingBox, source.distance,
+		    source.radiation, source.strength);
 	}
 
 	/* Fading sources */
@@ -247,50 +244,14 @@ public class RadiationManager implements IRadiationManager {
 
 	    FadingRadiationSource source = entry.getValue();
 
-	    applySourceToNearbyEntities(serverLevel, entry.getKey(), source.boundingBox, source.radiation,
-		    source.strength);
+	    applySourceToNearbyEntities(serverLevel, entry.getKey(), source.boundingBox, source.distance,
+		    source.radiation, source.strength);
 	}
 	/* Tick Temporary Radiation Sources */
 
-	Iterator<Map.Entry<BlockPos, TemporaryRadiationSource>> iteratorTemp = temporarySources.entrySet().iterator();
-	Map.Entry<BlockPos, TemporaryRadiationSource> entryTemp;
+	tickTemporarySources(temporarySources.values().iterator(), fadingSources);
 
-	while (iteratorTemp.hasNext()) {
-	    entryTemp = iteratorTemp.next();
-	    position = entryTemp.getKey();
-	    temporarySource = entryTemp.getValue();
-
-	    temporarySource.ticks = temporarySource.ticks - 1;
-
-	    if (temporarySource.ticks < 0) {
-		iteratorTemp.remove();
-		if (temporarySource.leaveFading) {
-		    FadingRadiationSource existing = fadingSources.getOrDefault(position, FadingRadiationSource.NONE);
-		    fadingSources.put(position,
-			    new FadingRadiationSource(Math.max(temporarySource.distance, existing.distance),
-				    Math.max(temporarySource.strength, existing.strength),
-				    Math.max(temporarySource.radiation, existing.radiation), position));
-		}
-	    }
-
-	}
-
-	Iterator<TemporaryRadiationSource> emitterIterator = emitters.values().iterator();
-	while (emitterIterator.hasNext()) {
-	    temporarySource = emitterIterator.next();
-	    temporarySource.ticks = temporarySource.ticks - 1;
-	    if (temporarySource.ticks < 0) {
-		emitterIterator.remove();
-		if (temporarySource.leaveFading) {
-		    position = temporarySource.position;
-		    FadingRadiationSource existing = fadingSources.getOrDefault(position, FadingRadiationSource.NONE);
-		    fadingSources.put(position,
-			    new FadingRadiationSource(Math.max(temporarySource.distance, existing.distance),
-				    Math.max(temporarySource.strength, existing.strength),
-				    Math.max(temporarySource.radiation, existing.radiation), position));
-		}
-	    }
-	}
+	tickTemporarySources(emitters.values().iterator(), fadingSources);
 
 	world.setData(VoltaicAttachmentTypes.TEMPORARY_RADIATION_SOURCES, temporarySources);
 
@@ -325,6 +286,30 @@ public class RadiationManager implements IRadiationManager {
 	cleanCaches(world.getGameTime());
     }
 
+    /**
+     * Applied sources are decremented after being applied, so a source with N
+     * remaining ticks is applied N + 1 times after its last refresh.
+     */
+    private static void tickTemporarySources(Iterator<TemporaryRadiationSource> iterator,
+	    HashMap<BlockPos, FadingRadiationSource> fadingSources) {
+	while (iterator.hasNext()) {
+	    TemporaryRadiationSource source = iterator.next();
+	    source.ticks = source.ticks - 1;
+	    if (source.ticks >= 0) {
+		continue;
+	    }
+	    iterator.remove();
+	    if (source.leaveFading) {
+		BlockPos position = source.position;
+		FadingRadiationSource existing = fadingSources.getOrDefault(position, FadingRadiationSource.NONE);
+		fadingSources.put(position,
+			new FadingRadiationSource(Math.max(source.distance, existing.distance),
+				Math.max(source.strength, existing.strength),
+				Math.max(source.radiation, existing.radiation), position));
+	    }
+	}
+    }
+
     private void cleanCaches(long gameTime) {
 
 	if (gameTime % 100L != 0L)
@@ -335,14 +320,18 @@ public class RadiationManager implements IRadiationManager {
 	entityCache.entrySet().removeIf(entry -> gameTime - entry.getValue().lastSeenTick > CACHE_ENTRY_EXPIRY_TICKS);
     }
 
-    private void applySourceToNearbyEntities(ServerLevel world, BlockPos sourcePos, AABB sourceBounds,
+    private void applySourceToNearbyEntities(ServerLevel world, BlockPos sourcePos, AABB sourceBounds, int distance,
 	    double radiationAmount, double strength) {
 
 	Vec3 source = Vec3.atCenterOf(sourcePos);
+	/* The bounding box finds candidates; the radius bounds the actual reach. */
+	double radius = distance + 0.5;
+	double radiusSq = radius * radius;
 
 	List<LivingEntity> entities = getCachedEntities(world, sourcePos, sourceBounds);
 	for (LivingEntity living : entities) {
-	    if (!living.isAlive() || living.level() != world || !living.getBoundingBox().intersects(sourceBounds)) {
+	    if (!living.isAlive() || living.level() != world || !living.getBoundingBox().intersects(sourceBounds)
+		    || distanceToAabbSqr(source, living.getBoundingBox()) > radiusSq) {
 		continue;
 	    }
 	    IRadiationRecipient capability = living.getCapability(VoltaicCapabilities.CAPABILITY_RADIATIONRECIPIENT);

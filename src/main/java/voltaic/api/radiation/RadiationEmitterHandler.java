@@ -24,12 +24,14 @@ import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import voltaic.Voltaic;
+import voltaic.api.radiation.util.IRadiationContentsReader;
 import voltaic.api.radiation.util.IRadiationManager;
 import voltaic.api.radiation.util.IRadiationManager.EmitterId;
 import voltaic.common.settings.VoltaicConfig;
 import voltaic.prefab.tile.GenericTile;
 import voltaic.prefab.utilities.RadiationUtils;
 import voltaic.prefab.utilities.RadiationUtils.ItemEmission;
+import voltaic.prefab.utilities.RadiationUtils.ItemEmissionAccumulator;
 import voltaic.registers.VoltaicAttachmentTypes;
 
 /**
@@ -64,8 +66,23 @@ public class RadiationEmitterHandler {
 
     public static final int FRAME_EXPIRY_TICKS = 1;
     public static final int CONTAINER_CHECK_INTERVAL = 20;
-    /* Covers the check interval plus one missed check before expiry. */
-    private static final int CONTAINER_EXPIRY_TICKS = CONTAINER_CHECK_INTERVAL + 1;
+    /*
+     * A container is refreshed in the post phase of a level tick and applied by the
+     * manager at the start of each following tick. A value of N is applied N + 1
+     * times, so 20 leaves one tick of margin before the next scan and does not
+     * survive a missed scan.
+     */
+    private static final int CONTAINER_EXPIRY_TICKS = CONTAINER_CHECK_INTERVAL;
+
+    private static final List<IRadiationContentsReader> READERS = new java.util.concurrent.CopyOnWriteArrayList<>();
+
+    /**
+     * Registers a specialised contents reader, which takes precedence over the
+     * ordinary inventory reader.
+     */
+    public static void registerReader(IRadiationContentsReader reader) {
+	READERS.add(reader);
+    }
 
     /* chunk positions per level, bucketed by the tick on which they are checked */
     private static final Map<ServerLevel, List<Set<Long>>> TRACKED_CHUNKS = new HashMap<>();
@@ -163,7 +180,18 @@ public class RadiationEmitterHandler {
     }
 
     private static void checkContainer(ServerLevel level, BlockEntity be) {
-	if (be.isRemoved() || !(be instanceof Container container) || be instanceof GenericTile)
+	if (be.isRemoved() || be instanceof GenericTile)
+	    return;
+	boolean specialised = false;
+	ItemEmissionAccumulator contents = new ItemEmissionAccumulator();
+	for (IRadiationContentsReader reader : READERS) {
+	    if (reader.read(be, contents)) {
+		specialised = true;
+		break;
+	    }
+	}
+	Container container = be instanceof Container c ? c : null;
+	if (!specialised && container == null)
 	    return;
 	BlockPos pos = be.getBlockPos();
 	EmitterId id = EmitterId.container(pos);
@@ -171,15 +199,16 @@ public class RadiationEmitterHandler {
 	    manager(level).clearEmitter(id, level);
 	    return;
 	}
-	if (container.isEmpty()) {
-	    manager(level).clearEmitter(id, level);
-	    return;
+	if (!specialised) {
+	    if (container.isEmpty()) {
+		manager(level).clearEmitter(id, level);
+		return;
+	    }
+	    for (int i = 0; i < container.getContainerSize(); i++) {
+		contents.add(container.getItem(i));
+	    }
 	}
-	List<ItemStack> items = new java.util.ArrayList<>(container.getContainerSize());
-	for (int i = 0; i < container.getContainerSize(); i++) {
-	    items.add(container.getItem(i));
-	}
-	ItemEmission emission = RadiationUtils.calculateItemEmission(items);
+	ItemEmission emission = contents.build();
 	if (!emission.isRadioactive()) {
 	    manager(level).clearEmitter(id, level);
 	    return;

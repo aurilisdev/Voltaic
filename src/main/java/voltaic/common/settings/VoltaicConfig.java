@@ -12,6 +12,7 @@ public class VoltaicConfig {
     public ModConfigSpec.BooleanValue RADIATION_SYSTEM_ENABLED;
     public ModConfigSpec.BooleanValue ORES_EMIT_RADIATION;
     public ModConfigSpec.IntValue ORE_RADIATION_ADMIT_RATE;
+    public ModConfigSpec.IntValue MAX_ITEM_RADIATION_RANGE;
     public ModConfigSpec.BooleanValue ALLOW_EXTERNAL_POWER_SOURCES;
     public ModConfigSpec SPEC;
 
@@ -33,6 +34,10 @@ public class VoltaicConfig {
 	ORE_RADIATION_ADMIT_RATE = builder
 		.comment("How frequently ores random tick radiation. Value of 1 is fastest rate.")
 		.defineInRange("oreRadiationEmitRate", 20, 1, Integer.MAX_VALUE);
+
+	MAX_ITEM_RADIATION_RANGE = builder.comment(
+		"Maximum radius in blocks of radioactive item stacks, containers and frames. Larger quantities keep increasing the radiation amount but not the range.")
+		.defineInRange("maxItemRadiationRange", 256, 0, 1024);
 
 	builder.pop();
 	builder.push("compatibility");

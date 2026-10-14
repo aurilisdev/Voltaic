@@ -61,7 +61,7 @@ public class CapabilityRadiationRecipient implements IRadiationRecipient {
 	    MobEffectInstance currentEffect = entity.getEffect(VoltaicEffects.RADIATION);
 
 	    if (currentEffect != null) {
-		duration += currentEffect.getDuration();
+		duration = (int) Math.min(Integer.MAX_VALUE, (long) duration + currentEffect.getDuration());
 		amplitude = Math.max(amplitude, currentEffect.getAmplifier());
 	    }
 
@@ -98,11 +98,19 @@ public class CapabilityRadiationRecipient implements IRadiationRecipient {
     }
 
     public static int getDurationFromRadiation(double radiation) {
-	return (int) Math.max(1, radiation / 100.0 * 20.0);
+	double ticks = radiation / 100.0 * 20.0;
+	if (Double.isNaN(ticks)) {
+	    return 1;
+	}
+	return (int) Math.min(Integer.MAX_VALUE, Math.max(1, ticks));
     }
 
     public static int getAmplitudeFromRadiation(double radiation, double strength) {
-	return (int) Math.min(40.0, radiation / 100.0 * strength);
+	double amplitude = radiation / 100.0 * strength;
+	if (Double.isNaN(amplitude)) {
+	    return 0;
+	}
+	return (int) Math.min(40.0, Math.max(0.0, amplitude));
     }
 
 }
