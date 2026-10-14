@@ -116,13 +116,20 @@ public class ComponentProcessor implements IComponent {
 		.get();
 	ComponentInventory inv = holder.<ComponentInventory>getComponent(IComponentType.Inventory).get();
 
-	for (ItemStack stack : inv.getUpgradeContents()) {
-	    if (!stack.isEmpty() && stack.getItem() instanceof ItemUpgrade upgrade && !upgrade.subtype.isEmpty) {
-		for (int i = 0; i < stack.getCount(); i++) {
-		    for (int j = 0; j < numProcessors; j++) {
-			upgrade.subtype.applyUpgrade.accept(getHolder(), stack, j);
-		    }
+	List<ItemStack> upgradeContents = inv.getUpgradeContents();
+	for (int upgradeIndex = 0; upgradeIndex < upgradeContents.size(); upgradeIndex++) {
+	    ItemStack stack = upgradeContents.get(upgradeIndex);
+	    if (stack.isEmpty() || !(stack.getItem() instanceof ItemUpgrade upgrade) || upgrade.subtype.isEmpty)
+		continue;
+
+	    ItemStack previous = stack.copy();
+	    for (int i = 0; i < stack.getCount(); i++) {
+		for (int j = 0; j < numProcessors; j++) {
+		    upgrade.subtype.applyUpgrade.accept(getHolder(), stack, j);
 		}
+	    }
+	    if (!ItemStack.matches(previous, stack)) {
+		inv.setChanged(inv.getUpgradeSlotStartIndex() + upgradeIndex);
 	    }
 	}
 
@@ -821,18 +828,20 @@ public class ComponentProcessor implements IComponent {
 
     public void dispenseExperience(ComponentInventory inv, double experience) {
 	storedXp += experience;
-	for (ItemStack stack : inv.getUpgradeContents()) {
+	if (storedXp == 0)
+	    return;
 
-	    if (!stack.isEmpty()) {
-		ItemUpgrade upgrade = (ItemUpgrade) stack.getItem();
-		if (upgrade.subtype == SubtypeItemUpgrade.experience) {
-		    stack.set(VoltaicDataComponentTypes.XP,
-			    stack.getOrDefault(VoltaicDataComponentTypes.XP, 0.0) + getStoredXp());
-		    setStoredXp(0);
-		    break;
-		}
-	    }
+	List<ItemStack> upgrades = inv.getUpgradeContents();
+	for (int i = 0; i < upgrades.size(); i++) {
+	    ItemStack stack = upgrades.get(i);
+	    if (stack.isEmpty() || !(stack.getItem() instanceof ItemUpgrade upgrade)
+		    || upgrade.subtype != SubtypeItemUpgrade.experience)
+		continue;
 
+	    stack.set(VoltaicDataComponentTypes.XP, stack.getOrDefault(VoltaicDataComponentTypes.XP, 0.0) + storedXp);
+	    setStoredXp(0);
+	    inv.setChanged(inv.getUpgradeSlotStartIndex() + i);
+	    return;
 	}
     }
 

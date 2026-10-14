@@ -238,7 +238,7 @@ public class PropertyTypes {
 
     public static final ListPropertyType<ItemStack, RegistryFriendlyByteBuf> ITEM_STACK_LIST = new ListPropertyType<>(
 	    //
-	    ItemStack::isSameItemSameComponents,
+	    ItemStack::matches,
 	    //
 	    ItemStack.OPTIONAL_STREAM_CODEC,
 	    //

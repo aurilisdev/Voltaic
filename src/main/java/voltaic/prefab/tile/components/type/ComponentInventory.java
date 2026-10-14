@@ -18,6 +18,7 @@ import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.common.util.TriPredicate;
 import net.neoforged.neoforge.items.IItemHandler;
@@ -290,7 +291,7 @@ public class ComponentInventory implements IComponent, WorldlyContainer {
 
     @Override
     public void setItem(int index, ItemStack stack) {
-	if (index < 0 || index >= items.getValue().size() || ItemStack.matches(items.getValue().get(index), stack))
+	if (index < 0 || index >= items.getValue().size())
 	    return;
 
 	if (stack.getCount() > getMaxStackSize()) {
@@ -374,6 +375,16 @@ public class ComponentInventory implements IComponent, WorldlyContainer {
 
     public void setChanged(int slot) {
 	onChanged.accept(this, slot);
+	Level level = holder.getLevel();
+	if (level == null || level.isClientSide())
+	    return;
+
+	items.setDirty();
+	holder.getPropertyManager().setDirty(items);
+	holder.setChanged();
+	if (!holder.hasComponent(IComponentType.Tickable))
+	    level.sendBlockUpdated(holder.getBlockPos(), holder.getBlockState(), holder.getBlockState(),
+		    Block.UPDATE_CLIENTS);
     }
 
     public int inputs() {

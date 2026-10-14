@@ -284,6 +284,7 @@ public class ComponentElectrodynamic implements IComponent, ICapabilityElectrody
 			.apply(electric.extractPower(stack, maxJoules.getValue() - joules.getValue(), false), false);
 		if (pack != TransferPack.EMPTY) {
 		    onChange();
+		    inventory.setChanged(slot);
 		}
 	    }
 	}
@@ -298,8 +299,12 @@ public class ComponentElectrodynamic implements IComponent, ICapabilityElectrody
 	ComponentInventory inventory = oInv.get();
 	ItemStack stack = inventory.getItem(slot);
 	if (stack.getItem() instanceof IItemElectric electric) {
-	    functionExtractPower.apply(electric.receivePower(stack,
-		    TransferPack.joulesVoltage(joules.getValue(), voltage.getValue()), false), false);
+	    TransferPack received = electric.receivePower(stack,
+		    TransferPack.joulesVoltage(joules.getValue(), voltage.getValue()), false);
+	    if (received != TransferPack.EMPTY) {
+		functionExtractPower.apply(received, false);
+		inventory.setChanged(slot);
+	    }
 	}
 	return this;
     }
