@@ -11,6 +11,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.DoorBlock;
 import net.minecraft.world.level.block.TrapDoorBlock;
@@ -36,6 +37,8 @@ public class RadiationManager implements IRadiationManager {
      */
     private static final double EXPOSURE_CACHE_MOVE_DISTANCE_SQ = 0.25;
 
+    /* Identified emitters; transient (rebuilt by their refreshers), never saved. */
+    private final Map<EmitterId, TemporaryRadiationSource> emitters = new HashMap<>();
     private final Map<ExposureKey, CachedExposure> exposureCache = new HashMap<>();
     private final Map<Long, CachedEntities> entityCache = new HashMap<>();
 
@@ -46,7 +49,10 @@ public class RadiationManager implements IRadiationManager {
 
     @Override
     public List<TemporaryRadiationSource> getTemporarySources(Level world) {
-	return new ArrayList<>(world.getData(VoltaicAttachmentTypes.TEMPORARY_RADIATION_SOURCES).values());
+	List<TemporaryRadiationSource> list = new ArrayList<>(
+		world.getData(VoltaicAttachmentTypes.TEMPORARY_RADIATION_SOURCES).values());
+	list.addAll(emitters.values());
+	return list;
     }
 
     @Override
@@ -61,7 +67,11 @@ public class RadiationManager implements IRadiationManager {
 
     @Override
     public List<BlockPos> getTemporaryLocations(Level world) {
-	return new ArrayList<>(world.getData(VoltaicAttachmentTypes.TEMPORARY_RADIATION_SOURCES).keySet());
+	List<BlockPos> list = new ArrayList<>(world.getData(VoltaicAttachmentTypes.TEMPORARY_RADIATION_SOURCES).keySet());
+	for (TemporaryRadiationSource source : emitters.values()) {
+	    list.add(source.position);
+	}
+	return list;
     }
 
     @Override
@@ -112,15 +122,37 @@ public class RadiationManager implements IRadiationManager {
     }
 
     @Override
+    public void refreshEmitter(EmitterId id, SimpleRadiationSource source, Level world) {
+	emitters.put(id, new TemporaryRadiationSource(source.ticks(), source.strength(), source.amount(),
+		source.shouldLeaveLingeringSource(), source.distance(), source.getSourceLocation()));
+    }
+
+    @Override
+    public boolean clearEmitter(EmitterId id, Level world) {
+	return emitters.remove(id) != null;
+    }
+
+    @Override
+    public void clearEmittersInChunk(ChunkPos chunk, Level world) {
+	emitters.values().removeIf(source -> source.chunkPos.equals(chunk));
+    }
+
+    @Override
     public int getReachOfSource(Level world, BlockPos pos) {
-	return Math.max(
+	int emitterReach = 0;
+	for (TemporaryRadiationSource source : emitters.values()) {
+	    if (source.position.equals(pos)) {
+		emitterReach = Math.max(emitterReach, source.distance);
+	    }
+	}
+	return Math.max(emitterReach, Math.max(
 		world.getData(VoltaicAttachmentTypes.TEMPORARY_RADIATION_SOURCES).getOrDefault(pos,
 			TemporaryRadiationSource.NONE).distance,
 		Math.max(
 			world.getData(VoltaicAttachmentTypes.PERMANENT_RADIATION_SOURCES)
 				.getOrDefault(pos, SimpleRadiationSource.NONE).getDistanceSpread(),
 			world.getData(VoltaicAttachmentTypes.FADING_RADIATION_SOURCES).getOrDefault(pos,
-				FadingRadiationSource.NONE).distance));
+				FadingRadiationSource.NONE).distance)));
     }
 
     @Override
@@ -165,6 +197,7 @@ public class RadiationManager implements IRadiationManager {
 	level.removeData(VoltaicAttachmentTypes.PERMANENT_RADIATION_SOURCES);
 	level.removeData(VoltaicAttachmentTypes.TEMPORARY_RADIATION_SOURCES);
 	level.removeData(VoltaicAttachmentTypes.FADING_RADIATION_SOURCES);
+	emitters.clear();
     }
 
     @Override
@@ -203,6 +236,11 @@ public class RadiationManager implements IRadiationManager {
 		    source.strength);
 	}
 
+	for (TemporaryRadiationSource source : emitters.values()) {
+	    applySourceToNearbyEntities(serverLevel, source.position, source.boundingBox, source.radiation,
+		    source.strength);
+	}
+
 	/* Fading sources */
 
 	for (Map.Entry<BlockPos, FadingRadiationSource> entry : fadingSources.entrySet()) {
@@ -235,6 +273,23 @@ public class RadiationManager implements IRadiationManager {
 		}
 	    }
 
+	}
+
+	Iterator<TemporaryRadiationSource> emitterIterator = emitters.values().iterator();
+	while (emitterIterator.hasNext()) {
+	    temporarySource = emitterIterator.next();
+	    temporarySource.ticks = temporarySource.ticks - 1;
+	    if (temporarySource.ticks < 0) {
+		emitterIterator.remove();
+		if (temporarySource.leaveFading) {
+		    position = temporarySource.position;
+		    FadingRadiationSource existing = fadingSources.getOrDefault(position, FadingRadiationSource.NONE);
+		    fadingSources.put(position,
+			    new FadingRadiationSource(Math.max(temporarySource.distance, existing.distance),
+				    Math.max(temporarySource.strength, existing.strength),
+				    Math.max(temporarySource.radiation, existing.radiation), position));
+		}
+	    }
 	}
 
 	world.setData(VoltaicAttachmentTypes.TEMPORARY_RADIATION_SOURCES, temporarySources);

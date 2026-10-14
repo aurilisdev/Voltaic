@@ -1,6 +1,7 @@
 package voltaic.api.radiation.util;
 
 import java.util.List;
+import java.util.UUID;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -50,6 +51,46 @@ public interface IRadiationManager {
      */
     public void addRadiationSource(SimpleRadiationSource source, Level level);
 
+    /**
+     * Replaces the radiation currently emitted by an identified emitter (for
+     * example a container or an item frame) and resets its expiry.
+     * <p>
+     * Identified emitters are stored separately from position-keyed sources, so
+     * several emitters may share one block without replacing each other. They are
+     * temporary: they are applied, queried (see {@link #getTemporarySources},
+     * {@link #getTemporaryLocations}, {@link #getReachOfSource}) and expired exactly
+     * like other temporary sources, are never saved, and are never added to the
+     * emitter's previous values.
+     * <p>
+     * Timing: the manager ticks at the start of a level tick. A source with
+     * {@code ticks} remaining is applied on {@code ticks + 1} manager ticks after
+     * it is refreshed, so refreshing every N game ticks needs {@code ticks >= N - 1}
+     * for gap-free coverage; the extra ticks are the cleanup delay if the emitter
+     * is removed without a notification.
+     *
+     * @param id          Identity of the emitter
+     * @param source      The new emission; its location is the emission position
+     *                    and its {@code ticks} are the expiry. Must be temporary.
+     */
+    public default void refreshEmitter(EmitterId id, SimpleRadiationSource source, Level level) {
+    }
+
+    /**
+     * Removes the emission of an identified emitter immediately.
+     *
+     * @return whether the emitter had an active emission
+     */
+    public default boolean clearEmitter(EmitterId id, Level level) {
+	return false;
+    }
+
+    /**
+     * Removes every identified emission located in the given chunk (used when a
+     * chunk unloads).
+     */
+    public default void clearEmittersInChunk(ChunkPos chunk, Level level) {
+    }
+
     public int getReachOfSource(Level world, BlockPos pos);
 
     /**
@@ -83,6 +124,22 @@ public interface IRadiationManager {
      * @return
      */
     public void tick(Level world);
+
+    /**
+     * Identity of a radiation emitter within a level, independent of where it
+     * emits from. Containers use their block position; entities such as item frames
+     * use their UUID.
+     */
+    public record EmitterId(String type, String key) {
+
+	public static EmitterId container(BlockPos pos) {
+	    return new EmitterId("container", Long.toString(pos.asLong()));
+	}
+
+	public static EmitterId entity(UUID uuid) {
+	    return new EmitterId("entity", uuid.toString());
+	}
+    }
 
     /**
      * A wrapper class that represents a radiation source that has been removed.

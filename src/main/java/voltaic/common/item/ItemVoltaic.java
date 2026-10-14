@@ -18,6 +18,7 @@ import voltaic.api.radiation.SimpleRadiationSource;
 import voltaic.api.radiation.util.IRadiationRecipient;
 import voltaic.api.radiation.util.RadioactiveObject;
 import voltaic.common.reloadlistener.RadioactiveItemRegister;
+import voltaic.prefab.utilities.RadiationUtils;
 import voltaic.common.settings.VoltaicConfig;
 import voltaic.registers.VoltaicCapabilities;
 
@@ -58,7 +59,7 @@ public class ItemVoltaic extends Item implements CreativeTabSupplier {
 	if (rad.amount() <= 0)
 	    return false;
 	double amount = stack.getCount() * rad.amount();
-	int range = (int) (Math.sqrt(amount) / (5 * Math.sqrt(2)) * 1.25);
+	int range = RadiationUtils.getItemRadiationRange(amount);
 	RadiationSystem.addRadiationSource(world, new SimpleRadiationSource(amount, rad.strength(), range, true, 0,
 		entity.getOnPos().above(), false, false));
 	return super.onEntityItemUpdate(stack, entity);
