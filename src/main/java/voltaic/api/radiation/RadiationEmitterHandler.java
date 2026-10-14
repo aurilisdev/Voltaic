@@ -24,6 +24,7 @@ import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import voltaic.Voltaic;
+import voltaic.api.radiation.util.IRadiationContainment;
 import voltaic.api.radiation.util.IRadiationContentsReader;
 import voltaic.api.radiation.util.IRadiationManager;
 import voltaic.api.radiation.util.IRadiationManager.EmitterId;
@@ -209,6 +210,14 @@ public class RadiationEmitterHandler {
 	    }
 	}
 	ItemEmission emission = contents.build();
+	if (emission.isRadioactive() && be.getBlockState().getBlock() instanceof IRadiationContainment containment) {
+	    double escaping = containment.getEscapingFraction(be);
+	    escaping = Double.isNaN(escaping) ? 1.0 : Math.min(1.0, Math.max(0.0, escaping));
+	    double amount = emission.amount() * escaping;
+	    emission = amount > 0
+		    ? new ItemEmission(amount, emission.strength(), RadiationUtils.getItemRadiationRange(amount))
+		    : ItemEmission.NONE;
+	}
 	if (!emission.isRadioactive()) {
 	    manager(level).clearEmitter(id, level);
 	    return;

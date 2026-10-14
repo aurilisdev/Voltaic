@@ -2,8 +2,10 @@ package voltaic.prefab.utilities;
 
 import java.util.List;
 
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
@@ -46,11 +48,47 @@ public class RadiationUtils {
      */
     public static class ItemEmissionAccumulator {
 
+	private static final int MAX_NESTING_DEPTH = 3;
+	private static final int MAX_NESTED_STACKS = 1024;
+
 	private double radiation = 0;
 	private double strength = 0;
+	private int work = 0;
 
 	public ItemEmissionAccumulator add(ItemStack stack) {
-	    return stack.isEmpty() ? this : add(stack.getItem(), stack.getCount());
+	    return add(stack, 0);
+	}
+
+	/**
+	 * Adds a stack and the contents of vanilla contained items (such as shulker
+	 * boxes). Recursion depth and total work are bounded so malformed nesting
+	 * cannot cause unbounded reads.
+	 */
+	private ItemEmissionAccumulator add(ItemStack stack, int depth) {
+	    if (stack.isEmpty()) {
+		return this;
+	    }
+	    add(stack.getItem(), stack.getCount());
+	    if (depth >= MAX_NESTING_DEPTH || work >= MAX_NESTED_STACKS) {
+		return this;
+	    }
+	    ItemContainerContents nested = stack.get(DataComponents.CONTAINER);
+	    if (nested == null) {
+		return this;
+	    }
+	    for (ItemStack inner : nested.nonEmptyItems()) {
+		if (++work > MAX_NESTED_STACKS) {
+		    break;
+		}
+		/* Each outer item holds its own copy of the contents. */
+		ItemEmissionAccumulator sub = new ItemEmissionAccumulator();
+		sub.work = work;
+		sub.add(inner, depth + 1);
+		work = sub.work;
+		radiation = saturatedAdd(radiation, saturatedMultiply(sub.radiation, stack.getCount()));
+		strength = Math.max(strength, sub.strength);
+	    }
+	    return this;
 	}
 
 	public ItemEmissionAccumulator add(Item item, long quantity) {
@@ -79,6 +117,11 @@ public class RadiationUtils {
 
 	public ItemEmission build() {
 	    return build(getConfiguredMaxItemRange());
+	}
+
+	private static double saturatedMultiply(double a, double b) {
+	    double product = a * b;
+	    return Double.isFinite(product) ? product : Double.MAX_VALUE;
 	}
 
 	private static double saturatedAdd(double a, double b) {
