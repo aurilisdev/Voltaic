@@ -178,6 +178,7 @@
   "tooltip.voltaic.upgrade.stator": "Improved Stator",
   "tooltip.voltaic.upgrade.unbreaking": "Unbreaking",
   "tooltip.voltaic.validupgrades": "Valid Upgrades:",
+  "voltaic.configuration.allowExternalPowerSources": "Allow External Power Sources",
   "voltaic.configuration.backgroundRadiationDissipation": "Background Radiation Dissipation",
   "voltaic.configuration.common": "Common",
   "voltaic.configuration.dispenseGuidebook": "Dispense Guidebook",

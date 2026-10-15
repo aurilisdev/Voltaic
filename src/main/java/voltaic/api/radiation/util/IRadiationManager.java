@@ -1,6 +1,7 @@
 package voltaic.api.radiation.util;
 
 import java.util.List;
+import java.util.UUID;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -13,8 +14,6 @@ import voltaic.api.radiation.SimpleRadiationSource;
 import voltaic.prefab.utilities.BlockEntityUtils;
 
 /**
- * An abstraction and refactor of Radiation System by AurilisDev
- * <p>
  * Implementations of this are capability-based and will handle the distribution
  * of radiation to radiation recipients within its perview. The assumption is
  * that implementations of this will use ray casting to apply radiation effects
@@ -50,6 +49,29 @@ public interface IRadiationManager {
      */
     public void addRadiationSource(SimpleRadiationSource source, Level level);
 
+    /**
+     * Replaces the radiation currently emitted by an identified emitter (for
+     * example a container or an item frame) and resets its expiry.
+     */
+    public default void refreshEmitter(EmitterId id, SimpleRadiationSource source, Level level) {
+    }
+
+    /**
+     * Removes the emission of an identified emitter immediately.
+     *
+     * @return whether the emitter had an active emission
+     */
+    public default boolean clearEmitter(EmitterId id, Level level) {
+	return false;
+    }
+
+    /**
+     * Removes every identified emission located in the given chunk (used when a
+     * chunk unloads).
+     */
+    public default void clearEmittersInChunk(ChunkPos chunk, Level level) {
+    }
+
     public int getReachOfSource(Level world, BlockPos pos);
 
     /**
@@ -83,6 +105,22 @@ public interface IRadiationManager {
      * @return
      */
     public void tick(Level world);
+
+    /**
+     * Identity of a radiation emitter within a level, independent of where it emits
+     * from. Containers use their block position; entities such as item frames use
+     * their UUID.
+     */
+    public record EmitterId(String type, String key) {
+
+	public static EmitterId container(BlockPos pos) {
+	    return new EmitterId("container", Long.toString(pos.asLong()));
+	}
+
+	public static EmitterId entity(UUID uuid) {
+	    return new EmitterId("entity", uuid.toString());
+	}
+    }
 
     /**
      * A wrapper class that represents a radiation source that has been removed.

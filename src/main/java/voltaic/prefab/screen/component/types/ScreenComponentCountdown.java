@@ -39,13 +39,10 @@ public class ScreenComponentCountdown extends AbstractScreenComponentInfo {
     public void renderBackground(GuiGraphics graphics, int xAxis, int yAxis, int guiWidth, int guiHeight) {
 	super.renderBackground(graphics, xAxis, yAxis, guiWidth, guiHeight);
 	CountdownTextures countdownBarDefault = CountdownTextures.COUNTDOWN_BAR_DEFAULT;
-	int lengthBar = (int) (progressInfoHandler.getAsDouble()
-		* countdownBarDefault.textureWidth());
+	int lengthBar = (int) (progressInfoHandler.getAsDouble() * countdownBarDefault.textureWidth());
 	graphics.blit(CountdownTextures.BACKGROUND_DEFAULT.getLocation(), guiWidth + xLocation + 1,
-		guiHeight + yLocation + 1, countdownBarDefault.textureU(),
-		countdownBarDefault.textureV(), lengthBar,
-		countdownBarDefault.textureHeight(),
-		countdownBarDefault.imageWidth(),
+		guiHeight + yLocation + 1, countdownBarDefault.textureU(), countdownBarDefault.textureV(), lengthBar,
+		countdownBarDefault.textureHeight(), countdownBarDefault.imageWidth(),
 		countdownBarDefault.imageHeight());
 
     }

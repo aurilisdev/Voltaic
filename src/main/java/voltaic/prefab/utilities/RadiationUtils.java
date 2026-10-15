@@ -23,6 +23,46 @@ import voltaic.prefab.tile.components.type.ComponentInventory;
 
 public class RadiationUtils {
 
+    /**
+     * Result of {@link #calculateItemEmission}. Radiation is summed by stack count,
+     * strength is the penetration of the strongest material.
+     */
+    public record ItemEmission(double amount, double strength, int range) {
+
+	public static final ItemEmission NONE = new ItemEmission(0, 0, 0);
+
+	public boolean isRadioactive() {
+	    return amount > 0;
+	}
+    }
+
+    /**
+     * The range of radioactive items; the same formula used for dropped items.
+     */
+    public static int getItemRadiationRange(double amount) {
+	return (int) (Math.sqrt(amount) / (5 * Math.sqrt(2)) * 1.25);
+    }
+
+    public static ItemEmission calculateItemEmission(Iterable<ItemStack> items) {
+	double totRadiation = 0;
+	double totStrength = 0;
+	for (ItemStack item : items) {
+	    if (item.isEmpty()) {
+		continue;
+	    }
+	    RadioactiveObject rads = RadioactiveItemRegister.getValue(item.getItem());
+	    if (rads.amount() <= 0) {
+		continue;
+	    }
+	    totRadiation += rads.amount() * item.getCount();
+	    totStrength = Math.max(totStrength, rads.strength());
+	}
+	if (totRadiation <= 0) {
+	    return ItemEmission.NONE;
+	}
+	return new ItemEmission(totRadiation, totStrength, getItemRadiationRange(totRadiation));
+    }
+
     public static void handleRadioactiveGases(Level level, GenericTile tile, ComponentGasHandlerMulti multi, int radius,
 	    boolean isTemp, int ticks, boolean shouldLinger, boolean shouldCombine) {
 	handleRadioactiveGases(level, tile, multi.getInputTanks(), radius, isTemp, ticks, shouldLinger, shouldCombine);

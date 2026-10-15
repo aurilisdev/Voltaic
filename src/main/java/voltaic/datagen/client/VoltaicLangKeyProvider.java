@@ -240,6 +240,7 @@ public class VoltaicLangKeyProvider extends BaseLangKeyProvider {
 	    addConfiguration("radiationSystemEnabled", "Enable Radiation System");
 	    addConfiguration("oresEmitRadiation", "Ores Emit Radiation");
 	    addConfiguration("oreRadiationEmitRate", "Ore Radiation");
+	    addConfiguration("allowExternalPowerSources", "Allow External Power Sources");
 
 	}
     }

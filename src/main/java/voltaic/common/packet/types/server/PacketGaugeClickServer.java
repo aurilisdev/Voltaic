@@ -75,9 +75,8 @@ public record PacketGaugeClickServer(BlockPos pos, boolean gas, boolean input, i
 		|| message.index < CONDENSED_INDEX)
 	    return;
 	if (!(player.level().getBlockEntity(message.pos) instanceof GenericTile tile)
-		|| player.distanceToSqr(message.pos.getCenter()) > MAX_DISTANCE_SQR)
-	    return;
-	if (!(player.containerMenu instanceof GenericContainerBlockEntity<?> menu)
+		|| player.distanceToSqr(message.pos.getCenter()) > MAX_DISTANCE_SQR
+		|| !(player.containerMenu instanceof GenericContainerBlockEntity<?> menu)
 		|| !menu.getSafeHost().map(host -> host == tile).orElse(false))
 	    return;
 

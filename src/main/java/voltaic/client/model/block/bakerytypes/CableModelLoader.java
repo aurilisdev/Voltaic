@@ -191,18 +191,10 @@ public class CableModelLoader implements IGeometryLoader<CableModelLoader.WirePa
 	    for (int i = 0; i < data.length; i++) {
 
 		switch (data[i]) {
-		case NONE:
-		    none = true;
-		    break;
-		case WIRE:
-		    quads.addAll(wires[i].getQuads(state, side, rand, extraData, renderType));
-		    break;
-		case INVENTORY:
-		    quads.addAll(inventories[i].getQuads(state, side, rand, extraData, renderType));
-		    break;
-		default:
-		    none = true;
-		    break;
+		case NONE -> none = true;
+		case WIRE -> quads.addAll(wires[i].getQuads(state, side, rand, extraData, renderType));
+		case INVENTORY -> quads.addAll(inventories[i].getQuads(state, side, rand, extraData, renderType));
+		default -> none = true;
 		}
 	    }
 
