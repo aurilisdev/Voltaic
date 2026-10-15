@@ -347,6 +347,11 @@ public abstract class GenericTile extends BlockEntity implements Nameable, IProp
     }
 
     public void onPlace(Level level, BlockState oldState, boolean isMoving) {
+	for (IComponent component : components) {
+	    if (component != null) {
+		component.onLoad(level);
+	    }
+	}
     }
 
     public int getComparatorSignal(Level level) {
