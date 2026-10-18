@@ -37,6 +37,9 @@ public class VoltaicDataComponentTypes {
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Double>> HEAT_STORED = DATA_COMPONENT_TYPES
 	    .register("heatstored", () -> DataComponentType.<Double>builder().persistent(Codec.DOUBLE)
 		    .networkSynchronized(ByteBufCodecs.DOUBLE).cacheEncoding().build());
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Double>> MEKASUIT_RADIATION_ENERGY_REMAINDER = DATA_COMPONENT_TYPES
+	    .register("mekasuit_radiation_energy_remainder", () -> DataComponentType.<Double>builder()
+		    .persistent(Codec.DOUBLE).networkSynchronized(ByteBufCodecs.DOUBLE).build()); // Used to store fractional joule loss from radiation.
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Double>> PATTERN_INTEGRITY = DATA_COMPONENT_TYPES
 	    .register("patternintegrity", () -> DataComponentType.<Double>builder().persistent(Codec.DOUBLE)
 		    .networkSynchronized(ByteBufCodecs.DOUBLE).cacheEncoding().build());

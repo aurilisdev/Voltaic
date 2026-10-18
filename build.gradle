@@ -84,6 +84,7 @@ configurations {
 dependencies {
     implementation libs.neo.neoforge
     compileOnly libs.bundles.jeiApi
+    compileOnly libs.mekanism
     localRuntime libs.jei
 }
 

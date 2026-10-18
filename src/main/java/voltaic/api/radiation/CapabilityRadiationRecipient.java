@@ -10,6 +10,7 @@ import voltaic.api.radiation.util.IHazmatSuit;
 import voltaic.api.radiation.util.IRadiationRecipient;
 import voltaic.api.radiation.util.RadioactiveObject;
 import voltaic.common.settings.VoltaicConfig;
+import voltaic.compatibility.mekanism.MekanismRadiationCompat;
 import voltaic.registers.VoltaicAttachmentTypes;
 import voltaic.registers.VoltaicEffects;
 
@@ -36,27 +37,24 @@ public class CapabilityRadiationRecipient implements IRadiationRecipient {
 	    rads *= VoltaicConfig.INSTANCE.IODINE_RAD_REDUCTION.get();
 	}
 
-	int hazmatPieces = 0;
-
+	double shielding = 0.0;
+	float damageChance = (float) (rads * 2.15 / 2169.9975);
 	for (EquipmentSlot slot : ARMOR_SLOTS) {
 	    ItemStack stack = entity.getItemBySlot(slot);
-
-	    if (!(stack.getItem() instanceof IHazmatSuit)) {
-		continue;
-	    }
-
-	    hazmatPieces++;
-
-	    float damageChance = (float) (rads * 2.15 / 2169.9975);
-
-	    if (Voltaic.RANDOM.nextFloat() < damageChance) {
-		stack.hurtAndBreak((int) Math.ceil(damageChance), entity, slot);
+	    double armorShielding = getArmorShielding(slot);
+	    if (stack.getItem() instanceof IHazmatSuit) {
+		shielding += armorShielding;
+		if (Voltaic.RANDOM.nextFloat() < damageChance) {
+		    stack.hurtAndBreak((int) Math.ceil(damageChance), entity, slot);
+		}
+	    } else {
+		shielding += MekanismRadiationCompat.applyRadiationShielding(stack, damageChance, armorShielding);
 	    }
 	}
-
-	if (hazmatPieces < 4) {
-	    int amplitude = getAmplitudeFromRadiation(rads, strength);
-	    int duration = getDurationFromRadiation(rads);
+	double unshieldedRads = shielding >= 1.0 - 1.0E-12 ? 0.0 : rads * Math.max(0.0, 1.0 - shielding);
+	if (unshieldedRads > 0.0) {
+	    int amplitude = getAmplitudeFromRadiation(unshieldedRads, strength);
+	    int duration = getDurationFromRadiation(unshieldedRads);
 
 	    MobEffectInstance currentEffect = entity.getEffect(VoltaicEffects.RADIATION);
 
@@ -103,6 +101,16 @@ public class CapabilityRadiationRecipient implements IRadiationRecipient {
 
     public static int getAmplitudeFromRadiation(double radiation, double strength) {
 	return (int) Math.min(40.0, radiation / 100.0 * strength);
+    }
+
+    private static double getArmorShielding(EquipmentSlot slot) {
+	return switch (slot) {
+	case HEAD -> 5.0 / 24.0;
+	case CHEST -> 8.0 / 24.0;
+	case LEGS -> 7.0 / 24.0;
+	case FEET -> 4.0 / 24.0;
+	default -> 0.0;
+	};
     }
 
 }

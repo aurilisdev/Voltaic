@@ -26,3 +26,10 @@ description='''${mod_description}'''
 
 [[accessTransformers]]
 file="META-INF/accesstransformer.cfg"
+
+[[dependencies.${mod_id}]]
+modId="mekanism"
+type="optional"
+versionRange="[10.7,11)"
+ordering="NONE"
+side="BOTH"
