@@ -1,10 +1,16 @@
 package voltaic.api.radiation;
 
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.damagesource.CombatRules;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.item.enchantment.ItemEnchantments;
 import voltaic.Voltaic;
 import voltaic.api.radiation.util.IHazmatSuit;
 import voltaic.api.radiation.util.IRadiationRecipient;
@@ -52,6 +58,10 @@ public class CapabilityRadiationRecipient implements IRadiationRecipient {
 	    }
 	}
 	double unshieldedRads = shielding >= 1.0 - 1.0E-12 ? 0.0 : rads * Math.max(0.0, 1.0 - shielding);
+
+	// Protection enchantment also reduces radiation exposure.
+	unshieldedRads = applyProtectionEnchantment(entity, unshieldedRads);
+
 	if (unshieldedRads > 0.0) {
 	    int amplitude = getAmplitudeFromRadiation(unshieldedRads, strength);
 	    int duration = getDurationFromRadiation(unshieldedRads);
@@ -67,6 +77,33 @@ public class CapabilityRadiationRecipient implements IRadiationRecipient {
 	}
 
 	recordRadiation(entity, rads, strength);
+    }
+
+    /**
+     * Sums the level of the vanilla Protection enchantment across all worn armor
+     * slots and applies {@link CombatRules#getDamageAfterMagicAbsorb(float, float)}
+     * to the given radiation amount. Returns the amount unchanged when no
+     * Protection enchantment is present.
+     */
+    private static double applyProtectionEnchantment(LivingEntity entity, double rads) {
+	if (rads <= 0.0) {
+	    return rads;
+	}
+	int protectionLevel = 0;
+	for (EquipmentSlot slot : ARMOR_SLOTS) {
+	    ItemStack stack = entity.getItemBySlot(slot);
+	    if (stack.isEmpty()) {
+		continue;
+	    }
+	    ItemEnchantments enchantments = stack.getTagEnchantments();
+	    Holder<Enchantment> protectionHolder = entity.registryAccess().registryOrThrow(Registries.ENCHANTMENT)
+		    .getHolderOrThrow(Enchantments.PROTECTION);
+	    protectionLevel += enchantments.getLevel(protectionHolder);
+	}
+	if (protectionLevel <= 0) {
+	    return rads;
+	}
+	return CombatRules.getDamageAfterMagicAbsorb((float) rads, protectionLevel);
     }
 
     private static void recordRadiation(LivingEntity entity, double rads, double strength) {
