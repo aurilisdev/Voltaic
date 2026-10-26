@@ -35,6 +35,9 @@ public final class MekanismRadiationCompat {
 	if (shielding <= 0.0) {
 	    return 0.0;
 	}
+	if (MekanismHazmatIntegrity.isHazmat(stack)) {
+	    return MekanismHazmatIntegrity.applyRadiationShielding(stack, damageChance, armorShielding);
+	}
 	if (RadiationShielding.getHazmatDurability(stack) > 0) {
 	    shielding = armorShielding;
 	}
