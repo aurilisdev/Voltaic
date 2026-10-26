@@ -5,11 +5,14 @@ import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.damagesource.CombatRules;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.util.LazyOptional;
@@ -109,6 +112,10 @@ public class CapabilityRadiationRecipient implements IRadiationRecipient, ICapab
 	}
 
 	double unshieldedRads = shielding >= 1.0 - 1.0E-12 ? 0.0 : rads * Math.max(0.0, 1.0 - shielding);
+
+	// Protection enchantment also reduces radiation exposure.
+	unshieldedRads = applyProtectionEnchantment(entity, unshieldedRads);
+
 	if (unshieldedRads > 0.0) {
 	    int amplitude = getAmplitudeFromRadiation(unshieldedRads, strength);
 	    int duration = getDurationFromRadiation(unshieldedRads);
@@ -125,6 +132,30 @@ public class CapabilityRadiationRecipient implements IRadiationRecipient, ICapab
 	recieved += rads;
 	recievedStrength = strength;
 
+    }
+
+    /**
+     * Sums the vanilla Protection enchantment levels across all worn armour slots
+     * and applies the corresponding reduction to radiation.
+     */
+    private static double applyProtectionEnchantment(LivingEntity entity, double rads) {
+	if (rads <= 0.0) {
+	    return rads;
+	}
+
+	int protectionLevel = 0;
+	for (EquipmentSlot slot : ARMOR_SLOTS) {
+	    ItemStack stack = entity.getItemBySlot(slot);
+	    if (!stack.isEmpty()) {
+		protectionLevel += EnchantmentHelper.getItemEnchantmentLevel(Enchantments.ALL_DAMAGE_PROTECTION, stack);
+	    }
+	}
+
+	if (protectionLevel <= 0) {
+	    return rads;
+	}
+
+	return CombatRules.getDamageAfterMagicAbsorb((float) rads, protectionLevel);
     }
 
     @Override
