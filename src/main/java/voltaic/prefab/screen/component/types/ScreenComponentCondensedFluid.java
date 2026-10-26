@@ -12,7 +12,7 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
 import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 import voltaic.common.packet.NetworkHandler;
-import voltaic.common.packet.types.server.PacketUpdateCarriedItemServer;
+import voltaic.common.packet.types.server.PacketGaugeClickServer;
 import voltaic.prefab.inventory.container.types.GenericContainerBlockEntity;
 import voltaic.prefab.properties.variant.SingleProperty;
 import voltaic.prefab.screen.GenericScreen;
@@ -106,8 +106,8 @@ public class ScreenComponentCondensedFluid extends ScreenComponentGeneric {
 
 	stack = handler.getContainer();
 
-	NetworkHandler.CHANNEL.sendToServer(new PacketUpdateCarriedItemServer(stack.copy(), owner.getBlockPos(),
-		Minecraft.getInstance().player.getUUID()));
+	NetworkHandler.CHANNEL.sendToServer(
+		new PacketGaugeClickServer(owner.getBlockPos(), false, false, PacketGaugeClickServer.CONDENSED_INDEX));
 
     }
 

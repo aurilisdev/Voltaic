@@ -15,9 +15,9 @@ import voltaic.common.packet.types.client.PacketSetClientRadioactiveGases;
 import voltaic.common.packet.types.client.PacketSetClientRadioactiveItems;
 import voltaic.common.packet.types.client.PacketSpawnSmokeParticle;
 import voltaic.common.packet.types.client.PacketUpdateCariedItemClient;
+import voltaic.common.packet.types.server.PacketGaugeClickServer;
 import voltaic.common.packet.types.server.PacketSendUpdatePropertiesServer;
 import voltaic.common.packet.types.server.PacketSwapBattery;
-import voltaic.common.packet.types.server.PacketUpdateCarriedItemServer;
 
 public class NetworkHandler {
 
@@ -62,8 +62,8 @@ public class NetworkHandler {
 		PacketSendUpdatePropertiesServer::handle, Optional.of(NetworkDirection.PLAY_TO_SERVER));
 	CHANNEL.registerMessage(disc++, PacketSwapBattery.class, PacketSwapBattery::encode, PacketSwapBattery::decode,
 		PacketSwapBattery::handle, Optional.of(NetworkDirection.PLAY_TO_SERVER));
-	CHANNEL.registerMessage(disc++, PacketUpdateCarriedItemServer.class, PacketUpdateCarriedItemServer::encode,
-		PacketUpdateCarriedItemServer::decode, PacketUpdateCarriedItemServer::handle,
+	CHANNEL.registerMessage(disc++, PacketGaugeClickServer.class, PacketGaugeClickServer::encode,
+		PacketGaugeClickServer::decode, PacketGaugeClickServer::handle,
 		Optional.of(NetworkDirection.PLAY_TO_SERVER));
 
     }

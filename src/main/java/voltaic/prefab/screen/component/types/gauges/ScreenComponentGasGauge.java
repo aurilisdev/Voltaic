@@ -33,12 +33,13 @@ import voltaic.api.gas.PropertyGasTank;
 import voltaic.api.gas.utils.IGasTank;
 import voltaic.api.screen.ITexture;
 import voltaic.client.VoltaicClientRegister;
-import voltaic.common.packet.NetworkHandler;
-import voltaic.common.packet.types.server.PacketUpdateCarriedItemServer;
+import voltaic.common.packet.types.server.PacketGaugeClickServer;
 import voltaic.prefab.inventory.container.types.GenericContainerBlockEntity;
 import voltaic.prefab.screen.GenericScreen;
 import voltaic.prefab.screen.component.ScreenComponentGeneric;
 import voltaic.prefab.tile.GenericTile;
+import voltaic.prefab.tile.components.IComponentType;
+import voltaic.prefab.tile.components.utils.IComponentGasHandler;
 import voltaic.prefab.utilities.CapabilityUtils;
 import voltaic.prefab.utilities.RenderingUtils;
 import voltaic.prefab.utilities.VoltaicTextUtils;
@@ -220,9 +221,9 @@ public class ScreenComponentGasGauge extends ScreenComponentGeneric {
 
 	    stack.getOrCreateTag().putBoolean("hasclickedonfluidgauge", true);
 
-	    NetworkHandler.CHANNEL.sendToServer(new PacketUpdateCarriedItemServer(stack.copy(),
-		    ((GenericContainerBlockEntity<?>) screen.getMenu()).getSafeHost().getBlockPos(),
-		    Minecraft.getInstance().player.getUUID()));
+	    PacketGaugeClickServer.<IComponentGasHandler, PropertyGasTank>sendClickToServer(owner,
+		    IComponentType.GasHandler, true, tank, IComponentGasHandler::getInputTanks,
+		    IComponentGasHandler::getOutputTanks);
 
 	    screen.getMenu().setCarried(stack);
 
@@ -244,9 +245,9 @@ public class ScreenComponentGasGauge extends ScreenComponentGeneric {
 
 	    stack.getOrCreateTag().putBoolean("hasclickedonfluidgauge", true);
 
-	    NetworkHandler.CHANNEL.sendToServer(new PacketUpdateCarriedItemServer(stack.copy(),
-		    ((GenericContainerBlockEntity<?>) screen.getMenu()).getSafeHost().getBlockPos(),
-		    Minecraft.getInstance().player.getUUID()));
+	    PacketGaugeClickServer.<IComponentGasHandler, PropertyGasTank>sendClickToServer(owner,
+		    IComponentType.GasHandler, true, tank, IComponentGasHandler::getInputTanks,
+		    IComponentGasHandler::getOutputTanks);
 
 	    screen.getMenu().setCarried(stack);
 
@@ -256,7 +257,8 @@ public class ScreenComponentGasGauge extends ScreenComponentGeneric {
     }
 
     public enum GasGaugeTextures implements ITexture {
-	BACKGROUND_DEFAULT(14, 49, 0, 0, 256, 256, TEXTURE), LEVEL_DEFAULT(14, 49, 14, 0, 256, 256, TEXTURE);
+	BACKGROUND_DEFAULT(14, 49, 0, 0, 256, 256, TEXTURE),
+	LEVEL_DEFAULT(14, 49, 14, 0, 256, 256, TEXTURE);
 
 	private final int textureWidth;
 	private final int textureHeight;

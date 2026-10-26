@@ -11,7 +11,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import voltaic.api.item.IItemElectric;
-import voltaic.prefab.tile.GenericTile;
 import voltaic.prefab.tile.IPropertyHolderTile;
 
 public class ServerBarrierMethods {
@@ -36,18 +35,6 @@ public class ServerBarrierMethods {
 	ItemStack handItem = player.getItemInHand(InteractionHand.MAIN_HAND);
 	if (!handItem.isEmpty() && handItem.getItem() instanceof IItemElectric electric) {
 	    electric.swapBatteryPackFirstItem(handItem, player);
-	}
-    }
-
-    public static void handleUpdateCarriedItemServer(Level level, ItemStack carriedItem, BlockPos tilePos,
-	    UUID playerId) {
-	ServerLevel world = (ServerLevel) level;
-	if (world == null) {
-	    return;
-	}
-	GenericTile tile = (GenericTile) world.getBlockEntity(tilePos);
-	if (tile != null) {
-	    tile.updateCarriedItemInContainer(carriedItem, playerId);
 	}
     }
 

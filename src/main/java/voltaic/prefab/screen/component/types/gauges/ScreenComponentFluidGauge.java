@@ -22,11 +22,12 @@ import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 import voltaic.api.electricity.formatting.ChatFormatter;
 import voltaic.api.fluid.PropertyFluidTank;
 import voltaic.api.screen.component.FluidTankSupplier;
-import voltaic.common.packet.NetworkHandler;
-import voltaic.common.packet.types.server.PacketUpdateCarriedItemServer;
+import voltaic.common.packet.types.server.PacketGaugeClickServer;
 import voltaic.prefab.inventory.container.types.GenericContainerBlockEntity;
 import voltaic.prefab.screen.GenericScreen;
 import voltaic.prefab.tile.GenericTile;
+import voltaic.prefab.tile.components.IComponentType;
+import voltaic.prefab.tile.components.utils.IComponentFluidHandler;
 import voltaic.prefab.utilities.CapabilityUtils;
 import voltaic.prefab.utilities.RenderingUtils;
 import voltaic.prefab.utilities.VoltaicTextUtils;
@@ -163,9 +164,9 @@ public class ScreenComponentFluidGauge extends AbstractScreenComponentGauge {
 
 	    stack.getOrCreateTag().putBoolean("hasclickedonfluidgauge", true);
 
-	    NetworkHandler.CHANNEL.sendToServer(new PacketUpdateCarriedItemServer(stack.copy(),
-		    ((GenericContainerBlockEntity<?>) screen.getMenu()).getSafeHost().getBlockPos(),
-		    Minecraft.getInstance().player.getUUID()));
+	    PacketGaugeClickServer.<IComponentFluidHandler, PropertyFluidTank>sendClickToServer(owner,
+		    IComponentType.FluidHandler, false, tank, IComponentFluidHandler::getInputTanks,
+		    IComponentFluidHandler::getOutputTanks);
 
 	    screen.getMenu().setCarried(stack);
 
@@ -188,9 +189,9 @@ public class ScreenComponentFluidGauge extends AbstractScreenComponentGauge {
 
 	    stack.getOrCreateTag().putBoolean("hasclickedonfluidgauge", true);
 
-	    NetworkHandler.CHANNEL.sendToServer(new PacketUpdateCarriedItemServer(stack.copy(),
-		    ((GenericContainerBlockEntity<?>) screen.getMenu()).getSafeHost().getBlockPos(),
-		    Minecraft.getInstance().player.getUUID()));
+	    PacketGaugeClickServer.<IComponentFluidHandler, PropertyFluidTank>sendClickToServer(owner,
+		    IComponentType.FluidHandler, false, tank, IComponentFluidHandler::getInputTanks,
+		    IComponentFluidHandler::getOutputTanks);
 
 	    screen.getMenu().setCarried(stack);
 
