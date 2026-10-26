@@ -24,3 +24,10 @@ authors="aurilisdev, skip999" #optional
 
 description='''
 '''
+
+[[dependencies.voltaic]]
+modId="mekanism"
+mandatory=false
+versionRange="[10.4,10.5)"
+ordering="NONE"
+side="BOTH"
