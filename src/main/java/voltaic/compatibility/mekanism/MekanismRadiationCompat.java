@@ -18,9 +18,6 @@ public final class MekanismRadiationCompat {
 
     private static final boolean MEKANISM_LOADED = ModList.get().isLoaded(Voltaic.MEKANISM_ID);
 
-    private MekanismRadiationCompat() {
-    }
-
     public static double getRadiationShielding(ItemStack stack) {
 	if (!MEKANISM_LOADED || stack.isEmpty()) {
 	    return 0.0;
@@ -32,6 +29,9 @@ public final class MekanismRadiationCompat {
 	double shielding = getRadiationShielding(stack);
 	if (shielding <= 0.0) {
 	    return 0.0;
+	}
+	if (MekanismHazmatIntegrity.isHazmat(stack)) {
+	    return MekanismHazmatIntegrity.applyRadiationShielding(stack, damageChance, armorShielding);
 	}
 	if (RadiationShielding.getHazmatDurability(stack) > 0) {
 	    shielding = armorShielding;

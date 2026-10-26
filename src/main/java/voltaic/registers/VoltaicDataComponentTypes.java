@@ -39,7 +39,13 @@ public class VoltaicDataComponentTypes {
 		    .networkSynchronized(ByteBufCodecs.DOUBLE).cacheEncoding().build());
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Double>> MEKASUIT_RADIATION_ENERGY_REMAINDER = DATA_COMPONENT_TYPES
 	    .register("mekasuit_radiation_energy_remainder", () -> DataComponentType.<Double>builder()
-		    .persistent(Codec.DOUBLE).networkSynchronized(ByteBufCodecs.DOUBLE).build()); // Used to store fractional joule loss from radiation.
+		    .persistent(Codec.DOUBLE).networkSynchronized(ByteBufCodecs.DOUBLE).build()); // Used to store
+												  // fractional joule
+												  // loss from
+												  // radiation.
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Double>> MEKANISM_HAZMAT_INTEGRITY = DATA_COMPONENT_TYPES
+	    .register("mekanism_hazmat_integrity", () -> DataComponentType.<Double>builder()
+		    .persistent(Codec.doubleRange(0.0, 1.0)).networkSynchronized(ByteBufCodecs.DOUBLE).build());
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Double>> PATTERN_INTEGRITY = DATA_COMPONENT_TYPES
 	    .register("patternintegrity", () -> DataComponentType.<Double>builder().persistent(Codec.DOUBLE)
 		    .networkSynchronized(ByteBufCodecs.DOUBLE).cacheEncoding().build());
