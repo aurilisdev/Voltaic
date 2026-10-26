@@ -19,6 +19,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.DoorBlock;
 import net.minecraft.world.level.block.TrapDoorBlock;
@@ -57,6 +58,8 @@ public class RadiationManager implements IRadiationManager, ICapabilitySerializa
      */
     private static final double EXPOSURE_CACHE_MOVE_DISTANCE_SQ = 0.25;
 
+    /* Identified emitters; transient (rebuilt by their refreshers), never saved. */
+    private final Map<EmitterId, TemporaryRadiationSource> emitters = new HashMap<>();
     private final Map<ExposureKey, CachedExposure> exposureCache = new HashMap<>();
     private final Map<Long, CachedEntities> entityCache = new HashMap<>();
 
@@ -156,6 +159,10 @@ public class RadiationManager implements IRadiationManager, ICapabilitySerializa
 	    return;
 	}
 
+	emitters.clear();
+	exposureCache.clear();
+	entityCache.clear();
+
 	// Permanent
 
 	CompoundTag permanent = nbt.getCompound("permanentradiationsources");
@@ -229,7 +236,9 @@ public class RadiationManager implements IRadiationManager, ICapabilitySerializa
 
     @Override
     public List<TemporaryRadiationSource> getTemporarySources(Level world) {
-	return new ArrayList<>(temporarySources.values());
+	List<TemporaryRadiationSource> sources = new ArrayList<>(temporarySources.values());
+	sources.addAll(emitters.values());
+	return sources;
     }
 
     @Override
@@ -244,7 +253,11 @@ public class RadiationManager implements IRadiationManager, ICapabilitySerializa
 
     @Override
     public List<BlockPos> getTemporaryLocations(Level world) {
-	return new ArrayList<>(temporarySources.keySet());
+	List<BlockPos> positions = new ArrayList<>(temporarySources.keySet());
+	for (TemporaryRadiationSource source : emitters.values()) {
+	    positions.add(source.position);
+	}
+	return positions;
     }
 
     @Override
@@ -289,10 +302,33 @@ public class RadiationManager implements IRadiationManager, ICapabilitySerializa
     }
 
     @Override
+    public void refreshEmitter(EmitterId id, SimpleRadiationSource source, Level world) {
+	emitters.put(id, new TemporaryRadiationSource(source.ticks(), source.strength(), source.amount(),
+		source.shouldLeaveLingeringSource(), source.distance(), source.getSourceLocation()));
+    }
+
+    @Override
+    public boolean clearEmitter(EmitterId id, Level world) {
+	return emitters.remove(id) != null;
+    }
+
+    @Override
+    public void clearEmittersInChunk(ChunkPos chunk, Level world) {
+	emitters.values().removeIf(source -> source.chunkPos.equals(chunk));
+    }
+
+    @Override
     public int getReachOfSource(Level world, BlockPos pos) {
-	return Math.max(temporarySources.getOrDefault(pos, TemporaryRadiationSource.NONE).distance,
-		Math.max(permanentSources.getOrDefault(pos, SimpleRadiationSource.NONE).getDistanceSpread(),
-			fadingSources.getOrDefault(pos, FadingRadiationSource.NONE).distance));
+	int emitterReach = 0;
+	for (TemporaryRadiationSource source : emitters.values()) {
+	    if (source.position.equals(pos)) {
+		emitterReach = Math.max(emitterReach, source.distance);
+	    }
+	}
+	return Math.max(emitterReach,
+		Math.max(temporarySources.getOrDefault(pos, TemporaryRadiationSource.NONE).distance,
+			Math.max(permanentSources.getOrDefault(pos, SimpleRadiationSource.NONE).getDistanceSpread(),
+				fadingSources.getOrDefault(pos, FadingRadiationSource.NONE).distance)));
     }
 
     @Override
@@ -328,6 +364,7 @@ public class RadiationManager implements IRadiationManager, ICapabilitySerializa
 	permanentSources.clear();
 	temporarySources.clear();
 	fadingSources.clear();
+	emitters.clear();
 
 	exposureCache.clear();
 	entityCache.clear();
@@ -360,6 +397,13 @@ public class RadiationManager implements IRadiationManager, ICapabilitySerializa
 	    TemporaryRadiationSource source = entry.getValue();
 
 	    applySourceToNearbyEntities(serverLevel, entry.getKey(), source.boundingBox, source.radiation,
+		    source.strength);
+	}
+
+	/* Identified emitters */
+
+	for (TemporaryRadiationSource source : emitters.values()) {
+	    applySourceToNearbyEntities(serverLevel, source.position, source.boundingBox, source.radiation,
 		    source.strength);
 	}
 
@@ -396,6 +440,25 @@ public class RadiationManager implements IRadiationManager, ICapabilitySerializa
 		}
 	    }
 
+	}
+
+	/* Expire identified emitters independently of position based sources. */
+
+	Iterator<TemporaryRadiationSource> emitterIterator = emitters.values().iterator();
+	while (emitterIterator.hasNext()) {
+	    temporarySource = emitterIterator.next();
+	    temporarySource.ticks--;
+	    if (temporarySource.ticks < 0) {
+		emitterIterator.remove();
+		if (temporarySource.leaveFading) {
+		    position = temporarySource.position;
+		    FadingRadiationSource existing = fadingSources.getOrDefault(position, FadingRadiationSource.NONE);
+		    fadingSources.put(position,
+			    new FadingRadiationSource(Math.max(temporarySource.distance, existing.distance),
+				    Math.max(temporarySource.strength, existing.strength),
+				    Math.max(temporarySource.radiation, existing.radiation), position));
+		}
+	    }
 	}
 
 	/* Fading Radiation Sources */
