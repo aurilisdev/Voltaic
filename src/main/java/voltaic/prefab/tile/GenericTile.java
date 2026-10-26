@@ -21,6 +21,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -303,19 +304,18 @@ public abstract class GenericTile extends BlockEntity implements Nameable, IProp
 		}
 	    }
 
-	} else if (!(stack.getItem() instanceof IWrenchItem)) {
-	    if (hasComponent(IComponentType.ContainerProvider)) {
-
-		if (!level.isClientSide) {
-
-		    player.openMenu(getComponent(IComponentType.ContainerProvider));
-
-		    player.awardStat(Stats.INTERACT_WITH_FURNACE);
-
-		}
-
+	} else if (stack.getItem() instanceof IWrenchItem) {
+	    InteractionResult result = stack.getItem().useOn(new UseOnContext(level, player, handIn, stack, hit));
+	    if (result.consumesAction()) {
 		return InteractionResult.CONSUME;
-
+	    }
+	} else {
+	    if (hasComponent(IComponentType.ContainerProvider)) {
+		if (!level.isClientSide) {
+		    player.openMenu(getComponent(IComponentType.ContainerProvider));
+		    player.awardStat(Stats.INTERACT_WITH_FURNACE);
+		}
+		return InteractionResult.CONSUME;
 	    }
 	}
 	return InteractionResult.PASS;
