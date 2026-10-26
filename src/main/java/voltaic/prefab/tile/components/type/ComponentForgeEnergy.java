@@ -19,8 +19,6 @@ import voltaic.registers.VoltaicCapabilities;
 public class ComponentForgeEnergy implements IComponent {
 
     private GenericTile holder;
-    private final boolean electroLoaded;
-
     private final ComponentElectrodynamic electro;
 
     public ComponentForgeEnergy(GenericTile holder) {
@@ -33,8 +31,6 @@ public class ComponentForgeEnergy implements IComponent {
 	if (Voltaic.isElectroLoaded() == null) {
 	    throw new RuntimeException("You are doing something very wrong indeed");
 	}
-	electroLoaded = Voltaic.isElectroLoaded();
-
     }
 
     @Override
@@ -55,7 +51,7 @@ public class ComponentForgeEnergy implements IComponent {
 
     @Override
     public <T> LazyOptional<T> getCapability(Capability<T> capability, Direction side, CapabilityInputType inputType) {
-	if (electroLoaded || side == null) {
+	if (!Voltaic.isForgeEnergyEnabled() || side == null) {
 	    return LazyOptional.empty();
 	}
 

@@ -22,4 +22,7 @@ public class VoltaicConstants {
     @IntValue(def = 20, comment = "How frequently ores random tick radiation. Value of 1 is fastest rate.")
     public static int ORE_RADIATION_ADMIT_RATE = 20;
 
+    @BooleanValue(def = false, comment = "Expose external power capabilities, such as Forge Energy, alongside Electrodynamics.")
+    public static boolean ALLOW_EXTERNAL_POWER_SOURCES;
+
 }

@@ -22,6 +22,8 @@ public class CapabilityForgeEnergyItem implements IEnergyStorage {
 
     @Override
     public int receiveEnergy(int toReceive, boolean simulate) {
+	if (!canRecieve)
+	    return 0;
 	return (int) electric.receivePower(stack,
 		TransferPack.joulesVoltage(toReceive, electric.getElectricProperties().receive.getVoltage()), simulate)
 		.getJoules();
@@ -29,6 +31,8 @@ public class CapabilityForgeEnergyItem implements IEnergyStorage {
 
     @Override
     public int extractEnergy(int toExtract, boolean simulate) {
+	if (!canExtract)
+	    return 0;
 	return (int) electric.extractPower(stack, toExtract, simulate).getJoules();
     }
 

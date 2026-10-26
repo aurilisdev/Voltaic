@@ -108,9 +108,7 @@ public class Voltaic {
     @SubscribeEvent
     @OnlyIn(Dist.CLIENT)
     public static void onClientSetup(FMLClientSetupEvent event) {
-	event.enqueueWork(() -> {
-	    VoltaicClientRegister.setup();
-	});
+	event.enqueueWork(() -> { VoltaicClientRegister.setup(); });
     }
 
     // Don't really have a better place to put this for now
@@ -143,6 +141,14 @@ public class Voltaic {
     // call this before that, you will have an inaccurate result.
     public static final Boolean isElectroLoaded() {
 	return ELECTRODYNAMICS_LOADED;
+    }
+
+    /**
+     * Forge Energy is the fallback when Electrodynamics is absent. When it is
+     * present, external power capabilities require explicit opt-in.
+     */
+    public static boolean isForgeEnergyEnabled() {
+	return !isElectroLoaded() || VoltaicConstants.ALLOW_EXTERNAL_POWER_SOURCES;
     }
 
 }
